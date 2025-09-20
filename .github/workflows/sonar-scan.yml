@@ -6,7 +6,6 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
-
   sonarcloud:
     name: SonarCloud
     runs-on: ubuntu-latest
@@ -19,12 +18,11 @@ jobs:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
       - name: Install uv
         uses: astral-sh/setup-uv@v6
-          with:
-            python-version: ${{ matrix.python-version }}
+        with:
+          python-version: ${{ matrix.python-version }}
 
       - name: Install the project
         run: uv sync --locked --all-extras --dev
-
 
       - name: Install dependencies and run coverag
         run: |
