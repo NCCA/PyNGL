@@ -38,12 +38,12 @@ class ShaderProgram:
     def auto_register_uniforms(self):
         uniform_count = gl.glGetProgramiv(self._id, gl.GL_ACTIVE_UNIFORMS)
         for i in range(uniform_count):
-            name, size, type = gl.glGetActiveUniform(self._id, i, 256)
+            name, _, shader_type = gl.glGetActiveUniform(self._id, i, 256)
             # remove [0] if it exists in the name
             if name.endswith(b"[0]"):
                 name = name[:-3]
             location = gl.glGetUniformLocation(self._id, name)
-            self._uniforms[name.decode("utf-8")] = (location, type)
+            self._uniforms[name.decode("utf-8")] = (location, shader_type)
 
     def use(self):
         gl.glUseProgram(self._id)
@@ -55,7 +55,7 @@ class ShaderProgram:
         if name in self._uniforms:
             return self._uniforms[name][0]
         else:
-            # logger.warning(f"Uniform '{name}' not found in shader '{self._name}'")
+            logger.warning(f"Uniform '{name}' not found in shader '{self._name}'")
             return -1
 
     def set_uniform(self, name: str, *value):
@@ -69,17 +69,11 @@ class ShaderProgram:
             elif isinstance(val, float):
                 gl.glUniform1f(loc, val)
             elif isinstance(val, Mat2):
-                gl.glUniformMatrix2fv(
-                    loc, 1, gl.GL_FALSE, (ctypes.c_float * 4)(*val.get_matrix())
-                )
+                gl.glUniformMatrix2fv(loc, 1, gl.GL_FALSE, (ctypes.c_float * 4)(*val.get_matrix()))
             elif isinstance(val, Mat3):
-                gl.glUniformMatrix3fv(
-                    loc, 1, gl.GL_FALSE, (ctypes.c_float * 9)(*val.get_matrix())
-                )
+                gl.glUniformMatrix3fv(loc, 1, gl.GL_FALSE, (ctypes.c_float * 9)(*val.get_matrix()))
             elif isinstance(val, Mat4):
-                gl.glUniformMatrix4fv(
-                    loc, 1, gl.GL_FALSE, (ctypes.c_float * 16)(*val.get_matrix())
-                )
+                gl.glUniformMatrix4fv(loc, 1, gl.GL_FALSE, (ctypes.c_float * 16)(*val.get_matrix()))
             elif isinstance(val, Vec2):
                 gl.glUniform2f(loc, *val)
             elif isinstance(val, Vec3):
@@ -90,21 +84,13 @@ class ShaderProgram:
                 try:
                     val = list(value[0])
                     if len(val) == 4:
-                        gl.glUniformMatrix2fv(
-                            loc, 1, gl.GL_FALSE, (ctypes.c_float * 4)(*val)
-                        )
+                        gl.glUniformMatrix2fv(loc, 1, gl.GL_FALSE, (ctypes.c_float * 4)(*val))
                     elif len(val) == 9:
-                        gl.glUniformMatrix3fv(
-                            loc, 1, gl.GL_FALSE, (ctypes.c_float * 9)(*val)
-                        )
+                        gl.glUniformMatrix3fv(loc, 1, gl.GL_FALSE, (ctypes.c_float * 9)(*val))
                     elif len(val) == 16:
-                        gl.glUniformMatrix4fv(
-                            loc, 1, gl.GL_FALSE, (ctypes.c_float * 16)(*val)
-                        )
+                        gl.glUniformMatrix4fv(loc, 1, gl.GL_FALSE, (ctypes.c_float * 16)(*val))
                 except TypeError:
-                    logger.warning(
-                        f"Warning: uniform '{name}' has unknown type: {type(val)}"
-                    )
+                    logger.warning(f"Warning: uniform '{name}' has unknown type: {type(val)}")
 
                     pass
 

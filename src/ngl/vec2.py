@@ -2,8 +2,9 @@
 Simple float only Vec2 class for 3D graphics, very similar to the pyngl ones
 """
 
-import math
 import ctypes
+import math
+
 from .util import clamp
 
 
@@ -313,19 +314,19 @@ class Vec2:
         """
         return self * rhs
 
-    # def __matmul__(self, rhs):
-    #     """
-    #     "Vec2 @ Mat2 matrix multiplication"
-    #     Args:
-    #         rhs (Mat3): The matrix to multiply by.
-    #     Returns:
-    #         Vec2: A new vector that is the result of multiplying this vector by the matrix.
-    #     """
-    #     return Vec2(
-    #         self.x * rhs.m[0][0] + self.y * rhs.m[1][0] + self.z * rhs.m[2][0],
-    #         self.x * rhs.m[0][1] + self.y * rhs.m[1][1] + self.z * rhs.m[2][1],
-    #         self.x * rhs.m[0][2] + self.y * rhs.m[1][2] + self.z * rhs.m[2][2],
-    #     )
+    def __matmul__(self, rhs):
+        """
+        "Vec2 @ Mat2 matrix multiplication"
+        Args:
+            rhs (Mat2): The matrix to multiply by.
+        Returns:
+            Vec2: A new vector that is the result of multiplying this vector by the matrix.
+        """
+        return Vec2(
+            self.x * rhs.m[0][0] + self.y * rhs.m[1][0] + self.z * rhs.m[2][0],
+            self.x * rhs.m[0][1] + self.y * rhs.m[1][1] + self.z * rhs.m[2][1],
+            self.x * rhs.m[0][2] + self.y * rhs.m[1][2] + self.z * rhs.m[2][2],
+        )
 
 
 # Helper function to create properties

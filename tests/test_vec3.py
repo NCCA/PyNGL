@@ -241,7 +241,7 @@ def test_mul_scalar():
         a = a * "hello"
 
 
-def test_getAttr():
+def test_get_attr():
     a = Vec3(1, 2, 3)
     assert getattr(a, "x") == pytest.approx(1.0)
     assert getattr(a, "y") == pytest.approx(2.0)
@@ -272,7 +272,7 @@ def test_string():
 
 def test_iterable():
     a = Vec3(1, 2, 3)
-    b = [x for x in a]
+    b=list(a)
     assert b == [1, 2, 3]
     assert a[0] == 1
     assert a[1] == 2

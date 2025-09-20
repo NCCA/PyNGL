@@ -86,11 +86,11 @@ def test_set_seed_value():
 
 
 def test_get_float_from_generator_name_not_found():
-    assert Random.get_float_from_generator_name("not_found") == 0.0
+    assert Random.get_float_from_generator_name("not_found") == pytest.approx(0.0)
 
 
 def test_get_int_from_generator_name_not_found():
-    assert Random.get_int_from_generator_name("not_found") == 0
+    assert Random.get_int_from_generator_name("not_found") == pytest.approx(0)
 
 
 def test_get_random_colour3():

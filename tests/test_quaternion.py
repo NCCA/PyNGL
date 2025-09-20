@@ -1,20 +1,19 @@
 import pytest
 
-from ngl import Mat4
-from ngl import Quaternion
+from ngl import Mat4, Quaternion
 
 
-def test_Quaternion():
+def test_quaternion():
     q = Quaternion()
-    assert q.s == 1.0
-    assert q.x == 0.0
-    assert q.y == 0.0
-    assert q.z == 0.0
+    assert q.s == pytest.approx(1.0)
+    assert q.x == pytest.approx(0.0)
+    assert q.y == pytest.approx(0.0)
+    assert q.z == pytest.approx(0.0)
     q = Quaternion(0.2, 0.0, 1.0, 0.0)
-    assert q.s == 0.2
-    assert q.x == 0.0
-    assert q.y == 1.0
-    assert q.z == 0.0
+    assert q.s == pytest.approx(0.2)
+    assert q.x == pytest.approx(0.0)
+    assert q.y == pytest.approx(1.0)
+    assert q.z == pytest.approx(0.0)
 
 
 def test_from_mat4():
@@ -36,26 +35,7 @@ def test_from_mat4():
 
     # The following tests add coverage for each of the paths in the code
     # +2.179450 [-0.344124i,+0.688247j,-0.344124k]
-    matrix = Mat4.from_list(
-        [
-            1.0,
-            2.0,
-            3.0,
-            4.0,
-            5.0,
-            6.0,
-            7.0,
-            8.0,
-            9.0,
-            10.0,
-            11.0,
-            12.0,
-            13.0,
-            14.0,
-            15.0,
-            16.0,
-        ]
-    )
+    matrix = Mat4.from_list(list(range(1, 17)))
 
     quat = Quaternion.from_mat4(matrix)
     assert quat.s == pytest.approx(2.179450)
@@ -95,40 +75,40 @@ def test_addition():
     a = Quaternion(0.5, 1.0, 0.0, 0.0)
     b = Quaternion(0.2, 0.0, 1.0, 0.0)
     c = a + b
-    assert c.s == 0.7
-    assert c.x == 1.0
-    assert c.y == 1.0
-    assert c.z == 0.0
+    assert c.s == pytest.approx(0.7)
+    assert c.x == pytest.approx(1.0, rel=1e-3)
+    assert c.y == pytest.approx(1.0, rel=1e-3)
+    assert c.z == pytest.approx(0.0, rel=1e-3)
 
 
 def test_plus_equal():
     a = Quaternion(0.5, 1.0, 0.0, 0.0)
     b = Quaternion(0.2, 0.0, 1.0, 0.0)
     a += b
-    assert a.s == 0.7
-    assert a.x == 1.0
-    assert a.y == 1.0
-    assert a.z == 0.0
+    assert a.s == pytest.approx(0.7)
+    assert a.x == pytest.approx(1.0, rel=1e-3)
+    assert a.y == pytest.approx(1.0, rel=1e-3)
+    assert a.z == pytest.approx(0.0, rel=1e-3)
 
 
 def test_subtraction():
     a = Quaternion(0.5, 1.0, 0.0, 0.0)
     b = Quaternion(0.2, 0.0, 1.0, 0.0)
     c = a - b
-    assert c.s == 0.3
-    assert c.x == 1.0
-    assert c.y == -1.0
-    assert c.z == 0.0
+    assert c.s == pytest.approx(0.3)
+    assert c.x == pytest.approx(1.0, rel=1e-3)
+    assert c.y == pytest.approx(-1.0, rel=1e-3)
+    assert c.z == pytest.approx(0.0, rel=1e-3)
 
 
 def test_minus_equal():
     a = Quaternion(0.5, 1.0, 0.0, 0.0)
     b = Quaternion(0.2, 0.0, 1.0, 0.0)
     a -= b
-    assert a.s == 0.3
-    assert a.x == 1.0
-    assert a.y == -1.0
-    assert a.z == 0.0
+    assert a.s == pytest.approx(0.3)
+    assert a.x == pytest.approx(1.0, rel=1e-3)
+    assert a.y == pytest.approx(-1.0, rel=1e-3)
+    assert a.z == pytest.approx(0.0, rel=1e-3)
 
 
 # from https://www.wolframalpha.com/input/?i=quaternion+-Sin%5BPi%5D%2B3i%2B4j%2B3k+multiplied+by+-1j%2B3.9i%2B4-3k

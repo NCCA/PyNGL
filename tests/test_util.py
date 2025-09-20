@@ -21,9 +21,11 @@ def test_clamp():
 
 
 def test_lerp():
-    assert lerp(0, 1, 0.5) == 0.5
-    assert lerp(0, 1, 0.1) == 0.1
-    assert lerp(0, 1, 0.9) == 0.9
+    assert lerp(0, 1, 0.5) == pytest.approx(0.5)
+    assert lerp(0, 1, 0.1) == pytest.approx(0.1)
+    assert lerp(0, 1, 0.9) == pytest.approx(0.9)
+    assert lerp(0, 1, 0.0) == pytest.approx(0.0)
+    assert lerp(0, 1, 1.0) == pytest.approx(1.0)
 
 
 def test_clamp_error():
@@ -59,27 +61,11 @@ def test_perspective():
 
 def test_ortho():
     project = ortho(-1.0, 1.0, -1.0, 1.0, 1.0, -1.0)
-    m = [
-        +1.000000,
-        +0.000000,
-        +0.000000,
-        -0.000000,
-        +0.000000,
-        +1.000000,
-        +0.000000,
-        -0.000000,
-        +0.000000,
-        +0.000000,
-        +1.000000,
-        +0.000000,
-        +0.000000,
-        +0.000000,
-        +0.000000,
-        +1.000000,
-    ]
-    # fmt: off
+    # fmt:  off
+    m = [ +1.000000,+0.000000, +0.000000, -0.000000, +0.000000, +1.000000,  +0.000000,-0.000000,+0.000000,+0.000000,+1.000000,+0.000000,+0.000000,+0.000000,+0.000000,+1.000000,]
+    # fmt: on
 
-    result=Mat4.from_list(m)
+    result = Mat4.from_list(m)
 
     # fmt: on
 
@@ -87,9 +73,7 @@ def test_ortho():
 
 
 def test_calc_normal():
-    result = calc_normal(
-        Vec3(-1.0, -1.0, 0.0), Vec3(0.0, 0.0, 0.0), Vec3(1.0, -1.0, 0.0)
-    )
+    result = calc_normal(Vec3(-1.0, -1.0, 0.0), Vec3(0.0, 0.0, 0.0), Vec3(1.0, -1.0, 0.0))
     assert result == pytest.approx(Vec3(0.0, 0.0, 1.0), abs=1e-3)
 
 

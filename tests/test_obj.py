@@ -50,21 +50,21 @@ def test_parse_vertex():
     obj = Obj.from_file("tests/files/Triangle1.obj")
     assert len(obj.vertex) == 3
     with pytest.raises(ObjParseVertexError):
-        obj = Obj.from_file("tests/files/BrokenFloats.obj")
+        _ = Obj.from_file("tests/files/BrokenFloats.obj")
 
 
 def test_parse_normal():
     obj = Obj.from_file("tests/files/Triangle1.obj")
     assert len(obj.normals) == 3
     with pytest.raises(ObjParseNormalError):
-        obj = Obj.from_file("tests/files/BrokenNormals.obj")
+        _ = Obj.from_file("tests/files/BrokenNormals.obj")
 
 
 def test_parse_uv():
     obj = Obj.from_file("tests/files/Triangle1.obj")
     assert len(obj.uv) == 3
     with pytest.raises(ObjParseUVError):
-        obj = Obj.from_file("tests/files/BrokenUV.obj")
+        _ = Obj.from_file("tests/files/BrokenUV.obj")
 
 
 def test_check_verts():

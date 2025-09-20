@@ -107,6 +107,8 @@ def test_mult_error():
     with pytest.raises(Mat3Error):
         a = Mat3()
         _ = a @ 2
+    with pytest.raises(Mat3Error):
+        a = Mat3()
         a * "a"
 
 
@@ -236,6 +238,4 @@ def test_strings():
 def test_from_mat4():
     m4 = Mat4.identity()
     m3 = Mat3.from_mat4(m4)
-    assert m3.get_matrix() == pytest.approx(
-        [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
-    )
+    assert m3.get_matrix() == pytest.approx([1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0])

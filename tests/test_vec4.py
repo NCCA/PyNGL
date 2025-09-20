@@ -33,7 +33,7 @@ def test_ctor():
     assert v.w == pytest.approx(1.0)
 
 
-def test_userCtor():
+def test_user_ctor():
     v = Vec4(2.0, 3.0, 4.0, 5.0)
     assert v.x == pytest.approx(2.0)
     assert v.y == pytest.approx(3.0)
@@ -177,7 +177,7 @@ def test_negate():
     assert a.w == pytest.approx(-5.0)
 
 
-def test_getAttr():
+def test_get_attr():
     a = Vec4(1, 2, 3, 5)
     assert getattr(a, "x") == pytest.approx(1.0)
     assert getattr(a, "y") == pytest.approx(2.0)
@@ -260,4 +260,4 @@ def test_coverage_vec4():
     with pytest.raises(ValueError):
         a = a * "fail"
     a = 2.0 * a
-    assert a.w == 2.0
+    assert a.w == pytest.approx(2.0)
