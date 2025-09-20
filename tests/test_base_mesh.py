@@ -1,3 +1,5 @@
+import math
+
 import OpenGL.GL as gl
 import pytest
 
@@ -36,23 +38,24 @@ def test_calc_dimensions():
         Vec3(0.0, 0.0, 0.0),
     ]
     mesh.calc_dimensions()
-    assert mesh.min_x == -1.0
-    assert mesh.max_x == 1.0
-    assert mesh.min_y == -2.0
-    assert mesh.max_y == 2.0
-    assert mesh.min_z == -3.0
-    assert mesh.max_z == 3.0
+    assert math.isclose(mesh.min_x, -1.0)
+    assert math.isclose(mesh.max_x, 1.0)
+    assert math.isclose(mesh.min_y, -2.0)
+    assert math.isclose(mesh.max_y, 2.0)
+    assert math.isclose(mesh.min_z, -3.0)
+    assert math.isclose(mesh.max_z, 3.0)
 
 
 def test_empty_mesh_dimensions():
     mesh = BaseMesh()
     mesh.calc_dimensions()
-    assert mesh.min_x == 0.0
-    assert mesh.max_x == 0.0
-    assert mesh.min_y == 0.0
-    assert mesh.max_y == 0.0
-    assert mesh.min_z == 0.0
-    assert mesh.max_z == 0.0
+
+    assert math.isclose(mesh.min_x, 0.0)
+    assert math.isclose(mesh.max_x, 0.0)
+    assert math.isclose(mesh.min_y, 0.0)
+    assert math.isclose(mesh.max_y, 0.0)
+    assert math.isclose(mesh.min_z, 0.0)
+    assert math.isclose(mesh.max_z, 0.0)
 
 
 def test_init_defaults():
@@ -63,12 +66,12 @@ def test_init_defaults():
     assert mesh.faces == []
     assert mesh.vao is None
     assert mesh.bbox is None
-    assert mesh.min_x == 0.0
-    assert mesh.max_x == 0.0
-    assert mesh.min_y == 0.0
-    assert mesh.max_y == 0.0
-    assert mesh.min_z == 0.0
-    assert mesh.max_z == 0.0
+    assert math.isclose(mesh.min_x, 0.0)
+    assert math.isclose(mesh.max_x, 0.0)
+    assert math.isclose(mesh.min_y, 0.0)
+    assert math.isclose(mesh.max_y, 0.0)
+    assert math.isclose(mesh.min_z, 0.0)
+    assert math.isclose(mesh.max_z, 0.0)
     assert mesh.texture_id == 0
     assert mesh.texture is False
 
