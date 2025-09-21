@@ -27,6 +27,9 @@ class SimpleVAO(AbstractVAO):
         self.m_allocated = True
         self.m_indicesCount = data.size
 
+    def num_indices(self):
+        return self.m_indicesCount
+
     def remove_vao(self):
         gl.glDeleteBuffers(1, [self.m_buffer])
         gl.glDeleteVertexArrays(1, [self.m_id])

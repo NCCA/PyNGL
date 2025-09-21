@@ -59,7 +59,9 @@ class FirstPersonCamera:
         self.fov: float = fov
         self._update_camera_vectors()
         self.projection: Mat4 = self.set_projection(self.fov, self.aspect, self.near, self.far)
-        self.view: Mat4 = self._look_at(self.eye, self.eye + self.front, self.up)
+        from .util import look_at
+
+        self.view: Mat4 = look_at(self.eye, self.eye + self.front, self.up)
 
     def __str__(self) -> str:
         return f"Camera {self.eye} {self.look} {self.world_up} {self.fov}"
@@ -107,7 +109,9 @@ class FirstPersonCamera:
         # normalize as fast movement can cause issues
         self.right.normalize()
         self.front.normalize()
-        self.view = self._look_at(self.eye, self.eye + self.front, self.up)
+        from .util import look_at
+
+        self.view = look_at(self.eye, self.eye + self.front, self.up)
 
     def set_projection(self, fov: float, aspect: float, near: float, far: float) -> Mat4:
         """
