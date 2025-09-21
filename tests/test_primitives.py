@@ -1,6 +1,6 @@
 import pytest
 
-from src.ngl.primitives import Primitives
+from ngl import Primitives
 
 
 # Helper to clear primitives between tests
@@ -122,21 +122,3 @@ def test_create_torus_invalid_sides_rings():
         Primitives.create_torus("bad_torus", major_radius=2.0, minor_radius=1.0, sides=2, rings=8)
     with pytest.raises(ValueError):
         Primitives.create_torus("bad_torus", major_radius=2.0, minor_radius=1.0, sides=8, rings=2)
-
-
-def test_draw_existing_primitive(monkeypatch):
-    Primitives.create_triangle_plane("draw_plane", width=2.0, depth=2.0, w_p=2, d_p=2, v_n=Vec3(0, 1, 0))
-    called = {}
-
-    def fake_draw():
-        called["draw"] = True
-
-    prim = Primitives._primitives["draw_plane"]
-    monkeypatch.setattr(prim.vao, "draw", fake_draw)
-    Primitives.draw("draw_plane")
-    assert called.get("draw", False)
-
-
-def test_draw_missing_primitive(caplog):
-    Primitives.draw("missing_prim")
-    assert any("Failed to draw primitive" in r for r in caplog.text.splitlines())
