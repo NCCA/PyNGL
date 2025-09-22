@@ -657,7 +657,7 @@ def test_debug_array_uniform_registration(opengl_context, array_uniform_shader):
     print("=== END DEBUG ===")
 
     # Check if we have any uniforms registered (OpenGL may optimize some out)
-    assert len(array_uniform_shader._uniforms) >= 0
+    assert len(array_uniform_shader._uniforms) > 0
     print(f"Total uniforms registered: {len(array_uniform_shader._uniforms)}")
 
 
