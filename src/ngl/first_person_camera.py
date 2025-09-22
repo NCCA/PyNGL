@@ -58,9 +58,7 @@ class FirstPersonCamera:
         self.aspect: float = 1.2
         self.fov: float = fov
         self._update_camera_vectors()
-        self.projection: Mat4 = self.set_projection(
-            self.fov, self.aspect, self.near, self.far
-        )
+        self.projection: Mat4 = self.set_projection(self.fov, self.aspect, self.near, self.far)
         from .util import look_at
 
         self.view: Mat4 = look_at(self.eye, self.eye + self.front, self.up)
@@ -71,16 +69,14 @@ class FirstPersonCamera:
     def __repr__(self) -> str:
         return f"Camera {self.eye} {self.look} {self.world_up} {self.fov}"
 
-    def process_mouse_movement(
-        self, diffx: float, diffy: float, _constrainPitch: bool = True
-    ) -> None:
+    def process_mouse_movement(self, diffx: float, diffy: float, _constrain_pitch: bool = True) -> None:
         """
         Process mouse movement to update the camera's direction vectors.
 
         Args:
             diffx (float): The difference in the x-coordinate of the mouse movement.
             diffy (float): The difference in the y-coordinate of the mouse movement.
-            _constrainPitch (bool, optional): Whether to constrain the pitch angle. Defaults to True.
+            _constrain_pitch (bool, optional): Whether to constrain the pitch angle. Defaults to True.
         """
         diffx *= self.sensitivity
         diffy *= self.sensitivity
@@ -89,7 +85,7 @@ class FirstPersonCamera:
         self.pitch += diffy
 
         # Make sure that when pitch is out of bounds, screen doesn't get flipped
-        if _constrainPitch:
+        if _constrain_pitch:
             if self.pitch > 89.0:
                 self.pitch = 89.0
             if self.pitch < -89.0:
@@ -117,9 +113,7 @@ class FirstPersonCamera:
 
         self.view = look_at(self.eye, self.eye + self.front, self.up)
 
-    def set_projection(
-        self, fov: float, aspect: float, near: float, far: float
-    ) -> Mat4:
+    def set_projection(self, fov: float, aspect: float, near: float, far: float) -> Mat4:
         """
         Set the projection matrix for the camera.
 

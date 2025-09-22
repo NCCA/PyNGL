@@ -53,7 +53,7 @@ def test_process_mouse_movement_constrain_pitch():
     cam = FirstPersonCamera(Vec3(), Vec3(), Vec3(0, 1, 0), 60.0)
     cam.pitch = 0.0
     cam.yaw = 0.0
-    cam.process_mouse_movement(100, 100, _constrainPitch=True)
+    cam.process_mouse_movement(100, 100, _constrain_pitch=True)
     assert cam.pitch <= 89.0
     assert cam.pitch >= -89.0
 
@@ -62,7 +62,7 @@ def test_process_mouse_movement_no_constrain_pitch():
     cam = FirstPersonCamera(Vec3(), Vec3(), Vec3(0, 1, 0), 60.0)
     cam.pitch = 0.0
     cam.yaw = 0.0
-    cam.process_mouse_movement(100, 100, _constrainPitch=False)
+    cam.process_mouse_movement(100, 100, _constrain_pitch=False)
     # pitch can exceed bounds
     assert (
         cam.pitch > 89.0

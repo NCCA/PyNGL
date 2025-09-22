@@ -137,7 +137,7 @@ class Primitives:
         # Create a list to store the vertex data
         data = []
 
-        for i in range(steps + 1):
+        for _ in range(steps + 1):
             # Vertex 1 x, y, z
             data.append([-ws2, 0.0, v1])
             # Vertex 2 x, y, z
@@ -350,7 +350,7 @@ class Primitives:
 
         data = []
 
-        for i in range(stacks):
+        for _ in range(stacks):
             for j in range(slices):
                 # First triangle
                 d1 = [0] * 8
