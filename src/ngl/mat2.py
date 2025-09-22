@@ -37,7 +37,7 @@ class Mat2:
         """
         return [item for sublist in zip(*self.m) for item in sublist]
 
-    def get_numpy(self):
+    def to_numpy(self):
         """
         Convert the current matrix to a NumPy array.
 

@@ -20,9 +20,9 @@ def test_get_matrix():
     assert m.get_matrix() == [1.0, 3.0, 2.0, 4.0]
 
 
-def test_get_numpy():
+def test_to_numpy():
     m = Mat2([[1.0, 2.0], [3.0, 4.0]])
-    arr = m.get_numpy()
+    arr = m.to_numpy()
     assert isinstance(arr, np.ndarray)
     assert arr.shape == (2, 2)
     np.testing.assert_array_equal(arr, np.array([[1.0, 3.0], [2.0, 4.0]]))

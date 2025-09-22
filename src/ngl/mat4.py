@@ -41,7 +41,7 @@ class Mat4:
         "return matrix elements as list ideal for OpenGL etc"
         return functools.reduce(operator.concat, self.m)
 
-    def get_numpy(self):
+    def to_numpy(self):
         "return matrix as a numpy array ideal for WebGPU etc"
         return np.array(self.get_matrix(), dtype=np.float32).reshape([4, 4])
 

@@ -17,9 +17,9 @@ def test_identity():
     assert values == pytest.approx(ident)
 
 
-def test_get_numpy():
+def test_to_numpy():
     m = Mat3.from_list([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-    n = m.get_numpy()
+    n = m.to_numpy()
     value = 1
     for c in range(0, 3):
         for r in range(0, 3):
