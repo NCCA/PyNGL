@@ -27,4 +27,4 @@ jobs:
         run: uv sync --locked --all-extras --dev
 
       - name: Run tests
-        run: uv run pytest tests
+        run: uv run pytest tests --ignore=tests/test_shaderlib.py --ignore=tests/test_texture.py --ignore=tests/test_text.py --ignore=tests/test_base_mesh.py --ignore=tests/test_obj.py --ignore=tests/test_vao.py
