@@ -432,7 +432,7 @@ def test_link_program_object_non_existent(opengl_context):
 
 def test_get_uniforms_no_current_shader(opengl_context):
     ShaderLib.use(None)
-    assert ShaderLib.get_uniform_1f("test") == 0.0
+    assert ShaderLib.get_uniform_1f("test") == pytest.approx(0.0)
     assert ShaderLib.get_uniform_2f("test") == [0.0, 0.0]
     assert ShaderLib.get_uniform_3f("test") == [0.0, 0.0, 0.0]
     assert ShaderLib.get_uniform_4f("test") == [0.0, 0.0, 0.0, 0.0]

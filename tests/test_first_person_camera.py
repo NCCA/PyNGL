@@ -1,3 +1,5 @@
+import pytest
+
 from src.ngl.first_person_camera import FirstPersonCamera
 from src.ngl.mat4 import Mat4
 from src.ngl.vec3 import Vec3
@@ -20,15 +22,15 @@ def test_init_sets_attributes():
     assert isinstance(cam.front, Vec3)
     assert isinstance(cam.up, Vec3)
     assert isinstance(cam.right, Vec3)
-    assert cam.yaw == -90.0
-    assert cam.pitch == 0.0
-    assert cam.speed == 2.5
-    assert cam.sensitivity == 0.1
-    assert cam.zoom == 45.0
-    assert cam.near == 0.1
-    assert cam.far == 100.0
-    assert cam.aspect == 1.2
-    assert cam.fov == fov
+    assert cam.yaw == pytest.approx(-90.0)
+    assert cam.pitch == pytest.approx(0.0)
+    assert cam.speed == pytest.approx(2.5)
+    assert cam.sensitivity == pytest.approx(0.1)
+    assert cam.zoom == pytest.approx(45.0)
+    assert cam.near == pytest.approx(0.1)
+    assert cam.far == pytest.approx(100.0)
+    assert cam.aspect == pytest.approx(1.2)
+    assert cam.fov == pytest.approx(fov)
     assert isinstance(cam.projection, Mat4)
     assert isinstance(cam.view, Mat4)
 
@@ -64,11 +66,7 @@ def test_process_mouse_movement_no_constrain_pitch():
     cam.yaw = 0.0
     cam.process_mouse_movement(100, 100, _constrain_pitch=False)
     # pitch can exceed bounds
-    assert (
-        cam.pitch > 89.0
-        or cam.pitch < -89.0
-        or (cam.pitch <= 89.0 and cam.pitch >= -89.0)
-    )
+    assert cam.pitch > 89.0 or cam.pitch < -89.0 or (cam.pitch <= 89.0 and cam.pitch >= -89.0)
 
 
 def test_update_camera_vectors_changes_front_right_up_and_view():
