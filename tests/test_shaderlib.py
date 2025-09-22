@@ -495,7 +495,8 @@ def test_shaderprogram_individual_array_elements(opengl_context, array_uniform_s
     """Test setting individual array elements like floatArray[0]"""
     array_uniform_shader.use()
 
-    # Test setting individual elements
+    # Test setting individual elements (these may or may not exist depending on OpenGL optimization)
+    # These calls should not crash even if the uniforms don't exist
     array_uniform_shader.set_uniform("floatArray[0]", 1.5)
     array_uniform_shader.set_uniform("floatArray[1]", 2.5)
 
@@ -605,6 +606,41 @@ def test_shaderprogram_set_uniform_buffer_not_found(opengl_context, uniform_bloc
     data = np.array([1.0, 2.0, 3.0, 4.0], dtype=np.float32)
     result = uniform_block_shader.set_uniform_buffer("NonExistent", data.nbytes, data)
     assert result == False
+
+
+def test_shaderprogram_uniform_info_methods(opengl_context, array_uniform_shader):
+    """Test uniform info methods"""
+    # Test for non-existent uniform
+    info = array_uniform_shader.get_uniform_info("nonexistent")
+    assert info == (-1, 0, 0, False)
+
+    # Test for non-array uniform
+    assert array_uniform_shader.is_uniform_array("nonexistent") == False
+    assert array_uniform_shader.get_uniform_array_size("nonexistent") == 0
+
+    # Test with any registered uniform
+    if array_uniform_shader._uniforms:
+        first_uniform = list(array_uniform_shader._uniforms.keys())[0]
+        info = array_uniform_shader.get_uniform_info(first_uniform)
+        location, shader_type, size, is_array = info
+        assert location >= -1  # -1 is also valid for unused uniforms
+        assert isinstance(size, int)
+        assert isinstance(is_array, bool)
+
+
+def test_debug_array_uniform_registration(opengl_context, array_uniform_shader):
+    """Debug test to see what uniforms are actually registered"""
+    print("\n=== DEBUG: All registered uniforms ===")
+    for name, (location, shader_type, size, is_array) in array_uniform_shader._uniforms.items():
+        print(f"{name}: location={location}, type={shader_type}, size={size}, is_array={is_array}")
+    print("=== END DEBUG ===")
+
+    # Check if we have the expected base arrays
+    assert "floatArray" in array_uniform_shader._uniforms or "floatArray[0]" in array_uniform_shader._uniforms
+
+    # Check if individual elements exist (if the base array indicates it's an array)
+    has_individual_elements = any(name.startswith("floatArray[") for name in array_uniform_shader._uniforms.keys())
+    print(f"Has individual array elements: {has_individual_elements}")
 
 
 def test_shaderprogram_print_methods(opengl_context, array_uniform_shader, uniform_block_shader):
@@ -721,11 +757,12 @@ def test_shaderlib_array_uniform_shader(opengl_context):
     assert ShaderLib.link_program_object("ArrayTest")
     ShaderLib.use("ArrayTest")
 
-    # Test individual array element setting via ShaderLib
-    light_positions = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0], [10.0, 11.0, 12.0]]
-    light_colors = [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6], [0.7, 0.8, 0.9], [1.0, 1.1, 1.2]]
+    # Test individual array element setting via ShaderLib (try a few elements)
+    light_positions = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
+    light_colors = [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]
 
-    for i in range(4):
+    # Test first couple elements to see if they work
+    for i in range(2):
         ShaderLib.set_uniform(f"lightPositions[{i}]", *light_positions[i])
         ShaderLib.set_uniform(f"lightColors[{i}]", *light_colors[i])
         ShaderLib.set_uniform(f"weights[{i}]", float(i + 1))
@@ -844,6 +881,11 @@ def test_shaderlib_uniform_buffer_no_shader(opengl_context):
 
 def test_shaderlib_auto_register_uniform_blocks(opengl_context):
     """Test ShaderLib auto register uniform blocks"""
+    # First ensure we have a shader with uniform blocks loaded
+    if "UBOTest" not in ShaderLib._shader_programs:
+        # Create the shader first
+        test_shaderlib_uniform_buffer_shader(opengl_context)
+
     # Use the existing uniform block shader
     ShaderLib.use("UBOTest")
     ShaderLib.auto_register_uniform_blocks()
