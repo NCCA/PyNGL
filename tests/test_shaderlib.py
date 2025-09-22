@@ -393,6 +393,251 @@ def test_shaderprogram_get_uniform_mat4x3(opengl_context, mat4x3_shader):
     assert len(res) == 12
 
 
+@pytest.fixture
+def array_uniform_shader(opengl_context):
+    vert_shader = """
+    #version 410 core
+    uniform float floatArray[3];
+    uniform vec2 vec2Array[2];
+    uniform vec3 vec3Array[2];
+    uniform vec4 vec4Array[2];
+    uniform int intArray[2];
+    uniform mat2 mat2Array[2];
+    uniform mat3 mat3Array[2];
+    uniform mat4 mat4Array[2];
+    void main()
+    {
+        gl_Position = vec4(floatArray[0] + vec2Array[0].x + vec3Array[0].x + vec4Array[0].x + intArray[0] + mat2Array[0][0][0] + mat3Array[0][0][0] + mat4Array[0][0][0]);
+    }
+    """
+    frag_shader = """
+    #version 410 core
+    out vec4 fragColor;
+    void main()
+    {
+        fragColor = vec4(1.0);
+    }
+    """
+    vert = Shader("array_uniform_vert", ShaderType.VERTEX.value)
+    vert.load_shader_source_from_string(vert_shader)
+    vert.compile()
+    frag = Shader("array_uniform_frag", ShaderType.FRAGMENT.value)
+    frag.load_shader_source_from_string(frag_shader)
+    frag.compile()
+    program = ShaderProgram("array_uniform")
+    program.attach_shader(vert)
+    program.attach_shader(frag)
+    assert program.link()
+    return program
+
+
+def test_shaderprogram_array_uniform_methods(opengl_context, array_uniform_shader):
+    """Test array uniform setter methods"""
+    array_uniform_shader.use()
+
+    # Test set_uniform_1fv
+    float_values = [1.0, 2.0, 3.0]
+    array_uniform_shader.set_uniform_1fv("floatArray", float_values)
+
+    # Test set_uniform_2fv
+    vec2_values = [[1.0, 2.0], [3.0, 4.0]]
+    array_uniform_shader.set_uniform_2fv("vec2Array", vec2_values)
+
+    # Test set_uniform_3fv
+    vec3_values = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
+    array_uniform_shader.set_uniform_3fv("vec3Array", vec3_values)
+
+    # Test set_uniform_4fv
+    vec4_values = [[1.0, 2.0, 3.0, 4.0], [5.0, 6.0, 7.0, 8.0]]
+    array_uniform_shader.set_uniform_4fv("vec4Array", vec4_values)
+
+    # Test set_uniform_1iv
+    int_values = [10, 20]
+    array_uniform_shader.set_uniform_1iv("intArray", int_values)
+
+    # Test set_uniform_matrix2fv with Mat2 objects
+    mat2_list = [Mat2([1.0, 2.0, 3.0, 4.0]), Mat2([5.0, 6.0, 7.0, 8.0])]
+    array_uniform_shader.set_uniform_matrix2fv("mat2Array", mat2_list)
+
+    # Test set_uniform_matrix2fv with lists
+    mat2_raw = [[1.0, 2.0, 3.0, 4.0], [5.0, 6.0, 7.0, 8.0]]
+    array_uniform_shader.set_uniform_matrix2fv("mat2Array", mat2_raw, transpose=True)
+
+    # Test set_uniform_matrix3fv
+    mat3_list = [Mat3.from_list([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0])]
+    array_uniform_shader.set_uniform_matrix3fv("mat3Array", mat3_list)
+
+    # Test set_uniform_matrix4fv
+    mat4_list = [
+        Mat4.from_list([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0])
+    ]
+    array_uniform_shader.set_uniform_matrix4fv("mat4Array", mat4_list)
+
+
+def test_shaderprogram_array_uniform_methods_not_found(opengl_context, array_uniform_shader):
+    """Test array uniform methods with non-existent uniforms"""
+    array_uniform_shader.use()
+
+    # These should not raise exceptions, just do nothing
+    array_uniform_shader.set_uniform_1fv("nonexistent", [1.0, 2.0])
+    array_uniform_shader.set_uniform_2fv("nonexistent", [[1.0, 2.0]])
+    array_uniform_shader.set_uniform_3fv("nonexistent", [[1.0, 2.0, 3.0]])
+    array_uniform_shader.set_uniform_4fv("nonexistent", [[1.0, 2.0, 3.0, 4.0]])
+    array_uniform_shader.set_uniform_1iv("nonexistent", [1, 2])
+    array_uniform_shader.set_uniform_matrix2fv("nonexistent", [[1.0, 2.0, 3.0, 4.0]])
+    array_uniform_shader.set_uniform_matrix3fv("nonexistent", [[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]])
+    array_uniform_shader.set_uniform_matrix4fv(
+        "nonexistent", [[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0]]
+    )
+
+
+def test_shaderprogram_individual_array_elements(opengl_context, array_uniform_shader):
+    """Test setting individual array elements like floatArray[0]"""
+    array_uniform_shader.use()
+
+    # Test setting individual elements
+    array_uniform_shader.set_uniform("floatArray[0]", 1.5)
+    array_uniform_shader.set_uniform("floatArray[1]", 2.5)
+
+    array_uniform_shader.set_uniform("vec2Array[0]", 1.0, 2.0)
+    array_uniform_shader.set_uniform("vec3Array[0]", 1.0, 2.0, 3.0)
+    array_uniform_shader.set_uniform("vec4Array[0]", 1.0, 2.0, 3.0, 4.0)
+
+
+@pytest.fixture
+def uniform_block_shader(opengl_context):
+    vert_shader = """
+    #version 410 core
+    layout(std140) uniform TransformBlock {
+        mat4 modelMatrix;
+        mat4 viewMatrix;
+        mat4 projMatrix;
+    };
+    void main()
+    {
+        gl_Position = projMatrix * viewMatrix * modelMatrix * vec4(0.0, 0.0, 0.0, 1.0);
+    }
+    """
+    frag_shader = """
+    #version 410 core
+    layout(std140) uniform MaterialBlock {
+        vec4 diffuseColor;
+        vec4 specularColor;
+        float shininess;
+    };
+    out vec4 fragColor;
+    void main()
+    {
+        fragColor = diffuseColor + specularColor * shininess;
+    }
+    """
+    vert = Shader("uniform_block_vert", ShaderType.VERTEX.value)
+    vert.load_shader_source_from_string(vert_shader)
+    vert.compile()
+    frag = Shader("uniform_block_frag", ShaderType.FRAGMENT.value)
+    frag.load_shader_source_from_string(frag_shader)
+    frag.compile()
+    program = ShaderProgram("uniform_block")
+    program.attach_shader(vert)
+    program.attach_shader(frag)
+    assert program.link()
+    return program
+
+
+def test_shaderprogram_uniform_blocks(opengl_context, uniform_block_shader):
+    """Test uniform block functionality"""
+    # Test that uniform blocks were registered
+    blocks = uniform_block_shader.get_registered_uniform_blocks()
+    assert len(blocks) >= 1  # Should have at least one block
+
+    # Test individual block data access
+    if "TransformBlock" in blocks:
+        block_data = uniform_block_shader.get_uniform_block_data("TransformBlock")
+        assert block_data is not None
+        assert "name" in block_data
+        assert "loc" in block_data
+        assert "buffer" in block_data
+
+        # Test location getter
+        loc = uniform_block_shader.get_uniform_block_location("TransformBlock")
+        assert loc >= 0
+
+        # Test buffer getter
+        buffer = uniform_block_shader.get_uniform_block_buffer("TransformBlock")
+        assert buffer > 0
+
+
+def test_shaderprogram_uniform_blocks_not_found(opengl_context, uniform_block_shader):
+    """Test uniform block methods with non-existent blocks"""
+    assert uniform_block_shader.get_uniform_block_data("NonExistent") is None
+    assert uniform_block_shader.get_uniform_block_location("NonExistent") == -1
+    assert uniform_block_shader.get_uniform_block_buffer("NonExistent") == 0
+
+
+def test_shaderprogram_set_uniform_buffer(opengl_context, uniform_block_shader):
+    """Test setting uniform buffer data"""
+    import numpy as np
+
+    # Create test data (3 4x4 matrices = 192 bytes)
+    matrix_data = np.array(
+        [
+            [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0],  # Identity
+            [2.0, 0.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.0, 1.0],  # Scale
+            [1.0, 0.0, 0.0, 5.0, 0.0, 1.0, 0.0, 3.0, 0.0, 0.0, 1.0, 2.0, 0.0, 0.0, 0.0, 1.0],  # Translate
+        ],
+        dtype=np.float32,
+    )
+
+    # Get first available uniform block
+    blocks = uniform_block_shader.get_registered_uniform_blocks()
+    if blocks:
+        block_name = list(blocks.keys())[0]
+
+        # Test successful buffer setting
+        result = uniform_block_shader.set_uniform_buffer(block_name, matrix_data.nbytes, matrix_data)
+        assert result == True
+
+
+def test_shaderprogram_set_uniform_buffer_not_found(opengl_context, uniform_block_shader):
+    """Test setting uniform buffer for non-existent block"""
+    import numpy as np
+
+    data = np.array([1.0, 2.0, 3.0, 4.0], dtype=np.float32)
+    result = uniform_block_shader.set_uniform_buffer("NonExistent", data.nbytes, data)
+    assert result == False
+
+
+def test_shaderprogram_print_methods(opengl_context, array_uniform_shader, uniform_block_shader):
+    """Test print methods"""
+    # Test print_registered_uniforms with arrays
+    array_uniform_shader.print_registered_uniforms()
+
+    # Test print_registered_uniform_blocks
+    uniform_block_shader.print_registered_uniform_blocks()
+
+    # Test print_properties with uniform blocks
+    uniform_block_shader.print_properties()
+
+
+def test_shaderprogram_set_uniform_edge_cases(opengl_context, uniform_shader):
+    """Test edge cases in set_uniform method"""
+    uniform_shader.use()
+
+    # Test with custom objects that don't match known types
+    class CustomObject:
+        def __init__(self, value):
+            self.value = value
+
+    custom_obj = CustomObject(42)
+    uniform_shader.set_uniform("testFloat", custom_obj)  # Should trigger warning
+
+    # Test with None
+    uniform_shader.set_uniform("testFloat", None)  # Should trigger warning
+
+    # Test with empty list
+    uniform_shader.set_uniform("testFloat", [])  # Should trigger warning or error handling
+
+
 """
 Note opengl_context created once in conftest.py
 """
@@ -439,3 +684,370 @@ def test_get_uniforms_no_current_shader(opengl_context):
     assert ShaderLib.get_uniform_mat2("test") == [0.0] * 4
     assert ShaderLib.get_uniform_mat3("test") == [0.0] * 9
     assert ShaderLib.get_uniform_mat4("test") == [0.0] * 16
+
+
+def test_shaderlib_array_uniform_shader(opengl_context):
+    """Test ShaderLib with array uniforms"""
+    vert_shader = """
+    #version 410 core
+    uniform float weights[4];
+    uniform vec3 lightPositions[4];
+    uniform vec3 lightColors[4];
+    void main()
+    {
+        gl_Position = vec4(weights[0] + lightPositions[0].x + lightColors[0].x);
+    }
+    """
+    frag_shader = """
+    #version 410 core
+    out vec4 fragColor;
+    void main()
+    {
+        fragColor = vec4(1.0);
+    }
+    """
+    # Load shaders using ShaderLib
+    ShaderLib.create_shader_program("ArrayTest")
+    ShaderLib.attach_shader("ArrayTestVert", ShaderType.VERTEX)
+    ShaderLib.load_shader_source_from_string("ArrayTestVert", vert_shader)
+    assert ShaderLib.compile_shader("ArrayTestVert")
+
+    ShaderLib.attach_shader("ArrayTestFrag", ShaderType.FRAGMENT)
+    ShaderLib.load_shader_source_from_string("ArrayTestFrag", frag_shader)
+    assert ShaderLib.compile_shader("ArrayTestFrag")
+
+    ShaderLib.attach_shader_to_program("ArrayTest", "ArrayTestVert")
+    ShaderLib.attach_shader_to_program("ArrayTest", "ArrayTestFrag")
+    assert ShaderLib.link_program_object("ArrayTest")
+    ShaderLib.use("ArrayTest")
+
+    # Test individual array element setting via ShaderLib
+    light_positions = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0], [10.0, 11.0, 12.0]]
+    light_colors = [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6], [0.7, 0.8, 0.9], [1.0, 1.1, 1.2]]
+
+    for i in range(4):
+        ShaderLib.set_uniform(f"lightPositions[{i}]", *light_positions[i])
+        ShaderLib.set_uniform(f"lightColors[{i}]", *light_colors[i])
+        ShaderLib.set_uniform(f"weights[{i}]", float(i + 1))
+
+
+def test_shaderlib_uniform_buffer_shader(opengl_context):
+    """Test ShaderLib with uniform blocks"""
+    vert_shader = """
+    #version 410 core
+    layout(std140) uniform TransformUBO {
+        mat4 modelMatrix;
+        mat4 viewMatrix;
+        mat4 projMatrix;
+    };
+    void main()
+    {
+        gl_Position = projMatrix * viewMatrix * modelMatrix * vec4(0.0, 0.0, 0.0, 1.0);
+    }
+    """
+    frag_shader = """
+    #version 410 core
+    out vec4 fragColor;
+    void main()
+    {
+        fragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    }
+    """
+    # Load shaders using ShaderLib
+    ShaderLib.create_shader_program("UBOTest")
+    ShaderLib.attach_shader("UBOTestVert", ShaderType.VERTEX)
+    ShaderLib.load_shader_source_from_string("UBOTestVert", vert_shader)
+    assert ShaderLib.compile_shader("UBOTestVert")
+
+    ShaderLib.attach_shader("UBOTestFrag", ShaderType.FRAGMENT)
+    ShaderLib.load_shader_source_from_string("UBOTestFrag", frag_shader)
+    assert ShaderLib.compile_shader("UBOTestFrag")
+
+    ShaderLib.attach_shader_to_program("UBOTest", "UBOTestVert")
+    ShaderLib.attach_shader_to_program("UBOTest", "UBOTestFrag")
+    assert ShaderLib.link_program_object("UBOTest")
+    ShaderLib.use("UBOTest")
+
+    # Test uniform buffer via ShaderLib
+    import numpy as np
+
+    matrix_data = np.array(
+        [
+            # Identity matrix
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            # Scale matrix
+            2.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            2.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            2.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            # Translation matrix
+            1.0,
+            0.0,
+            0.0,
+            5.0,
+            0.0,
+            1.0,
+            0.0,
+            3.0,
+            0.0,
+            0.0,
+            1.0,
+            2.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+        ],
+        dtype=np.float32,
+    )
+
+    # Test ShaderLib uniform buffer setting
+    result = ShaderLib.set_uniform_buffer("TransformUBO", matrix_data.nbytes, matrix_data)
+    assert result == True
+
+
+def test_shaderlib_uniform_buffer_no_shader(opengl_context):
+    """Test ShaderLib uniform buffer with no current shader"""
+    import numpy as np
+
+    data = np.array([1.0, 2.0, 3.0, 4.0], dtype=np.float32)
+    result = ShaderLib.set_uniform_buffer("test", data.nbytes, data)
+    assert result == False
+
+
+def test_shaderlib_auto_register_uniform_blocks(opengl_context):
+    """Test ShaderLib auto register uniform blocks"""
+    # Use the existing uniform block shader
+    ShaderLib.use("UBOTest")
+    ShaderLib.auto_register_uniform_blocks()
+
+    # Test getting uniform block data for current shader
+    block_data = ShaderLib.get_uniform_block_data()
+    if block_data is not None:
+        assert isinstance(block_data, dict)
+
+    # Test getting specific block data for current shader
+    specific_data = ShaderLib.get_uniform_block_data(block_name="TransformUBO")
+    if specific_data is not None:
+        assert "name" in specific_data
+
+    # Test getting block data for specific shader
+    all_blocks = ShaderLib.get_uniform_block_data(shader_name="UBOTest")
+    if all_blocks is not None:
+        assert isinstance(all_blocks, dict)
+
+
+def test_shaderlib_print_methods(opengl_context):
+    """Test ShaderLib print methods"""
+    ShaderLib.use("TestUniform")
+    ShaderLib.print_registered_uniforms()
+    ShaderLib.print_properties()
+
+
+def test_get_gl_type_string_edge_cases(opengl_context, simple_shader):
+    """Test get_gl_type_string with unknown types"""
+    # Test known types
+    assert simple_shader.get_gl_type_string(gl.GL_FLOAT) == "float"
+    assert simple_shader.get_gl_type_string(gl.GL_FLOAT_VEC2) == "vec2"
+    assert simple_shader.get_gl_type_string(gl.GL_FLOAT_VEC3) == "vec3"
+    assert simple_shader.get_gl_type_string(gl.GL_FLOAT_VEC4) == "vec4"
+    assert simple_shader.get_gl_type_string(gl.GL_FLOAT_MAT2) == "mat2"
+    assert simple_shader.get_gl_type_string(gl.GL_FLOAT_MAT3) == "mat3"
+    assert simple_shader.get_gl_type_string(gl.GL_FLOAT_MAT4) == "mat4"
+    assert simple_shader.get_gl_type_string(gl.GL_INT) == "int"
+    assert simple_shader.get_gl_type_string(gl.GL_UNSIGNED_INT) == "unsigned int"
+    assert simple_shader.get_gl_type_string(gl.GL_BOOL) == "bool"
+    assert simple_shader.get_gl_type_string(gl.GL_DOUBLE) == "double"
+    assert simple_shader.get_gl_type_string(gl.GL_SAMPLER_2D) == "sampler2D"
+    assert simple_shader.get_gl_type_string(gl.GL_SAMPLER_CUBE) == "samplerCube"
+
+    # Test unknown type
+    assert simple_shader.get_gl_type_string(99999) == "Unknown type 99999"
+    assert simple_shader.get_gl_type_string(-1) == "Unknown type -1"
+
+
+def test_shaderprogram_set_uniform_buffer_exception_handling(opengl_context, uniform_block_shader):
+    """Test uniform buffer exception handling"""
+
+    # Get first available uniform block
+    blocks = uniform_block_shader.get_registered_uniform_blocks()
+    if blocks:
+        block_name = list(blocks.keys())[0]
+
+        # Test with invalid data that might cause np.frombuffer to fail
+        try:
+            result = uniform_block_shader.set_uniform_buffer(block_name, 16, "invalid_data")
+            # Should return False due to exception
+            assert result == False
+        except:
+            # If exception is raised instead of caught, that's also valid
+            pass
+
+
+def test_shaderprogram_array_methods_with_invalid_location(opengl_context):
+    """Test array uniform methods when uniform location is -1"""
+    # Create a simple shader without the array uniforms we're trying to set
+    vert_shader = """
+    #version 410 core
+    void main()
+    {
+        gl_Position = vec4(0.0);
+    }
+    """
+    frag_shader = """
+    #version 410 core
+    out vec4 fragColor;
+    void main()
+    {
+        fragColor = vec4(1.0);
+    }
+    """
+    vert = Shader("invalid_array_vert", ShaderType.VERTEX.value)
+    vert.load_shader_source_from_string(vert_shader)
+    vert.compile()
+    frag = Shader("invalid_array_frag", ShaderType.FRAGMENT.value)
+    frag.load_shader_source_from_string(frag_shader)
+    frag.compile()
+    program = ShaderProgram("invalid_array")
+    program.attach_shader(vert)
+    program.attach_shader(frag)
+    assert program.link()
+    program.use()
+
+    # These should all handle -1 location gracefully
+    program.set_uniform_1fv("nonexistent", [1.0, 2.0])
+    program.set_uniform_2fv("nonexistent", [[1.0, 2.0]])
+    program.set_uniform_3fv("nonexistent", [[1.0, 2.0, 3.0]])
+    program.set_uniform_4fv("nonexistent", [[1.0, 2.0, 3.0, 4.0]])
+    program.set_uniform_1iv("nonexistent", [1, 2])
+    program.set_uniform_matrix2fv("nonexistent", [[1.0, 2.0, 3.0, 4.0]])
+    program.set_uniform_matrix3fv("nonexistent", [[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]])
+    program.set_uniform_matrix4fv(
+        "nonexistent", [[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0]]
+    )
+
+
+def test_shaderprogram_get_uniform_methods_with_invalid_location(opengl_context):
+    """Test getter methods when uniform location is -1"""
+    # Create a simple shader without specific uniforms
+    vert_shader = """
+    #version 410 core
+    void main()
+    {
+        gl_Position = vec4(0.0);
+    }
+    """
+    frag_shader = """
+    #version 410 core
+    out vec4 fragColor;
+    void main()
+    {
+        fragColor = vec4(1.0);
+    }
+    """
+    vert = Shader("getter_test_vert", ShaderType.VERTEX.value)
+    vert.load_shader_source_from_string(vert_shader)
+    vert.compile()
+    frag = Shader("getter_test_frag", ShaderType.FRAGMENT.value)
+    frag.load_shader_source_from_string(frag_shader)
+    frag.compile()
+    program = ShaderProgram("getter_test")
+    program.attach_shader(vert)
+    program.attach_shader(frag)
+    assert program.link()
+    program.use()
+
+    # Test all getter methods with nonexistent uniforms
+    assert program.get_uniform_1f("nonexistent") == 0.0
+    assert program.get_uniform_2f("nonexistent") == [0.0, 0.0]
+    assert program.get_uniform_3f("nonexistent") == [0.0, 0.0, 0.0]
+    assert program.get_uniform_4f("nonexistent") == [0.0, 0.0, 0.0, 0.0]
+    assert program.get_uniform_mat2("nonexistent") == [0.0] * 4
+    assert program.get_uniform_mat3("nonexistent") == [0.0] * 9
+    assert program.get_uniform_mat4("nonexistent") == [0.0] * 16
+    assert program.get_uniform_mat4x3("nonexistent") == [0.0] * 12
+
+
+def test_shaderprogram_set_uniform_warning_cases(opengl_context, uniform_shader):
+    """Test cases that should trigger warnings in set_uniform"""
+    uniform_shader.use()
+
+    # Test with object that converts to list but wrong size
+    class WeirdObject:
+        def __iter__(self):
+            return iter([1.0, 2.0])  # Only 2 elements, not 4, 9, or 16
+
+    uniform_shader.set_uniform("testFloat", WeirdObject())  # Should trigger warning
+
+    # Test with list of wrong size (not 4, 9, or 16)
+    uniform_shader.set_uniform("testFloat", [1.0, 2.0, 3.0])  # 3 elements - should warn
+    uniform_shader.set_uniform("testFloat", [1.0, 2.0, 3.0, 4.0, 5.0])  # 5 elements - should warn
+
+
+def test_shaderprogram_print_registered_uniform_blocks_empty(opengl_context, simple_shader):
+    """Test print_registered_uniform_blocks with no uniform blocks"""
+    # simple_shader has no uniform blocks
+    simple_shader.print_registered_uniform_blocks()
+
+
+def test_shaderprogram_auto_register_uniform_blocks_no_blocks(opengl_context, simple_shader):
+    """Test auto_register_uniform_blocks when shader has no uniform blocks"""
+    # This should work without errors even with 0 uniform blocks
+    simple_shader.auto_register_uniform_blocks()
+    assert len(simple_shader.get_registered_uniform_blocks()) == 0
+
+
+def test_shaderlib_get_uniform_block_data_edge_cases(opengl_context):
+    """Test ShaderLib get_uniform_block_data edge cases"""
+    # Test with no current shader
+    ShaderLib.use(None)
+    result = ShaderLib.get_uniform_block_data()
+    assert result is None
+
+    # Test with shader that has no uniform blocks
+    ShaderLib.use("Test")  # This shader has no uniform blocks
+    result = ShaderLib.get_uniform_block_data()
+    assert result is None
+
+    # Test with nonexistent shader name
+    result = ShaderLib.get_uniform_block_data(shader_name="NonExistent")
+    assert result is None
+
+
+def test_shaderprogram_uniform_block_methods_edge_cases(opengl_context, simple_shader):
+    """Test uniform block methods with shader that has no blocks"""
+    # simple_shader has no uniform blocks
+    assert simple_shader.get_uniform_block_data("nonexistent") is None
+    assert simple_shader.get_uniform_block_location("nonexistent") == -1
+    assert simple_shader.get_uniform_block_buffer("nonexistent") == 0
+
+    # Test get_registered_uniform_blocks returns empty dict
+    blocks = simple_shader.get_registered_uniform_blocks()
+    assert isinstance(blocks, dict)

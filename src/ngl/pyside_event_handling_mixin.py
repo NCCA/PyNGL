@@ -300,9 +300,15 @@ class PySideEventHandlingMixin:
         pos = state.get("model_position", [0, 0, 0])
         self.model_position.set(pos[0], pos[1], pos[2])
 
-        self.rotation_sensitivity = state.get("rotation_sensitivity", self.DEFAULT_ROTATION_SENSITIVITY)
-        self.translation_sensitivity = state.get("translation_sensitivity", self.DEFAULT_TRANSLATION_SENSITIVITY)
-        self.zoom_sensitivity = state.get("zoom_sensitivity", self.DEFAULT_ZOOM_SENSITIVITY)
+        self.rotation_sensitivity = state.get(
+            "rotation_sensitivity", self.DEFAULT_ROTATION_SENSITIVITY
+        )
+        self.translation_sensitivity = state.get(
+            "translation_sensitivity", self.DEFAULT_TRANSLATION_SENSITIVITY
+        )
+        self.zoom_sensitivity = state.get(
+            "zoom_sensitivity", self.DEFAULT_ZOOM_SENSITIVITY
+        )
 
         # # Sync legacy attributes
         # self.sync_legacy_attributes()

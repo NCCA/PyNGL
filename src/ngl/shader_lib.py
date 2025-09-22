@@ -41,9 +41,7 @@ class _ShaderLib:
             logger.error(f"Failed to compile vertex shader for {name}")
             return False
 
-        frag_shader = Shader(
-            f"{name}Fragment", ShaderType.FRAGMENT.value, exit_on_error
-        )
+        frag_shader = Shader(f"{name}Fragment", ShaderType.FRAGMENT.value, exit_on_error)
         frag_shader.load(frag)
         if not frag_shader.compile():
             logger.error(f"Failed to compile fragment shader for {name}")
@@ -53,9 +51,7 @@ class _ShaderLib:
         program.attach_shader(frag_shader)
 
         if geo:
-            geo_shader = Shader(
-                f"{name}Geometry", ShaderType.GEOMETRY.value, exit_on_error
-            )
+            geo_shader = Shader(f"{name}Geometry", ShaderType.GEOMETRY.value, exit_on_error)
             geo_shader.load(geo)
             if not geo_shader.compile():
                 logger.error(f"Failed to compile geometry shader for {name}")
@@ -104,6 +100,12 @@ class _ShaderLib:
         else:
             logger.error(f"Error: shader {name} not found")
 
+    def load_shader_source_from_string(self, name: str, source_string: str):
+        if name in self._shaders:
+            self._shaders[name].load_shader_source_from_string(source_string)
+        else:
+            logger.error(f"Error: shader {name} not found")
+
     def compile_shader(self, name: str) -> bool:
         if name in self._shaders:
             return self._shaders[name].compile()
@@ -113,13 +115,9 @@ class _ShaderLib:
 
     def attach_shader_to_program(self, program_name: str, shader_name: str):
         if program_name in self._shader_programs and shader_name in self._shaders:
-            self._shader_programs[program_name].attach_shader(
-                self._shaders[shader_name]
-            )
+            self._shader_programs[program_name].attach_shader(self._shaders[shader_name])
         else:
-            logger.error(
-                f"Error: program {program_name} or shader {shader_name} not found"
-            )
+            logger.error(f"Error: program {program_name} or shader {shader_name} not found")
 
     def link_program_object(self, name: str) -> bool:
         if name in self._shader_programs:
@@ -132,22 +130,20 @@ class _ShaderLib:
         if self._current_shader:
             self._shader_programs[self._current_shader].set_uniform(name, *value)
 
-    def set_uniform_buffer(self, uniform_block_name: str, data) -> bool:
+    def set_uniform_buffer(self, uniform_block_name: str, size: int, data) -> bool:
         """
         Set uniform buffer data for the specified uniform block in the current shader.
 
         Args:
             uniform_block_name: Name of the uniform block
-            data: Data to upload should be numpy array
+            size: Size of the data in bytes
+            data: Data to upload (can be ctypes array, bytes, or buffer-like object)
 
         Returns:
             bool: True if successful, False otherwise
         """
-
         if self._current_shader:
-            return self._shader_programs[self._current_shader].set_uniform_buffer(
-                uniform_block_name, data.data.nbytes, data.data
-            )
+            return self._shader_programs[self._current_shader].set_uniform_buffer(uniform_block_name, size, data)
         else:
             logger.error("No current shader active")
             return False
@@ -219,9 +215,7 @@ class _ShaderLib:
         }
 
         for shader_name, shader_data in to_load.items():
-            if self.load_shader(
-                shader_name, shader_data["vertex"], shader_data["fragment"]
-            ):
+            if self.load_shader(shader_name, shader_data["vertex"], shader_data["fragment"]):
                 logger.info(f"{shader_name} shader loaded successfully")
 
         self._default_shaders_loaded = True
@@ -240,9 +234,7 @@ class _ShaderLib:
             logger.info(
                 "_______________________________________________________________________________________________________________________"
             )
-            logger.info(
-                f"Printing Properties for ShaderProgram {self._current_shader} "
-            )
+            logger.info(f"Printing Properties for ShaderProgram {self._current_shader} ")
             logger.info(
                 "_______________________________________________________________________________________________________________________"
             )
@@ -251,9 +243,7 @@ class _ShaderLib:
                 "_______________________________________________________________________________________________________________________"
             )
         else:
-            logger.warning(
-                f"Warning no currently active shader to print properties for {self._current_shader} "
-            )
+            logger.warning(f"Warning no currently active shader to print properties for {self._current_shader} ")
 
     def auto_register_uniform_blocks(self, shader_name: str = None):
         """
@@ -267,38 +257,15 @@ class _ShaderLib:
             logger.error(f"Shader program '{shader_name}' not found")
             return
 
+        # Delegate to the ShaderProgram's auto_register_uniform_blocks method
         program = self._shader_programs[shader_name]
-        program_id = program.get_id()
+        program.auto_register_uniform_blocks()
 
-        # Clear existing uniform blocks for this shader
+        # Copy the uniform blocks to our registry
         if shader_name not in self._registered_uniform_blocks:
             self._registered_uniform_blocks[shader_name] = {}
-        else:
-            self._registered_uniform_blocks[shader_name].clear()
 
-        # Get number of active uniform blocks
-        n_uniforms = gl.glGetProgramiv(program_id, gl.GL_ACTIVE_UNIFORM_BLOCKS)
-        logger.info(f"Found {n_uniforms} uniform blocks in shader '{shader_name}'")
-
-        for i in range(n_uniforms):
-            # Get uniform block name
-            name = gl.glGetActiveUniformBlockName(program_id, i)
-            if isinstance(name, bytes):
-                name = name.decode("utf-8")
-
-            # Get uniform block index
-            block_index = gl.glGetUniformBlockIndex(program_id, name.encode("utf-8"))
-
-            # Generate buffer
-            buffer = gl.glGenBuffers(1)
-
-            # Store uniform block data
-            block_data = {"name": name, "loc": block_index, "buffer": buffer}
-
-            self._registered_uniform_blocks[shader_name][name] = block_data
-            logger.info(
-                f"Uniform Block: {name}, Index: {block_index}, Buffer: {buffer}"
-            )
+        self._registered_uniform_blocks[shader_name] = program.get_registered_uniform_blocks()
 
     def get_uniform_block_data(self, shader_name: str = None, block_name: str = None):
         """
