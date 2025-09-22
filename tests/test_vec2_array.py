@@ -98,6 +98,7 @@ def test_str():
     a = Vec2Array([Vec2(1, 2)])
     assert str(a) == "[Vec2 [1,2]]"
 
+
 def test_sizeof():
     a = Vec2Array()
     assert a.sizeof() == 0

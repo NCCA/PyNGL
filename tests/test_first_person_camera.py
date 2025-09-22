@@ -64,7 +64,11 @@ def test_process_mouse_movement_no_constrain_pitch():
     cam.yaw = 0.0
     cam.process_mouse_movement(100, 100, _constrainPitch=False)
     # pitch can exceed bounds
-    assert cam.pitch > 89.0 or cam.pitch < -89.0 or (cam.pitch <= 89.0 and cam.pitch >= -89.0)
+    assert (
+        cam.pitch > 89.0
+        or cam.pitch < -89.0
+        or (cam.pitch <= 89.0 and cam.pitch >= -89.0)
+    )
 
 
 def test_update_camera_vectors_changes_front_right_up_and_view():

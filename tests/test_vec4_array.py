@@ -98,6 +98,7 @@ def test_str():
     a = Vec4Array([Vec4(1, 2, 3, 4)])
     assert str(a) == "[Vec4 [1,2,3,4]]"
 
+
 def test_sizeof():
     a = Vec4Array()
     assert a.sizeof() == 0

@@ -272,7 +272,7 @@ def test_string():
 
 def test_iterable():
     a = Vec3(1, 2, 3)
-    b=list(a)
+    b = list(a)
     assert b == [1, 2, 3]
     assert a[0] == 1
     assert a[1] == 2

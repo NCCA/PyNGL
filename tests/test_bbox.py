@@ -2,6 +2,7 @@ import pytest
 
 from ngl import BBox, Vec3
 
+
 def test_default_ctor():
     test = BBox()
     assert test.width == pytest.approx(2.0)

@@ -49,10 +49,14 @@ class AbstractVAO(abc.ABC):
     def remove_vao(self):
         raise NotImplementedError
 
-    def set_vertex_attribute_pointer(self, id, size, type, stride, offset, normalize=False):
+    def set_vertex_attribute_pointer(
+        self, id, size, type, stride, offset, normalize=False
+    ):
         if not self.m_bound:
             logger.error("VAO not bound in set_vertex_attribute_pointer")
-        gl.glVertexAttribPointer(id, size, type, normalize, stride, ctypes.c_void_p(offset))
+        gl.glVertexAttribPointer(
+            id, size, type, normalize, stride, ctypes.c_void_p(offset)
+        )
         gl.glEnableVertexAttribArray(id)
 
     def set_num_indices(self, count):

@@ -5,7 +5,18 @@ Note opengl_context created once in conftest.py
 import OpenGL.GL as gl
 import pytest
 
-from ngl import Mat2, Mat3, Mat4, Shader, ShaderLib, ShaderProgram, ShaderType, Vec2, Vec3, Vec4
+from ngl import (
+    Mat2,
+    Mat3,
+    Mat4,
+    Shader,
+    ShaderLib,
+    ShaderProgram,
+    ShaderType,
+    Vec2,
+    Vec3,
+    Vec4,
+)
 
 sourcedir = "tests/files/"
 
@@ -267,7 +278,17 @@ def test_shaderprogram_set_uniforms(opengl_context, uniform_shader):
 
     mat_list = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]
     uniform_shader.set_uniform("testMat3", mat_list)
-    assert uniform_shader.get_uniform_mat3("testMat3") == [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]
+    assert uniform_shader.get_uniform_mat3("testMat3") == [
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        6.0,
+        7.0,
+        8.0,
+        9.0,
+    ]
     # fmt: off
     mat_list = [ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0]
     uniform_shader.set_uniform("testMat4", mat_list)
@@ -370,3 +391,51 @@ def test_shaderprogram_get_uniform_mat4x3(opengl_context, mat4x3_shader):
     mat4x3_shader.use()
     res = mat4x3_shader.get_uniform_mat4x3("testMat4x3")
     assert len(res) == 12
+
+
+"""
+Note opengl_context created once in conftest.py
+"""
+
+
+sourcedir = "tests/files/"
+
+
+def test_load_shader_with_geo(opengl_context):
+    assert ShaderLib.load_shader(
+        "TestGeo",
+        sourcedir + "vert.glsl",
+        sourcedir + "frag.glsl",
+        sourcedir + "geom.glsl",
+    )
+
+
+def test_get_program_id_non_existent(opengl_context):
+    assert ShaderLib.get_program_id("nonExistent") is None
+
+
+def test_load_shader_source_non_existent(opengl_context):
+    ShaderLib.load_shader_source("nonExistent", "dummy.glsl")
+
+
+def test_compile_shader_non_existent(opengl_context):
+    assert not ShaderLib.compile_shader("nonExistent")
+
+
+def test_attach_shader_to_program_non_existent(opengl_context):
+    ShaderLib.attach_shader_to_program("nonExistentProgram", "nonExistentShader")
+
+
+def test_link_program_object_non_existent(opengl_context):
+    assert not ShaderLib.link_program_object("nonExistent")
+
+
+def test_get_uniforms_no_current_shader(opengl_context):
+    ShaderLib.use(None)
+    assert ShaderLib.get_uniform_1f("test") == 0.0
+    assert ShaderLib.get_uniform_2f("test") == [0.0, 0.0]
+    assert ShaderLib.get_uniform_3f("test") == [0.0, 0.0, 0.0]
+    assert ShaderLib.get_uniform_4f("test") == [0.0, 0.0, 0.0, 0.0]
+    assert ShaderLib.get_uniform_mat2("test") == [0.0] * 4
+    assert ShaderLib.get_uniform_mat3("test") == [0.0] * 9
+    assert ShaderLib.get_uniform_mat4("test") == [0.0] * 16

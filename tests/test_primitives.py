@@ -1,6 +1,6 @@
 import pytest
 
-from ngl import Primitives
+from ngl import Primitives, Vec3
 
 
 # Helper to clear primitives between tests
@@ -24,11 +24,10 @@ def test_create_line_grid_basic():
     assert prim.vao.num_indices() > 0
 
 
-from src.ngl.vec3 import Vec3
-
-
 def test_create_triangle_plane_basic():
-    Primitives.create_triangle_plane("test_plane", width=2.0, depth=2.0, w_p=2, d_p=2, v_n=Vec3(0, 1, 0))
+    Primitives.create_triangle_plane(
+        "test_plane", width=2.0, depth=2.0, w_p=2, d_p=2, v_n=Vec3(0, 1, 0)
+    )
     prim = Primitives._primitives["test_plane"]
     assert hasattr(prim, "vao")
     assert prim.vao is not None
@@ -78,19 +77,25 @@ def test_create_capsule_invalid_height():
 
 
 def test_create_cylinder_basic():
-    Primitives.create_cylinder("test_cylinder", radius=1.0, height=2.0, slices=8, stacks=2)
+    Primitives.create_cylinder(
+        "test_cylinder", radius=1.0, height=2.0, slices=8, stacks=2
+    )
     prim = Primitives._primitives["test_cylinder"]
     assert prim.vao is not None
 
 
 def test_create_cylinder_invalid_radius():
     with pytest.raises(ValueError):
-        Primitives.create_cylinder("bad_cylinder", radius=0.0, height=2.0, slices=8, stacks=2)
+        Primitives.create_cylinder(
+            "bad_cylinder", radius=0.0, height=2.0, slices=8, stacks=2
+        )
 
 
 def test_create_cylinder_invalid_height():
     with pytest.raises(ValueError):
-        Primitives.create_cylinder("bad_cylinder", radius=1.0, height=-2.0, slices=8, stacks=2)
+        Primitives.create_cylinder(
+            "bad_cylinder", radius=1.0, height=-2.0, slices=8, stacks=2
+        )
 
 
 def test_create_disk_basic():
@@ -105,20 +110,30 @@ def test_create_disk_invalid_radius():
 
 
 def test_create_torus_basic():
-    Primitives.create_torus("test_torus", major_radius=2.0, minor_radius=1.0, sides=8, rings=8)
+    Primitives.create_torus(
+        "test_torus", major_radius=2.0, minor_radius=1.0, sides=8, rings=8
+    )
     prim = Primitives._primitives["test_torus"]
     assert prim.vao is not None
 
 
 def test_create_torus_invalid_radii():
     with pytest.raises(ValueError):
-        Primitives.create_torus("bad_torus", major_radius=0.0, minor_radius=1.0, sides=8, rings=8)
+        Primitives.create_torus(
+            "bad_torus", major_radius=0.0, minor_radius=1.0, sides=8, rings=8
+        )
     with pytest.raises(ValueError):
-        Primitives.create_torus("bad_torus", major_radius=2.0, minor_radius=0.0, sides=8, rings=8)
+        Primitives.create_torus(
+            "bad_torus", major_radius=2.0, minor_radius=0.0, sides=8, rings=8
+        )
 
 
 def test_create_torus_invalid_sides_rings():
     with pytest.raises(ValueError):
-        Primitives.create_torus("bad_torus", major_radius=2.0, minor_radius=1.0, sides=2, rings=8)
+        Primitives.create_torus(
+            "bad_torus", major_radius=2.0, minor_radius=1.0, sides=2, rings=8
+        )
     with pytest.raises(ValueError):
-        Primitives.create_torus("bad_torus", major_radius=2.0, minor_radius=1.0, sides=8, rings=2)
+        Primitives.create_torus(
+            "bad_torus", major_radius=2.0, minor_radius=1.0, sides=8, rings=2
+        )
