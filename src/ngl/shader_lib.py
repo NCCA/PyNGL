@@ -66,7 +66,13 @@ class _ShaderLib:
         logger.info(f"Shader program '{name}' created")
         return True
 
-    def use(self, name: str):
+    def use(self, name: str | None):
+        # Handle None to clear current shader
+        if name is None:
+            gl.glUseProgram(0)
+            self._current_shader = None
+            return
+
         # lazy load default shaders on request
         if not self._default_shaders_loaded and name not in self._shader_programs:
             logger.warning("Default shaders not loaded loading now")
