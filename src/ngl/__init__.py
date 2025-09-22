@@ -18,6 +18,7 @@ from .obj import (
 )
 from .plane import Plane
 from .primitives import Primitives, Prims
+from .pyside_event_handling_mixin import PySideEventHandlingMixin
 from .quaternion import Quaternion
 from .random import Random
 from .shader import MatrixTranspose, Shader, ShaderType
@@ -95,4 +96,5 @@ all = [
     Primitives,
     Prims,
     FirstPersonCamera,
+    PySideEventHandlingMixin,
 ]

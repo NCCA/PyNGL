@@ -10,7 +10,7 @@ from .shader import Shader
 from .vec2 import Vec2
 from .vec3 import Vec3
 from .vec4 import Vec4
-
+import numpy as np
 
 class ShaderProgram:
     def __init__(self, name: str, exit_on_error: bool = True):
@@ -19,6 +19,7 @@ class ShaderProgram:
         self._id = gl.glCreateProgram()
         self._shaders = []
         self._uniforms = {}
+        self._registered_uniform_blocks = {}
 
     def attach_shader(self, shader: Shader):
         gl.glAttachShader(self._id, shader._id)
@@ -33,6 +34,7 @@ class ShaderProgram:
                 exit()
             return False
         self.auto_register_uniforms()
+        self.auto_register_uniform_blocks()
         return True
 
     def auto_register_uniforms(self):
@@ -44,6 +46,37 @@ class ShaderProgram:
                 name = name[:-3]
             location = gl.glGetUniformLocation(self._id, name)
             self._uniforms[name.decode("utf-8")] = (location, shader_type)
+
+    def auto_register_uniform_blocks(self):
+        """
+        Automatically register uniform blocks for this shader program.
+        This is the Python equivalent of the C++ ShaderProgram::autoRegisterUniformBlocks method.
+        """
+        # Clear existing uniform blocks
+        self._registered_uniform_blocks.clear()
+
+        # Get number of active uniform blocks
+        n_uniforms = gl.glGetProgramiv(self._id, gl.GL_ACTIVE_UNIFORM_BLOCKS)
+        logger.info(f"FOUND UNIFORM BLOCKS {n_uniforms}")
+
+        for i in range(n_uniforms):
+            # Get uniform block name using ctypes buffer
+            name_buffer = (ctypes.c_char * 256)()
+            length = ctypes.c_int()
+
+            gl.glGetActiveUniformBlockName(self._id, i, 256, ctypes.byref(length), name_buffer)
+            name_str = name_buffer.value.decode("utf-8") if name_buffer.value else f"UniformBlock_{i}"
+
+            # Create uniform block data structure
+            data = {
+                "name": name_str,
+                "loc": gl.glGetUniformBlockIndex(self._id, name_str.encode("utf-8")),
+                "buffer": gl.glGenBuffers(1),
+            }
+
+            # Store the uniform block data
+            self._registered_uniform_blocks[name_str] = data
+            logger.info(f"Uniform Block {name_str} {data['loc']} {data['buffer']}")
 
     def use(self):
         gl.glUseProgram(self._id)
@@ -57,6 +90,45 @@ class ShaderProgram:
         else:
             logger.warning(f"Uniform '{name}' not found in shader '{self._name}'")
             return -1
+
+    def set_uniform_buffer(self, uniform_block_name: str, size: int, data) -> bool:
+        """
+        Set uniform buffer data for the specified uniform block.
+        This is the Python equivalent of the C++ ShaderProgram::setUniformBuffer method.
+
+        Args:
+            uniform_block_name: Name of the uniform block
+            size: Size of the data in bytes
+            data: Data to upload (can be ctypes array, bytes, or buffer-like object)
+
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        if uniform_block_name not in self._registered_uniform_blocks:
+            logger.error(f"Uniform block '{uniform_block_name}' not found in shader '{self._name}'")
+            return False
+
+        block = self._registered_uniform_blocks[uniform_block_name]
+
+        try:
+            # Bind the uniform buffer
+            gl.glBindBuffer(gl.GL_UNIFORM_BUFFER, block["buffer"])
+
+            # Upload the data
+            data = np.frombuffer(data, dtype=np.float32)
+            gl.glBufferData(gl.GL_UNIFORM_BUFFER, size, data, gl.GL_DYNAMIC_DRAW)
+
+            # Bind the buffer to the uniform block binding point
+            gl.glBindBufferBase(gl.GL_UNIFORM_BUFFER, block["loc"], block["buffer"])
+
+            # Unbind the buffer
+            gl.glBindBuffer(gl.GL_UNIFORM_BUFFER, 0)
+
+            return True
+
+        except Exception as e:
+            logger.error(f"Failed to set uniform buffer '{uniform_block_name}': {e}")
+            return False
 
     def set_uniform(self, name: str, *value):
         loc = self.get_uniform_location(name)
@@ -163,6 +235,30 @@ class ShaderProgram:
             return list(result)
         return [0.0] * 12
 
+    def get_uniform_block_data(self, name: str):
+        """Get uniform block data by name"""
+        return self._registered_uniform_blocks.get(name, None)
+
+    def get_registered_uniform_blocks(self) -> dict:
+        """Get all registered uniform blocks"""
+        return self._registered_uniform_blocks.copy()
+
+    def get_uniform_block_location(self, name: str) -> int:
+        """Get uniform block location by name"""
+        if name in self._registered_uniform_blocks:
+            return self._registered_uniform_blocks[name]["loc"]
+        else:
+            logger.warning(f"Uniform block '{name}' not found in shader '{self._name}'")
+            return -1
+
+    def get_uniform_block_buffer(self, name: str) -> int:
+        """Get uniform block buffer by name"""
+        if name in self._registered_uniform_blocks:
+            return self._registered_uniform_blocks[name]["buffer"]
+        else:
+            logger.warning(f"Uniform block '{name}' not found in shader '{self._name}'")
+            return 0
+
     def get_gl_type_string(self, gl_type: int) -> str:
         type_map = {
             gl.GL_FLOAT: "float",
@@ -187,6 +283,11 @@ class ShaderProgram:
             type_str = self.get_gl_type_string(type)
             logger.info(f"  {name} (type: {type_str}, location: {location})")
 
+    def print_registered_uniform_blocks(self):
+        logger.info(f"Registered uniform blocks for {self._name}:")
+        for name, data in self._registered_uniform_blocks.items():
+            logger.info(f"  {name} (index: {data['loc']}, buffer: {data['buffer']})")
+
     def print_properties(self):
         logger.info(f"Properties for shader program {self._name}:")
         logger.info(f"  ID: {self._id}")
@@ -205,3 +306,11 @@ class ShaderProgram:
 
         active_uniforms = gl.glGetProgramiv(self._id, gl.GL_ACTIVE_UNIFORMS)
         logger.info(f"  Active uniforms: {active_uniforms}")
+
+        active_uniform_blocks = gl.glGetProgramiv(self._id, gl.GL_ACTIVE_UNIFORM_BLOCKS)
+        logger.info(f"  Active uniform blocks: {active_uniform_blocks}")
+
+        if self._registered_uniform_blocks:
+            logger.info("  Registered uniform blocks:")
+            for name, data in self._registered_uniform_blocks.items():
+                logger.info(f"    {name} (index: {data['loc']}, buffer: {data['buffer']})")

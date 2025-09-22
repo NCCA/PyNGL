@@ -73,12 +73,12 @@ def test_vao_context_manager(opengl_context):
     vertices = [-0.5, -0.5, 0.0, 0.5, -0.5, 0.0, 0.0, 0.5, 0.0]
     vao = VAOFactory.create_vao(VAOType.SIMPLE, gl.GL_TRIANGLES)
     with vao as v:
-        assert v.m_bound is True
+        assert v.bound is True
         data = VertexData(data=vertices, size=len(vertices) // 3)
         v.set_data(data)
         v.set_vertex_attribute_pointer(0, 3, gl.GL_FLOAT, 0, 0)
         v.draw()
-    assert v.m_bound is False
+    assert v.bound is False
     vao.remove_vao()
 
 

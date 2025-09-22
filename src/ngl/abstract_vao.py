@@ -16,19 +16,19 @@ class VertexData:
 
 class AbstractVAO(abc.ABC):
     def __init__(self, mode=gl.GL_TRIANGLES):
-        self.m_id = gl.glGenVertexArrays(1)
-        self.m_mode = mode
-        self.m_bound = False
-        self.m_allocated = False
-        self.m_indicesCount = 0
+        self.id = gl.glGenVertexArrays(1)
+        self.mode = mode
+        self.bound = False
+        self.allocated = False
+        self.indices_count = 0
 
     def bind(self):
-        gl.glBindVertexArray(self.m_id)
-        self.m_bound = True
+        gl.glBindVertexArray(self.id)
+        self.bound = True
 
     def unbind(self):
         gl.glBindVertexArray(0)
-        self.m_bound = False
+        self.bound = False
 
     def __enter__(self):
         self.bind()
@@ -52,7 +52,7 @@ class AbstractVAO(abc.ABC):
     def set_vertex_attribute_pointer(
         self, id, size, type, stride, offset, normalize=False
     ):
-        if not self.m_bound:
+        if not self.bound:
             logger.error("VAO not bound in set_vertex_attribute_pointer")
         gl.glVertexAttribPointer(
             id, size, type, normalize, stride, ctypes.c_void_p(offset)
@@ -60,16 +60,16 @@ class AbstractVAO(abc.ABC):
         gl.glEnableVertexAttribArray(id)
 
     def set_num_indices(self, count):
-        self.m_indicesCount = count
+        self.indices_count = count
 
     def num_indices(self):
-        return self.m_indicesCount
+        return self.indices_count
 
     def get_mode(self):
-        return self.m_mode
+        return self.mode
 
     def set_mode(self, mode):
-        self.m_mode = mode
+        self.mode = mode
 
     @abc.abstractmethod
     def get_buffer_id(self, index=0):
@@ -83,4 +83,4 @@ class AbstractVAO(abc.ABC):
         gl.glUnmapBuffer(gl.GL_ARRAY_BUFFER)
 
     def get_id(self):
-        return self.m_id
+        return self.id

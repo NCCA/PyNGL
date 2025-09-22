@@ -106,6 +106,15 @@ class Mat4:
         return a
 
     @classmethod
+    def translate(cls, x: float, y: float, z: float):
+        "return a new matrix as translation"
+        a = Mat4()  # identity by default
+        a.m[3][0] = x
+        a.m[3][1] = y
+        a.m[3][2] = z
+        return a
+
+    @classmethod
     def rotate_x(cls, angle):
         "return a rotation around the X axis by angle degrees"
         a = Mat4()

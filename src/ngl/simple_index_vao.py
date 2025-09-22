@@ -25,13 +25,13 @@ class IndexVertexData(VertexData):
 class SimpleIndexVAO(AbstractVAO):
     def __init__(self, mode=gl.GL_TRIANGLES):
         super().__init__(mode)
-        self.m_buffer = gl.glGenBuffers(1)
-        self.m_idx_buffer = gl.glGenBuffers(1)
-        self.m_index_type = gl.GL_UNSIGNED_INT
+        self.buffer = gl.glGenBuffers(1)
+        self.idx_buffer = gl.glGenBuffers(1)
+        self.index_type = gl.GL_UNSIGNED_INT
 
     def draw(self):
-        if self.m_bound and self.m_allocated:
-            gl.glDrawElements(self.m_mode, self.m_indicesCount, self.m_index_type, None)
+        if self.bound and self.allocated:
+            gl.glDrawElements(self.mode, self.indices_count, self.index_type, None)
         else:
             logger.error("SimpleIndexVAO not bound or not allocated")
 
@@ -40,26 +40,26 @@ class SimpleIndexVAO(AbstractVAO):
             logger.error("SimpleIndexVAO: Unsupported index type")
             raise TypeError("data must be of type IndexVertexData")
 
-        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.m_buffer)
+        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.buffer)
         gl.glBufferData(gl.GL_ARRAY_BUFFER, data.data.nbytes, data.data, data.mode)
 
-        gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, self.m_idx_buffer)
+        gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, self.idx_buffer)
         gl.glBufferData(
             gl.GL_ELEMENT_ARRAY_BUFFER, data.indices.nbytes, data.indices, data.mode
         )
 
-        self.m_allocated = True
-        self.m_indicesCount = len(data.indices)
-        self.m_index_type = data.index_type
+        self.allocated = True
+        self.indices_count = len(data.indices)
+        self.index_type = data.index_type
 
     def remove_vao(self):
-        gl.glDeleteBuffers(1, [self.m_buffer])
-        gl.glDeleteBuffers(1, [self.m_idx_buffer])
-        gl.glDeleteVertexArrays(1, [self.m_id])
+        gl.glDeleteBuffers(1, [self.buffer])
+        gl.glDeleteBuffers(1, [self.idx_buffer])
+        gl.glDeleteVertexArrays(1, [self.id])
 
     def get_buffer_id(self, index=0):
-        return self.m_buffer
+        return self.buffer
 
     def map_buffer(self, index=0, access_mode=gl.GL_READ_WRITE):
-        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.m_buffer)
+        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.buffer)
         return gl.glMapBuffer(gl.GL_ARRAY_BUFFER, access_mode)

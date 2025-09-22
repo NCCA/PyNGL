@@ -15,6 +15,17 @@ def test_ctor():
     assert m.get_matrix() == pytest.approx(ident)
 
 
+def test_translate():
+    m = Mat4.translate(1, 2, 3)
+    # fmt: off
+    ident = [1.0, 0.0, 0.0, 0.0,
+                0.0, 1.0, 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
+                1.0, 2.0, 3.0, 1.0]
+    # fmt: on
+    assert m.get_matrix() == pytest.approx(ident)
+
+
 def test_identity():
     m = Mat4.identity()
     # fmt: off
