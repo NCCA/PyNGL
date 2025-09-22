@@ -277,7 +277,11 @@ class PySideEventHandlingMixin:
         return {
             "spin_x_face": self.spin_x_face,
             "spin_y_face": self.spin_y_face,
-            "model_position": [self.model_position.x, self.model_position.y, self.model_position.z],
+            "model_position": [
+                self.model_position.x,
+                self.model_position.y,
+                self.model_position.z,
+            ],
             "rotation_sensitivity": self.rotation_sensitivity,
             "translation_sensitivity": self.translation_sensitivity,
             "zoom_sensitivity": self.zoom_sensitivity,
