@@ -218,21 +218,16 @@ def test_build_obj_with_colour():
     obj.add_vertex_colour(Vec3(0.0, 4.0, 0.0), Vec3(0.0, 1.0, 0.0))
     obj.add_vertex_colour(Vec3(-2.0, 0.0, 0.0), Vec3(0.0, 0.0, 1.0))
 
-    obj.add_uv(Vec3(1.0, 0.0, 0.0))
-    obj.add_uv(Vec3(0.5, 1.0, 0.0))
-    obj.add_uv(Vec3(0.004399, 0.008916, 0.0))
+    uvs = [Vec3(1.0, 0.0, 0.0), Vec3(0.5, 1.0, 0.0), Vec3(0.004399, 0.008916, 0.0)]
+    for uv in uvs:
+        obj.add_uv(uv)
     obj.add_normal(Vec3(0.0, 0.0, 1.0))
     # f 1/1/1 2/2/1 3/3/1
     face = Face()
-    face.vertex.append(0)
-    face.vertex.append(1)
-    face.vertex.append(2)
-    face.uv.append(0)
-    face.uv.append(1)
-    face.uv.append(2)
-    face.normal.append(0)
-    face.normal.append(0)
-    face.normal.append(0)
+    for i in range(3):
+        face.vertex.append(i)
+        face.uv.append(i)
+        face.normal.append(0)
     obj.add_face(face)
     obj.save("tests/tempColourObj.obj")
     # reload and check
