@@ -298,17 +298,15 @@ class PySideEventHandlingMixin:
         self.spin_y_face = state.get("spin_y_face", 0)
 
         pos = state.get("model_position", [0, 0, 0])
-        self.model_position.set(pos[0], pos[1], pos[2])
+        # Handle cases where pos might have fewer than 3 elements
+        x = pos[0] if len(pos) > 0 else 0
+        y = pos[1] if len(pos) > 1 else 0
+        z = pos[2] if len(pos) > 2 else 0
+        self.model_position.set(x, y, z)
 
-        self.rotation_sensitivity = state.get(
-            "rotation_sensitivity", self.DEFAULT_ROTATION_SENSITIVITY
-        )
-        self.translation_sensitivity = state.get(
-            "translation_sensitivity", self.DEFAULT_TRANSLATION_SENSITIVITY
-        )
-        self.zoom_sensitivity = state.get(
-            "zoom_sensitivity", self.DEFAULT_ZOOM_SENSITIVITY
-        )
+        self.rotation_sensitivity = state.get("rotation_sensitivity", self.DEFAULT_ROTATION_SENSITIVITY)
+        self.translation_sensitivity = state.get("translation_sensitivity", self.DEFAULT_TRANSLATION_SENSITIVITY)
+        self.zoom_sensitivity = state.get("zoom_sensitivity", self.DEFAULT_ZOOM_SENSITIVITY)
 
         # # Sync legacy attributes
         # self.sync_legacy_attributes()

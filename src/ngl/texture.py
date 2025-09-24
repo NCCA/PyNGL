@@ -28,6 +28,19 @@ class Texture:
                 return gl.GL_RGB
             elif self._image.mode.value == "RGBA":
                 return gl.GL_RGBA
+            elif self._image.mode.value == "L":
+                return gl.GL_RED
+        return 0
+
+    @property
+    def internal_format(self) -> int:
+        if self._image.mode:
+            if self._image.mode.value == "RGB":
+                return gl.GL_RGB8
+            elif self._image.mode.value == "RGBA":
+                return gl.GL_RGBA8
+            elif self._image.mode.value == "L":
+                return gl.GL_R8
         return 0
 
     def load_image(self, filename: str) -> bool:
@@ -46,7 +59,7 @@ class Texture:
             gl.glTexImage2D(
                 gl.GL_TEXTURE_2D,
                 0,
-                self.format,
+                self.internal_format,
                 self.width,
                 self.height,
                 0,

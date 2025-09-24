@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 class ImageModes(Enum):
     RGB = "RGB"
     RGBA = "RGBA"
+    GRAY = "L"
 
 
 class Image:
@@ -22,15 +23,18 @@ class Image:
         height: int = 0,
         mode: ImageModes = None,
     ):
-        logger.debug(f"Creating Image from file {filename} or {width}x{height}")
         if filename:
             self.load(filename)
+            logger.debug(f"Creating Image from file {filename} ")
         else:
             self._width = width
             self._height = height
             self._mode = mode
             if mode:
-                self._data = np.zeros((height, width, len(mode.value)), dtype=np.uint8)
+                if mode == ImageModes.GRAY:
+                    self._data = np.zeros((height, width), dtype=np.uint8)
+                else:
+                    self._data = np.zeros((height, width, len(mode.value)), dtype=np.uint8)
             else:
                 self._data = None
 
@@ -47,7 +51,16 @@ class Image:
             with PILImage.open(filename) as img:
                 self._width = img.width
                 self._height = img.height
-                self._mode = ImageModes(img.mode)
+                try:
+                    self._mode = ImageModes(img.mode)
+                except ValueError:
+                    logger.warning(f"Image mode {img.mode} not supported, converting")
+                    if img.mode == "I;16":
+                        img = img.convert("L")
+                    else:
+                        img = img.convert("RGB")
+                    self._mode = ImageModes(img.mode)
+
                 self._data = np.array(img)
             return True
         except Exception as e:

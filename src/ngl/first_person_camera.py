@@ -58,9 +58,7 @@ class FirstPersonCamera:
         self.aspect: float = 1.2
         self.fov: float = fov
         self._update_camera_vectors()
-        self.projection: Mat4 = self.set_projection(
-            self.fov, self.aspect, self.near, self.far
-        )
+        self.projection: Mat4 = self.set_projection(self.fov, self.aspect, self.near, self.far)
         from .util import look_at
 
         self.view: Mat4 = look_at(self.eye, self.eye + self.front, self.up)
@@ -71,9 +69,7 @@ class FirstPersonCamera:
     def __repr__(self) -> str:
         return f"Camera {self.eye} {self.look} {self.world_up} {self.fov}"
 
-    def process_mouse_movement(
-        self, diffx: float, diffy: float, _constrain_pitch: bool = True
-    ) -> None:
+    def process_mouse_movement(self, diffx: float, diffy: float, _constrain_pitch: bool = True) -> None:
         """
         Process mouse movement to update the camera's direction vectors.
 
@@ -117,9 +113,7 @@ class FirstPersonCamera:
 
         self.view = look_at(self.eye, self.eye + self.front, self.up)
 
-    def set_projection(
-        self, fov: float, aspect: float, near: float, far: float
-    ) -> Mat4:
+    def set_projection(self, fov: float, aspect: float, near: float, far: float) -> Mat4:
         """
         Set the projection matrix for the camera.
 
@@ -157,3 +151,18 @@ class FirstPersonCamera:
             Mat4: The view-projection matrix.
         """
         return self.projection @ self.view
+
+    def process_mouse_scroll(self, y_offset: float) -> None:
+        """
+        Process mouse scroll events.
+
+        Args:
+            _yoffset (float): The scroll offset.
+        """
+        if self.zoom >= 1.0 and self.zoom <= 45.0:
+            self.zoom -= y_offset
+        if self.zoom <= 1.0:
+            self.zoom = 1.0
+        if self.zoom >= 45.0:
+            self.zoom = 45.0
+        self.projection = perspective(self.zoom, self.aspect, self.near, self.far)

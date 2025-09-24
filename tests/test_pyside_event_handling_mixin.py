@@ -10,8 +10,7 @@ from unittest.mock import Mock, patch
 import pytest
 from PySide6.QtCore import QPointF, Qt
 
-from ngl import Vec3
-from ngl.pyside_event_handling_mixin import PySideEventHandlingMixin
+from ngl import PySideEventHandlingMixin, Vec3
 
 
 class MockEventHandlingWindow(PySideEventHandlingMixin):
@@ -350,10 +349,10 @@ def test_get_camera_state(event_window):
     expected = {
         "spin_x_face": 45,
         "spin_y_face": 90,
-        "model_position": [1, 2, 3],
+        "model_position": [pytest.approx(1), pytest.approx(2), pytest.approx(3)],
         "rotation_sensitivity": pytest.approx(0.8),
         "translation_sensitivity": pytest.approx(0.02),
-        "zoom_sensitivity": pytest.approx(0.15) ,
+        "zoom_sensitivity": pytest.approx(0.15),
     }
 
     assert state == expected
@@ -374,9 +373,9 @@ def test_set_camera_state(event_window):
 
     assert event_window.spin_x_face == 30
     assert event_window.spin_y_face == 60
-    assert event_window.model_position.x == 5
-    assert event_window.model_position.y == 10
-    assert event_window.model_position.z == 15
+    assert event_window.model_position.x == pytest.approx(5)
+    assert event_window.model_position.y == pytest.approx(10)
+    assert event_window.model_position.z == pytest.approx(15)
     assert event_window.rotation_sensitivity == pytest.approx(0.75)
     assert event_window.translation_sensitivity == pytest.approx(0.05)
     assert event_window.zoom_sensitivity == pytest.approx(0.25)
@@ -393,9 +392,9 @@ def test_set_camera_state_partial(event_window):
 
     assert event_window.spin_x_face == 15
     assert event_window.spin_y_face == 0  # Default
-    assert event_window.model_position.x == 2
-    assert event_window.model_position.y == 4
-    assert event_window.model_position.z == 6
+    assert event_window.model_position.x == pytest.approx(2)
+    assert event_window.model_position.y == pytest.approx(4)
+    assert event_window.model_position.z == pytest.approx(6)
     assert event_window.rotation_sensitivity == PySideEventHandlingMixin.DEFAULT_ROTATION_SENSITIVITY
     assert event_window.translation_sensitivity == PySideEventHandlingMixin.DEFAULT_TRANSLATION_SENSITIVITY
     assert event_window.zoom_sensitivity == PySideEventHandlingMixin.DEFAULT_ZOOM_SENSITIVITY
@@ -408,9 +407,9 @@ def test_set_camera_state_empty_dict(event_window):
     # Should use all defaults
     assert event_window.spin_x_face == 0
     assert event_window.spin_y_face == 0
-    assert event_window.model_position.x == 0
-    assert event_window.model_position.y == 0
-    assert event_window.model_position.z == 0
+    assert event_window.model_position.x == pytest.approx(0)
+    assert event_window.model_position.y == pytest.approx(0)
+    assert event_window.model_position.z == pytest.approx(0)
     assert event_window.rotation_sensitivity == PySideEventHandlingMixin.DEFAULT_ROTATION_SENSITIVITY
     assert event_window.translation_sensitivity == PySideEventHandlingMixin.DEFAULT_TRANSLATION_SENSITIVITY
     assert event_window.zoom_sensitivity == PySideEventHandlingMixin.DEFAULT_ZOOM_SENSITIVITY
@@ -439,9 +438,9 @@ def test_camera_state_round_trip(event_window):
     # Check values are restored
     assert event_window.spin_x_face == 25
     assert event_window.spin_y_face == 50
-    assert event_window.model_position.x == 3
-    assert event_window.model_position.y == 6
-    assert event_window.model_position.z == 9
+    assert event_window.model_position.x == pytest.approx(3)
+    assert event_window.model_position.y == pytest.approx(6)
+    assert event_window.model_position.z == pytest.approx(9)
     assert event_window.rotation_sensitivity == pytest.approx(0.6)
     assert event_window.translation_sensitivity == pytest.approx(0.03)
     assert event_window.zoom_sensitivity == pytest.approx(0.12)
@@ -509,3 +508,134 @@ def test_event_handling_target_protocol():
     assert hasattr(window, "close")
     assert callable(window.update)
     assert callable(window.close)
+
+
+def test_mouseMoveEvent_rotation_without_left_button(event_window):
+    """Test mouse movement during rotation mode but without left button pressed"""
+    # Setup rotation state
+    event_window.rotate = True
+    event_window.original_x_rotation = 100
+    event_window.original_y_rotation = 200
+
+    event = Mock()
+    event.buttons.return_value = Qt.NoButton  # No button pressed
+    event.position.return_value = QPointF(120, 180)
+
+    event_window.mouseMoveEvent(event)
+
+    # Should not update rotation values
+    assert event_window.spin_x_face == 0
+    assert event_window.spin_y_face == 0
+    assert event_window.update_called is False
+
+
+def test_mouseMoveEvent_translation_without_right_button(event_window):
+    """Test mouse movement during translation mode but without right button pressed"""
+    # Setup translation state
+    event_window.translate = True
+    event_window.original_x_pos = 100
+    event_window.original_y_pos = 200
+
+    event = Mock()
+    event.buttons.return_value = Qt.NoButton  # No button pressed
+    event.position.return_value = QPointF(110, 190)
+
+    event_window.mouseMoveEvent(event)
+
+    # Should not update position
+    assert event_window.model_position.x == 0
+    assert event_window.model_position.y == 0
+    assert event_window.update_called is False
+
+
+def test_mousePressEvent_middle_button(event_window):
+    """Test middle mouse button press (should be ignored)"""
+    event = Mock()
+    event.button.return_value = Qt.MiddleButton
+    event.position.return_value = QPointF(100, 200)
+
+    event_window.mousePressEvent(event)
+
+    # Should not change any state
+    assert event_window.rotate is False
+    assert event_window.translate is False
+
+
+def test_mouseReleaseEvent_middle_button(event_window):
+    """Test middle mouse button release (should be ignored)"""
+    event_window.rotate = True
+    event_window.translate = True
+
+    event = Mock()
+    event.button.return_value = Qt.MiddleButton
+
+    event_window.mouseReleaseEvent(event)
+
+    # Should not change state
+    assert event_window.rotate is True
+    assert event_window.translate is True
+
+
+def test_setup_event_handling_with_none_position():
+    """Test setup_event_handling with None initial position"""
+    window = MockEventHandlingWindow()
+    window.setup_event_handling(initial_position=None)
+
+    assert window.model_position.x == 0
+    assert window.model_position.y == 0
+    assert window.model_position.z == 0
+
+
+def test_wheelEvent_priority_y_over_x(event_window):
+    """Test that y delta takes priority over x delta when both are non-zero"""
+    event_window.zoom_sensitivity = 0.5
+    initial_z = event_window.model_position.z
+
+    event = Mock()
+    angle_delta = Mock()
+    angle_delta.y.return_value = 120  # Positive y delta
+    angle_delta.x.return_value = -120  # Negative x delta
+    event.angleDelta.return_value = angle_delta
+
+    event_window.wheelEvent(event)
+
+    # Should use y delta (120), not x delta (-120)
+    assert event_window.model_position.z == initial_z + 0.5
+    assert event_window.update_called is True
+
+
+def test_set_camera_state_partial_model_position():
+    """Test set_camera_state with partial model position data"""
+    window = MockEventHandlingWindow()
+    window.setup_event_handling()
+
+    state = {
+        "spin_x_face": 25,
+        "model_position": [7, 8],  # Only 2 values instead of 3
+    }
+
+    # This should handle the IndexError gracefully
+    window.set_camera_state(state)
+
+    assert window.spin_x_face == 25
+    assert window.model_position.x == pytest.approx(7)
+    assert window.model_position.y == pytest.approx(8)
+    # z should remain default
+    assert window.model_position.z == pytest.approx(0)
+
+
+def test_set_camera_state_empty_model_position():
+    """Test set_camera_state with empty model position list"""
+    window = MockEventHandlingWindow()
+    window.setup_event_handling()
+
+    state = {
+        "model_position": [],  # Empty list
+    }
+
+    # This should handle gracefully and use defaults
+    window.set_camera_state(state)
+
+    assert window.model_position.x == pytest.approx(0)
+    assert window.model_position.y == pytest.approx(0)
+    assert window.model_position.z == pytest.approx(0)

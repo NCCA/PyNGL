@@ -58,3 +58,18 @@ def test_multi_texture(opengl_context, tmp_path):
     active_texture = gl.glGetIntegerv(gl.GL_ACTIVE_TEXTURE)
     assert active_texture == gl.GL_TEXTURE1
     gl.glDeleteTextures(1, [tex_id])
+
+
+def test_load_gray(opengl_context, tmp_path):
+    size = 4
+    img = Image(width=size, height=size, mode=ImageModes.GRAY)
+    filename = tmp_path / "simpleGRAY.png"
+    img.save(str(filename))
+    t = Texture(str(filename))
+    assert t.width == size
+    assert t.height == size
+    assert t.format == gl.GL_RED
+
+    tex_id = t.set_texture_gl()
+    assert tex_id != 0
+    gl.glDeleteTextures(1, [tex_id])

@@ -28,6 +28,16 @@ class Mat2:
         else:
             self.m = m
 
+    @classmethod
+    def from_list(cls, m: list[float]):
+        """
+        Initialize a 2x2 matrix from a flat list.
+
+        Args:
+            m (list[float]): A flat list representing the matrix.
+        """
+        return cls([m[0:2], m[2:4]])
+
     def get_matrix(self) -> list[float]:
         """
         Get the current matrix representation as a flat list in column-major order.
