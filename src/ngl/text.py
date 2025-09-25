@@ -39,8 +39,12 @@ class Text(object):
         face.set_pixel_sizes(0, size)
         # disable byte-alignment restriction
         gl.glPixelStorei(gl.GL_UNPACK_ALIGNMENT, 1)
-        for i in range(0, 128):
-            face.load_char(chr(i), freetype.FT_LOAD_RENDER)
+        start_char = " "
+        end_char = "~"
+
+        for code in range(ord(start_char), ord(end_char) + 1):
+            c = chr(code)
+            face.load_char(c, freetype.FT_LOAD_RENDER)
             # # now we create the OpenGL texture ID and bind to make it active
             # texture_id = gl.glGenTextures(1)
             # gl.glActiveTexture(gl.GL_TEXTURE0)
@@ -60,6 +64,7 @@ class Text(object):
             # fmt: on
             # generate and bind texture
             texture_id = gl.glGenTextures(1)
+            gl.glActiveTexture(gl.GL_TEXTURE0)
             gl.glBindTexture(gl.GL_TEXTURE_2D, texture_id)
 
             # upload glyph bitmap as single channel texture
@@ -76,12 +81,8 @@ class Text(object):
             )
 
             # set texture options
-            gl.glTexParameteri(
-                gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_S, gl.GL_CLAMP_TO_EDGE
-            )
-            gl.glTexParameteri(
-                gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_T, gl.GL_CLAMP_TO_EDGE
-            )
+            gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_S, gl.GL_CLAMP_TO_EDGE)
+            gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_T, gl.GL_CLAMP_TO_EDGE)
             gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_LINEAR)
             gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_LINEAR)
             char = Character(
@@ -92,7 +93,7 @@ class Text(object):
                 face.glyph.bitmap_top,
                 face.glyph.advance.x,
             )
-            self.characters[chr(i)] = char
+            self.characters[c] = char
 
         gl.glPixelStorei(gl.GL_UNPACK_ALIGNMENT, 4)
         self.set_colour(0.0, 0.0, 0.0)
