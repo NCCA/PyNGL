@@ -4,8 +4,9 @@ uniform sampler2D u_texture;
 uniform vec4 u_textColor;
 out vec4 fragColor;
 void main() {
-    float a = texture(u_texture, v_uv).a; 
+    float a = texture(u_texture, v_uv).a;
     fragColor = vec4(u_textColor.rgb, u_textColor.a * a);
+
 }
 
 // #version 410 core
