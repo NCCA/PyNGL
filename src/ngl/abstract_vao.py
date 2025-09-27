@@ -10,8 +10,8 @@ from .log import logger
 class VertexData:
     def __init__(self, data, size, mode=gl.GL_STATIC_DRAW):
         if isinstance(data, np.ndarray):
-            self.data=data
-        else :
+            self.data = data
+        else:
             self.data = np.array(data, dtype=np.float32)
         self.size = size
         self.mode = mode

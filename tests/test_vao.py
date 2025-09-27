@@ -5,7 +5,14 @@ Note opengl_context created once in conftest.py
 import OpenGL.GL as gl
 import pytest
 
-from ngl import IndexVertexData, VAOFactory, VAOType, VertexData
+from ngl import (
+    DefaultShader,
+    IndexVertexData,
+    ShaderLib,
+    VAOFactory,
+    VAOType,
+    VertexData,
+)
 
 
 def test_vao_factory(opengl_context):
@@ -24,6 +31,7 @@ def test_simple_vao(opengl_context):
     data = VertexData(data=vertices, size=len(vertices) // 3)
     vao.set_data(data)
     vao.set_vertex_attribute_pointer(0, 3, gl.GL_FLOAT, 0, 0)
+    ShaderLib.use(DefaultShader.COLOUR)
     vao.draw()
     vao.unbind()
     assert vao.get_id() != 0
@@ -42,6 +50,7 @@ def test_multi_buffer_vao(opengl_context):
     color_data = VertexData(data=colors, size=len(colors) // 3)
     vao.set_data(color_data, 1)
     vao.set_vertex_attribute_pointer(1, 3, gl.GL_FLOAT, 0, 0)
+    ShaderLib.use(DefaultShader.COLOUR)
     vao.draw()
     vao.unbind()
     assert vao.get_buffer_id(0) != 0
@@ -62,6 +71,7 @@ def test_simple_index_vao(opengl_context):
     )
     vao.set_data(data)
     vao.set_vertex_attribute_pointer(0, 3, gl.GL_FLOAT, 0, 0)
+    ShaderLib.use(DefaultShader.COLOUR)
     vao.draw()
     vao.unbind()
     assert vao.get_id() != 0
@@ -77,6 +87,7 @@ def test_vao_context_manager(opengl_context):
         data = VertexData(data=vertices, size=len(vertices) // 3)
         v.set_data(data)
         v.set_vertex_attribute_pointer(0, 3, gl.GL_FLOAT, 0, 0)
+        ShaderLib.use(DefaultShader.COLOUR)
         v.draw()
     assert v.bound is False
     vao.remove_vao()
@@ -108,6 +119,7 @@ def test_abstract_vao_coverage(opengl_context):
         assert ptr is not None
         vao.unmap_buffer()
         # test draw (line 42)
+        ShaderLib.use(DefaultShader.COLOUR)
         vao.draw()
 
     # test get_buffer_id (line 76)

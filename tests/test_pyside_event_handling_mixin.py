@@ -48,9 +48,18 @@ def test_setup_event_handling_default_values(event_window):
     assert event_window.original_x_pos == pytest.approx(0.0)
     assert event_window.original_y_pos == pytest.approx(0.0)
     assert event_window.model_position == Vec3(0, 0, 0)
-    assert event_window.rotation_sensitivity == PySideEventHandlingMixin.DEFAULT_ROTATION_SENSITIVITY
-    assert event_window.translation_sensitivity == PySideEventHandlingMixin.DEFAULT_TRANSLATION_SENSITIVITY
-    assert event_window.zoom_sensitivity == PySideEventHandlingMixin.DEFAULT_ZOOM_SENSITIVITY
+    assert (
+        event_window.rotation_sensitivity
+        == PySideEventHandlingMixin.DEFAULT_ROTATION_SENSITIVITY
+    )
+    assert (
+        event_window.translation_sensitivity
+        == PySideEventHandlingMixin.DEFAULT_TRANSLATION_SENSITIVITY
+    )
+    assert (
+        event_window.zoom_sensitivity
+        == PySideEventHandlingMixin.DEFAULT_ZOOM_SENSITIVITY
+    )
 
 
 def test_setup_event_handling_custom_values():
@@ -58,7 +67,10 @@ def test_setup_event_handling_custom_values():
     window = MockEventHandlingWindow()
     initial_pos = Vec3(1, 2, 3)
     window.setup_event_handling(
-        rotation_sensitivity=0.8, translation_sensitivity=0.02, zoom_sensitivity=0.2, initial_position=initial_pos
+        rotation_sensitivity=0.8,
+        translation_sensitivity=0.02,
+        zoom_sensitivity=0.2,
+        initial_position=initial_pos,
     )
 
     assert window.rotation_sensitivity == pytest.approx(0.8)
@@ -395,9 +407,18 @@ def test_set_camera_state_partial(event_window):
     assert event_window.model_position.x == pytest.approx(2)
     assert event_window.model_position.y == pytest.approx(4)
     assert event_window.model_position.z == pytest.approx(6)
-    assert event_window.rotation_sensitivity == PySideEventHandlingMixin.DEFAULT_ROTATION_SENSITIVITY
-    assert event_window.translation_sensitivity == PySideEventHandlingMixin.DEFAULT_TRANSLATION_SENSITIVITY
-    assert event_window.zoom_sensitivity == PySideEventHandlingMixin.DEFAULT_ZOOM_SENSITIVITY
+    assert (
+        event_window.rotation_sensitivity
+        == PySideEventHandlingMixin.DEFAULT_ROTATION_SENSITIVITY
+    )
+    assert (
+        event_window.translation_sensitivity
+        == PySideEventHandlingMixin.DEFAULT_TRANSLATION_SENSITIVITY
+    )
+    assert (
+        event_window.zoom_sensitivity
+        == PySideEventHandlingMixin.DEFAULT_ZOOM_SENSITIVITY
+    )
 
 
 def test_set_camera_state_empty_dict(event_window):
@@ -410,9 +431,18 @@ def test_set_camera_state_empty_dict(event_window):
     assert event_window.model_position.x == pytest.approx(0)
     assert event_window.model_position.y == pytest.approx(0)
     assert event_window.model_position.z == pytest.approx(0)
-    assert event_window.rotation_sensitivity == PySideEventHandlingMixin.DEFAULT_ROTATION_SENSITIVITY
-    assert event_window.translation_sensitivity == PySideEventHandlingMixin.DEFAULT_TRANSLATION_SENSITIVITY
-    assert event_window.zoom_sensitivity == PySideEventHandlingMixin.DEFAULT_ZOOM_SENSITIVITY
+    assert (
+        event_window.rotation_sensitivity
+        == PySideEventHandlingMixin.DEFAULT_ROTATION_SENSITIVITY
+    )
+    assert (
+        event_window.translation_sensitivity
+        == PySideEventHandlingMixin.DEFAULT_TRANSLATION_SENSITIVITY
+    )
+    assert (
+        event_window.zoom_sensitivity
+        == PySideEventHandlingMixin.DEFAULT_ZOOM_SENSITIVITY
+    )
 
 
 def test_camera_state_round_trip(event_window):
@@ -449,7 +479,9 @@ def test_camera_state_round_trip(event_window):
 def test_constants():
     """Test default sensitivity constants"""
     assert PySideEventHandlingMixin.DEFAULT_ROTATION_SENSITIVITY == pytest.approx(0.5)
-    assert PySideEventHandlingMixin.DEFAULT_TRANSLATION_SENSITIVITY == pytest.approx(0.01)
+    assert PySideEventHandlingMixin.DEFAULT_TRANSLATION_SENSITIVITY == pytest.approx(
+        0.01
+    )
     assert PySideEventHandlingMixin.DEFAULT_ZOOM_SENSITIVITY == pytest.approx(0.1)
 
 

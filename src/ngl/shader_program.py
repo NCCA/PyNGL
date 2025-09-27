@@ -1,5 +1,5 @@
 import ctypes
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Union
 
 import numpy as np
 import OpenGL.GL as gl
@@ -39,12 +39,12 @@ class ShaderProgram:
             name: Name of the shader program for identification
             exit_on_error: Whether to exit the application when errors occur
         """
-        self._name = name
-        self._exit_on_error = exit_on_error
-        self._id = gl.glCreateProgram()
-        self._shaders = []
-        self._uniforms = {}
-        self._registered_uniform_blocks = {}
+        self._name: str = name
+        self._exit_on_error: bool = exit_on_error
+        self._id: int = gl.glCreateProgram()
+        self._shaders: list[Shader] = []
+        self._uniforms: dict[str, tuple[int, int, int, bool]] = {}
+        self._registered_uniform_blocks: dict[str, dict] = {}
 
     def attach_shader(self, shader: Shader) -> None:
         """
@@ -57,6 +57,12 @@ class ShaderProgram:
         self._shaders.append(shader)
 
     def link(self) -> bool:
+        """
+        Link the attached shaders to create the final shader program.
+
+        Returns:
+            bool: True if linking succeeded, False otherwise.
+        """
         gl.glLinkProgram(self._id)
         if gl.glGetProgramiv(self._id, gl.GL_LINK_STATUS) != gl.GL_TRUE:
             info = gl.glGetProgramInfoLog(self._id)
@@ -64,6 +70,7 @@ class ShaderProgram:
             if self._exit_on_error:
                 exit()
             return False
+        # Automatically register uniforms and uniform blocks after linking
         self.auto_register_uniforms()
         self.auto_register_uniform_blocks()
         return True
@@ -98,9 +105,7 @@ class ShaderProgram:
             if is_array:
                 for element_idx in range(size):
                     element_name = f"{base_name}[{element_idx}]"
-                    element_location = gl.glGetUniformLocation(
-                        self._id, element_name.encode("utf-8")
-                    )
+                    element_location = gl.glGetUniformLocation(self._id, element_name.encode("utf-8"))
                     if element_location != -1:
                         # Store individual array element: (location, shader_type, 1, False)
                         self._uniforms[element_name] = (
@@ -115,9 +120,7 @@ class ShaderProgram:
                 logger.info(
                     f"Registered array uniform: {base_name}[{size}] (type: {self.get_gl_type_string(shader_type)}, location: {location})"
                 )
-                logger.info(
-                    f"  Also registered individual elements: {base_name}[0] to {base_name}[{size - 1}]"
-                )
+                logger.info(f"  Also registered individual elements: {base_name}[0] to {base_name}[{size - 1}]")
             else:
                 logger.info(
                     f"Registered uniform: {base_name} (type: {self.get_gl_type_string(shader_type)}, location: {location})"
@@ -140,14 +143,8 @@ class ShaderProgram:
             name_buffer = (ctypes.c_char * 256)()
             length = ctypes.c_int()
 
-            gl.glGetActiveUniformBlockName(
-                self._id, i, 256, ctypes.byref(length), name_buffer
-            )
-            name_str = (
-                name_buffer.value.decode("utf-8")
-                if name_buffer.value
-                else f"UniformBlock_{i}"
-            )
+            gl.glGetActiveUniformBlockName(self._id, i, 256, ctypes.byref(length), name_buffer)
+            name_str = name_buffer.value.decode("utf-8") if name_buffer.value else f"UniformBlock_{i}"
 
             # Create uniform block data structure
             data = {
@@ -161,7 +158,9 @@ class ShaderProgram:
             logger.info(f"Uniform Block {name_str} {data['loc']} {data['buffer']}")
 
     def use(self) -> None:
-        """Set this shader program as the current active program."""
+        """
+        Set this shader program as the current active program.
+        """
         gl.glUseProgram(self._id)
 
     def get_id(self) -> int:
@@ -169,7 +168,7 @@ class ShaderProgram:
         Get the OpenGL shader program ID.
 
         Returns:
-            The OpenGL program ID
+            int: The OpenGL program ID
         """
         return self._id
 
@@ -181,7 +180,7 @@ class ShaderProgram:
             name: The name of the uniform variable
 
         Returns:
-            The uniform location, or -1 if not found
+            int: The uniform location, or -1 if not found
         """
         if name in self._uniforms:
             return self._uniforms[name][0]
@@ -189,7 +188,7 @@ class ShaderProgram:
             logger.warning(f"Uniform '{name}' not found in shader '{self._name}'")
             return -1
 
-    def get_uniform_info(self, name: str) -> Tuple[int, int, int, bool]:
+    def get_uniform_info(self, name: str) -> tuple[int, int, int, bool]:
         """
         Get complete uniform info: (location, shader_type, size, is_array).
 
@@ -197,9 +196,8 @@ class ShaderProgram:
             name: The name of the uniform variable
 
         Returns:
-            A tuple containing (location, shader_type, size, is_array)
+            tuple: (location, shader_type, size, is_array)
         """
-        """Get complete uniform info: (location, shader_type, size, is_array)"""
         return self._uniforms.get(name, (-1, 0, 0, False))
 
     def is_uniform_array(self, name: str) -> bool:
@@ -210,9 +208,8 @@ class ShaderProgram:
             name: The name of the uniform variable
 
         Returns:
-            True if the uniform is an array, False otherwise
+            bool: True if the uniform is an array, False otherwise
         """
-        """Check if a uniform is an array"""
         if name in self._uniforms:
             return self._uniforms[name][3]
         return False
@@ -225,9 +222,8 @@ class ShaderProgram:
             name: The name of the uniform variable
 
         Returns:
-            The array size, or 0 if uniform not found
+            int: The array size, or 0 if uniform not found
         """
-        """Get the size of a uniform array, returns 1 for non-arrays"""
         if name in self._uniforms:
             return self._uniforms[name][2]
         return 0
@@ -246,9 +242,7 @@ class ShaderProgram:
             bool: True if successful, False otherwise
         """
         if uniform_block_name not in self._registered_uniform_blocks:
-            logger.error(
-                f"Uniform block '{uniform_block_name}' not found in shader '{self._name}'"
-            )
+            logger.error(f"Uniform block '{uniform_block_name}' not found in shader '{self._name}'")
             return False
 
         block = self._registered_uniform_blocks[uniform_block_name]
@@ -301,17 +295,11 @@ class ShaderProgram:
             elif isinstance(val, float):
                 gl.glUniform1f(loc, val)
             elif isinstance(val, Mat2):
-                gl.glUniformMatrix2fv(
-                    loc, 1, gl.GL_FALSE, (ctypes.c_float * 4)(*val.get_matrix())
-                )
+                gl.glUniformMatrix2fv(loc, 1, gl.GL_FALSE, (ctypes.c_float * 4)(*val.get_matrix()))
             elif isinstance(val, Mat3):
-                gl.glUniformMatrix3fv(
-                    loc, 1, gl.GL_FALSE, (ctypes.c_float * 9)(*val.get_matrix())
-                )
+                gl.glUniformMatrix3fv(loc, 1, gl.GL_FALSE, (ctypes.c_float * 9)(*val.get_matrix()))
             elif isinstance(val, Mat4):
-                gl.glUniformMatrix4fv(
-                    loc, 1, gl.GL_FALSE, (ctypes.c_float * 16)(*val.get_matrix())
-                )
+                gl.glUniformMatrix4fv(loc, 1, gl.GL_FALSE, (ctypes.c_float * 16)(*val.get_matrix()))
             elif isinstance(val, Vec2):
                 gl.glUniform2f(loc, *val)
             elif isinstance(val, Vec3):
@@ -322,21 +310,13 @@ class ShaderProgram:
                 try:
                     val = list(value[0])
                     if len(val) == 4:
-                        gl.glUniformMatrix2fv(
-                            loc, 1, gl.GL_FALSE, (ctypes.c_float * 4)(*val)
-                        )
+                        gl.glUniformMatrix2fv(loc, 1, gl.GL_FALSE, (ctypes.c_float * 4)(*val))
                     elif len(val) == 9:
-                        gl.glUniformMatrix3fv(
-                            loc, 1, gl.GL_FALSE, (ctypes.c_float * 9)(*val)
-                        )
+                        gl.glUniformMatrix3fv(loc, 1, gl.GL_FALSE, (ctypes.c_float * 9)(*val))
                     elif len(val) == 16:
-                        gl.glUniformMatrix4fv(
-                            loc, 1, gl.GL_FALSE, (ctypes.c_float * 16)(*val)
-                        )
+                        gl.glUniformMatrix4fv(loc, 1, gl.GL_FALSE, (ctypes.c_float * 16)(*val))
                 except TypeError:
-                    logger.warning(
-                        f"Warning: uniform '{name}' has unknown type: {type(val)}"
-                    )
+                    logger.warning(f"Warning: uniform '{name}' has unknown type: {type(val)}")
 
         elif len(value) == 2:
             gl.glUniform2f(loc, *value)
@@ -370,9 +350,7 @@ class ShaderProgram:
         loc = self.get_uniform_location(name)
         if loc != -1:
             flat_values = [item for vec in values for item in vec]
-            gl.glUniform2fv(
-                loc, len(values), (ctypes.c_float * len(flat_values))(*flat_values)
-            )
+            gl.glUniform2fv(loc, len(values), (ctypes.c_float * len(flat_values))(*flat_values))
 
     def set_uniform_3fv(self, name: str, values: List[List[float]]) -> None:
         """
@@ -386,9 +364,7 @@ class ShaderProgram:
         loc = self.get_uniform_location(name)
         if loc != -1:
             flat_values = [item for vec in values for item in vec]
-            gl.glUniform3fv(
-                loc, len(values), (ctypes.c_float * len(flat_values))(*flat_values)
-            )
+            gl.glUniform3fv(loc, len(values), (ctypes.c_float * len(flat_values))(*flat_values))
 
     def set_uniform_4fv(self, name: str, values: List[List[float]]) -> None:
         """
@@ -402,9 +378,7 @@ class ShaderProgram:
         loc = self.get_uniform_location(name)
         if loc != -1:
             flat_values = [item for vec in values for item in vec]
-            gl.glUniform4fv(
-                loc, len(values), (ctypes.c_float * len(flat_values))(*flat_values)
-            )
+            gl.glUniform4fv(loc, len(values), (ctypes.c_float * len(flat_values))(*flat_values))
 
     def set_uniform_1iv(self, name: str, values: List[int]) -> None:
         """
@@ -710,7 +684,7 @@ class ShaderProgram:
             gl_type: OpenGL type constant (e.g., GL_FLOAT, GL_FLOAT_VEC3)
 
         Returns:
-            Human-readable type string
+            str: Human-readable type string
         """
         type_map = {
             gl.GL_FLOAT: "float",
@@ -730,7 +704,9 @@ class ShaderProgram:
         return type_map.get(gl_type, f"Unknown type {gl_type}")
 
     def print_registered_uniforms(self) -> None:
-        """Print information about all registered uniforms to the log."""
+        """
+        Print information about all registered uniforms to the log.
+        """
         logger.info(f"Registered uniforms for {self._name}:")
         base_uniforms = {}
         array_elements = {}
@@ -742,9 +718,7 @@ class ShaderProgram:
                 base_name = name.split("[")[0]
                 if base_name not in array_elements:
                     array_elements[base_name] = []
-                array_elements[base_name].append(
-                    (name, location, uniform_type, size, is_array)
-                )
+                array_elements[base_name].append((name, location, uniform_type, size, is_array))
             else:
                 base_uniforms[name] = (location, uniform_type, size, is_array)
 
@@ -752,9 +726,7 @@ class ShaderProgram:
         for name, (location, uniform_type, size, is_array) in base_uniforms.items():
             type_str = self.get_gl_type_string(uniform_type)
             if is_array:
-                logger.info(
-                    f"  {name}[{size}] (type: {type_str}, location: {location})"
-                )
+                logger.info(f"  {name}[{size}] (type: {type_str}, location: {location})")
             else:
                 logger.info(f"  {name} (type: {type_str}, location: {location})")
 
@@ -763,18 +735,20 @@ class ShaderProgram:
             logger.info(f"  Array elements for {base_name}:")
             for element_name, location, uniform_type, size, is_array in elements:
                 type_str = self.get_gl_type_string(uniform_type)
-                logger.info(
-                    f"    {element_name} (type: {type_str}, location: {location})"
-                )
+                logger.info(f"    {element_name} (type: {type_str}, location: {location})")
 
     def print_registered_uniform_blocks(self) -> None:
-        """Print information about all registered uniform blocks to the log."""
+        """
+        Print information about all registered uniform blocks to the log.
+        """
         logger.info(f"Registered uniform blocks for {self._name}:")
         for name, data in self._registered_uniform_blocks.items():
             logger.info(f"  {name} (index: {data['loc']}, buffer: {data['buffer']})")
 
     def print_properties(self) -> None:
-        """Print detailed properties and status information about this shader program."""
+        """
+        Print detailed properties and status information about this shader program.
+        """
         logger.info(f"Properties for shader program {self._name}:")
         logger.info(f"  ID: {self._id}")
 
@@ -799,6 +773,4 @@ class ShaderProgram:
         if self._registered_uniform_blocks:
             logger.info("  Registered uniform blocks:")
             for name, data in self._registered_uniform_blocks.items():
-                logger.info(
-                    f"    {name} (index: {data['loc']}, buffer: {data['buffer']})"
-                )
+                logger.info(f"    {name} (index: {data['loc']}, buffer: {data['buffer']})")

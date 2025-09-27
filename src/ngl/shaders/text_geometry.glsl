@@ -2,8 +2,8 @@
 layout(points) in;
 layout(triangle_strip, max_vertices=4) out;
 
-uniform vec2 u_screenSize;
-uniform float u_fontSize;
+uniform vec2 screenSize;
+uniform float fontSize;
 
 in VS_OUT
 {
@@ -18,15 +18,15 @@ out vec2 v_uv;
 vec2 toNDC(vec2 screenPos)
 {
     return vec2(
-        (screenPos.x / u_screenSize.x) * 2.0 - 1.0,
-        1.0 - (screenPos.y / u_screenSize.y) * 2.0
+        (screenPos.x / screenSize.x) * 2.0 - 1.0,
+        1.0 - (screenPos.y /screenSize.y) * 2.0
     );
 }
 
 void main()
 {
     vec2 base = gs_in[0].pos;
-    vec2 gsize = gs_in[0].size * u_fontSize;
+    vec2 gsize = gs_in[0].size * fontSize;
     vec4 uv = gs_in[0].uvRect;
     // generate a quad
     // Top Left
