@@ -227,7 +227,9 @@ class _Text:
         ShaderLib.set_uniform("fontSize", 1.0)
         ShaderLib.set_uniform("textColor", 1.0, 1.0, 1.0, 1.0)
 
-    def render_text(self, font: str, x: int, y: int, text: str, colour: Vec3 = Vec3(1, 1, 1)) -> None:
+    def render_text(
+        self, font: str, x: int, y: int, text: str, colour: Vec3 = Vec3(1, 1, 1)
+    ) -> None:
         """
         Renders a string of text to the screen.
 
@@ -286,7 +288,9 @@ class _Text:
         if polygon_mode != gl.GL_FILL:
             gl.glPolygonMode(gl.GL_FRONT_AND_BACK, polygon_mode)
 
-    def _build_instances(self, font: str, text: str, start_x: int, start_y: int) -> List[float]:
+    def _build_instances(
+        self, font: str, text: str, start_x: int, start_y: int
+    ) -> List[float]:
         """
         Generates vertex attribute data for each character in a string.
 

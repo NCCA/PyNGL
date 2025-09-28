@@ -48,12 +48,16 @@ class Obj(BaseMesh):
             ObjParseVertexError: If vertex parsing fails.
         """
         try:
-            self.vertex.append(Vec3(float(tokens[1]), float(tokens[2]), float(tokens[3])))
+            self.vertex.append(
+                Vec3(float(tokens[1]), float(tokens[2]), float(tokens[3]))
+            )
             self._current_vertex_offset += 1
             if len(tokens) == 7:  # we have the non standard colour
                 if not hasattr(self, "colour"):
                     self.colour = []
-                self.colour.append(Vec3(float(tokens[4]), float(tokens[5]), float(tokens[6])))
+                self.colour.append(
+                    Vec3(float(tokens[4]), float(tokens[5]), float(tokens[6]))
+                )
         except ValueError:
             raise ObjParseVertexError
 
@@ -67,7 +71,9 @@ class Obj(BaseMesh):
             ObjParseNormalError: If normal parsing fails.
         """
         try:
-            self.normals.append(Vec3(float(tokens[1]), float(tokens[2]), float(tokens[3])))
+            self.normals.append(
+                Vec3(float(tokens[1]), float(tokens[2]), float(tokens[3]))
+            )
             self._current_normal_offset += 1
         except ValueError:
             raise ObjParseNormalError
@@ -342,7 +348,9 @@ class Obj(BaseMesh):
         for i, v in enumerate(self.vertex):
             obj_file.write(f"v {v.x} {v.y} {v.z} ")
             if hasattr(self, "colour"):  # write colour if present
-                obj_file.write(f"{self.colour[i].x} {self.colour[i].y} {self.colour[i].z} ")
+                obj_file.write(
+                    f"{self.colour[i].x} {self.colour[i].y} {self.colour[i].z} "
+                )
             obj_file.write("\n")
 
     def _write_uvs(self, obj_file) -> None:

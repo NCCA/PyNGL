@@ -68,7 +68,9 @@ class _ShaderLib:
             return False
 
         # Load and compile fragment shader
-        frag_shader = Shader(f"{name}Fragment", ShaderType.FRAGMENT.value, exit_on_error)
+        frag_shader = Shader(
+            f"{name}Fragment", ShaderType.FRAGMENT.value, exit_on_error
+        )
         frag_shader.load(frag)
         if not frag_shader.compile():
             logger.error(f"Failed to compile fragment shader for {name}")
@@ -80,7 +82,9 @@ class _ShaderLib:
 
         # Optionally load and compile geometry shader
         if geo:
-            geo_shader = Shader(f"{name}Geometry", ShaderType.GEOMETRY.value, exit_on_error)
+            geo_shader = Shader(
+                f"{name}Geometry", ShaderType.GEOMETRY.value, exit_on_error
+            )
             geo_shader.load(geo)
             if not geo_shader.compile():
                 logger.error(f"Failed to compile geometry shader for {name}")
@@ -155,7 +159,9 @@ class _ShaderLib:
         """
         self._shader_programs[name] = ShaderProgram(name, exit_on_error)
 
-    def attach_shader(self, name: str, type: ShaderType, exit_on_error: bool = True) -> None:
+    def attach_shader(
+        self, name: str, type: ShaderType, exit_on_error: bool = True
+    ) -> None:
         """
         Create and register a Shader object by name and type.
 
@@ -217,9 +223,13 @@ class _ShaderLib:
             shader_name: Name of the shader.
         """
         if program_name in self._shader_programs and shader_name in self._shaders:
-            self._shader_programs[program_name].attach_shader(self._shaders[shader_name])
+            self._shader_programs[program_name].attach_shader(
+                self._shaders[shader_name]
+            )
         else:
-            logger.error(f"Error: program {program_name} or shader {shader_name} not found")
+            logger.error(
+                f"Error: program {program_name} or shader {shader_name} not found"
+            )
 
     def link_program_object(self, name: str) -> bool:
         """
@@ -261,7 +271,9 @@ class _ShaderLib:
             bool: True if successful, False otherwise.
         """
         if self._current_shader:
-            return self._shader_programs[self._current_shader].set_uniform_buffer(uniform_block_name, size, data)
+            return self._shader_programs[self._current_shader].set_uniform_buffer(
+                uniform_block_name, size, data
+            )
         else:
             logger.error("No current shader active")
             return False
@@ -414,7 +426,9 @@ class _ShaderLib:
 
         # Load each default shader program
         for shader_name, shader_data in to_load.items():
-            if self.load_shader(shader_name, shader_data["vertex"], shader_data["fragment"]):
+            if self.load_shader(
+                shader_name, shader_data["vertex"], shader_data["fragment"]
+            ):
                 logger.info(f"{shader_name} shader loaded successfully")
 
         # Text shader has geometry shader as well
@@ -451,7 +465,9 @@ class _ShaderLib:
             logger.info(
                 "_______________________________________________________________________________________________________________________"
             )
-            logger.info(f"Printing Properties for ShaderProgram {self._current_shader} ")
+            logger.info(
+                f"Printing Properties for ShaderProgram {self._current_shader} "
+            )
             logger.info(
                 "_______________________________________________________________________________________________________________________"
             )
@@ -460,7 +476,9 @@ class _ShaderLib:
                 "_______________________________________________________________________________________________________________________"
             )
         else:
-            logger.warning(f"Warning no currently active shader to print properties for {self._current_shader} ")
+            logger.warning(
+                f"Warning no currently active shader to print properties for {self._current_shader} "
+            )
 
     def auto_register_uniform_blocks(self, shader_name: str = None) -> None:
         """
@@ -485,7 +503,9 @@ class _ShaderLib:
         if shader_name not in self._registered_uniform_blocks:
             self._registered_uniform_blocks[shader_name] = {}
 
-        self._registered_uniform_blocks[shader_name] = program.get_registered_uniform_blocks()
+        self._registered_uniform_blocks[shader_name] = (
+            program.get_registered_uniform_blocks()
+        )
 
     def get_uniform_block_data(self, shader_name: str = None, block_name: str = None):
         """

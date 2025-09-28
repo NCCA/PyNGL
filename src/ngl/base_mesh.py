@@ -123,7 +123,9 @@ class BaseMesh:
                 vbo_mesh.append(d)
 
         mesh_data = np.concatenate([v.as_array() for v in vbo_mesh]).astype(np.float32)
-        self.vao = vao_factory.VAOFactory.create_vao(vao_factory.VAOType.SIMPLE, data_pack_type)
+        self.vao = vao_factory.VAOFactory.create_vao(
+            vao_factory.VAOType.SIMPLE, data_pack_type
+        )
         with self.vao as vao:
             mesh_size = len(mesh_data) // 8
             vao.set_data(VertexData(mesh_data, mesh_size))
@@ -135,7 +137,9 @@ class BaseMesh:
             vao.set_vertex_attribute_pointer(2, 2, gl.GL_FLOAT, 8 * 4, 6 * 4)
             vao.set_num_indices(mesh_size)
         self.calc_dimensions()
-        self.bbox = BBox.from_extents(self.min_x, self.max_x, self.min_y, self.max_y, self.min_z, self.max_z)
+        self.bbox = BBox.from_extents(
+            self.min_x, self.max_x, self.min_y, self.max_y, self.min_z, self.max_z
+        )
 
     def calc_dimensions(self) -> None:
         """
