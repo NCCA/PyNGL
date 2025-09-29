@@ -254,6 +254,24 @@ def test_sizeof():
     assert Vec4.sizeof() == 4 * ctypes.sizeof(ctypes.c_float)
 
 
+def test_division():
+    a = Vec4(1.0, 2.0, 3.0, 4.0)
+    # test scalar division
+    b = a / 2.0
+    assert b == Vec4(0.5, 1.0, 1.5, 2.0)
+    # test vector division
+    c = Vec4(2.0, 2.0, 3.0, 4.0)
+    d = a / c
+    assert d == Vec4(0.5, 1.0, 1.0, 1.0)
+    # test divide by zero
+    with pytest.raises(ZeroDivisionError):
+        b = a / 0.0
+    with pytest.raises(ZeroDivisionError):
+        b = a / Vec4(0.0, 1.0, 1.0, 1.0)
+    with pytest.raises(ValueError):
+        b = a / "hello"
+
+
 def test_coverage_vec4():
     a = Vec4()
     assert (a == "fail") is False
