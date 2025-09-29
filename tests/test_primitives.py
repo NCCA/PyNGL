@@ -1,6 +1,6 @@
 import pytest
 
-from pyngl import Primitives, Vec3
+from ncca.ngl import Primitives, Vec3
 
 
 # Helper to clear primitives between tests

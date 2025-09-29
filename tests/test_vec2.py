@@ -3,7 +3,7 @@ import math
 
 import pytest
 
-from pyngl import Vec2
+from ncca.ngl import Vec2
 
 
 def test_init():

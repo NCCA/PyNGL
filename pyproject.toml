@@ -1,29 +1,40 @@
 [project]
-name = "pyngl"
+name = "ncca-ngl"
 version = "0.1.0"
 description = "A Python version of the NGL graphics library."
 authors = [{ name = "Jon Macey", email = "jmacey@bournemouth.ac.uk" }]
 requires-python = ">=3.13"
+license = { file = "LICENSE.txt" }
+
 dependencies = [
     "numpy>=2.3.3",
     "PyOpenGL",
     "Pillow",
     "glfw>=2.9.0",
     "freetype-py>=2.5.1",
-    "pre-commit>=4.3.0",
     "pyside6>=6.9.2",
 ]
 
+[project.urls]
+Homepage = "https://github.com/NCCA/PyNGL"
+Issues = "https://github.com/NCCA/PyNGL/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+include = ["ncca.*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src","tests"]
 
+# [build-system]
+# requires = ["uv_build>=0.8.14,<0.9.0"]
+# build-backend = "uv_build"
+# module-name = ["ncca.ngl"]
+# module-root = "src/ncca/"
+
 [build-system]
-requires = ["uv_build>=0.8.14,<0.9.0"]
-build-backend = "uv_build"
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
 
 [dependency-groups]
 dev = [
@@ -31,4 +42,6 @@ dev = [
     "pytest>=8.4.2",
     "pytest-cov>=7.0.0",
     "ruff>=0.13.0",
+    "pre-commit>=4.3.0",
+
 ]

@@ -3,7 +3,7 @@ import ctypes
 
 import pytest
 
-from pyngl import Mat3, Vec3
+from ncca.ngl import Mat3, Vec3
 
 
 def test_properties():

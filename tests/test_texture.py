@@ -4,7 +4,7 @@ Note opengl_context created once in conftest.py
 
 import OpenGL.GL as gl
 
-from pyngl import Image, ImageModes, Texture
+from ncca.ngl import Image, ImageModes, Texture
 
 
 def test_construct(opengl_context):

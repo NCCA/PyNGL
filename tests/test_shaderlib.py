@@ -5,7 +5,7 @@ Note opengl_context created once in conftest.py
 import OpenGL.GL as gl
 import pytest
 
-from pyngl import (
+from ncca.ngl import (
     Mat2,
     Mat3,
     Mat4,

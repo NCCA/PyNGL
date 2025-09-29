@@ -10,7 +10,7 @@ from unittest.mock import Mock, patch
 import pytest
 from PySide6.QtCore import QPointF, Qt
 
-from pyngl import PySideEventHandlingMixin, Vec3
+from ncca.ngl import PySideEventHandlingMixin, Vec3
 
 
 class MockEventHandlingWindow(PySideEventHandlingMixin):

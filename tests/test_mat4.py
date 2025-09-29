@@ -1,7 +1,7 @@
 import mat4Data  # noqa
 import pytest
 
-from pyngl import Mat4, Mat4Error, Mat4NotSquare, Vec4
+from ncca.ngl import Mat4, Mat4Error, Mat4NotSquare, Vec4
 
 
 def test_ctor():

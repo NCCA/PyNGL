@@ -1,6 +1,6 @@
 import pytest
 
-from pyngl import (
+from ncca.ngl import (
     Mat4,
     Vec3,
     calc_normal,

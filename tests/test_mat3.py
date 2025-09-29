@@ -1,7 +1,7 @@
 import mat3Data  # this is generated from the julia file gen_mat4_tests.jl
 import pytest
 
-from pyngl import Mat3, Mat3Error, Mat3NotSquare, Mat4, Vec3
+from ncca.ngl import Mat3, Mat3Error, Mat3NotSquare, Mat4, Vec3
 
 
 def test_ctor():
