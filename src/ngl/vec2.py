@@ -280,8 +280,13 @@ class Vec2:
         "object representation for debugging"
         return f"Vec2 [{self.x},{self.y}]"
 
-    def __truediv__(self, scalar):
-        return Vec2(self.x / scalar, self.y / scalar)
+    def __truediv__(self, rhs):
+        if isinstance(rhs, (float, int)):
+            return Vec2(self.x / rhs, self.y / rhs)
+        elif isinstance(rhs, Vec2):
+            return Vec2(self.x / rhs.x, self.y / rhs.y)
+        else:
+            raise ValueError(f"can only do piecewise division with a scalar {rhs=}")
 
     def __str__(self):
         "object representation for debugging"
@@ -300,9 +305,7 @@ class Vec2:
         if isinstance(rhs, (float, int)):
             return Vec2(self.x * rhs, self.y * rhs)
         else:
-            raise ValueError(
-                f"can only do piecewise multiplication with a scalar {rhs=}"
-            )
+            raise ValueError(f"can only do piecewise multiplication with a scalar {rhs=}")
 
     def __rmul__(self, rhs):
         """

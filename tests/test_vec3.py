@@ -304,3 +304,21 @@ def test_clone():
 
 def test_sizeof():
     assert Vec3.sizeof() == 3 * ctypes.sizeof(ctypes.c_float)
+
+
+def test_division():
+    a = Vec3(1.0, 2.0, 3.0)
+    # test scalar division
+    b = a / 2.0
+    assert b == Vec3(0.5, 1.0, 1.5)
+    # test vector division
+    c = Vec3(2.0, 2.0, 3.0)
+    d = a / c
+    assert d == Vec3(0.5, 1.0, 1.0)
+    # test divide by zero
+    with pytest.raises(ZeroDivisionError):
+        b = a / 0.0
+    with pytest.raises(ZeroDivisionError):
+        b = a / Vec3(0.0, 1.0, 1.0)
+    with pytest.raises(ValueError):
+        b = a / "hello"
