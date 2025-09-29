@@ -1,6 +1,6 @@
 import pytest
 
-from ngl import BBox, Vec3
+from pyngl import BBox, Vec3
 
 
 def assert_bbox_extents(bbox, min_x, max_x, min_y, max_y, min_z, max_z):

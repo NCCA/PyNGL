@@ -5,7 +5,7 @@ Note opengl_context created once in conftest.py
 import OpenGL.GL as gl
 import pytest
 
-from ngl import (
+from pyngl import (
     DefaultShader,
     IndexVertexData,
     ShaderLib,

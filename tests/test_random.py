@@ -2,7 +2,7 @@ import random
 
 import pytest
 
-from ngl.random import Random
+from pyngl import Random
 
 
 def test_vec2():

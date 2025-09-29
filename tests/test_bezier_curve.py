@@ -1,4 +1,4 @@
-from ngl import BezierCurve, Vec3
+from pyngl import BezierCurve, Vec3
 
 
 def test_default_ctor():

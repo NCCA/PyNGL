@@ -1,5 +1,5 @@
 [project]
-name = "ngl"
+name = "pyngl"
 version = "0.1.0"
 description = "A Python version of the NGL graphics library."
 authors = [{ name = "Jon Macey", email = "jmacey@bournemouth.ac.uk" }]

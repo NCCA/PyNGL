@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from ngl import Image, ImageModes
+from pyngl import Image, ImageModes
 
 
 def test_default_ctor():

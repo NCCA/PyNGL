@@ -2,7 +2,7 @@ import ctypes
 
 import pytest
 
-from ngl import Mat4, Vec4
+from pyngl import Mat4, Vec4
 
 
 def test_properties():

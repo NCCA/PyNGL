@@ -1,6 +1,6 @@
 import pytest
 
-from ngl import Transform, TransformRotationOrder, Vec3, Vec4
+from pyngl import Transform, TransformRotationOrder, Vec3, Vec4
 
 orders = ["xyz", "yzx", "zxy", "xzy", "yxz", "zyx"]
 

@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from ngl import Mat2, Vec2
+from pyngl import Mat2, Vec2
 
 
 def test_default_identity():

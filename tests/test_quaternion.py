@@ -1,6 +1,6 @@
 import pytest
 
-from ngl import Mat4, Quaternion
+from pyngl import Mat4, Quaternion
 
 
 def test_quaternion():

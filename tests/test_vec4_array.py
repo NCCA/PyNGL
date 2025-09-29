@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from ngl import Vec4, Vec4Array
+from pyngl import Vec4, Vec4Array
 
 
 def test_init():

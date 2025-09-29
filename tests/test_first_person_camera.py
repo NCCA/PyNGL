@@ -1,8 +1,6 @@
 import pytest
 
-from src.ngl.first_person_camera import FirstPersonCamera
-from src.ngl.mat4 import Mat4
-from src.ngl.vec3 import Vec3
+from pyngl import FirstPersonCamera, Mat4, Vec3
 
 
 class DummyMat4(Mat4):
@@ -66,11 +64,7 @@ def test_process_mouse_movement_no_constrain_pitch():
     cam.yaw = 0.0
     cam.process_mouse_movement(100, 100, _constrain_pitch=False)
     # pitch can exceed bounds
-    assert (
-        cam.pitch > 89.0
-        or cam.pitch < -89.0
-        or (cam.pitch <= 89.0 and cam.pitch >= -89.0)
-    )
+    assert cam.pitch > 89.0 or cam.pitch < -89.0 or (cam.pitch <= 89.0 and cam.pitch >= -89.0)
 
 
 def test_update_camera_vectors_changes_front_right_up_and_view():

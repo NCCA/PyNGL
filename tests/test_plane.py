@@ -1,6 +1,6 @@
 import pytest
 
-from ngl import Plane, Vec3
+from pyngl import Plane, Vec3
 
 
 def test_default_ctor():

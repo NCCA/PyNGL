@@ -1,6 +1,6 @@
 import pytest
 
-from ngl import (
+from pyngl import (
     Face,
     Obj,
     ObjParseFaceError,
