@@ -1,6 +1,6 @@
 [project]
 name = "ncca-ngl"
-version = "0.1.0"
+version = "0.1.2"
 description = "A Python version of the NGL graphics library."
 authors = [{ name = "Jon Macey", email = "jmacey@bournemouth.ac.uk" }]
 requires-python = ">=3.13"
@@ -13,28 +13,33 @@ dependencies = [
     "glfw>=2.9.0",
     "freetype-py>=2.5.1",
     "pyside6>=6.9.2",
+    "hatch>=1.14.2",
 ]
 
 [project.urls]
 Homepage = "https://github.com/NCCA/PyNGL"
 Issues = "https://github.com/NCCA/PyNGL/issues"
 
-[tool.setuptools.packages.find]
-where = ["src"]
-include = ["ncca.*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src","tests"]
 
-# [build-system]
-# requires = ["uv_build>=0.8.14,<0.9.0"]
-# build-backend = "uv_build"
-# module-name = ["ncca.ngl"]
-# module-root = "src/ncca/"
 
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["ncca.*"]
+
+[tool.setuptools.package-data]
+"ncca.ngl" = ["shaders/*", "PrimData/Primitives.npz"]
+
+[tool.setuptools]
+include-package-data = true
+
+
 
 [dependency-groups]
 dev = [

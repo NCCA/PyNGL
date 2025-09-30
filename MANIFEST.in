@@ -1,0 +1,33 @@
+# Include package data
+include src/ncca/ngl/shaders/*
+include src/ncca/ngl/PrimData/Primitives.npz
+
+# Include license and readme
+include LICENSE.txt
+include README.md
+
+# Exclude tests and test-related files
+exclude tests/*
+global-exclude tests/*
+global-exclude *test*
+global-exclude __pycache__/*
+global-exclude *.pyc
+global-exclude *.pyo
+
+# Exclude development and build files
+exclude .gitignore
+exclude .pre-commit-config.yaml
+exclude pyproject.toml.bak
+exclude *.log
+exclude TODO.md
+exclude sonar-project.properties
+exclude uv.lock
+
+# Exclude directories
+prune tests
+prune .pytest_cache
+prune .ruff_cache
+prune .venv
+prune dist
+prune tmp
+prune .github
