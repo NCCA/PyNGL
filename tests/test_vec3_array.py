@@ -15,6 +15,11 @@ def test_init():
     assert a[1] == Vec3(4, 5, 6)
     with pytest.raises(TypeError):
         Vec3Array([1, 2, 3])
+    # Test initialization with an integer
+    a = Vec3Array(5)
+    assert len(a) == 5
+    for i in range(5):
+        assert a[i] == Vec3(0.0, 0.0, 0.0)
 
 
 def test_append():
@@ -110,3 +115,18 @@ def test_sizeof():
     assert a.sizeof() == 3 * Vec3.sizeof()
     a.append(Vec3())
     assert a.sizeof() == 4 * Vec3.sizeof()
+
+
+def test_setitem():
+    """Test the __setitem__ method"""
+    a = Vec3Array([Vec3(1, 2, 3), Vec3(4, 5, 6)])
+    # Test valid assignment
+    v = Vec3(7, 8, 9)
+    a[0] = v
+    assert a[0] == v
+    # Test invalid assignment
+    with pytest.raises(TypeError):
+        a[1] = "not a vec3"
+    # Test index out of range
+    with pytest.raises(IndexError):
+        a[2] = Vec3()

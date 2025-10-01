@@ -17,14 +17,20 @@ class Vec3Array:
         Initializes the Vec3Array.
 
         Args:
-            values (iterable, optional): An iterable of Vec3 objects. Defaults to None.
+            values (iterable | int, optional): An iterable of Vec3 objects or an integer.
+                If an integer, the array is initialized with that many default Vec3s.
+                If an iterable, it's initialized with the Vec3s from the iterable.
+                Defaults to None (an empty array).
         """
         self._data = []
         if values is not None:
-            for v in values:
-                if not isinstance(v, Vec3):
-                    raise TypeError("All elements must be of type Vec3")
-                self._data.append(v)
+            if isinstance(values, int):
+                self._data = [Vec3() for _ in range(values)]
+            else:
+                for v in values:
+                    if not isinstance(v, Vec3):
+                        raise TypeError("All elements must be of type Vec3")
+                    self._data.append(v)
 
     def __getitem__(self, index):
         """
@@ -37,6 +43,18 @@ class Vec3Array:
             Vec3: The Vec3 object at the given index.
         """
         return self._data[index]
+
+    def __setitem__(self, index, value):
+        """
+        Set the Vec3 at the specified index.
+
+        Args:
+            index (int): The index of the element to set.
+            value (Vec3): The new Vec3 object.
+        """
+        if not isinstance(value, Vec3):
+            raise TypeError("Only Vec3 objects can be assigned")
+        self._data[index] = value
 
     def __len__(self):
         """

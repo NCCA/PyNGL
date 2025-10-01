@@ -15,6 +15,11 @@ def test_init():
     assert a[1] == Vec4(5, 6, 7, 8)
     with pytest.raises(TypeError):
         Vec4Array([1, 2, 3, 4])
+    # Test initialization with an integer
+    a = Vec4Array(5)
+    assert len(a) == 5
+    for i in range(5):
+        assert a[i] == Vec4(0.0, 0.0, 0.0, 1.0)
 
 
 def test_append():
