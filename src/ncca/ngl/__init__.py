@@ -1,3 +1,11 @@
+# generate auto __version__
+from importlib.metadata import PackageNotFoundError, version
+
+try:
+    __version__ = version("ncca-ngl")
+except PackageNotFoundError:
+    __version__ = "0.0.0"
+
 from .abstract_vao import AbstractVAO, VertexData
 from .base_mesh import BaseMesh, Face
 from .bbox import BBox
