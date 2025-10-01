@@ -105,7 +105,9 @@ class ShaderProgram:
             if is_array:
                 for element_idx in range(size):
                     element_name = f"{base_name}[{element_idx}]"
-                    element_location = gl.glGetUniformLocation(self._id, element_name.encode("utf-8"))
+                    element_location = gl.glGetUniformLocation(
+                        self._id, element_name.encode("utf-8")
+                    )
                     if element_location != -1:
                         # Store individual array element: (location, shader_type, 1, False)
                         self._uniforms[element_name] = (
@@ -120,7 +122,9 @@ class ShaderProgram:
                 logger.info(
                     f"Registered array uniform: {base_name}[{size}] (type: {self.get_gl_type_string(shader_type)}, location: {location})"
                 )
-                logger.info(f"  Also registered individual elements: {base_name}[0] to {base_name}[{size - 1}]")
+                logger.info(
+                    f"  Also registered individual elements: {base_name}[0] to {base_name}[{size - 1}]"
+                )
             else:
                 logger.info(
                     f"Registered uniform: {base_name} (type: {self.get_gl_type_string(shader_type)}, location: {location})"
@@ -143,8 +147,14 @@ class ShaderProgram:
             name_buffer = (ctypes.c_char * 256)()
             length = ctypes.c_int()
 
-            gl.glGetActiveUniformBlockName(self._id, i, 256, ctypes.byref(length), name_buffer)
-            name_str = name_buffer.value.decode("utf-8") if name_buffer.value else f"UniformBlock_{i}"
+            gl.glGetActiveUniformBlockName(
+                self._id, i, 256, ctypes.byref(length), name_buffer
+            )
+            name_str = (
+                name_buffer.value.decode("utf-8")
+                if name_buffer.value
+                else f"UniformBlock_{i}"
+            )
 
             # Create uniform block data structure
             data = {
@@ -242,7 +252,9 @@ class ShaderProgram:
             bool: True if successful, False otherwise
         """
         if uniform_block_name not in self._registered_uniform_blocks:
-            logger.error(f"Uniform block '{uniform_block_name}' not found in shader '{self._name}'")
+            logger.error(
+                f"Uniform block '{uniform_block_name}' not found in shader '{self._name}'"
+            )
             return False
 
         block = self._registered_uniform_blocks[uniform_block_name]
@@ -295,11 +307,17 @@ class ShaderProgram:
             elif isinstance(val, float):
                 gl.glUniform1f(loc, val)
             elif isinstance(val, Mat2):
-                gl.glUniformMatrix2fv(loc, 1, gl.GL_FALSE, (ctypes.c_float * 4)(*val.get_matrix()))
+                gl.glUniformMatrix2fv(
+                    loc, 1, gl.GL_FALSE, (ctypes.c_float * 4)(*val.get_matrix())
+                )
             elif isinstance(val, Mat3):
-                gl.glUniformMatrix3fv(loc, 1, gl.GL_FALSE, (ctypes.c_float * 9)(*val.get_matrix()))
+                gl.glUniformMatrix3fv(
+                    loc, 1, gl.GL_FALSE, (ctypes.c_float * 9)(*val.get_matrix())
+                )
             elif isinstance(val, Mat4):
-                gl.glUniformMatrix4fv(loc, 1, gl.GL_FALSE, (ctypes.c_float * 16)(*val.get_matrix()))
+                gl.glUniformMatrix4fv(
+                    loc, 1, gl.GL_FALSE, (ctypes.c_float * 16)(*val.get_matrix())
+                )
             elif isinstance(val, Vec2):
                 gl.glUniform2f(loc, *val)
             elif isinstance(val, Vec3):
@@ -310,13 +328,21 @@ class ShaderProgram:
                 try:
                     val = list(value[0])
                     if len(val) == 4:
-                        gl.glUniformMatrix2fv(loc, 1, gl.GL_FALSE, (ctypes.c_float * 4)(*val))
+                        gl.glUniformMatrix2fv(
+                            loc, 1, gl.GL_FALSE, (ctypes.c_float * 4)(*val)
+                        )
                     elif len(val) == 9:
-                        gl.glUniformMatrix3fv(loc, 1, gl.GL_FALSE, (ctypes.c_float * 9)(*val))
+                        gl.glUniformMatrix3fv(
+                            loc, 1, gl.GL_FALSE, (ctypes.c_float * 9)(*val)
+                        )
                     elif len(val) == 16:
-                        gl.glUniformMatrix4fv(loc, 1, gl.GL_FALSE, (ctypes.c_float * 16)(*val))
+                        gl.glUniformMatrix4fv(
+                            loc, 1, gl.GL_FALSE, (ctypes.c_float * 16)(*val)
+                        )
                 except TypeError:
-                    logger.warning(f"Warning: uniform '{name}' has unknown type: {type(val)}")
+                    logger.warning(
+                        f"Warning: uniform '{name}' has unknown type: {type(val)}"
+                    )
 
         elif len(value) == 2:
             if isinstance(value[0], int):
@@ -359,7 +385,9 @@ class ShaderProgram:
         loc = self.get_uniform_location(name)
         if loc != -1:
             flat_values = [item for vec in values for item in vec]
-            gl.glUniform2fv(loc, len(values), (ctypes.c_float * len(flat_values))(*flat_values))
+            gl.glUniform2fv(
+                loc, len(values), (ctypes.c_float * len(flat_values))(*flat_values)
+            )
 
     def set_uniform_3fv(self, name: str, values: List[List[float]]) -> None:
         """
@@ -373,7 +401,9 @@ class ShaderProgram:
         loc = self.get_uniform_location(name)
         if loc != -1:
             flat_values = [item for vec in values for item in vec]
-            gl.glUniform3fv(loc, len(values), (ctypes.c_float * len(flat_values))(*flat_values))
+            gl.glUniform3fv(
+                loc, len(values), (ctypes.c_float * len(flat_values))(*flat_values)
+            )
 
     def set_uniform_4fv(self, name: str, values: List[List[float]]) -> None:
         """
@@ -387,7 +417,9 @@ class ShaderProgram:
         loc = self.get_uniform_location(name)
         if loc != -1:
             flat_values = [item for vec in values for item in vec]
-            gl.glUniform4fv(loc, len(values), (ctypes.c_float * len(flat_values))(*flat_values))
+            gl.glUniform4fv(
+                loc, len(values), (ctypes.c_float * len(flat_values))(*flat_values)
+            )
 
     def set_uniform_1iv(self, name: str, values: List[int]) -> None:
         """
@@ -696,19 +728,121 @@ class ShaderProgram:
             str: Human-readable type string
         """
         type_map = {
+            # Scalars
             gl.GL_FLOAT: "float",
+            gl.GL_DOUBLE: "double",
+            gl.GL_INT: "int",
+            gl.GL_UNSIGNED_INT: "uint",
+            gl.GL_BOOL: "bool",
+            # Float vectors
             gl.GL_FLOAT_VEC2: "vec2",
             gl.GL_FLOAT_VEC3: "vec3",
             gl.GL_FLOAT_VEC4: "vec4",
-            gl.GL_DOUBLE: "double",
-            gl.GL_INT: "int",
-            gl.GL_UNSIGNED_INT: "unsigned int",
-            gl.GL_BOOL: "bool",
+            # Double vectors
+            gl.GL_DOUBLE_VEC2: "dvec2",
+            gl.GL_DOUBLE_VEC3: "dvec3",
+            gl.GL_DOUBLE_VEC4: "dvec4",
+            # Integer vectors
+            gl.GL_INT_VEC2: "ivec2",
+            gl.GL_INT_VEC3: "ivec3",
+            gl.GL_INT_VEC4: "ivec4",
+            # Unsigned int vectors
+            gl.GL_UNSIGNED_INT_VEC2: "uvec2",
+            gl.GL_UNSIGNED_INT_VEC3: "uvec3",
+            gl.GL_UNSIGNED_INT_VEC4: "uvec4",
+            # Bool vectors
+            gl.GL_BOOL_VEC2: "bvec2",
+            gl.GL_BOOL_VEC3: "bvec3",
+            gl.GL_BOOL_VEC4: "bvec4",
+            # Float matrices
             gl.GL_FLOAT_MAT2: "mat2",
             gl.GL_FLOAT_MAT3: "mat3",
             gl.GL_FLOAT_MAT4: "mat4",
+            gl.GL_FLOAT_MAT2x3: "mat2x3",
+            gl.GL_FLOAT_MAT2x4: "mat2x4",
+            gl.GL_FLOAT_MAT3x2: "mat3x2",
+            gl.GL_FLOAT_MAT3x4: "mat3x4",
+            gl.GL_FLOAT_MAT4x2: "mat4x2",
+            gl.GL_FLOAT_MAT4x3: "mat4x3",
+            # Double matrices
+            gl.GL_DOUBLE_MAT2: "dmat2",
+            gl.GL_DOUBLE_MAT3: "dmat3",
+            gl.GL_DOUBLE_MAT4: "dmat4",
+            gl.GL_DOUBLE_MAT2x3: "dmat2x3",
+            gl.GL_DOUBLE_MAT2x4: "dmat2x4",
+            gl.GL_DOUBLE_MAT3x2: "dmat3x2",
+            gl.GL_DOUBLE_MAT3x4: "dmat3x4",
+            gl.GL_DOUBLE_MAT4x2: "dmat4x2",
+            gl.GL_DOUBLE_MAT4x3: "dmat4x3",
+            # Samplers (float)
+            gl.GL_SAMPLER_1D: "sampler1D",
             gl.GL_SAMPLER_2D: "sampler2D",
+            gl.GL_SAMPLER_3D: "sampler3D",
             gl.GL_SAMPLER_CUBE: "samplerCube",
+            gl.GL_SAMPLER_1D_SHADOW: "sampler1DShadow",
+            gl.GL_SAMPLER_2D_SHADOW: "sampler2DShadow",
+            gl.GL_SAMPLER_1D_ARRAY: "sampler1DArray",
+            gl.GL_SAMPLER_2D_ARRAY: "sampler2DArray",
+            gl.GL_SAMPLER_1D_ARRAY_SHADOW: "sampler1DArrayShadow",
+            gl.GL_SAMPLER_2D_ARRAY_SHADOW: "sampler2DArrayShadow",
+            gl.GL_SAMPLER_CUBE_SHADOW: "samplerCubeShadow",
+            gl.GL_SAMPLER_BUFFER: "samplerBuffer",
+            gl.GL_SAMPLER_2D_RECT: "sampler2DRect",
+            gl.GL_SAMPLER_2D_RECT_SHADOW: "sampler2DRectShadow",
+            # Samplers (int)
+            gl.GL_INT_SAMPLER_1D: "isampler1D",
+            gl.GL_INT_SAMPLER_2D: "isampler2D",
+            gl.GL_INT_SAMPLER_3D: "isampler3D",
+            gl.GL_INT_SAMPLER_CUBE: "isamplerCube",
+            gl.GL_INT_SAMPLER_1D_ARRAY: "isampler1DArray",
+            gl.GL_INT_SAMPLER_2D_ARRAY: "isampler2DArray",
+            gl.GL_INT_SAMPLER_BUFFER: "isamplerBuffer",
+            gl.GL_INT_SAMPLER_2D_RECT: "isampler2DRect",
+            # Samplers (unsigned int)
+            gl.GL_UNSIGNED_INT_SAMPLER_1D: "usampler1D",
+            gl.GL_UNSIGNED_INT_SAMPLER_2D: "usampler2D",
+            gl.GL_UNSIGNED_INT_SAMPLER_3D: "usampler3D",
+            gl.GL_UNSIGNED_INT_SAMPLER_CUBE: "usamplerCube",
+            gl.GL_UNSIGNED_INT_SAMPLER_1D_ARRAY: "usampler1DArray",
+            gl.GL_UNSIGNED_INT_SAMPLER_2D_ARRAY: "usampler2DArray",
+            gl.GL_UNSIGNED_INT_SAMPLER_BUFFER: "usamplerBuffer",
+            gl.GL_UNSIGNED_INT_SAMPLER_2D_RECT: "usampler2DRect",
+            # Images (float)
+            gl.GL_IMAGE_1D: "image1D",
+            gl.GL_IMAGE_2D: "image2D",
+            gl.GL_IMAGE_3D: "image3D",
+            gl.GL_IMAGE_2D_RECT: "image2DRect",
+            gl.GL_IMAGE_CUBE: "imageCube",
+            gl.GL_IMAGE_BUFFER: "imageBuffer",
+            gl.GL_IMAGE_1D_ARRAY: "image1DArray",
+            gl.GL_IMAGE_2D_ARRAY: "image2DArray",
+            gl.GL_IMAGE_CUBE_MAP_ARRAY: "imageCubeArray",
+            gl.GL_IMAGE_2D_MULTISAMPLE: "image2DMS",
+            gl.GL_IMAGE_2D_MULTISAMPLE_ARRAY: "image2DMSArray",
+            # Images (int)
+            gl.GL_INT_IMAGE_1D: "iimage1D",
+            gl.GL_INT_IMAGE_2D: "iimage2D",
+            gl.GL_INT_IMAGE_3D: "iimage3D",
+            gl.GL_INT_IMAGE_2D_RECT: "iimage2DRect",
+            gl.GL_INT_IMAGE_CUBE: "iimageCube",
+            gl.GL_INT_IMAGE_BUFFER: "iimageBuffer",
+            gl.GL_INT_IMAGE_1D_ARRAY: "iimage1DArray",
+            gl.GL_INT_IMAGE_2D_ARRAY: "iimage2DArray",
+            gl.GL_INT_IMAGE_CUBE_MAP_ARRAY: "iimageCubeArray",
+            gl.GL_INT_IMAGE_2D_MULTISAMPLE: "iimage2DMS",
+            gl.GL_INT_IMAGE_2D_MULTISAMPLE_ARRAY: "iimage2DMSArray",
+            # Images (unsigned int)
+            gl.GL_UNSIGNED_INT_IMAGE_1D: "uimage1D",
+            gl.GL_UNSIGNED_INT_IMAGE_2D: "uimage2D",
+            gl.GL_UNSIGNED_INT_IMAGE_3D: "uimage3D",
+            gl.GL_UNSIGNED_INT_IMAGE_2D_RECT: "uimage2DRect",
+            gl.GL_UNSIGNED_INT_IMAGE_CUBE: "uimageCube",
+            gl.GL_UNSIGNED_INT_IMAGE_BUFFER: "uimageBuffer",
+            gl.GL_UNSIGNED_INT_IMAGE_1D_ARRAY: "uimage1DArray",
+            gl.GL_UNSIGNED_INT_IMAGE_2D_ARRAY: "uimage2DArray",
+            gl.GL_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY: "uimageCubeArray",
+            gl.GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE: "uimage2DMS",
+            gl.GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY: "uimage2DMSArray",
         }
         return type_map.get(gl_type, f"Unknown type {gl_type}")
 
@@ -727,7 +861,9 @@ class ShaderProgram:
                 base_name = name.split("[")[0]
                 if base_name not in array_elements:
                     array_elements[base_name] = []
-                array_elements[base_name].append((name, location, uniform_type, size, is_array))
+                array_elements[base_name].append(
+                    (name, location, uniform_type, size, is_array)
+                )
             else:
                 base_uniforms[name] = (location, uniform_type, size, is_array)
 
@@ -735,7 +871,9 @@ class ShaderProgram:
         for name, (location, uniform_type, size, is_array) in base_uniforms.items():
             type_str = self.get_gl_type_string(uniform_type)
             if is_array:
-                logger.info(f"  {name}[{size}] (type: {type_str}, location: {location})")
+                logger.info(
+                    f"  {name}[{size}] (type: {type_str}, location: {location})"
+                )
             else:
                 logger.info(f"  {name} (type: {type_str}, location: {location})")
 
@@ -744,7 +882,9 @@ class ShaderProgram:
             logger.info(f"  Array elements for {base_name}:")
             for element_name, location, uniform_type, size, is_array in elements:
                 type_str = self.get_gl_type_string(uniform_type)
-                logger.info(f"    {element_name} (type: {type_str}, location: {location})")
+                logger.info(
+                    f"    {element_name} (type: {type_str}, location: {location})"
+                )
 
     def print_registered_uniform_blocks(self) -> None:
         """
@@ -782,4 +922,6 @@ class ShaderProgram:
         if self._registered_uniform_blocks:
             logger.info("  Registered uniform blocks:")
             for name, data in self._registered_uniform_blocks.items():
-                logger.info(f"    {name} (index: {data['loc']}, buffer: {data['buffer']})")
+                logger.info(
+                    f"    {name} (index: {data['loc']}, buffer: {data['buffer']})"
+                )

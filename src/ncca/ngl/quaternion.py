@@ -75,7 +75,9 @@ class Quaternion:
         return Quaternion(s, x, y, z)
 
     def __add__(self, rhs):
-        return Quaternion(self.s + rhs.s, self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
+        return Quaternion(
+            self.s + rhs.s, self.x + rhs.x, self.y + rhs.y, self.z + rhs.z
+        )
 
     def __iadd__(self, rhs):
         self.s += rhs.s
@@ -85,7 +87,9 @@ class Quaternion:
         return self
 
     def __sub__(self, rhs):
-        return Quaternion(self.s - rhs.s, self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
+        return Quaternion(
+            self.s - rhs.s, self.x - rhs.x, self.y - rhs.y, self.z - rhs.z
+        )
 
     def __isub__(self, rhs):
         return self.__sub__(rhs)

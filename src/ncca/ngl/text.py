@@ -227,7 +227,9 @@ class _Text:
         ShaderLib.set_uniform("fontSize", 1.0)
         ShaderLib.set_uniform("textColour", 1.0, 1.0, 1.0, 1.0)
 
-    def render_text(self, font: str, x: int, y: int, text: str, colour: Vec3 = Vec3(1.0, 1.0, 1.0)) -> None:
+    def render_text(
+        self, font: str, x: int, y: int, text: str, colour: Vec3 = Vec3(1.0, 1.0, 1.0)
+    ) -> None:
         """
         Renders a string of text to the screen.
 
@@ -274,7 +276,9 @@ class _Text:
             gl.glActiveTexture(gl.GL_TEXTURE0)
             gl.glBindTexture(gl.GL_TEXTURE_2D, atlas.texture)
             ShaderLib.use(DefaultShader.TEXT)
-            ShaderLib.set_uniform("textColour", float(colour.x), float(colour.y), float(colour.z), 1.0)
+            ShaderLib.set_uniform(
+                "textColour", float(colour.x), float(colour.y), float(colour.z), 1.0
+            )
             # We are drawing one point per character
             vao.set_num_indices(len(render_data) // 8)
             vao.draw()
@@ -286,7 +290,9 @@ class _Text:
         if polygon_mode != gl.GL_FILL:
             gl.glPolygonMode(gl.GL_FRONT_AND_BACK, polygon_mode)
 
-    def _build_instances(self, font: str, text: str, start_x: int, start_y: int) -> List[float]:
+    def _build_instances(
+        self, font: str, text: str, start_x: int, start_y: int
+    ) -> List[float]:
         """
         Generates vertex attribute data for each character in a string.
 

@@ -1,6 +1,6 @@
 [project]
 name = "ncca-ngl"
-version = "0.1.5"
+version = "0.1.6"
 description = "A Python version of the NGL graphics library."
 authors = [{ name = "Jon Macey", email = "jmacey@bournemouth.ac.uk" }]
 requires-python = ">=3.13"

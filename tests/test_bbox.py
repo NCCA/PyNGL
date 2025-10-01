@@ -25,7 +25,9 @@ def assert_bbox_center(bbox, center):
     assert bbox.center == center
 
 
-def assert_bbox_properties(bbox, min_x, max_x, min_y, max_y, min_z, max_z, width, height, depth, center):
+def assert_bbox_properties(
+    bbox, min_x, max_x, min_y, max_y, min_z, max_z, width, height, depth, center
+):
     """Helper function to assert all bbox properties."""
     assert_bbox_extents(bbox, min_x, max_x, min_y, max_y, min_z, max_z)
     assert_bbox_dimensions(bbox, width, height, depth)
