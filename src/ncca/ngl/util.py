@@ -3,6 +3,7 @@
 Most of these functions are based on functions found in other libraries such as GLM, NGL or GLU
 """
 
+import enum
 import math
 
 from .mat4 import Mat4
@@ -44,7 +45,26 @@ def look_at(eye, look, up):
     return result
 
 
-def perspective(fov, aspect, near, far):
+class PerspMode(enum.Enum):
+    OpenGL = "OpenGL"
+    WebGPU = "WebGPU"
+    Vulkan = "Vulkan"
+
+
+def perspective(fov: float, aspect: float, near: float, far: float, mode: PerspMode = PerspMode.OpenGL) -> Mat4:
+    """
+    Calculate a perspective matrix for various 3D graphics API's default mode is OpenGL but will covert for Vulkan and Web GPU if
+    required.
+
+    Args :
+        fov : float - Field of view angle in degrees.
+        aspect : float - Aspect ratio of the viewport.
+        near : float - Near clipping plane distance.
+        far : float - Far clipping plane distance.
+
+    Returns:
+        Mat4 - The perspective matrix.
+    """
     m = Mat4.zero()  # as per glm
     _range = math.tan(math.radians(fov / 2.0)) * near
     left = -_range * aspect
@@ -53,32 +73,34 @@ def perspective(fov, aspect, near, far):
     top = _range
     m.m[0][0] = (2.0 * near) / (right - left)
     m.m[1][1] = (2.0 * near) / (top - bottom)
-    m.m[2][2] = -(far + near) / (far - near)
-    m.m[2][3] = -1.0
-    m.m[3][2] = -(2.0 * far * near) / (far - near)
+    match mode:
+        case PerspMode.OpenGL:
+            m.m[2][2] = -(far + near) / (far - near)
+            m.m[2][3] = -1.0
+            m.m[3][2] = -(2.0 * far * near) / (far - near)
+
+        # This ensures the clip space Z range is [0, 1] as required by Vulkan and WebGPU.
+        case PerspMode.WebGPU | PerspMode.Vulkan:
+            m.m[2][2] = -far / (far - near)
+            m.m[2][3] = -1.0
+            m.m[3][2] = -(far * near) / (far - near)
     return m
 
 
-def ortho(left, right, bottom, top, near, far):
-    """Create an orthographic projection matrix."""
+def ortho(left, right, bottom, top, near, far, mode=PerspMode.OpenGL):
     m = Mat4.identity()
     m.m[0][0] = 2.0 / (right - left)
     m.m[1][1] = 2.0 / (top - bottom)
-    m.m[2][2] = -2.0 / (far - near)
+    match mode:
+        case PerspMode.OpenGL:
+            m.m[2][2] = -2.0 / (far - near)
+            m.m[3][2] = -(far + near) / (far - near)
+        case PerspMode.WebGPU | PerspMode.Vulkan:
+            m.m[2][2] = -1.0 / (far - near)
+            m.m[3][2] = -near / (far - near)
     m.m[3][0] = -(right + left) / (right - left)
     m.m[3][1] = -(top + bottom) / (top - bottom)
-    m.m[3][2] = -(far + near) / (far - near)
     return m
-
-
-# Mat4 result(1.0f);
-#   result.m_00= 2.0f / (_right - _left);
-#   result.m_11= 2.0f / (_top - _bottom);
-#   result.m_22= - 2.0f / (_zFar - _zNear);
-#   result.m_30= - (_right + _left) / (_right - _left);
-#   result.m_31= - (_top + _bottom) / (_top - _bottom);
-#   result.m_32= - (_zFar + _zNear) / (_zFar - _zNear);
-#   return result;
 
 
 def frustum(left, right, bottom, top, near, far):
