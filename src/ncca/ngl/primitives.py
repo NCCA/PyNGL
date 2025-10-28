@@ -102,3 +102,20 @@ class Primitives:
                 except Exception:
                     pass
             cls._loaded = True
+
+    @classmethod
+    def draw(cls, name: Union[str, Prims]) -> None:
+        """
+        Draws the specified primitive.
+
+        Args:
+            name: The name of the primitive to draw, either as a string or a Prims enum.
+        """
+        key = name.value if isinstance(name, Prims) else name
+        try:
+            prim = cls._primitives[key]
+            with prim.vao:
+                prim.vao.draw()
+        except KeyError:
+            logger.error(f"Failed to draw primitive {key}")
+            return
