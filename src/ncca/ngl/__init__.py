@@ -25,7 +25,8 @@ from .obj import (
     ObjParseVertexError,
 )
 from .plane import Plane
-from .primitives import Primitives, Prims
+from .prim_data import PrimData, Prims
+from .primitives import Primitives
 from .pyside_event_handling_mixin import PySideEventHandlingMixin
 from .quaternion import Quaternion
 from .random import Random
@@ -103,6 +104,7 @@ all = [
     logger,
     Primitives,
     Prims,
+    PrimData,
     FirstPersonCamera,
     PySideEventHandlingMixin,
 ]

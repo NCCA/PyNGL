@@ -51,7 +51,13 @@ class PerspMode(enum.Enum):
     Vulkan = "Vulkan"
 
 
-def perspective(fov: float, aspect: float, near: float, far: float, mode: PerspMode = PerspMode.OpenGL) -> Mat4:
+def perspective(
+    fov: float,
+    aspect: float,
+    near: float,
+    far: float,
+    mode: PerspMode = PerspMode.OpenGL,
+) -> Mat4:
     """
     Calculate a perspective matrix for various 3D graphics API's default mode is OpenGL but will covert for Vulkan and Web GPU if
     required.
