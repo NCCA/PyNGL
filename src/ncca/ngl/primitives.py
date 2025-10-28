@@ -82,40 +82,14 @@ class _primitive:
             self.vao.set_data(data)
             vert_data_size = 8 * 4  # 4 is sizeof float and 8 is x,y,z,nx,ny,nz,uv
             self.vao.set_vertex_attribute_pointer(0, 3, gl.GL_FLOAT, vert_data_size, 0)
-            self.vao.set_vertex_attribute_pointer(
-                1, 3, gl.GL_FLOAT, vert_data_size, Vec3.sizeof()
-            )
-            self.vao.set_vertex_attribute_pointer(
-                2, 2, gl.GL_FLOAT, vert_data_size, 2 * Vec3.sizeof()
-            )
+            self.vao.set_vertex_attribute_pointer(1, 3, gl.GL_FLOAT, vert_data_size, Vec3.sizeof())
+            self.vao.set_vertex_attribute_pointer(2, 2, gl.GL_FLOAT, vert_data_size, 2 * Vec3.sizeof())
             self.vao.set_num_indices(prim_data.size // 8)
 
 
-class Primitives:
-    """A static class for creating and drawing primitives."""
-
-    # this is effectively a static class so we can use it to store data
-    # and generate pipelines for drawing
-    _primitives: Dict[str, _primitive] = {}
-    _loaded: bool = False
-
-    @classmethod
-    def load_default_primitives(cls) -> None:
-        """Loads the default primitives from the PrimData directory."""
-        logger.info("Loading default primitives...")
-        if not cls._loaded:
-            prim_folder = Path(__file__).parent / "PrimData"
-            prims = np.load(prim_folder / "Primitives.npz")
-            for p in prims.items():
-                prim_data = p[1]
-                prim = _primitive(prim_data)
-                cls._primitives[p[0]] = prim
-            cls._loaded = True
-
-    @classmethod
-    def create_line_grid(
-        cls, name: str, width: float, depth: float, steps: int
-    ) -> None:
+class PrimData:
+    @staticmethod
+    def line_grid(width: float, depth: float, steps: int) -> None:
         """
         Creates a line grid primitive.
 
@@ -153,14 +127,10 @@ class Primitives:
             v2 += dstep
 
         # Convert the list to a NumPy array
-        data_array = np.array(data, dtype=np.float32)
-        prim = _primitive(data_array)
-        cls._primitives[name] = prim
+        return np.array(data, dtype=np.float32)
 
-    @classmethod
-    def create_triangle_plane(
-        cls, name: str, width: float, depth: float, w_p: int, d_p: int, v_n: Vec3
-    ) -> None:
+    @staticmethod
+    def triangle_plane(width: float, depth: float, w_p: int, d_p: int, v_n: Vec3) -> None:
         """
         Creates a triangle plane primitive.
 
@@ -191,17 +161,13 @@ class Primitives:
                 # vert 1
                 data.extend([w, 0.0, d + d_step, v_n.x, v_n.y, v_n.z, u, v + dv])
                 # vert 2
-                data.extend(
-                    [w + w_step, 0.0, d + d_step, v_n.x, v_n.y, v_n.z, u + du, v + dv]
-                )
+                data.extend([w + w_step, 0.0, d + d_step, v_n.x, v_n.y, v_n.z, u + du, v + dv])
                 # vert 3
                 data.extend([w, 0.0, d, v_n.x, v_n.y, v_n.z, u, v])
 
                 # tri 2
                 # vert 1
-                data.extend(
-                    [w + w_step, 0.0, d + d_step, v_n.x, v_n.y, v_n.z, u + du, v + dv]
-                )
+                data.extend([w + w_step, 0.0, d + d_step, v_n.x, v_n.y, v_n.z, u + du, v + dv])
                 # vert 2
                 data.extend([w + w_step, 0.0, d, v_n.x, v_n.y, v_n.z, u + du, v])
                 # vert 3
@@ -211,34 +177,14 @@ class Primitives:
             v += dv
             d += d_step
 
-        data_array = np.array(data, dtype=np.float32)
-        prim = _primitive(data_array)
-        cls._primitives[name] = prim
+        return np.array(data, dtype=np.float32)
 
-    @classmethod
-    def draw(cls, name: Union[str, Prims]) -> None:
-        """
-        Draws the specified primitive.
-
-        Args:
-            name: The name of the primitive to draw, either as a string or a Prims enum.
-        """
-        key = name.value if isinstance(name, Prims) else name
-        try:
-            prim = cls._primitives[key]
-            with prim.vao:
-                prim.vao.draw()
-        except KeyError:
-            logger.error(f"Failed to draw primitive {key}")
-            return
-
-    @classmethod
-    def create_sphere(cls, name: str, radius: float, precision: int) -> None:
+    @staticmethod
+    def sphere(radius, precision):
         """
         Creates a sphere primitive.
 
         Args:
-            name: The name of the primitive.
             radius: The radius of the sphere.
             precision: The precision of the sphere (number of slices).
         """
@@ -310,19 +256,14 @@ class Primitives:
                 data.append([x1, y1, z1, nx1, ny1, nz1, u1, v1])
                 data.append([x3, y3, z3, nx3, ny3, nz3, u3, v3])
 
-        data_array = np.array(data, dtype=np.float32)
-        prim = _primitive(data_array)
-        cls._primitives[name] = prim
+        return np.array(data, dtype=np.float32)
 
-    @classmethod
-    def create_cone(
-        cls, name: str, base: float, height: float, slices: int, stacks: int
-    ) -> None:
+    @staticmethod
+    def cone(base: float, height: float, slices: int, stacks: int) -> None:
         """
         Creates a cone primitive.
 
         Args:
-            name: The name of the primitive.
             base: The radius of the cone's base.
             height: The height of the cone.
             slices: The number of divisions around the cone.
@@ -429,14 +370,10 @@ class Primitives:
             r0 = r1
             r1 -= r_step
 
-        data_array = np.array(data, dtype=np.float32)
-        prim = _primitive(data_array)
-        cls._primitives[name] = prim
+        return np.array(data, dtype=np.float32)
 
-    @classmethod
-    def create_capsule(
-        cls, name: str, radius: float, height: float, precision: int
-    ) -> None:
+    @staticmethod
+    def capsule(radius: float, height: float, precision: int) -> None:
         """
         Creates a capsule primitive.
         The capsule is aligned along the y-axis.
@@ -510,14 +447,119 @@ class Primitives:
                     nx, ny, nz = sb * c1, cb, sb * s1
                     data.extend([nx, ny + o, nz, nx, ny, nz, 0.0, 0.0])
 
-        data_array = np.array(data, dtype=np.float32)
+        return np.array(data, dtype=np.float32)
+
+
+class Primitives:
+    """A static class for creating and drawing primitives."""
+
+    # this is effectively a static class so we can use it to store data
+    # and generate pipelines for drawing
+    _primitives: Dict[str, _primitive] = {}
+    _loaded: bool = False
+
+    @classmethod
+    def load_default_primitives(cls) -> None:
+        """Loads the default primitives from the PrimData directory."""
+        logger.info("Loading default primitives...")
+        if not cls._loaded:
+            prim_folder = Path(__file__).parent / "PrimData"
+            prims = np.load(prim_folder / "Primitives.npz")
+            for p in prims.items():
+                prim_data = p[1]
+                prim = _primitive(prim_data)
+                cls._primitives[p[0]] = prim
+            cls._loaded = True
+
+    @classmethod
+    def create_line_grid(cls, name: str, width: float, depth: float, steps: int) -> None:
+        # Convert the list to a NumPy array
+        data_array = PrimData.line_grid(width, depth, steps)
         prim = _primitive(data_array)
         cls._primitives[name] = prim
 
     @classmethod
-    def create_cylinder(
-        cls, name: str, radius: float, height: float, slices: int, stacks: int
-    ) -> None:
+    def create_triangle_plane(cls, name: str, width: float, depth: float, w_p: int, d_p: int, v_n: Vec3) -> None:
+        """
+        Creates a triangle plane primitive.
+
+        Args:
+            name: The name of the primitive.
+            width: The width of the plane.
+            depth: The depth of the plane.
+            w_p: The number of width partitions.
+            d_p: The number of depth partitions.
+            v_n: The normal vector for the plane.
+        """
+
+        data_array = PrimData.triangle_plane(width, depth, w_p, d_p, v_n)
+        prim = _primitive(data_array)
+        cls._primitives[name] = prim
+
+    @classmethod
+    def draw(cls, name: Union[str, Prims]) -> None:
+        """
+        Draws the specified primitive.
+
+        Args:
+            name: The name of the primitive to draw, either as a string or a Prims enum.
+        """
+        key = name.value if isinstance(name, Prims) else name
+        try:
+            prim = cls._primitives[key]
+            with prim.vao:
+                prim.vao.draw()
+        except KeyError:
+            logger.error(f"Failed to draw primitive {key}")
+            return
+
+    @classmethod
+    def create_sphere(cls, name: str, radius: float, precision: int) -> None:
+        """
+        Creates a sphere primitive.
+
+        Args:
+            name: The name of the primitive.
+            radius: The radius of the sphere.
+            precision: The precision of the sphere (number of slices).
+        """
+
+        data_array = PrimData.sphere(radius, precision)
+        prim = _primitive(data_array)
+        cls._primitives[name] = prim
+
+    @classmethod
+    def create_cone(cls, name: str, base: float, height: float, slices: int, stacks: int) -> None:
+        """
+        Creates a cone primitive.
+
+        Args:
+            name: The name of the primitive.
+            base: The radius of the cone's base.
+            height: The height of the cone.
+            slices: The number of divisions around the cone.
+            stacks: The number of divisions along the cone's height.
+        """
+        data_array = PrimData.cone(base, height, slices, stacks)
+        prim = _primitive(data_array)
+        cls._primitives[name] = prim
+
+    @classmethod
+    def create_capsule(cls, name: str, radius: float, height: float, precision: int) -> None:
+        """
+        Creates a capsule primitive.
+        The capsule is aligned along the y-axis.
+        It is composed of a cylinder and two hemispherical caps.
+        based on code from here https://code.google.com/p/rgine/source/browse/trunk/RGine/opengl/src/RGLShapes.cpp
+        and adapted
+        """
+
+        data_array = PrimData.capsule(radius, height, precision)
+        prim = _primitive(data_array)
+        cls._primitives[name] = prim
+
+    @classmethod
+    def create_cylinder(cls, name: str, radius: float, height: float, slices: int, stacks: int) -> None:
         """
         Creates a cylinder primitive.
         The cylinder is aligned along the y-axis.
