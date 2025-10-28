@@ -21,6 +21,14 @@ class Prims(enum.Enum):
     TEAPOT = "teapot"
     TETRAHEDRON = "tetrahedron"
     TROLL = "troll"
+    SPHERE = "sphere"
+    TORUS = "torus"
+    LINE_GRID = "line_grid"
+    TRIANGLE_PLANE = "triangle_plane"
+    CONE = "cone"
+    CAPSULE = "capsule"
+    CYLINDER = "cylinder"
+    DISK = "disk"
 
 
 def _circle_table(n: int) -> np.ndarray:
