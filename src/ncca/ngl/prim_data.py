@@ -10,7 +10,7 @@ from .vec3 import Vec3
 class Prims(enum.Enum):
     """Enum for the default primitives that can be loaded."""
 
-    BUDDAH = "buddah"
+    BUDDHA = "buddah"
     BUNNY = "bunny"
     CUBE = "cube"
     DODECAHEDRON = "dodecahedron"

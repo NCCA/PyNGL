@@ -137,7 +137,7 @@ def test_create_torus_invalid_sides_rings():
 
 def test_all_primitives_load():
     built_in_prims = [
-        Prims.BUDDAH,
+        Prims.BUDDHA,
         Prims.BUNNY,
         Prims.CUBE,
         Prims.DODECAHEDRON,
