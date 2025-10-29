@@ -179,17 +179,17 @@ def test_negate():
 
 def test_get_attr():
     a = Vec4(1, 2, 3, 5)
-    assert getattr(a, "x") == pytest.approx(1.0)
-    assert getattr(a, "y") == pytest.approx(2.0)
-    assert getattr(a, "z") == pytest.approx(3.0)
-    assert getattr(a, "w") == pytest.approx(5.0)
+    assert a.x == pytest.approx(1.0)
+    assert a.y == pytest.approx(2.0)
+    assert a.z == pytest.approx(3.0)
+    assert a.w == pytest.approx(5.0)
     # check to see if we can get non attr
     with pytest.raises(AttributeError):
-        getattr(a, "b")
+        a.b
 
     # check to see that adding an attrib fails
     with pytest.raises(AttributeError):
-        setattr(a, "b", 20.0)
+        a.b = 20.0
 
 
 def test_mul_scalar():
@@ -243,9 +243,9 @@ def test_iterable():
     assert v == [1, 2, 3, 4]
 
 
-def test_clone():
+def test_copy():
     a = Vec4(1, 2, 3, 4)
-    b = a.clone()
+    b = a.copy()
     assert a == b
     assert a is not b  # Ensure it's a different object
 

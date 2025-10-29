@@ -132,7 +132,7 @@ class Mat3:
 
     def transpose(self):
         """transpose this matrix"""
-        self.m = [list(item) for item in zip(*self.m)]
+        self.m = [list(item) for item in zip(*self.m, strict=False)]
 
     def get_transpose(self):
         """return a new matrix as the transpose of ourself
@@ -143,7 +143,7 @@ class Mat3:
                 The transpose of the current matrix
         """
         m = Mat3()
-        m.m = [list(item) for item in zip(*self.m)]
+        m.m = [list(item) for item in zip(*self.m, strict=False)]
         return m
 
     @classmethod
@@ -360,7 +360,7 @@ class Mat3:
         "internal add function"
         temp = Mat3()
         for i in range(0, len(temp.m)):
-            temp.m[i] = [a + b for a, b in zip(self.m[i], rhs.m[i])]
+            temp.m[i] = [a + b for a, b in zip(self.m[i], rhs.m[i], strict=False)]
         return temp
 
     def __add__(self, rhs):
@@ -375,7 +375,7 @@ class Mat3:
         "internal subtract function"
         temp = Mat3()
         for i in range(0, len(temp.m)):
-            temp.m[i] = [a - b for a, b in zip(self.m[i], rhs.m[i])]
+            temp.m[i] = [a - b for a, b in zip(self.m[i], rhs.m[i], strict=False)]
         return temp
 
     def __sub__(self, rhs):
@@ -399,6 +399,16 @@ class Mat3:
         # flatten to single array
         return functools.reduce(operator.concat, self.m)
 
+    def copy(self) -> "Mat3":
+        """Create a copy of the matrix.
+
+        Returns:
+            A new Mat3 instance with the same values.
+        """
+        new_mat = Mat3()
+        new_mat.m = copy.deepcopy(self.m)
+        return new_mat
+
     def inverse(self):
         "Inverse of matrix raise MatrixError if not calculable"
         det = self.determinant()
@@ -406,35 +416,17 @@ class Mat3:
             invdet = 1 / det
             tmp = Mat3()
             # minor matrix + co-factor
-            tmp.m[0][0] = (
-                +(self.m[1][1] * self.m[2][2] - self.m[1][2] * self.m[2][1]) * invdet
-            )
-            tmp.m[1][0] = (
-                -(self.m[1][0] * self.m[2][2] - self.m[1][2] * self.m[2][0]) * invdet
-            )
-            tmp.m[2][0] = (
-                +(self.m[1][0] * self.m[2][1] - self.m[1][1] * self.m[2][0]) * invdet
-            )
+            tmp.m[0][0] = +(self.m[1][1] * self.m[2][2] - self.m[1][2] * self.m[2][1]) * invdet
+            tmp.m[1][0] = -(self.m[1][0] * self.m[2][2] - self.m[1][2] * self.m[2][0]) * invdet
+            tmp.m[2][0] = +(self.m[1][0] * self.m[2][1] - self.m[1][1] * self.m[2][0]) * invdet
 
-            tmp.m[0][1] = (
-                -(self.m[0][1] * self.m[2][2] - self.m[0][2] * self.m[2][1]) * invdet
-            )
-            tmp.m[1][1] = (
-                +(self.m[0][0] * self.m[2][2] - self.m[0][2] * self.m[2][0]) * invdet
-            )
-            tmp.m[2][1] = (
-                -(self.m[0][0] * self.m[2][1] - self.m[0][1] * self.m[2][0]) * invdet
-            )
+            tmp.m[0][1] = -(self.m[0][1] * self.m[2][2] - self.m[0][2] * self.m[2][1]) * invdet
+            tmp.m[1][1] = +(self.m[0][0] * self.m[2][2] - self.m[0][2] * self.m[2][0]) * invdet
+            tmp.m[2][1] = -(self.m[0][0] * self.m[2][1] - self.m[0][1] * self.m[2][0]) * invdet
 
-            tmp.m[0][2] = (
-                +(self.m[0][1] * self.m[1][2] - self.m[0][2] * self.m[1][1]) * invdet
-            )
-            tmp.m[1][2] = (
-                -(self.m[0][0] * self.m[1][2] - self.m[0][2] * self.m[1][0]) * invdet
-            )
-            tmp.m[2][2] = (
-                +(self.m[0][0] * self.m[1][1] - self.m[0][1] * self.m[1][0]) * invdet
-            )
+            tmp.m[0][2] = +(self.m[0][1] * self.m[1][2] - self.m[0][2] * self.m[1][1]) * invdet
+            tmp.m[1][2] = -(self.m[0][0] * self.m[1][2] - self.m[0][2] * self.m[1][0]) * invdet
+            tmp.m[2][2] = +(self.m[0][0] * self.m[1][1] - self.m[0][1] * self.m[1][0]) * invdet
 
             return tmp
         except ZeroDivisionError:
@@ -451,16 +443,14 @@ class Mat3:
     @classmethod
     def from_mat4(cls, mat4):
         """Create a Mat3 from a Mat4"""
-        return Mat3.from_list(
-            [
-                mat4.m[0][0],
-                mat4.m[0][1],
-                mat4.m[0][2],
-                mat4.m[1][0],
-                mat4.m[1][1],
-                mat4.m[1][2],
-                mat4.m[2][0],
-                mat4.m[2][1],
-                mat4.m[2][2],
-            ]
-        )
+        return Mat3.from_list([
+            mat4.m[0][0],
+            mat4.m[0][1],
+            mat4.m[0][2],
+            mat4.m[1][0],
+            mat4.m[1][1],
+            mat4.m[1][2],
+            mat4.m[2][0],
+            mat4.m[2][1],
+            mat4.m[2][2],
+        ])

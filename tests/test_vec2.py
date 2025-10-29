@@ -20,9 +20,9 @@ def test_iter():
     assert list(v) == [1.0, 2.0]
 
 
-def test_clone():
+def test_copy():
     v1 = Vec2(1.0, 2.0)
-    v2 = v1.clone()
+    v2 = v1.copy()
     assert v1 == v2
     assert v1 is not v2
 
@@ -210,6 +210,16 @@ def test_rmul():
     v2 = 2.0 * v
     assert v2.x == 2.0
     assert v2.y == 4.0
+
+
+def test_matmul():
+    from ncca.ngl import Mat2
+
+    v = Vec2(1.0, 2.0)
+    m = Mat2([[1.0, 2.0], [3.0, 4.0]])
+    r = v @ m
+    assert r.x == pytest.approx(7.0)
+    assert r.y == pytest.approx(10.0)
 
 
 def test_sizeof():

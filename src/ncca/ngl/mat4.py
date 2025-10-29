@@ -86,14 +86,24 @@ class Mat4:
         # flatten to single array
         return functools.reduce(operator.concat, self.m)
 
+    def copy(self) -> "Mat4":
+        """Create a copy of the matrix.
+
+        Returns:
+            A new Mat4 instance with the same values.
+        """
+        new_mat = Mat4()
+        new_mat.m = copy.deepcopy(self.m)
+        return new_mat
+
     def transpose(self):
         "transpose this matrix"
-        self.m = [list(item) for item in zip(*self.m)]
+        self.m = [list(item) for item in zip(*self.m, strict=False)]
 
     def get_transpose(self):
         "return a new matrix as the transpose of ourself"
         m = Mat4()
-        m.m = [list(item) for item in zip(*self.m)]
+        m.m = [list(item) for item in zip(*self.m, strict=False)]
         return m
 
     @classmethod
@@ -258,7 +268,7 @@ class Mat4:
         "internal add function"
         temp = Mat4()
         for i in range(0, len(temp.m)):
-            temp.m[i] = [a + b for a, b in zip(self.m[i], rhs.m[i])]
+            temp.m[i] = [a + b for a, b in zip(self.m[i], rhs.m[i], strict=False)]
         return temp
 
     def __add__(self, rhs):
@@ -273,7 +283,7 @@ class Mat4:
         "internal sub function"
         temp = Mat4()
         for i in range(0, len(temp.m)):
-            temp.m[i] = [a - b for a, b in zip(self.m[i], rhs.m[i])]
+            temp.m[i] = [a - b for a, b in zip(self.m[i], rhs.m[i], strict=False)]
         return temp
 
     def __sub__(self, rhs):

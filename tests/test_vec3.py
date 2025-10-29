@@ -243,16 +243,16 @@ def test_mul_scalar():
 
 def test_get_attr():
     a = Vec3(1, 2, 3)
-    assert getattr(a, "x") == pytest.approx(1.0)
-    assert getattr(a, "y") == pytest.approx(2.0)
-    assert getattr(a, "z") == pytest.approx(3.0)
+    assert a.x == pytest.approx(1.0)
+    assert a.y == pytest.approx(2.0)
+    assert a.z == pytest.approx(3.0)
 
     # check to see if we can get non attr
     with pytest.raises(AttributeError):
-        getattr(a, "b")
+        a.b
     # check to see that adding an attrib fails
     with pytest.raises(AttributeError):
-        setattr(a, "b", 20.0)
+        a.b = 20.0
 
 
 def test_matmul():
@@ -287,19 +287,13 @@ def test_iterable():
 
 def test_copy():
     a = Vec3(1, 2, 3)
-    b = copy.copy(a)
+    b = a.copy()
     assert a == b
+    assert a is not b  # Ensure it's a different object
     b.x = 10
     assert a != b
     assert a.x == 1
     assert b.x == 10
-
-
-def test_clone():
-    a = Vec3(1, 2, 3)
-    b = a.clone()
-    assert a == b
-    assert a is not b  # Ensure it's a different object
 
 
 def test_sizeof():

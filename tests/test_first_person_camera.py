@@ -64,18 +64,14 @@ def test_process_mouse_movement_no_constrain_pitch():
     cam.yaw = 0.0
     cam.process_mouse_movement(100, 100, _constrain_pitch=False)
     # pitch can exceed bounds
-    assert (
-        cam.pitch > 89.0
-        or cam.pitch < -89.0
-        or (cam.pitch <= 89.0 and cam.pitch >= -89.0)
-    )
+    assert cam.pitch > 89.0 or cam.pitch < -89.0 or (cam.pitch <= 89.0 and cam.pitch >= -89.0)
 
 
 def test_update_camera_vectors_changes_front_right_up_and_view():
     cam = FirstPersonCamera(Vec3(), Vec3(), Vec3(0, 1, 0), 60.0)
-    old_front = cam.front.clone()
-    old_right = cam.right.clone()
-    old_up = cam.up.clone()
+    old_front = cam.front.copy()
+    old_right = cam.right.copy()
+    old_up = cam.up.copy()
     cam.yaw += 10
     cam.pitch += 5
     cam._update_camera_vectors()
@@ -91,7 +87,7 @@ def test_set_projection_returns_mat4():
 
 def test_move_changes_eye():
     cam = FirstPersonCamera(Vec3(), Vec3(), Vec3(0, 1, 0), 60.0)
-    old_eye = cam.eye.clone()
+    old_eye = cam.eye.copy()
     cam.move(1.0, 0.0, 0.5)
     assert cam.eye != old_eye
 

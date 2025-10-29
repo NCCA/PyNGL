@@ -6,6 +6,9 @@ try:
 except PackageNotFoundError:
     __version__ = "0.0.0"
 
+__author__ = "Jon Macey jmacey@bournemouth.ac.uk"
+__license__ = "MIT"
+
 from .abstract_vao import AbstractVAO, VertexData
 from .base_mesh import BaseMesh, Face
 from .bbox import BBox

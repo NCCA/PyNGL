@@ -42,7 +42,7 @@ class Vec2:
         yield self.x
         yield self.y
 
-    def clone(self) -> "Vec2":
+    def copy(self) -> "Vec2":
         """
         Create a copy of the vector.
         Returns:
@@ -305,9 +305,7 @@ class Vec2:
         if isinstance(rhs, (float, int)):
             return Vec2(self.x * rhs, self.y * rhs)
         else:
-            raise ValueError(
-                f"can only do piecewise multiplication with a scalar {rhs=}"
-            )
+            raise ValueError(f"can only do piecewise multiplication with a scalar {rhs=}")
 
     def __rmul__(self, rhs):
         """
@@ -330,9 +328,8 @@ class Vec2:
             Vec2: A new vector that is the result of multiplying this vector by the matrix.
         """
         return Vec2(
-            self.x * rhs.m[0][0] + self.y * rhs.m[1][0] + self.z * rhs.m[2][0],
-            self.x * rhs.m[0][1] + self.y * rhs.m[1][1] + self.z * rhs.m[2][1],
-            self.x * rhs.m[0][2] + self.y * rhs.m[1][2] + self.z * rhs.m[2][2],
+            self.x * rhs.m[0][0] + self.y * rhs.m[1][0],
+            self.x * rhs.m[0][1] + self.y * rhs.m[1][1],
         )
 
 

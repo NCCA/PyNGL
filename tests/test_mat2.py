@@ -68,3 +68,13 @@ def test_internal_mat_mul():
     result = a._mat_mul(b)
     assert isinstance(result, Mat2)
     assert result.m == [[1 * 2 + 2 * 1, 1 * 0 + 2 * 2], [3 * 2 + 4 * 1, 3 * 0 + 4 * 2]]
+
+
+def test_copy():
+    m = Mat2([[1, 2], [3, 4]])
+    c = m.copy()
+    assert c.m == m.m
+    assert id(c) != id(m)
+    # check that changing the copy doesn't change the original
+    c.m[0][0] = 100
+    assert m.m[0][0] == 1

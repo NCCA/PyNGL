@@ -113,7 +113,7 @@ def test_mult_error():
 
 
 def test_mat3_times_mat3():
-    for a, b, result in zip(mat3Data.a, mat3Data.b, mat3Data.a_times_b):
+    for a, b, result in zip(mat3Data.a, mat3Data.b, mat3Data.a_times_b, strict=False):
         m1 = Mat3.from_list(a)
         m2 = Mat3.from_list(b)
         value = m1 @ m2
@@ -121,7 +121,7 @@ def test_mat3_times_mat3():
 
 
 def test_mult_mat3_equal():
-    for a, b, result in zip(mat3Data.a, mat3Data.b, mat3Data.a_times_b):
+    for a, b, result in zip(mat3Data.a, mat3Data.b, mat3Data.a_times_b, strict=False):
         m1 = Mat3.from_list(a)
         m2 = Mat3.from_list(b)
         m1 @= m2
@@ -148,7 +148,7 @@ def test_add():
 
 
 def test_mat3_plus_mat3():
-    for a, b, result in zip(mat3Data.a, mat3Data.b, mat3Data.a_plus_b):
+    for a, b, result in zip(mat3Data.a, mat3Data.b, mat3Data.a_plus_b, strict=False):
         m1 = Mat3.from_list(a)
         m2 = Mat3.from_list(b)
         values = m1 + m2
@@ -156,7 +156,7 @@ def test_mat3_plus_mat3():
 
 
 def test_mat3_plus_equal():
-    for a, b, result in zip(mat3Data.a, mat3Data.b, mat3Data.a_plus_b):
+    for a, b, result in zip(mat3Data.a, mat3Data.b, mat3Data.a_plus_b, strict=False):
         m1 = Mat3.from_list(a)
         m2 = Mat3.from_list(b)
         m1 += m2
@@ -173,7 +173,7 @@ def test_mat3_mult_float():
 
 
 def test_mat3_minus_mat3():
-    for a, b, result in zip(mat3Data.a, mat3Data.b, mat3Data.a_minus_b):
+    for a, b, result in zip(mat3Data.a, mat3Data.b, mat3Data.a_minus_b, strict=False):
         m1 = Mat3.from_list(a)
         m2 = Mat3.from_list(b)
         values = m1 - m2
@@ -181,7 +181,7 @@ def test_mat3_minus_mat3():
 
 
 def test_mat3_minus_equal():
-    for a, b, result in zip(mat3Data.a, mat3Data.b, mat3Data.a_minus_b):
+    for a, b, result in zip(mat3Data.a, mat3Data.b, mat3Data.a_minus_b, strict=False):
         m1 = Mat3.from_list(a)
         m2 = Mat3.from_list(b)
         m1 -= m2
@@ -189,14 +189,14 @@ def test_mat3_minus_equal():
 
 
 def test_det():
-    for a, result in zip(mat3Data.a, mat3Data.a_det):
+    for a, result in zip(mat3Data.a, mat3Data.a_det, strict=False):
         m1 = Mat3.from_list(a)
         value = m1.determinant()
         assert value == pytest.approx(result[0])
 
 
 def test_inverse():
-    for a, result in zip(mat3Data.a, mat3Data.a_inv):
+    for a, result in zip(mat3Data.a, mat3Data.a_inv, strict=False):
         m1 = Mat3.from_list(a)
         value = m1.inverse()
         assert value.get_matrix() == pytest.approx(result)
@@ -238,6 +238,14 @@ def test_strings():
 def test_from_mat4():
     m4 = Mat4.identity()
     m3 = Mat3.from_mat4(m4)
-    assert m3.get_matrix() == pytest.approx(
-        [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
-    )
+    assert m3.get_matrix() == pytest.approx([1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0])
+
+
+def test_copy():
+    m = Mat3.from_list([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+    c = m.copy()
+    assert c.get_matrix() == m.get_matrix()
+    assert id(c) != id(m)
+    # check that changing the copy doesn't change the original
+    c.m[0][0] = 100
+    assert m.m[0][0] == 1

@@ -45,7 +45,7 @@ class Mat2:
         Returns:
             list[float]: A flat list of floats.
         """
-        return [item for sublist in zip(*self.m) for item in sublist]
+        return [item for sublist in zip(*self.m, strict=False) for item in sublist]
 
     def to_numpy(self):
         """
@@ -125,4 +125,14 @@ class Mat2:
     def to_list(self):
         "convert matrix to list in column-major order"
         # flatten to single array
-        return [item for sublist in zip(*self.m) for item in sublist]
+        return [item for sublist in zip(*self.m, strict=False) for item in sublist]
+
+    def copy(self) -> "Mat2":
+        """Create a copy of the matrix.
+
+        Returns:
+            A new Mat2 instance with the same values.
+        """
+        new_mat = Mat2()
+        new_mat.m = copy.deepcopy(self.m)
+        return new_mat

@@ -133,7 +133,7 @@ def test_rotate_z():
 
 
 def test_mat4_times_mat4():
-    for a, b, result in zip(mat4Data.a, mat4Data.b, mat4Data.a_times_b):
+    for a, b, result in zip(mat4Data.a, mat4Data.b, mat4Data.a_times_b, strict=False):
         m1 = Mat4.from_list(a)
         m2 = Mat4.from_list(b)
         value = m1 @ m2
@@ -164,7 +164,7 @@ def test_mult_error():
 
 
 def test_mult_mat4_equal():
-    for a, b, result in zip(mat4Data.a, mat4Data.b, mat4Data.a_times_b):
+    for a, b, result in zip(mat4Data.a, mat4Data.b, mat4Data.a_times_b, strict=False):
         m1 = Mat4.from_list(a)
         m2 = Mat4.from_list(b)
         m1 @= m2
@@ -182,7 +182,7 @@ def test_mat4_mult_vec4():
 
 
 def test_mat4_plus_mat4():
-    for a, b, result in zip(mat4Data.a, mat4Data.b, mat4Data.a_plus_b):
+    for a, b, result in zip(mat4Data.a, mat4Data.b, mat4Data.a_plus_b, strict=False):
         m1 = Mat4.from_list(a)
         m2 = Mat4.from_list(b)
         values = m1 + m2
@@ -190,7 +190,7 @@ def test_mat4_plus_mat4():
 
 
 def test_mat4_plus_equal():
-    for a, b, result in zip(mat4Data.a, mat4Data.b, mat4Data.a_plus_b):
+    for a, b, result in zip(mat4Data.a, mat4Data.b, mat4Data.a_plus_b, strict=False):
         m1 = Mat4.from_list(a)
         m2 = Mat4.from_list(b)
         m1 += m2
@@ -198,7 +198,7 @@ def test_mat4_plus_equal():
 
 
 def test_mat4_minus_mat4():
-    for a, b, result in zip(mat4Data.a, mat4Data.b, mat4Data.a_minus_b):
+    for a, b, result in zip(mat4Data.a, mat4Data.b, mat4Data.a_minus_b, strict=False):
         m1 = Mat4.from_list(a)
         m2 = Mat4.from_list(b)
         values = m1 - m2
@@ -206,7 +206,7 @@ def test_mat4_minus_mat4():
 
 
 def test_mat4_minus_equal():
-    for a, b, result in zip(mat4Data.a, mat4Data.b, mat4Data.a_minus_b):
+    for a, b, result in zip(mat4Data.a, mat4Data.b, mat4Data.a_minus_b, strict=False):
         m1 = Mat4.from_list(a)
         m2 = Mat4.from_list(b)
         m1 -= m2
@@ -214,14 +214,14 @@ def test_mat4_minus_equal():
 
 
 def test_det():
-    for a, result in zip(mat4Data.a, mat4Data.a_det):
+    for a, result in zip(mat4Data.a, mat4Data.a_det, strict=False):
         m1 = Mat4.from_list(a)
         value = m1.determinant()
         assert value == pytest.approx(result[0])
 
 
 def test_inverse():
-    for a, result in zip(mat4Data.a, mat4Data.a_inv):
+    for a, result in zip(mat4Data.a, mat4Data.a_inv, strict=False):
         m1 = Mat4.from_list(a)
         value = m1.inverse()
         assert value.get_matrix() == pytest.approx(result)
@@ -244,9 +244,7 @@ def test_subscript_set():
     a[1] = [5, 6, 7, 8]
     a[2] = [9, 10, 11, 12]
     a[3] = [13, 14, 15, 16]
-    assert a.get_matrix() == pytest.approx(
-        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
-    )
+    assert a.get_matrix() == pytest.approx([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])
 
 
 def test_mult():
@@ -260,38 +258,40 @@ def test_mult():
 
 def test_strings():
     a = Mat4.identity()
-    assert (
-        str(a)
-        == "[[1.0, 0.0, 0.0, 0.0]\n[0.0, 1.0, 0.0, 0.0]\n[0.0, 0.0, 1.0, 0.0]\n[0.0, 0.0, 0.0, 1.0]]"
-    )
-    assert (
-        repr(a)
-        == "Mat4([[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 1.0, 0.0], [0.0, 0.0, 0.0, 1.0]])"
-    )
+    assert str(a) == "[[1.0, 0.0, 0.0, 0.0]\n[0.0, 1.0, 0.0, 0.0]\n[0.0, 0.0, 1.0, 0.0]\n[0.0, 0.0, 0.0, 1.0]]"
+    assert repr(a) == "Mat4([[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 1.0, 0.0], [0.0, 0.0, 0.0, 1.0]])"
 
 
 def test_ngl():
     t1 = Mat4.rotate_x(45.0)
     t2 = Mat4.rotate_y(35.0)
     test = t2 @ t1
-    result = Mat4.from_list(
-        [
-            0.819152,
-            0,
-            -0.573577,
-            0,
-            0.40558,
-            0.707107,
-            0.579228,
-            0,
-            0.40558,
-            -0.707107,
-            0.579228,
-            0,
-            0,
-            0,
-            0,
-            1,
-        ]
-    )
+    result = Mat4.from_list([
+        0.819152,
+        0,
+        -0.573577,
+        0,
+        0.40558,
+        0.707107,
+        0.579228,
+        0,
+        0.40558,
+        -0.707107,
+        0.579228,
+        0,
+        0,
+        0,
+        0,
+        1,
+    ])
     assert test.to_list() == pytest.approx(result.to_list(), abs=1e-3)
+
+
+def test_copy():
+    m = Mat4.from_list([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]])
+    c = m.copy()
+    assert c.get_matrix() == m.get_matrix()
+    assert id(c) != id(m)
+    # check that changing the copy doesn't change the original
+    c.m[0][0] = 100
+    assert m.m[0][0] == 1
