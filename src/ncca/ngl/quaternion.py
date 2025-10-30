@@ -10,6 +10,7 @@ Attributes:
 import math
 
 from .mat4 import Mat4
+from .vec3 import Vec3
 
 
 class Quaternion:
@@ -75,9 +76,7 @@ class Quaternion:
         return Quaternion(s, x, y, z)
 
     def __add__(self, rhs):
-        return Quaternion(
-            self.s + rhs.s, self.x + rhs.x, self.y + rhs.y, self.z + rhs.z
-        )
+        return Quaternion(self.s + rhs.s, self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
 
     def __iadd__(self, rhs):
         self.s += rhs.s
@@ -87,20 +86,57 @@ class Quaternion:
         return self
 
     def __sub__(self, rhs):
-        return Quaternion(
-            self.s - rhs.s, self.x - rhs.x, self.y - rhs.y, self.z - rhs.z
-        )
+        return Quaternion(self.s - rhs.s, self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
 
     def __isub__(self, rhs):
         return self.__sub__(rhs)
 
+    # def __mul__(self, rhs):
+    #     return Quaternion(
+    #         self.s * rhs.s - self.x * rhs.x - self.y * rhs.y - self.z * rhs.z,
+    #         self.s * rhs.x + self.x * rhs.s + self.y * rhs.z - self.z * rhs.y,
+    #         self.s * rhs.y - self.x * rhs.z + self.y * rhs.s + self.z * rhs.x,
+    #         self.s * rhs.z + self.x * rhs.y - self.y * rhs.x + self.z * rhs.s,
+    #     )
+
     def __mul__(self, rhs):
-        return Quaternion(
-            self.s * rhs.s - self.x * rhs.x - self.y * rhs.y - self.z * rhs.z,
-            self.s * rhs.x + self.x * rhs.s + self.y * rhs.z - self.z * rhs.y,
-            self.s * rhs.y - self.x * rhs.z + self.y * rhs.s + self.z * rhs.x,
-            self.s * rhs.z + self.x * rhs.y - self.y * rhs.x + self.z * rhs.s,
-        )
+        if isinstance(rhs, Quaternion):
+            return Quaternion(
+                self.s * rhs.s - self.x * rhs.x - self.y * rhs.y - self.z * rhs.z,
+                self.s * rhs.x + self.x * rhs.s + self.y * rhs.z - self.z * rhs.y,
+                self.s * rhs.y - self.x * rhs.z + self.y * rhs.s + self.z * rhs.x,
+                self.s * rhs.z + self.x * rhs.y - self.y * rhs.x + self.z * rhs.s,
+            )
+        elif isinstance(rhs, Vec3):
+            qw = self.s
+            qx = self.x
+            qy = self.y
+            qz = self.z
+
+            vx = rhs.x
+            vy = rhs.y
+            vz = rhs.z
+
+            # pq
+            pw = -qx * vx - qy * vy - qz * vz
+            px = qw * vx + qy * vz - qz * vy
+            py = qw * vy - qx * vz + qz * vx
+            pz = qw * vz + qx * vy - qy * vx
+
+            # pqp*
+            return Vec3(
+                -pw * qx + px * qw - py * qz + pz * qy,
+                -pw * qy + px * qz + py * qw - pz * qx,
+                -pw * qz - px * qy + py * qx + pz * qw,
+            )
+
+    def normalize(self):
+        length = math.sqrt(self.s * self.s + self.x * self.x + self.y * self.y + self.z * self.z)
+        if length > 0:
+            self.s /= length
+            self.x /= length
+            self.y /= length
+            self.z /= length
 
     def __str__(self) -> str:
         """
