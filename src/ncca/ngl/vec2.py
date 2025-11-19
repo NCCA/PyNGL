@@ -5,6 +5,8 @@ Simple float only Vec2 class for 3D graphics, very similar to the pyngl ones
 import ctypes
 import math
 
+import numpy as np
+
 from .util import clamp
 
 
@@ -74,7 +76,7 @@ class Vec2:
         Raises:
             ValueError: If v is not a float or int.
         """
-        if not isinstance(v, (int, float)):
+        if not isinstance(v, (int, float, np.float32)):
             raise ValueError("need float or int")
         else:
             setattr(self, name, v)

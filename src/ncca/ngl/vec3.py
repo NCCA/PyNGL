@@ -73,7 +73,7 @@ class Vec3:
         Raises:
             ValueError: If v is not a float or int.
         """
-        if not isinstance(v, (int, float)):
+        if not isinstance(v, (int, float, np.float32)):
             raise ValueError("need float or int")
         else:
             setattr(self, name, v)
