@@ -605,6 +605,9 @@ class PrimData:
     def primitive(name: Union[str, enum]) -> np.ndarray:
         prim_folder = Path(__file__).parent / "PrimData"
         prims = np.load(prim_folder / "Primitives.npz")
+        if isinstance(name, PrimData):
+            name = name.value
+
         try:
             return prims[name]
         except KeyError:
