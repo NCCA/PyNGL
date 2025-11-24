@@ -1,6 +1,5 @@
 import pytest
-
-from ncca.ngl import FirstPersonCamera, Mat4, Vec3
+from ncca.ngl import FirstPersonCamera, Mat4, PerspMode, Vec3
 
 
 class DummyMat4(Mat4):

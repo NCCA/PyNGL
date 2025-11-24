@@ -1,7 +1,7 @@
 import math
 
 from .mat4 import Mat4
-from .util import perspective
+from .util import PerspMode, look_at, perspective
 from .vec3 import Vec3
 
 
@@ -32,7 +32,7 @@ class FirstPersonCamera:
         view (Mat4): The view matrix.
     """
 
-    def __init__(self, eye: Vec3, look: Vec3, up: Vec3, fov: float) -> None:
+    def __init__(self, eye: Vec3, look: Vec3, up: Vec3, fov: float, persp_mode: PerspMode = PerspMode.OpenGL) -> None:
         """
         Initialize the FirstPersonCamera.
 
@@ -58,12 +58,9 @@ class FirstPersonCamera:
         self.aspect: float = 1.2
         self.fov: float = fov
         self._update_camera_vectors()
-        self.projection: Mat4 = self.set_projection(
-            self.fov, self.aspect, self.near, self.far
-        )
-        from .util import look_at
+        self._projection: Mat4 = self.set_projection(self.fov, self.aspect, self.near, self.far, persp_mode)
 
-        self.view: Mat4 = look_at(self.eye, self.eye + self.front, self.up)
+        self._view: Mat4 = look_at(self.eye, self.eye + self.front, self.up)
 
     def __str__(self) -> str:
         return f"Camera {self.eye} {self.look} {self.world_up} {self.fov}"
@@ -71,9 +68,15 @@ class FirstPersonCamera:
     def __repr__(self) -> str:
         return f"Camera {self.eye} {self.look} {self.world_up} {self.fov}"
 
-    def process_mouse_movement(
-        self, diffx: float, diffy: float, _constrain_pitch: bool = True
-    ) -> None:
+    @property
+    def projection(self) -> Mat4:
+        return self._projection
+
+    @property
+    def view(self) -> Mat4:
+        return self._view
+
+    def process_mouse_movement(self, diffx: float, diffy: float, _constrain_pitch: bool = True) -> None:
         """
         Process mouse movement to update the camera's direction vectors.
 
@@ -115,10 +118,10 @@ class FirstPersonCamera:
         self.front.normalize()
         from .util import look_at
 
-        self.view = look_at(self.eye, self.eye + self.front, self.up)
+        self._view = look_at(self.eye, self.eye + self.front, self.up)
 
     def set_projection(
-        self, fov: float, aspect: float, near: float, far: float
+        self, fov: float, aspect: float, near: float, far: float, persp_mode: PerspMode = PerspMode.OpenGL
     ) -> Mat4:
         """
         Set the projection matrix for the camera.
@@ -133,7 +136,7 @@ class FirstPersonCamera:
             Mat4: The projection matrix.
         """
 
-        return perspective(fov, aspect, near, far)
+        return perspective(fov, aspect, near, far, persp_mode)
 
     def move(self, x: float, y: float, delta: float) -> None:
         """
@@ -156,7 +159,7 @@ class FirstPersonCamera:
         Returns:
             Mat4: The view-projection matrix.
         """
-        return self.projection @ self.view
+        return self._projection @ self._view
 
     def process_mouse_scroll(self, y_offset: float) -> None:
         """
@@ -171,4 +174,4 @@ class FirstPersonCamera:
             self.zoom = 1.0
         if self.zoom >= 45.0:
             self.zoom = 45.0
-        self.projection = perspective(self.zoom, self.aspect, self.near, self.far)
+        self._projection = perspective(self.zoom, self.aspect, self.near, self.far)
