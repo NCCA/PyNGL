@@ -3,7 +3,7 @@ import sys
 from PySide6.QtWidgets import QApplication, QDialog, QGridLayout, QLabel
 
 from ncca.ngl import Vec2, Vec3, Vec4
-from ncca.widgets import (
+from ncca.ngl.widgets import (
     LookAtWidget,
     RGBAColourWidget,
     RGBColourWidget,

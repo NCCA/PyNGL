@@ -1,7 +1,7 @@
 # Include package data
 include src/ncca/ngl/shaders/*
 include src/ncca/ngl/PrimData/Primitives.npz
-
+include src/ncca/widgets/*.py
 # Include license and readme
 include LICENSE.txt
 include README.md
@@ -13,7 +13,7 @@ global-exclude *test*
 global-exclude __pycache__/*
 global-exclude *.pyc
 global-exclude *.pyo
-
+global-exclude .ruff*
 # Exclude development and build files
 exclude .gitignore
 exclude .pre-commit-config.yaml
