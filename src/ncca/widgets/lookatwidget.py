@@ -1,4 +1,4 @@
-from PySide6.QtCore import Property, QSignalBlocker, Qt, Signal
+from PySide6.QtCore import Property, QSignalBlocker, Qt, Signal, Slot
 from PySide6.QtWidgets import QComboBox, QFrame, QLabel, QToolButton, QVBoxLayout, QWidget
 
 from ncca.ngl import Mat4, Vec3, look_at
@@ -11,7 +11,7 @@ class LookAtWidget(QFrame):
 
     valueChanged = Signal(Mat4)
 
-    def __init__(self, name: str, parent: QWidget | None = None) -> None:
+    def __init__(self, name: str, eye=Vec3(2, 2, 2), look=Vec3(0, 0, 0), parent: QWidget | None = None) -> None:
         """
         Args:
             name: The name of the widget.
@@ -20,7 +20,7 @@ class LookAtWidget(QFrame):
         super().__init__(parent)
         self.setFrameShape(QFrame.Shape.StyledPanel)
         self._name = name
-
+        self._view = Mat4()
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(2, 2, 2, 2)
         main_layout.setSpacing(0)
@@ -38,8 +38,8 @@ class LookAtWidget(QFrame):
         content_layout = QVBoxLayout(self._content_widget)
         content_layout.setContentsMargins(0, 0, 0, 0)
 
-        self._eye = Vec3Widget("Eye", Vec3(0.0, 2.0, 2.0), self)
-        self._look = Vec3Widget("Look", Vec3(0.0, 0.0, 0.0), self)
+        self._eye = Vec3Widget("Eye", eye, self)
+        self._look = Vec3Widget("Look", look, self)
         self._up = QComboBox(self)
         for v in ["y-up", "x-up", "z-up"]:
             self._up.addItem(v)
@@ -63,12 +63,15 @@ class LookAtWidget(QFrame):
             self._content_widget.setVisible(False)
 
     def _update_matrix(self) -> None:
-        """Updates the transformation matrix based on the widget values."""
-        eye = self._eye.get_value()
-        look = self._look.get_value()
+        """Updates the view matrix based on the widget values."""
+        eye = self._eye.value
+        look = self._look.value
         world_up = [Vec3(0, 1, 0), Vec3(1, 0, 0), Vec3(0, 0, 1)]
         up = world_up[self._up.currentIndex()]
 
-        view = look_at(eye, look, up)
-        print(view)
-        self.valueChanged.emit(view)
+        self._view = look_at(eye, look, up)
+        self.valueChanged.emit(self._view)
+
+    def view(self) -> Mat4:
+        """Returns the current view matrix."""
+        return self._view

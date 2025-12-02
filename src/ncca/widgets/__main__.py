@@ -3,7 +3,15 @@ import sys
 from PySide6.QtWidgets import QApplication, QDialog, QGridLayout, QLabel
 
 from ncca.ngl import Vec2, Vec3, Vec4
-from ncca.widgets import LookAtWidget, TransformWidget, Vec2Widget, Vec3Widget, Vec4Widget
+from ncca.widgets import (
+    LookAtWidget,
+    RGBAColourWidget,
+    RGBColourWidget,
+    TransformWidget,
+    Vec2Widget,
+    Vec3Widget,
+    Vec4Widget,
+)
 
 
 class SimpleDialog(QDialog):
@@ -40,8 +48,13 @@ class SimpleDialog(QDialog):
         self.transform_widget = TransformWidget("Transform Widget", self)
         layout.addWidget(self.transform_widget, 3, 0)
 
-        self.lookat = LookAtWidget("Look At", self)
+        self.lookat = LookAtWidget("Look At", parent=self)
         layout.addWidget(self.lookat, 4, 0)
+
+        self.rgb_colour_widget = RGBColourWidget("RGB Colour Widget", 1.0, 0.0, 0.0, self)
+        layout.addWidget(self.rgb_colour_widget, 5, 0)
+        self.rgba_colour_widget = RGBAColourWidget("RGB Colour Widget", 1.0, 0.0, 0.0, 1.0, self)
+        layout.addWidget(self.rgba_colour_widget, 6, 0)
 
         self.setLayout(layout)
 
