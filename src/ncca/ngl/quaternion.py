@@ -75,6 +75,27 @@ class Quaternion:
 
         return Quaternion(s, x, y, z)
 
+    @staticmethod
+    def from_axis_angle(axis: "Vec3", angle: float) -> "Quaternion":
+        """
+        Creates a new Quaternion from an axis and angle.
+
+        Args:
+            axis (Vec3): The axis of rotation.
+            angle (float): The angle of rotation in degrees.
+
+        Returns:
+            Quaternion: A new Quaternion representing the rotation.
+        """
+        angle_rad = math.radians(angle)
+        half_angle = angle_rad * 0.5
+        s = math.cos(half_angle)
+        sin_half_angle = math.sin(half_angle)
+        x = axis.x * sin_half_angle
+        y = axis.y * sin_half_angle
+        z = axis.z * sin_half_angle
+        return Quaternion(s, x, y, z)
+
     def __add__(self, rhs):
         return Quaternion(self.s + rhs.s, self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
 

@@ -1,4 +1,4 @@
-#version 410 core
+#version 330 core
 in vec3 fragmentNormal;
 in vec2 uv;
 

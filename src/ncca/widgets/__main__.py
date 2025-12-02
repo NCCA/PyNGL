@@ -3,7 +3,7 @@ import sys
 from PySide6.QtWidgets import QApplication, QDialog, QGridLayout, QLabel
 
 from ncca.ngl import Vec2, Vec3, Vec4
-from ncca.widgets import TransformWidget, Vec2Widget, Vec3Widget, Vec4Widget
+from ncca.widgets import LookAtWidget, TransformWidget, Vec2Widget, Vec3Widget, Vec4Widget
 
 
 class SimpleDialog(QDialog):
@@ -39,6 +39,9 @@ class SimpleDialog(QDialog):
 
         self.transform_widget = TransformWidget("Transform Widget", self)
         layout.addWidget(self.transform_widget, 3, 0)
+
+        self.lookat = LookAtWidget("Look At", self)
+        layout.addWidget(self.lookat, 4, 0)
 
         self.setLayout(layout)
 
