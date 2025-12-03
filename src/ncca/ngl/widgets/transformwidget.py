@@ -40,8 +40,12 @@ class TransformWidget(QFrame):
         content_layout.setContentsMargins(0, 0, 0, 0)
 
         self._position = Vec3Widget(self, "Position", Vec3(0.0, 0.0, 0.0))
+        self._position.set_range(-20, 20)
         self._rotation = Vec3Widget(self, "Rotation", Vec3(0.0, 0.0, 0.0))
+        self._rotation.set_range(-360, 360)
         self._scale = Vec3Widget(self, "Scale", Vec3(1.0, 1.0, 1.0))
+        self._scale.set_range(-20, 20)
+
         self._rot_order = QComboBox(self)
         for v in self._rotation_order:
             self._rot_order.addItem(v)
@@ -79,3 +83,21 @@ class TransformWidget(QFrame):
         tx.set_scale(scale.x, scale.y, scale.z)
         print(tx.get_matrix())
         self.valueChanged.emit(tx.get_matrix())
+
+    def name(self) -> str:
+        """
+        Returns:
+            The name of the widget.
+        """
+        return self._name
+
+    def set_name(self, name: str) -> None:
+        """Sets the name of the widget.
+
+        Args:
+            name: The new name of the widget.
+        """
+        self._name = name
+        self._toggle_button.setText(name)
+
+    name = Property(str, name, set_name)

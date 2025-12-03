@@ -10,6 +10,7 @@ class LookAtWidget(QFrame):
     """A widget for displaying and editing a Transform object, with foldable sections."""
 
     valueChanged = Signal(Mat4)
+    world_up = [Vec3(0, 1, 0), Vec3(1, 0, 0), Vec3(0, 0, 1)]
 
     def __init__(self, parent: QWidget | None = None, name: str = "", eye=Vec3(2, 2, 2), look=Vec3(0, 0, 0)) -> None:
         """
@@ -53,6 +54,31 @@ class LookAtWidget(QFrame):
         main_layout.addWidget(self._toggle_button)
         main_layout.addWidget(self._content_widget)
 
+    def set_eye(self, eye):
+        self._eye.set_value(eye)
+
+    def set_look(self, look):
+        self._look.set_value(look)
+
+    def set_up(self, up):
+        self._up.setCurrentIndex(up)
+
+    def set_name(self, name):
+        self._name = name
+        self._toggle_button.setText(name)
+
+    def get_name(self):
+        return self._name.text()
+
+    def get_eye(self):
+        return self._eye.value
+
+    def get_look(self):
+        return self._look.value
+
+    def get_up(self):
+        return self.world_up[self._up.currentIndex()]
+
     def toggle_collapsed(self, checked: bool) -> None:
         """Toggles the visibility of the content widget."""
         if checked:
@@ -66,8 +92,8 @@ class LookAtWidget(QFrame):
         """Updates the view matrix based on the widget values."""
         eye = self._eye.value
         look = self._look.value
-        world_up = [Vec3(0, 1, 0), Vec3(1, 0, 0), Vec3(0, 0, 1)]
-        up = world_up[self._up.currentIndex()]
+
+        up = self.world_up[self._up.currentIndex()]
 
         self._view = look_at(eye, look, up)
         self.valueChanged.emit(self._view)
@@ -75,3 +101,8 @@ class LookAtWidget(QFrame):
     def view(self) -> Mat4:
         """Returns the current view matrix."""
         return self._view
+
+    name = Property(str, get_name, set_name)
+    eye = Property(Vec3, get_eye, set_eye)
+    look = Property(Vec3, get_look, set_look)
+    up = Property(Vec3, get_up, set_up)
