@@ -12,7 +12,7 @@ class TransformWidget(QFrame):
     valueChanged = Signal(Mat4)
     _rotation_order = ["xyz", "yzx", "zxy", "xzy", "yxz", "zyx"]
 
-    def __init__(self, name: str, parent: QWidget | None = None) -> None:
+    def __init__(self, parent: QWidget | None = None, name: str = "") -> None:
         """
         Args:
             name: The name of the widget.
@@ -39,9 +39,9 @@ class TransformWidget(QFrame):
         content_layout = QVBoxLayout(self._content_widget)
         content_layout.setContentsMargins(0, 0, 0, 0)
 
-        self._position = Vec3Widget("Position", Vec3(0.0, 0.0, 0.0), self)
-        self._rotation = Vec3Widget("Rotation", Vec3(0.0, 0.0, 0.0), self)
-        self._scale = Vec3Widget("Scale", Vec3(1.0, 1.0, 1.0), self)
+        self._position = Vec3Widget(self, "Position", Vec3(0.0, 0.0, 0.0))
+        self._rotation = Vec3Widget(self, "Rotation", Vec3(0.0, 0.0, 0.0))
+        self._scale = Vec3Widget(self, "Scale", Vec3(1.0, 1.0, 1.0))
         self._rot_order = QComboBox(self)
         for v in self._rotation_order:
             self._rot_order.addItem(v)

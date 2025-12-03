@@ -11,7 +11,7 @@ class LookAtWidget(QFrame):
 
     valueChanged = Signal(Mat4)
 
-    def __init__(self, name: str, eye=Vec3(2, 2, 2), look=Vec3(0, 0, 0), parent: QWidget | None = None) -> None:
+    def __init__(self, parent: QWidget | None = None, name: str = "", eye=Vec3(2, 2, 2), look=Vec3(0, 0, 0)) -> None:
         """
         Args:
             name: The name of the widget.
@@ -38,8 +38,8 @@ class LookAtWidget(QFrame):
         content_layout = QVBoxLayout(self._content_widget)
         content_layout.setContentsMargins(0, 0, 0, 0)
 
-        self._eye = Vec3Widget("Eye", eye, self)
-        self._look = Vec3Widget("Look", look, self)
+        self._eye = Vec3Widget(self, "Eye", eye)
+        self._look = Vec3Widget(self, "Look", look)
         self._up = QComboBox(self)
         for v in ["y-up", "x-up", "z-up"]:
             self._up.addItem(v)

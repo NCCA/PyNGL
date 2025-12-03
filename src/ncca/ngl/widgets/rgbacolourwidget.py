@@ -22,7 +22,15 @@ class RGBAColourWidget(QFrame):
     bValueChanged = Signal(float)
     aValueChanged = Signal(float)
 
-    def __init__(self, name: str, r: float, g: float, b: float, a: float, parent: QWidget | None = None) -> None:
+    def __init__(
+        self,
+        parent: QWidget | None = None,
+        name: str = "",
+        r: float = 1.0,
+        g: float = 1.0,
+        b: float = 1.0,
+        a: float = 1.0,
+    ) -> None:
         """
         Args:
             name: The name of the widget.

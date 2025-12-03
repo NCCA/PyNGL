@@ -13,7 +13,7 @@ class Vec4Widget(QFrame):
     zValueChanged = Signal(float)
     wValueChanged = Signal(float)
 
-    def __init__(self, name: str, value: Vec4 = Vec4(0.0, 0.0, 0.0, 1.0), parent: QWidget | None = None) -> None:
+    def __init__(self, parent: QWidget | None = None, name: str = "", value: Vec4 = Vec4(0.0, 0.0, 0.0, 1.0)) -> None:
         """
         Args:
             name: The name of the widget.
