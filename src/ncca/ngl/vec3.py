@@ -7,7 +7,7 @@ import math
 
 import numpy as np
 
-from .util import clamp
+from .util import clamp, hash_combine
 
 
 class Vec3:
@@ -38,6 +38,15 @@ class Vec3:
     @classmethod
     def sizeof(cls):
         return 3 * ctypes.sizeof(ctypes.c_float)
+
+    def __hash__(self):
+        # Use 32-bit float element hashes, then combine
+        seed = 0
+        for v in (self.x, self.y, self.z):
+            # ensure 32-bit float semantics
+            h = hash(float(np.float32(v)))
+            seed = hash_combine(seed, h)
+        return seed
 
     def __iter__(self):
         """

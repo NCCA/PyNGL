@@ -7,7 +7,7 @@ import math
 
 import numpy as np
 
-from .util import clamp
+from .util import clamp, hash_combine
 
 
 class Vec2:
@@ -43,6 +43,15 @@ class Vec2:
         """
         yield self.x
         yield self.y
+
+    def __hash__(self):
+        # Use 32-bit float element hashes, then combine
+        seed = 0
+        for v in (self.x, self.y):
+            # ensure 32-bit float semantics
+            h = hash(float(np.float32(v)))
+            seed = hash_combine(seed, h)
+        return seed
 
     def copy(self) -> "Vec2":
         """

@@ -8,6 +8,7 @@ import math
 import numpy as np
 
 from .log import logger
+from .util import hash_combine
 
 
 class Vec4:
@@ -72,6 +73,15 @@ class Vec4:
             Vec4: A new Vec4 instance with the same values.
         """
         return Vec4(self.x, self.y, self.z, self.w)
+
+    def __hash__(self):
+        # Use 32-bit float element hashes, then combine
+        seed = 0
+        for v in (self.x, self.y, self.z, self.w):
+            # ensure 32-bit float semantics
+            h = hash(float(np.float32(v)))
+            seed = hash_combine(seed, h)
+        return seed
 
     def __add__(self, rhs):
         "return a+b vector addition"
