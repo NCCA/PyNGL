@@ -11,13 +11,14 @@ from ncca.ngl.widgets import (
     Vec2Widget,
     Vec3Widget,
     Vec4Widget,
+    __version__,
 )
 
 
 class SimpleDialog(QDialog):
     def __init__(self, parent=None):
         super(SimpleDialog, self).__init__(parent)
-        self.setWindowTitle("PyNGL ncca.widgets library ")
+        self.setWindowTitle(f"PyNGL ncca.widgets library {__version__}")
         self.setMinimumWidth(200)
         layout = QGridLayout()
 

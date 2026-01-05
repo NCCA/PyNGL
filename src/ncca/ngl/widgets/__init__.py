@@ -1,4 +1,12 @@
-__version__ = "0.1.0"
+from importlib.metadata import PackageNotFoundError, version
+
+try:
+    __version__ = version("ncca-ngl")
+except PackageNotFoundError:
+    __version__ = "0.0.0"
+
+__author__ = "Jon Macey jmacey@bournemouth.ac.uk"
+__license__ = "MIT"
 
 
 from .lookatwidget import LookAtWidget
