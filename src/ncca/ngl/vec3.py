@@ -1,5 +1,6 @@
 """
 Simple float only Vec3 class for 3D graphics, very similar to the pyngl ones
+NumPy-based implementation
 """
 
 import ctypes
@@ -12,15 +13,14 @@ from .util import clamp, hash_combine
 
 class Vec3:
     """
-    A simple 3D vector class for 3D graphics, I use slots to fix the attributes to x,y,z
+    A simple 3D vector class for 3D graphics, using numpy for efficient operations.
     Attributes:
         x (float): The x-coordinate of the vector.
         y (float): The y-coordinate of the vector.
         z (float): The z-coordinate of the vector.
-
     """
 
-    __slots__ = ["_x", "_y", "_z"]  # fix the attributes to x,y,z
+    __slots__ = ["_data"]
 
     def __init__(self, x=0.0, y=0.0, z=0.0):
         """
@@ -31,9 +31,7 @@ class Vec3:
             y (float, optional): The y-coordinate of the vector. Defaults to 0.0.
             z (float, optional): The z-coordinate of the vector. Defaults to 0.0.
         """
-        self._x = x  # x component of vector : float
-        self._y = y  # y component of vector : float
-        self._z = z  # z component of vector : float
+        self._data = np.array([x, y, z], dtype=np.float64)
 
     @classmethod
     def sizeof(cls):
@@ -42,7 +40,7 @@ class Vec3:
     def __hash__(self):
         # Use 32-bit float element hashes, then combine
         seed = 0
-        for v in (self.x, self.y, self.z):
+        for v in self._data:
             # ensure 32-bit float semantics
             h = hash(float(np.float32(v)))
             seed = hash_combine(seed, h)
@@ -68,11 +66,9 @@ class Vec3:
         Raises:
             IndexError: If the index is out of range.
         """
-        components = [self.x, self.y, self.z]
-        try:
-            return components[index]
-        except IndexError:
+        if index < 0 or index > 2:
             raise IndexError("Index out of range. Valid indices are 0, 1, and 2.")
+        return self._data[index]
 
     def _validate_and_set(self, v, name):
         """
@@ -105,9 +101,7 @@ class Vec3:
             Vec3: A new vector that is the result of adding this vector and the rhs vector.
         """
         r = Vec3()
-        r.x = self.x + rhs.x
-        r.y = self.y + rhs.y
-        r.z = self.z + rhs.z
+        r._data = self._data + rhs._data
         return r
 
     def __iadd__(self, rhs):
@@ -119,9 +113,7 @@ class Vec3:
         Returns:
             Vec3: returns this vector after adding the rhs vector.
         """
-        self.x += rhs.x
-        self.y += rhs.y
-        self.z += rhs.z
+        self._data += rhs._data
         return self
 
     def __sub__(self, rhs):
@@ -134,9 +126,7 @@ class Vec3:
             Vec3: A new vector that is the result of subtracting this vector and the rhs vector.
         """
         r = Vec3()
-        r.x = self.x - rhs.x
-        r.y = self.y - rhs.y
-        r.z = self.z - rhs.z
+        r._data = self._data - rhs._data
         return r
 
     def __isub__(self, rhs):
@@ -148,9 +138,7 @@ class Vec3:
         Returns:
             Vec3: returns this vector after subtracting the rhs vector.
         """
-        self.x -= rhs.x
-        self.y -= rhs.y
-        self.z -= rhs.z
+        self._data -= rhs._data
         return self
 
     def __eq__(self, rhs):
@@ -162,10 +150,9 @@ class Vec3:
             bool: True if the vectors are close, False otherwise.
             NotImplemented: If the right-hand side is not a Vec3.
         """
-
         if not isinstance(rhs, Vec3):
             return NotImplemented
-        return math.isclose(self.x, rhs.x) and math.isclose(self.y, rhs.y) and math.isclose(self.z, rhs.z)
+        return np.allclose(self._data, rhs._data)
 
     def __neq__(self, rhs):
         """
@@ -178,15 +165,13 @@ class Vec3:
         """
         if not isinstance(rhs, Vec3):
             return NotImplemented
-        return not (math.isclose(self.x, rhs.x) and math.isclose(self.y, rhs.y) and math.isclose(self.z, rhs.z))
+        return not np.allclose(self._data, rhs._data)
 
     def __neg__(self):
         """
         negate a vector -a
         """
-        self.x = -self.x
-        self.y = -self.y
-        self.z = -self.z
+        self._data = -self._data
         return self
 
     def set(self, x, y, z):
@@ -200,9 +185,9 @@ class Vec3:
             ValueError: if x,y,z are not float
         """
         try:
-            self.x = float(x)
-            self.y = float(y)
-            self.z = float(z)
+            self._data[0] = float(x)
+            self._data[1] = float(y)
+            self._data[2] = float(z)
         except ValueError:
             raise ValueError(f"Vec3.set {x=} {y=} {z=} all need to be float")
 
@@ -212,7 +197,7 @@ class Vec3:
         Args:
             rhs (Vec3): The right-hand side vector to dot product with.
         """
-        return self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
+        return np.dot(self._data, rhs._data)
 
     def length(self):
         """
@@ -220,7 +205,7 @@ class Vec3:
         Returns:
             float: The length of the vector.
         """
-        return math.sqrt(self.x**2 + self.y**2 + self.z**2)
+        return np.linalg.norm(self._data)
 
     def length_squared(self):
         """
@@ -228,7 +213,7 @@ class Vec3:
         Returns:
             float: The length of the vector squared
         """
-        return self.x**2 + self.y**2 + self.z**2
+        return np.dot(self._data, self._data)
 
     def inner(self, rhs):
         """
@@ -238,15 +223,13 @@ class Vec3:
         Returns:
             float: The inner product of the two vectors.
         """
-        return (self.x * rhs.x) + (self.y * rhs.y) + (self.z * rhs.z)
+        return np.dot(self._data, rhs._data)
 
     def null(self):
         """
         set the vector to zero
         """
-        self.x = 0.0
-        self.y = 0.0
-        self.z = 0.0
+        self._data[:] = 0.0
 
     def cross(self, rhs):
         """
@@ -256,11 +239,9 @@ class Vec3:
         Returns:
             Vec3: A new vector that is the result of the cross product.
         """
-        return Vec3(
-            self.y * rhs.z - self.z * rhs.y,
-            self.z * rhs.x - self.x * rhs.z,
-            self.x * rhs.y - self.y * rhs.x,
-        )
+        result = Vec3()
+        result._data = np.cross(self._data, rhs._data)
+        return result
 
     def normalize(self):
         """
@@ -271,14 +252,11 @@ class Vec3:
             ZeroDivisionError: If the length of the vector is zero.
         """
         vector_length = self.length()
-        try:
-            self.x /= vector_length
-            self.y /= vector_length
-            self.z /= vector_length
-        except ZeroDivisionError:
+        if vector_length == 0.0:
             raise ZeroDivisionError(
                 f"Vec3.normalize {vector_length} length is zero most likely calling normalize on a zero vector"
             )
+        self._data /= vector_length
         return self
 
     def reflect(self, n):
@@ -291,7 +269,9 @@ class Vec3:
         """
         d = self.dot(n)
         #  I - 2.0 * dot(N, I) * N
-        return Vec3(self.x - 2.0 * d * n.x, self.y - 2.0 * d * n.y, self.z - 2.0 * d * n.z)
+        result = Vec3()
+        result._data = self._data - 2.0 * d * n._data
+        return result
 
     def clamp(self, low, high):
         """
@@ -299,11 +279,10 @@ class Vec3:
         Args:
             low (float): The low end of the range.
             high (float): The high end of the range.
-
         """
-        self.x = clamp(self.x, low, high)
-        self.y = clamp(self.y, low, high)
-        self.z = clamp(self.z, low, high)
+        self._data[0] = clamp(self.x, low, high)
+        self._data[1] = clamp(self.y, low, high)
+        self._data[2] = clamp(self.z, low, high)
 
     def __repr__(self):
         "object representation for debugging"
@@ -323,11 +302,9 @@ class Vec3:
         """
         from .mat3 import Mat3
 
-        return Mat3.from_list([
-            [self.x * rhs.x, self.x * rhs.y, self.x * rhs.z],
-            [self.y * rhs.x, self.y * rhs.y, self.y * rhs.z],
-            [self.z * rhs.x, self.z * rhs.y, self.z * rhs.z],
-        ])
+        result = Mat3()
+        result.m = np.outer(self._data, rhs._data)
+        return result
 
     def __mul__(self, rhs):
         """
@@ -340,7 +317,9 @@ class Vec3:
             ValueError: If the right-hand side is not a float.
         """
         if isinstance(rhs, (float, int)):
-            return Vec3(self.x * rhs, self.y * rhs, self.z * rhs)
+            r = Vec3()
+            r._data = self._data * rhs
+            return r
         else:
             raise ValueError(f"can only do piecewise multiplication with a scalar {rhs=}")
 
@@ -367,9 +346,17 @@ class Vec3:
             ValueError: If the right-hand side is not a float.
         """
         if isinstance(rhs, (float, int)):
-            return Vec3(self.x / rhs, self.y / rhs, self.z / rhs)
+            if rhs == 0.0:
+                raise ZeroDivisionError("division by zero")
+            r = Vec3()
+            r._data = self._data / rhs
+            return r
         elif isinstance(rhs, Vec3):
-            return Vec3(self.x / rhs.x, self.y / rhs.y, self.z / rhs.z)
+            if np.any(rhs._data == 0.0):
+                raise ZeroDivisionError("division by zero")
+            r = Vec3()
+            r._data = self._data / rhs._data
+            return r
         else:
             raise ValueError(f"can only do piecewise division with a scalar {rhs=}")
 
@@ -382,29 +369,31 @@ class Vec3:
             Vec3: A new vector that is the result of multiplying this vector by the matrix.
         """
         return Vec3(
-            self.x * rhs.m[0][0] + self.y * rhs.m[1][0] + self.z * rhs.m[2][0],
-            self.x * rhs.m[0][1] + self.y * rhs.m[1][1] + self.z * rhs.m[2][1],
-            self.x * rhs.m[0][2] + self.y * rhs.m[1][2] + self.z * rhs.m[2][2],
+            self.x * rhs.m[0, 0] + self.y * rhs.m[1, 0] + self.z * rhs.m[2, 0],
+            self.x * rhs.m[0, 1] + self.y * rhs.m[1, 1] + self.z * rhs.m[2, 1],
+            self.x * rhs.m[0, 2] + self.y * rhs.m[1, 2] + self.z * rhs.m[2, 2],
         )
 
     def to_list(self):
-        return [self.x, self.y, self.z]
+        return self._data.tolist()
 
     def to_numpy(self):
-        return np.array([self.x, self.y, self.z])
+        return self._data.copy()
 
 
 # Helper function to create properties
-def _create_property(attr_name):
+def _create_property(index):
     def getter(self):
-        return getattr(self, f"_{attr_name}")
+        return self._data[index]
 
     def setter(self, value):
-        self._validate_and_set(value, f"_{attr_name}")
+        if not isinstance(value, (int, float, np.float32)):
+            raise ValueError("need float or int")
+        self._data[index] = value
 
     return property(getter, setter)
 
 
 # Dynamically add properties for x, y, z
-for attr in ["x", "y", "z"]:
-    setattr(Vec3, attr, _create_property(attr))
+for i, attr in enumerate(["x", "y", "z"]):
+    setattr(Vec3, attr, _create_property(i))
