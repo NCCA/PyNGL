@@ -1,5 +1,6 @@
 """
-Simple Float only Vec3 class for 3D graphics, very similar to the pyngl ones
+Simple Float only Vec4 class for 3D graphics, very similar to the pyngl ones
+NumPy-based implementation
 """
 
 import ctypes
@@ -12,15 +13,12 @@ from .util import hash_combine
 
 
 class Vec4:
-    __slots__ = ["_x", "_y", "_z", "_w"]
-    "by using slots we fix our class attributes to x,y,z,w"
+    __slots__ = ["_data"]
+    "by using slots we fix our class attributes"
 
     def __init__(self, x=0.0, y=0.0, z=0.0, w=1.0):
         """simple ctor"""
-        self._x = x  # x component of vector : float
-        self._y = y  # y component of vector : float
-        self._z = z  # z component of vector : float
-        self._w = w  # w component of vector : float
+        self._data = np.array([x, y, z, w], dtype=np.float64)
 
     @classmethod
     def sizeof(cls):
@@ -41,9 +39,9 @@ class Vec4:
 
     def __iter__(self):
         """
-        Make the Vec3 class iterable.
+        Make the Vec4 class iterable.
         Yields:
-            float: The x, y, and z components of the vector.
+            float: The x, y, z, and w components of the vector.
         """
         yield self.x
         yield self.y
@@ -54,17 +52,15 @@ class Vec4:
         """
         Get the component of the vector at the given index.
         Args:
-            index (int): The index of the component (0 for x, 1 for y, 2 for z).
+            index (int): The index of the component (0 for x, 1 for y, 2 for z, 3 for w).
         Returns:
             float: The value of the component at the given index.
         Raises:
             IndexError: If the index is out of range.
         """
-        components = [self.x, self.y, self.z, self.w]
-        try:
-            return components[index]
-        except IndexError:
+        if index < 0 or index > 3:
             raise IndexError("Index out of range. Valid indices are 0, 1, 2, and 3.")
+        return self._data[index]
 
     def copy(self) -> "Vec4":
         """
@@ -77,7 +73,7 @@ class Vec4:
     def __hash__(self):
         # Use 32-bit float element hashes, then combine
         seed = 0
-        for v in (self.x, self.y, self.z, self.w):
+        for v in self._data:
             # ensure 32-bit float semantics
             h = hash(float(np.float32(v)))
             seed = hash_combine(seed, h)
@@ -86,105 +82,77 @@ class Vec4:
     def __add__(self, rhs):
         "return a+b vector addition"
         r = Vec4()
-        r.x = self.x + rhs.x
-        r.y = self.y + rhs.y
-        r.z = self.z + rhs.z
-        r.w = self.w + rhs.w
+        r._data = self._data + rhs._data
         return r
 
     def __iadd__(self, rhs):
         "return a+=b vector addition"
-        self.x += rhs.x
-        self.y += rhs.y
-        self.z += rhs.z
-        self.w += rhs.w
-
+        self._data += rhs._data
         return self
 
     def __sub__(self, rhs):
-        "return a+b vector addition"
+        "return a-b vector subtraction"
         r = Vec4()
-        r.x = self.x - rhs.x
-        r.y = self.y - rhs.y
-        r.z = self.z - rhs.z
-        r.w = self.w - rhs.w
+        r._data = self._data - rhs._data
         return r
 
     def __isub__(self, rhs):
-        "return a+=b vector addition"
-        self.x -= rhs.x
-        self.y -= rhs.y
-        self.z -= rhs.z
-        self.w -= rhs.w
+        "return a-=b vector subtraction"
+        self._data -= rhs._data
         return self
 
     def set(self, x, y, z, w=1.0):
         "set from x,y,z,w will convert to float an raise value error if problem"
         try:
-            self.x = float(x)
-            self.y = float(y)
-            self.z = float(z)
-            self.w = float(w)
+            self._data[0] = float(x)
+            self._data[1] = float(y)
+            self._data[2] = float(z)
+            self._data[3] = float(w)
         except ValueError:
             logger.warning("need float values")
             raise
 
     def dot(self, rhs):
-        return (self.x * rhs.x) + (self.y * rhs.y) + (self.z * rhs.z) + (self.w * rhs.w)
+        return np.dot(self._data, rhs._data)
 
     def length(self):
         "length of vector"
-        return math.sqrt(self.x**2 + self.y**2 + self.z**2 + self.w**2)
+        return np.linalg.norm(self._data)
 
     def length_squared(self):
         "square length of vector"
-        return self.x**2 + self.y**2 + self.z**2 + self.w**2
+        return np.dot(self._data, self._data)
 
     def normalize(self):
         "normalize this vector"
         length = self.length()
-        try:
-            self.x /= length
-            self.y /= length
-            self.z /= length
-            self.w /= length
-        except ZeroDivisionError:
+        if length == 0.0:
             raise ZeroDivisionError("cannot normalize the zero vector")
+        self._data /= length
         return self
 
     def __eq__(self, rhs):
         "test a==b using math.isclose"
         if not isinstance(rhs, Vec4):
             return NotImplemented
-        return (
-            math.isclose(self.x, rhs.x)
-            and math.isclose(self.y, rhs.y)
-            and math.isclose(self.z, rhs.z)
-            and math.isclose(self.w, rhs.w)
-        )
+        return np.allclose(self._data, rhs._data)
 
     def __neq__(self, rhs):
         "test a!=b using math.isclose"
         if not isinstance(rhs, Vec4):
             return NotImplemented
-        return not (
-            math.isclose(self.x, rhs.x)
-            and math.isclose(self.y, rhs.y)
-            and math.isclose(self.z, rhs.z)
-            and math.isclose(self.w, rhs.w)
-        )
+        return not np.allclose(self._data, rhs._data)
 
     def __neg__(self):
-        self.x = -self.x
-        self.y = -self.y
-        self.z = -self.z
-        self.w = -self.w
+        self._data = -self._data
         return self
 
     def __mul__(self, rhs):
         if isinstance(rhs, (float, int)):
             "Vec4 * scalar multiplication"
-            return Vec4(self.x * rhs, self.y * rhs, self.z * rhs, self.w * rhs)
+            r = Vec4()
+            r._data = self._data * rhs
+            return r
         else:
             raise ValueError
 
@@ -193,19 +161,27 @@ class Vec4:
 
     def __truediv__(self, rhs):
         if isinstance(rhs, (float, int)):
-            return Vec4(self.x / rhs, self.y / rhs, self.z / rhs, self.w / rhs)
+            if rhs == 0.0:
+                raise ZeroDivisionError("division by zero")
+            r = Vec4()
+            r._data = self._data / rhs
+            return r
         elif isinstance(rhs, Vec4):
-            return Vec4(self.x / rhs.x, self.y / rhs.y, self.z / rhs.z, self.w / rhs.w)
+            if np.any(rhs._data == 0.0):
+                raise ZeroDivisionError("division by zero")
+            r = Vec4()
+            r._data = self._data / rhs._data
+            return r
         else:
             raise ValueError(f"can only do piecewise division with a scalar {rhs=}")
 
     def __matmul__(self, rhs):
         "Vec4 @ Mat4 matrix multiplication"
         return Vec4(
-            self.x * rhs.m[0][0] + self.y * rhs.m[1][0] + self.z * rhs.m[2][0] + self.w * rhs.m[3][0],
-            self.x * rhs.m[0][1] + self.y * rhs.m[1][1] + self.z * rhs.m[2][1] + self.w * rhs.m[3][1],
-            self.x * rhs.m[0][2] + self.y * rhs.m[1][2] + self.z * rhs.m[2][2] + self.w * rhs.m[3][2],
-            self.x * rhs.m[0][3] + self.y * rhs.m[1][3] + self.z * rhs.m[2][3] + self.w * rhs.m[3][3],
+            self.x * rhs.m[0, 0] + self.y * rhs.m[1, 0] + self.z * rhs.m[2, 0] + self.w * rhs.m[3, 0],
+            self.x * rhs.m[0, 1] + self.y * rhs.m[1, 1] + self.z * rhs.m[2, 1] + self.w * rhs.m[3, 1],
+            self.x * rhs.m[0, 2] + self.y * rhs.m[1, 2] + self.z * rhs.m[2, 2] + self.w * rhs.m[3, 2],
+            self.x * rhs.m[0, 3] + self.y * rhs.m[1, 3] + self.z * rhs.m[2, 3] + self.w * rhs.m[3, 3],
         )
 
     def __repr__(self):
@@ -214,26 +190,33 @@ class Vec4:
 
     def __str__(self):
         "print out the vector as a string"
-        return f"[{self.x},{self.y},{self.z},{self.w}]"
+
+        # Format numbers without decimal point if they're whole numbers
+        def fmt(val):
+            return str(int(val)) if val == int(val) else str(val)
+
+        return f"[{fmt(self.x)},{fmt(self.y)},{fmt(self.z)},{fmt(self.w)}]"
 
     def to_list(self):
-        return [self.x, self.y, self.z, self.w]
+        return self._data.tolist()
 
     def to_numpy(self):
-        return np.array([self.x, self.y, self.z, self.w])
+        return self._data.copy()
 
 
 # Helper function to create properties
-def _create_property(attr_name):
+def _create_property(index):
     def getter(self):
-        return getattr(self, f"_{attr_name}")
+        return self._data[index]
 
     def setter(self, value):
-        self._validate_and_set(value, f"_{attr_name}")
+        if not isinstance(value, (int, float, np.float32)):
+            raise ValueError("need float or int")
+        self._data[index] = value
 
     return property(getter, setter)
 
 
-# Dynamically add properties for x, y, z,w
-for attr in ["x", "y", "z", "w"]:
-    setattr(Vec4, attr, _create_property(attr))
+# Dynamically add properties for x, y, z, w
+for i, attr in enumerate(["x", "y", "z", "w"]):
+    setattr(Vec4, attr, _create_property(i))

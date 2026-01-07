@@ -223,7 +223,7 @@ def test_matmul():
 def test_string():
     a = Vec4(1, 2, 3, 4)
     assert str(a) == "[1,2,3,4]"
-    assert repr(a) == "Vec4 [1,2,3,4]"
+    assert repr(a) == "Vec4 [1.0,2.0,3.0,4.0]"
 
 
 def test_iterable():
