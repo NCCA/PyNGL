@@ -1,13 +1,14 @@
-import copy
+"""
+Mat2 class with NumPy implementation
+"""
+
+import numpy as np
 
 from .vec2 import Vec2
 
 
 class Mat2Error(Exception):
     pass
-
-
-_identity = [[1.0, 0.0], [0.0, 1.0]]
 
 
 class Mat2:
@@ -22,11 +23,13 @@ class Mat2:
                         If not provided, an identity matrix is created.
         """
         if m is None:
-            self.m = copy.deepcopy(_identity)
+            self.m = np.eye(2, dtype=np.float64)
         elif isinstance(m, list) and len(m) == 4 and not isinstance(m[0], list):
-            self.m = [m[0:2], m[2:4]]
+            # Flat list - reshape to 2x2
+            self.m = np.array(m, dtype=np.float64).reshape(2, 2, order="C")
         else:
-            self.m = m
+            # 2D list
+            self.m = np.array(m, dtype=np.float64)
 
     @classmethod
     def from_list(cls, m: list[float]):
@@ -36,7 +39,7 @@ class Mat2:
         Args:
             m (list[float]): A flat list representing the matrix.
         """
-        return cls([m[0:2], m[2:4]])
+        return cls(m)
 
     def get_matrix(self) -> list[float]:
         """
@@ -45,7 +48,8 @@ class Mat2:
         Returns:
             list[float]: A flat list of floats.
         """
-        return [item for sublist in zip(*self.m, strict=False) for item in sublist]
+        # Transpose then flatten for column-major order
+        return self.m.T.flatten().tolist()
 
     def to_numpy(self):
         """
@@ -54,9 +58,7 @@ class Mat2:
         Returns:
             np.ndarray: The matrix as a NumPy array.
         """
-        import numpy as np
-
-        return np.array(self.get_matrix()).reshape([2, 2])
+        return self.m.astype(np.float32)
 
     @classmethod
     def identity(cls) -> "Mat2":
@@ -66,9 +68,7 @@ class Mat2:
         Returns:
             Mat2: A new identity Mat2 object.
         """
-        ret = cls()
-        ret.m = copy.deepcopy(_identity)
-        return ret
+        return cls()
 
     def __matmul__(self, rhs):
         """
@@ -77,8 +77,7 @@ class Mat2:
         Args:
             rhs (Mat2 | Vec2): The right-hand side operand.
                                 If Mat2, perform matrix multiplication.
-                                If Vec2, transform the vec
-                                r by the matrix.
+                                If Vec2, transform the vector by the matrix.
 
         Returns:
             Mat2: Resulting matrix from matrix multiplication.
@@ -88,30 +87,13 @@ class Mat2:
             ValueError: If rhs is neither a Mat2 nor Vec2 object.
         """
         if isinstance(rhs, Mat2):
-            return self._mat_mul(rhs)
+            return Mat2(self.m @ rhs.m)
         elif isinstance(rhs, Vec2):
-            return Vec2(
-                rhs.x * self.m[0][0] + rhs.y * self.m[0][1],
-                rhs.x * self.m[1][0] + rhs.y * self.m[1][1],
-            )
+            vec = np.array([rhs.x, rhs.y], dtype=np.float64)
+            res = self.m @ vec
+            return Vec2(res[0], res[1])
         else:
             raise ValueError(f"Can only multiply by Mat2 or Vec2, not {type(rhs)}")
-
-    def _mat_mul(self, other):
-        """
-        Internal method to perform matrix multiplication.
-
-        Args:
-            other (Mat2): The right-hand side matrix.
-
-        Returns:
-            Mat2: Result of matrix multiplication.
-        """
-        ret = Mat2()
-        for i in range(2):
-            for j in range(2):
-                ret.m[i][j] = sum(self.m[i][k] * other.m[k][j] for k in range(2))
-        return ret
 
     def __str__(self) -> str:
         """
@@ -120,12 +102,11 @@ class Mat2:
         Returns:
             str: The string representation.
         """
-        return f"Mat2({self.m[0]}, {self.m[1]})"
+        return f"Mat2({self.m[0].tolist()}, {self.m[1].tolist()})"
 
     def to_list(self):
         "convert matrix to list in column-major order"
-        # flatten to single array
-        return [item for sublist in zip(*self.m, strict=False) for item in sublist]
+        return self.m.T.flatten().tolist()
 
     def copy(self) -> "Mat2":
         """Create a copy of the matrix.
@@ -134,5 +115,5 @@ class Mat2:
             A new Mat2 instance with the same values.
         """
         new_mat = Mat2()
-        new_mat.m = copy.deepcopy(self.m)
+        new_mat.m = self.m.copy()
         return new_mat

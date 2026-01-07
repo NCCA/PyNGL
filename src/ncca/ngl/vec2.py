@@ -1,5 +1,6 @@
 """
 Simple float only Vec2 class for 3D graphics, very similar to the pyngl ones
+NumPy-based implementation
 """
 
 import ctypes
@@ -12,13 +13,13 @@ from .util import clamp, hash_combine
 
 class Vec2:
     """
-    A simple 3D vector class for 3D graphics, I use slots to fix the attributes to x,y,z
+    A simple 2D vector class for graphics, using numpy for efficient operations.
     Attributes:
         x (float): The x-coordinate of the vector.
         y (float): The y-coordinate of the vector.
     """
 
-    __slots__ = ["_x", "_y"]  # fix the attributes to x,y,z
+    __slots__ = ["_data"]
 
     def __init__(self, x=0.0, y=0.0):
         """
@@ -28,8 +29,7 @@ class Vec2:
             x (float, optional): The x-coordinate of the vector. Defaults to 0.0.
             y (float, optional): The y-coordinate of the vector. Defaults to 0.0.
         """
-        self._x = x  # x component of vector : float
-        self._y = y  # y component of vector : float
+        self._data = np.array([x, y], dtype=np.float64)
 
     @classmethod
     def sizeof(cls):
@@ -47,7 +47,7 @@ class Vec2:
     def __hash__(self):
         # Use 32-bit float element hashes, then combine
         seed = 0
-        for v in (self.x, self.y):
+        for v in self._data:
             # ensure 32-bit float semantics
             h = hash(float(np.float32(v)))
             seed = hash_combine(seed, h)
@@ -65,17 +65,15 @@ class Vec2:
         """
         Get the component of the vector at the given index.
         Args:
-            index (int): The index of the component (0 for x, 1 for y, 2 for z).
+            index (int): The index of the component (0 for x, 1 for y).
         Returns:
             float: The value of the component at the given index.
         Raises:
             IndexError: If the index is out of range.
         """
-        components = [self.x, self.y]
-        try:
-            return components[index]
-        except IndexError:
+        if index < 0 or index > 1:
             raise IndexError("Index out of range. Valid indices are 0, 1,")
+        return self._data[index]
 
     def _validate_and_set(self, v, name):
         """
@@ -100,8 +98,7 @@ class Vec2:
             Vec2: A new vector that is the result of adding this vector and the rhs vector.
         """
         r = Vec2()
-        r.x = self.x + rhs.x
-        r.y = self.y + rhs.y
+        r._data = self._data + rhs._data
         return r
 
     def __iadd__(self, rhs):
@@ -113,8 +110,7 @@ class Vec2:
         Returns:
             Vec2: returns this vector after adding the rhs vector.
         """
-        self.x += rhs.x
-        self.y += rhs.y
+        self._data += rhs._data
         return self
 
     def __sub__(self, rhs):
@@ -127,8 +123,7 @@ class Vec2:
             Vec2: A new vector that is the result of subtracting this vector and the rhs vector.
         """
         r = Vec2()
-        r.x = self.x - rhs.x
-        r.y = self.y - rhs.y
+        r._data = self._data - rhs._data
         return r
 
     def __isub__(self, rhs):
@@ -140,8 +135,7 @@ class Vec2:
         Returns:
             Vec2: returns this vector after subtracting the rhs vector.
         """
-        self.x -= rhs.x
-        self.y -= rhs.y
+        self._data -= rhs._data
         return self
 
     def __eq__(self, rhs):
@@ -153,10 +147,9 @@ class Vec2:
             bool: True if the vectors are close, False otherwise.
             NotImplemented: If the right-hand side is not a Vec2.
         """
-
         if not isinstance(rhs, Vec2):
             return NotImplemented
-        return math.isclose(self.x, rhs.x) and math.isclose(self.y, rhs.y)
+        return np.allclose(self._data, rhs._data)
 
     def __neq__(self, rhs):
         """
@@ -167,22 +160,20 @@ class Vec2:
             bool: True if the vectors are not close, False otherwise.
             NotImplemented: If the right-hand side is not a Vec2.
         """
-
         if not isinstance(rhs, Vec2):
             return NotImplemented
-        return not (math.isclose(self.x, rhs.x) and math.isclose(self.y, rhs.y))
+        return not np.allclose(self._data, rhs._data)
 
     def __neg__(self):
         """
         negate a vector -a
         """
-        self.x = -self.x
-        self.y = -self.y
+        self._data = -self._data
         return self
 
     def set(self, x, y):
         """
-        set the x,y,z values of the vector
+        set the x,y values of the vector
         Args:
             x (float): The x-coordinate of the vector.
             y (float): The y-coordinate of the vector.
@@ -190,8 +181,8 @@ class Vec2:
             ValueError: if x,y are not float
         """
         try:
-            self.x = float(x)
-            self.y = float(y)
+            self._data[0] = float(x)
+            self._data[1] = float(y)
         except ValueError:
             raise ValueError(f"Vec2.set {x=} {y=} all need to be float")
 
@@ -201,7 +192,7 @@ class Vec2:
         Args:
             rhs (Vec2): The right-hand side vector to dot product with.
         """
-        return self.x * rhs.x + self.y * rhs.y
+        return np.dot(self._data, rhs._data)
 
     def length(self):
         """
@@ -209,7 +200,7 @@ class Vec2:
         Returns:
             float: The length of the vector.
         """
-        return math.sqrt(self.x**2 + self.y**2)
+        return np.linalg.norm(self._data)
 
     def length_squared(self):
         """
@@ -217,7 +208,7 @@ class Vec2:
         Returns:
             float: The length of the vector squared
         """
-        return self.x**2 + self.y**2
+        return np.dot(self._data, self._data)
 
     def inner(self, rhs):
         """
@@ -227,14 +218,13 @@ class Vec2:
         Returns:
             float: The inner product of the two vectors.
         """
-        return (self.x * rhs.x) + (self.y * rhs.y)
+        return np.dot(self._data, rhs._data)
 
     def null(self):
         """
         set the vector to zero
         """
-        self.x = 0.0
-        self.y = 0.0
+        self._data[:] = 0.0
 
     def cross(self, rhs):
         """
@@ -255,13 +245,11 @@ class Vec2:
             ZeroDivisionError: If the length of the vector is zero.
         """
         vector_length = self.length()
-        try:
-            self.x /= vector_length
-            self.y /= vector_length
-        except ZeroDivisionError:
+        if vector_length == 0.0:
             raise ZeroDivisionError(
                 f"Vec2.normalize {vector_length} length is zero most likely calling normalize on a zero vector"
             )
+        self._data /= vector_length
         return self
 
     def reflect(self, n):
@@ -282,10 +270,9 @@ class Vec2:
         Args:
             low (float): The low end of the range.
             high (float): The high end of the range.
-
         """
-        self.x = clamp(self.x, low, high)
-        self.y = clamp(self.y, low, high)
+        self._data[0] = clamp(self.x, low, high)
+        self._data[1] = clamp(self.y, low, high)
 
     def __repr__(self):
         "object representation for debugging"
@@ -293,9 +280,17 @@ class Vec2:
 
     def __truediv__(self, rhs):
         if isinstance(rhs, (float, int)):
-            return Vec2(self.x / rhs, self.y / rhs)
+            if rhs == 0.0:
+                raise ZeroDivisionError("division by zero")
+            r = Vec2()
+            r._data = self._data / rhs
+            return r
         elif isinstance(rhs, Vec2):
-            return Vec2(self.x / rhs.x, self.y / rhs.y)
+            if np.any(rhs._data == 0.0):
+                raise ZeroDivisionError("division by zero")
+            r = Vec2()
+            r._data = self._data / rhs._data
+            return r
         else:
             raise ValueError(f"can only do piecewise division with a scalar {rhs=}")
 
@@ -314,7 +309,9 @@ class Vec2:
             ValueError: If the right-hand side is not a float.
         """
         if isinstance(rhs, (float, int)):
-            return Vec2(self.x * rhs, self.y * rhs)
+            r = Vec2()
+            r._data = self._data * rhs
+            return r
         else:
             raise ValueError(f"can only do piecewise multiplication with a scalar {rhs=}")
 
@@ -339,22 +336,24 @@ class Vec2:
             Vec2: A new vector that is the result of multiplying this vector by the matrix.
         """
         return Vec2(
-            self.x * rhs.m[0][0] + self.y * rhs.m[1][0],
-            self.x * rhs.m[0][1] + self.y * rhs.m[1][1],
+            self.x * rhs.m[0, 0] + self.y * rhs.m[1, 0],
+            self.x * rhs.m[0, 1] + self.y * rhs.m[1, 1],
         )
 
 
 # Helper function to create properties
-def _create_property(attr_name):
+def _create_property(index):
     def getter(self):
-        return getattr(self, f"_{attr_name}")
+        return self._data[index]
 
     def setter(self, value):
-        self._validate_and_set(value, f"_{attr_name}")
+        if not isinstance(value, (int, float, np.float32)):
+            raise ValueError("need float or int")
+        self._data[index] = value
 
     return property(getter, setter)
 
 
 # Dynamically add properties for x, y
-for attr in ["x", "y"]:
-    setattr(Vec2, attr, _create_property(attr))
+for i, attr in enumerate(["x", "y"]):
+    setattr(Vec2, attr, _create_property(i))

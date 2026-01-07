@@ -231,8 +231,8 @@ class Mat4:
             return self._mat_mul(rhs)
         elif isinstance(rhs, Vec4):
             # Vector transformation
-            vec = np.array([rhs.x, rhs.y, rhs.z, rhs.w], dtype=np.float64)
-            res = self.m @ vec
+            # vec = np.array([rhs.x, rhs.y, rhs.z, rhs.w], dtype=np.float64)
+            res = self.m @ rhs._data
             return Vec4(res[0], res[1], res[2], res[3])
         else:
             raise Mat4Error

@@ -96,12 +96,12 @@ def test_to_numpy():
 
 def test_repr():
     a = Vec2Array([Vec2(1, 2)])
-    assert repr(a) == "Vec2Array([Vec2 [1,2]])"
+    assert repr(a) == "Vec2Array([Vec2 [1.0,2.0]])"
 
 
 def test_str():
     a = Vec2Array([Vec2(1, 2)])
-    assert str(a) == "[Vec2 [1,2]]"
+    assert str(a) == "[Vec2 [1.0,2.0]]"
 
 
 def test_sizeof():
