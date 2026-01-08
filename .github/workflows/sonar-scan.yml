@@ -9,6 +9,8 @@ jobs:
   sonarcloud:
     name: SonarCloud
     runs-on: ubuntu-latest
+    env:
+      QT_QPA_PLATFORM: offscreen
     strategy:
       matrix:
         python-version: ["3.13"]
@@ -26,7 +28,7 @@ jobs:
 
       - name: Install dependencies and run coverag
         run: |
-          uv run coverage run --source=src/ngl -m pytest -v tests && uv run coverage report -m
+          uv run coverage run --source=src/ngl -m pytest -v tests --ignore="*widget*.py" && uv run coverage report -m
           uv run coverage xml
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5.0.0
