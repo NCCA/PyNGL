@@ -109,7 +109,7 @@ def test_mult_error():
         _ = a @ 2
     with pytest.raises(Mat3Error):
         a = Mat3()
-        a * "a"
+        _ = a * "a"
 
 
 def test_mat3_times_mat3():

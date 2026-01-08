@@ -16,8 +16,8 @@ from ncca.ngl import (
 def test_clamp():
     assert clamp(2, 10, 20) == 10  # test  int up
     assert clamp(200, 10, 20) == 20  # test int down
-    assert clamp(0.1, 0.01, 1.0) == 0.1
-    assert clamp(2.1, 0.01, 1.2) == 1.2
+    assert clamp(0.1, 0.01, 1.0) == pytest.approx(0.1)
+    assert clamp(2.1, 0.01, 1.2) == pytest.approx(1.2)
 
 
 def test_lerp():
@@ -73,9 +73,7 @@ def test_ortho():
 
 
 def test_calc_normal():
-    result = calc_normal(
-        Vec3(-1.0, -1.0, 0.0), Vec3(0.0, 0.0, 0.0), Vec3(1.0, -1.0, 0.0)
-    )
+    result = calc_normal(Vec3(-1.0, -1.0, 0.0), Vec3(0.0, 0.0, 0.0), Vec3(1.0, -1.0, 0.0))
     assert result == pytest.approx(Vec3(0.0, 0.0, 1.0), abs=1e-3)
 
 

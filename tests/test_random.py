@@ -122,7 +122,7 @@ def test_get_random_colour4():
     assert 0.0 <= v.x <= 1.0
     assert 0.0 <= v.y <= 1.0
     assert 0.0 <= v.z <= 1.0
-    assert v.w == 1.0
+    assert v.w == pytest.approx(1.0)
 
 
 def test_get_random_normalized_vec3():
