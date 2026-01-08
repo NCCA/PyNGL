@@ -201,7 +201,7 @@ def test_mul():
     assert v2.x == pytest.approx(2.0)
     assert v2.y == pytest.approx(4.0)
     with pytest.raises(ValueError):
-        v * "a"
+        _ = v * "a"
 
 
 def test_rmul():

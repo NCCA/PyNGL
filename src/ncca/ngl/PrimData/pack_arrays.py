@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 
-import numpy as np
 import pathlib
+
+import numpy as np
 
 files = pathlib.Path(".").glob("*.npy")
 
 data = {}
 for f in files:
     data[str(f.stem)] = np.load(f)
-    # arrays.append(np.load(f))
-    # names.append(str(f.stem))
 print(data.keys())
 
 

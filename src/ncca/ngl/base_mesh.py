@@ -54,6 +54,24 @@ class BaseMesh:
         """
         return all(len(f.vertex) == 3 for f in self.faces)
 
+    def _should_skip_vao_creation(self, reset_vao: bool) -> bool:
+        """Check if VAO creation should be skipped."""
+        if self.vao is None:
+            return False
+
+        if reset_vao:
+            logger.warning("VAO exist so returning")
+            return True
+
+        logger.warning("Creating new VAO")
+        return False
+
+    def _validate_triangular_mesh(self) -> None:
+        """Validate that the mesh is composed of triangles."""
+        if not self.is_triangular():
+            logger.error("Can only create VBO from all Triangle data at present")
+            raise RuntimeError("Can only create VBO from all Triangle data at present")
+
     def create_vao(self, reset_vao: bool = False) -> None:
         """
         Create a Vertex Array Object (VAO) for the mesh.
@@ -64,20 +82,14 @@ class BaseMesh:
         Raises:
             RuntimeError: If the mesh is not composed entirely of triangles.
         """
-        if reset_vao:
-            if self.vao is not None:
-                logger.warning("VAO exist so returning")
-                return
-        else:
-            if self.vao is not None:
-                logger.warning("Creating new VAO")
 
-        data_pack_type = 0
-        if self.is_triangular():
-            data_pack_type = gl.GL_TRIANGLES
-        if data_pack_type == 0:
-            logger.error("Can only create VBO from all Triangle data at present")
-            raise RuntimeError("Can only create VBO from all Triangle data at present")
+        # Handle existing VAO based on reset_vao flag
+        if self._should_skip_vao_creation(reset_vao):
+            return
+        # Validate mesh is triangular
+        self._validate_triangular_mesh()
+
+        data_pack_type = gl.GL_TRIANGLES
 
         @dataclass
         class VertData:
@@ -123,9 +135,7 @@ class BaseMesh:
                 vbo_mesh.append(d)
 
         mesh_data = np.concatenate([v.as_array() for v in vbo_mesh]).astype(np.float32)
-        self.vao = vao_factory.VAOFactory.create_vao(
-            vao_factory.VAOType.SIMPLE, data_pack_type
-        )
+        self.vao = vao_factory.VAOFactory.create_vao(vao_factory.VAOType.SIMPLE, data_pack_type)
         with self.vao as vao:
             mesh_size = len(mesh_data) // 8
             vao.set_data(VertexData(mesh_data, mesh_size))
@@ -137,9 +147,7 @@ class BaseMesh:
             vao.set_vertex_attribute_pointer(2, 2, gl.GL_FLOAT, 8 * 4, 6 * 4)
             vao.set_num_indices(mesh_size)
         self.calc_dimensions()
-        self.bbox = BBox.from_extents(
-            self.min_x, self.max_x, self.min_y, self.max_y, self.min_z, self.max_z
-        )
+        self.bbox = BBox.from_extents(self.min_x, self.max_x, self.min_y, self.max_y, self.min_z, self.max_z)
 
     def calc_dimensions(self) -> None:
         """
