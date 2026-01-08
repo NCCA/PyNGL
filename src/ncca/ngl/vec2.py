@@ -280,13 +280,13 @@ class Vec2:
 
     def __truediv__(self, rhs):
         if isinstance(rhs, (float, int)):
-            if rhs == 0.0:
+            if math.isclose(rhs, 0.0):
                 raise ZeroDivisionError("division by zero")
             r = Vec2()
             r._data = self._data / rhs
             return r
         elif isinstance(rhs, Vec2):
-            if np.any(rhs._data == 0.0):
+            if np.any(np.isclose(rhs._data, 0.0)):
                 raise ZeroDivisionError("division by zero")
             r = Vec2()
             r._data = self._data / rhs._data
