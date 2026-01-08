@@ -245,7 +245,7 @@ class Vec2:
             ZeroDivisionError: If the length of the vector is zero.
         """
         vector_length = self.length()
-        if vector_length == 0.0:
+        if math.isclose(vector_length, 0.0):
             raise ZeroDivisionError(
                 f"Vec2.normalize {vector_length} length is zero most likely calling normalize on a zero vector"
             )
