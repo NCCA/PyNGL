@@ -1,13 +1,11 @@
 # TODO
 
 
-to_list
-to_numpy everywhere for math types is get_list better? or .list()?
+Updated for numpy in this branch. 
 
+Need to add webgpu code.
 
 1. add sizeof() methods to Arrays classes and Mat
 2. get a better ctor for Mats and make sure API is consistent
 3 Fix Text
-4. Add VAOPrimitives (from WebGPU demo)
-5. much more error checking and use logger to do it.
-
+4. unify api for all elements so add to_list, to_numpy to_tuple 

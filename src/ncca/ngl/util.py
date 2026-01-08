@@ -161,5 +161,3 @@ def hash_combine(seed, h):
     seed = (seed + 0x9E3779B9 + ((seed << 6) & 0xFFFFFFFFFFFFFFFF) + (seed >> 2)) & 0xFFFFFFFFFFFFFFFF
     seed ^= h
     return seed
-
-

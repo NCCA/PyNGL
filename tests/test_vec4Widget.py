@@ -1,0 +1,145 @@
+import pytest
+from PySide6.QtCore import Qt
+from PySide6.QtTest import QTest
+
+from ncca.ngl import Vec4
+from ncca.ngl.widgets import Vec4Widget
+
+
+def test_vec4_widget_initial_value(qtbot):
+    # Create the window
+    v4 = Vec4Widget()
+    qtbot.addWidget(v4)
+
+    assert v4.get_value() == Vec4(0, 0, 0, 1)
+    assert v4.get_name() == ""
+
+
+def test_vec4_widget_constructor_initial_value_and_name(qtbot):
+    # Pass name and value via keywords (constructor signature is parent, name, value)
+    start_value = Vec4(0.5, -0.5, 1.0, 0.5)
+    v4 = Vec4Widget(name="InitName", value=start_value)
+    qtbot.addWidget(v4)
+
+    # internal value and label text
+    assert v4.get_value() == start_value
+    assert v4.get_name() == "InitName"
+    # spinboxes initialized to the provided values
+    assert v4.get_value() == start_value
+
+
+def test_vec4_widget_set_value(qtbot):
+    # Create the window
+    v4 = Vec4Widget()
+    qtbot.addWidget(v4)
+    v4.set_value(Vec4(1, 2, 3, 1))
+    assert v4.get_value() == Vec4(1, 2, 3, 1)
+
+
+def test_property_accessors(qtbot):
+    v4 = Vec4Widget()
+    qtbot.addWidget(v4)
+
+    # property-style assignment should work (Qt Property wrapper)
+    v4.value = Vec4(7, 8, 9, 0)
+    assert v4.get_value() == Vec4(7, 8, 9, 0)
+
+    v4.name = "PropName"
+    assert v4.get_name() == "PropName"
+    assert v4._label.text() == "PropName"
+
+
+def test_value_signals_for_each_component(qtbot):
+    # Verify per-axis signals emit when spinboxes change (already in your tests,
+    # but keep a concise check here)
+    v4 = Vec4Widget()
+    qtbot.addWidget(v4)
+
+    with qtbot.waitSignal(v4.xValueChanged, timeout=1000) as sig_x:
+        v4.x_spinbox.setValue(1.23)
+    assert sig_x.args == [pytest.approx(1.23)]
+
+    with qtbot.waitSignal(v4.yValueChanged, timeout=1000) as sig_y:
+        v4.y_spinbox.setValue(-2.34)
+    assert sig_y.args == [pytest.approx(-2.34)]
+
+    with qtbot.waitSignal(v4.zValueChanged, timeout=1000) as sig_z:
+        v4.z_spinbox.setValue(3.45)
+    assert sig_z.args == [pytest.approx(3.45)]
+    with qtbot.waitSignal(v4.wValueChanged, timeout=1000) as sig_w:
+        v4.w_spinbox.setValue(4.56)
+    assert sig_z.args == [pytest.approx(3.45)]
+
+
+def test_set_value_blocks_axis_signals_but_emits_valueChanged(qtbot):
+    v4 = Vec4Widget()
+    qtbot.addWidget(v4)
+
+    # lists to collect any axis signal emissions
+    xs = []
+    ys = []
+    zs = []
+    ws = []
+    v4.xValueChanged.connect(xs.append)
+    v4.yValueChanged.connect(ys.append)
+    v4.zValueChanged.connect(zs.append)
+    v4.wValueChanged.connect(ws.append)
+
+    new_val = Vec4(1.0, 2.0, 3.0, 4.0)
+    # set_value uses QSignalBlocker on the spinboxes, so individual axis signals
+    # should NOT be emitted, but the combined valueChanged should be.
+    with qtbot.waitSignal(v4.valueChanged, timeout=1000) as sig:
+        v4.set_value(new_val)
+
+    assert v4.get_value() == new_val
+    # axis signal lists must remain empty
+    assert xs == []
+    assert ys == []
+    assert zs == []
+    assert ws == []
+    # the valueChanged signal should have been emitted with the Vec4
+    assert sig.args == [new_val]
+
+
+def test_set_range_and_individual_ranges(qtbot):
+    v4 = Vec4Widget()
+    qtbot.addWidget(v4)
+
+    # set individual ranges
+    v4.set_x_range(-1.0, 1.0)
+    assert v4.x_spinbox.minimum() == pytest.approx(-1.0)
+    assert v4.x_spinbox.maximum() == pytest.approx(1.0)
+
+    v4.set_y_range(-2.0, 2.0)
+    assert v4.y_spinbox.minimum() == pytest.approx(-2.0)
+    assert v4.y_spinbox.maximum() == pytest.approx(2.0)
+
+    v4.set_z_range(-3.0, 3.0)
+    assert v4.z_spinbox.minimum() == pytest.approx(-3.0)
+    assert v4.z_spinbox.maximum() == pytest.approx(3.0)
+
+    v4.set_w_range(-4.0, 4.0)
+    assert v4.w_spinbox.minimum() == pytest.approx(-4.0)
+    assert v4.w_spinbox.maximum() == pytest.approx(4.0)
+
+    # set_range should override all three
+    v4.set_range(-5.0, 5.0)
+    assert v4.x_spinbox.minimum() == pytest.approx(-5.0)
+    assert v4.x_spinbox.maximum() == pytest.approx(5.0)
+    assert v4.y_spinbox.minimum() == pytest.approx(-5.0)
+    assert v4.y_spinbox.maximum() == pytest.approx(5.0)
+    assert v4.z_spinbox.minimum() == pytest.approx(-5.0)
+    assert v4.z_spinbox.maximum() == pytest.approx(5.0)
+    assert v4.w_spinbox.minimum() == pytest.approx(-5.0)
+    assert v4.w_spinbox.maximum() == pytest.approx(5.0)
+
+
+def test_set_single_step_applies_to_all(qtbot):
+    v4 = Vec4Widget()
+    qtbot.addWidget(v4)
+
+    v4.set_single_step(0.5)
+    assert v4.x_spinbox.singleStep() == pytest.approx(0.5)
+    assert v4.y_spinbox.singleStep() == pytest.approx(0.5)
+    assert v4.z_spinbox.singleStep() == pytest.approx(0.5)
+    assert v4.w_spinbox.singleStep() == pytest.approx(0.5)

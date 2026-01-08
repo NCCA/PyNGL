@@ -78,7 +78,7 @@ class Vec2Widget(QFrame):
         Args:
             value: The new value of the widget.
         """
-        with QSignalBlocker(self.x_spinbox), QSignalBlocker(self.y_spinbox), QSignalBlocker(self.z_spinbox):
+        with QSignalBlocker(self.x_spinbox), QSignalBlocker(self.y_spinbox):
             self.x_spinbox.setValue(value.x)
             self.y_spinbox.setValue(value.y)
         self._value = value

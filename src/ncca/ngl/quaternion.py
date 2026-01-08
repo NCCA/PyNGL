@@ -1,5 +1,6 @@
 """
 A simple Quaternion class for use in NCCA Python
+NumPy-based implementation for efficient operations
 Attributes:
     s (float): The scalar part of the quaternion.
     x (float): The x-coordinate of the vector part of the quaternion.
@@ -9,12 +10,14 @@ Attributes:
 
 import math
 
+import numpy as np
+
 from .mat4 import Mat4
 from .vec3 import Vec3
 
 
 class Quaternion:
-    __slots__ = ["s", "x", "y", "z"]  # fix the attributes to s x,y,z
+    __slots__ = ["_data"]  # Store as [s, x, y, z]
 
     def __init__(self, s: float = 1.0, x: float = 0, y: float = 0, z: float = 0):
         """
@@ -25,12 +28,40 @@ class Quaternion:
             x (float): The x-coordinate of the vector part of the quaternion.
             y (float): The y-coordinate of the vector part of the quaternion.
             z (float): The z-coordinate of the vector part of the quaternion.
-
         """
-        self.s = float(s)
-        self.x = float(x)
-        self.y = float(y)
-        self.z = float(z)
+        self._data = np.array([float(s), float(x), float(y), float(z)], dtype=np.float64)
+
+    @property
+    def s(self):
+        return self._data[0]
+
+    @s.setter
+    def s(self, value):
+        self._data[0] = float(value)
+
+    @property
+    def x(self):
+        return self._data[1]
+
+    @x.setter
+    def x(self, value):
+        self._data[1] = float(value)
+
+    @property
+    def y(self):
+        return self._data[2]
+
+    @y.setter
+    def y(self, value):
+        self._data[2] = float(value)
+
+    @property
+    def z(self):
+        return self._data[3]
+
+    @z.setter
+    def z(self, value):
+        self._data[3] = float(value)
 
     @staticmethod
     def from_mat4(mat: "Mat4") -> "Quaternion":
@@ -42,7 +73,6 @@ class Quaternion:
 
         Returns:
             Quaternion: A new Quaternion representing the rotation matrix.
-
         """
         matrix = mat.get_matrix()
         T = 1.0 + matrix[0] + matrix[5] + matrix[10]
@@ -58,14 +88,12 @@ class Quaternion:
             y = (matrix[4] + matrix[1]) / scale
             z = (matrix[2] + matrix[8]) / scale
             s = (matrix[6] - matrix[9]) / scale
-
         elif matrix[5] > matrix[10]:
             scale = math.sqrt(1.0 + matrix[5] - matrix[0] - matrix[10]) * 2.0
             x = (matrix[4] + matrix[1]) / scale
             y = 0.25 * scale
             z = (matrix[9] + matrix[6]) / scale
             s = (matrix[8] - matrix[2]) / scale
-
         else:
             scale = math.sqrt(1.0 + matrix[10] - matrix[0] - matrix[5]) * 2.0
             x = (matrix[8] + matrix[2]) / scale
@@ -97,38 +125,37 @@ class Quaternion:
         return Quaternion(s, x, y, z)
 
     def __add__(self, rhs):
-        return Quaternion(self.s + rhs.s, self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
+        result = Quaternion()
+        result._data = self._data + rhs._data
+        return result
 
     def __iadd__(self, rhs):
-        self.s += rhs.s
-        self.x += rhs.x
-        self.y += rhs.y
-        self.z += rhs.z
+        self._data += rhs._data
         return self
 
     def __sub__(self, rhs):
-        return Quaternion(self.s - rhs.s, self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
+        result = Quaternion()
+        result._data = self._data - rhs._data
+        return result
 
     def __isub__(self, rhs):
-        return self.__sub__(rhs)
-
-    # def __mul__(self, rhs):
-    #     return Quaternion(
-    #         self.s * rhs.s - self.x * rhs.x - self.y * rhs.y - self.z * rhs.z,
-    #         self.s * rhs.x + self.x * rhs.s + self.y * rhs.z - self.z * rhs.y,
-    #         self.s * rhs.y - self.x * rhs.z + self.y * rhs.s + self.z * rhs.x,
-    #         self.s * rhs.z + self.x * rhs.y - self.y * rhs.x + self.z * rhs.s,
-    #     )
+        self._data -= rhs._data
+        return self
 
     def __mul__(self, rhs):
         if isinstance(rhs, Quaternion):
+            # Quaternion multiplication
+            s1, x1, y1, z1 = self._data
+            s2, x2, y2, z2 = rhs._data
+
             return Quaternion(
-                self.s * rhs.s - self.x * rhs.x - self.y * rhs.y - self.z * rhs.z,
-                self.s * rhs.x + self.x * rhs.s + self.y * rhs.z - self.z * rhs.y,
-                self.s * rhs.y - self.x * rhs.z + self.y * rhs.s + self.z * rhs.x,
-                self.s * rhs.z + self.x * rhs.y - self.y * rhs.x + self.z * rhs.s,
+                s1 * s2 - x1 * x2 - y1 * y2 - z1 * z2,
+                s1 * x2 + x1 * s2 + y1 * z2 - z1 * y2,
+                s1 * y2 - x1 * z2 + y1 * s2 + z1 * x2,
+                s1 * z2 + x1 * y2 - y1 * x2 + z1 * s2,
             )
         elif isinstance(rhs, Vec3):
+            # Quaternion-vector multiplication (rotate vector by quaternion)
             qw = self.s
             qx = self.x
             qy = self.y
@@ -138,13 +165,13 @@ class Quaternion:
             vy = rhs.y
             vz = rhs.z
 
-            # pq
+            # pq (quaternion * pure quaternion from vector)
             pw = -qx * vx - qy * vy - qz * vz
             px = qw * vx + qy * vz - qz * vy
             py = qw * vy - qx * vz + qz * vx
             pz = qw * vz + qx * vy - qy * vx
 
-            # pqp*
+            # pqp* (result * conjugate of quaternion)
             return Vec3(
                 -pw * qx + px * qw - py * qz + pz * qy,
                 -pw * qy + px * qz + py * qw - pz * qx,
@@ -152,12 +179,25 @@ class Quaternion:
             )
 
     def normalize(self):
-        length = math.sqrt(self.s * self.s + self.x * self.x + self.y * self.y + self.z * self.z)
+        """Normalize the quaternion to unit length"""
+        length = np.linalg.norm(self._data)
         if length > 0:
-            self.s /= length
-            self.x /= length
-            self.y /= length
-            self.z /= length
+            self._data /= length
+
+    def length(self):
+        """Return the length/magnitude of the quaternion"""
+        return np.linalg.norm(self._data)
+
+    def conjugate(self):
+        """Return the conjugate of the quaternion (s, -x, -y, -z)"""
+        result = Quaternion()
+        result._data = self._data.copy()
+        result._data[1:] *= -1  # Negate x, y, z components
+        return result
+
+    def dot(self, rhs):
+        """Dot product of two quaternions"""
+        return np.dot(self._data, rhs._data)
 
     def __str__(self) -> str:
         """
@@ -165,9 +205,16 @@ class Quaternion:
 
         Returns:
             str: A string representation of the Quaternion.
-
         """
         return f"Quaternion({self.s}, [{self.x}, {self.y}, {self.z}])"
 
     def __repr__(self) -> str:
         return f"Quaternion({self.s}, [{self.x}, {self.y}, {self.z}])"
+
+    def to_numpy(self):
+        """Return the quaternion as a numpy array [s, x, y, z]"""
+        return self._data.copy()
+
+    def to_list(self):
+        """Return the quaternion as a list [s, x, y, z]"""
+        return self._data.tolist()

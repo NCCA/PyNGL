@@ -22,6 +22,7 @@ class Vec3Widget(QFrame):
         super().__init__(parent)
         self.setFrameShape(QFrame.Shape.StyledPanel)
         self._value = value
+
         self._name = name
         layout = QHBoxLayout()
 
