@@ -53,6 +53,7 @@ class LookAtWidget(QFrame):
         content_layout.addWidget(self._up)
         main_layout.addWidget(self._toggle_button)
         main_layout.addWidget(self._content_widget)
+        self._update_matrix()
 
     def set_eye(self, eye):
         self._eye.set_value(eye)
@@ -68,7 +69,7 @@ class LookAtWidget(QFrame):
         self._toggle_button.setText(name)
 
     def get_name(self):
-        return self._name.text()
+        return self._name
 
     def get_eye(self):
         return self._eye.value
