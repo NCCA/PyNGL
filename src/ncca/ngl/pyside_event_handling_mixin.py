@@ -96,31 +96,11 @@ class PySideEventHandlingMixin:
         self.INCREMENT = self.translation_sensitivity
         self.ZOOM = self.zoom_sensitivity
 
-    # def sync_legacy_attributes(self) -> None:
-    #     """
-    #     Synchronize legacy attribute names with new ones.
-    #     Call this if you modify the legacy attributes directly.
-    #     """
-    #     self.spin_x_face = self.spinXFace
-    #     self.spin_y_face = self.spinYFace
-    #     self.model_position = self.modelPos
-    #     self.original_x_rotation = self.origX
-    #     self.original_y_rotation = self.origY
-    #     self.original_x_pos = self.origXPos
-    #     self.original_y_pos = self.origYPos
-    #     self.translation_sensitivity = self.INCREMENT
-    #     self.zoom_sensitivity = self.ZOOM
-
     def reset_camera(self) -> None:
         """Reset camera rotation and model position to defaults."""
         self.spin_x_face = 0
         self.spin_y_face = 0
         self.model_position.set(0, 0, 0)
-
-        # # Sync legacy attributes
-        # self.spinXFace = 0
-        # self.spinYFace = 0
-        # self.modelPos.set(0, 0, 0)
 
     def keyPressEvent(self, event) -> None:
         """
@@ -175,12 +155,6 @@ class PySideEventHandlingMixin:
             self.original_x_rotation = position.x()
             self.original_y_rotation = position.y()
 
-            # # Sync legacy attributes
-            # self.spinXFace = self.spin_x_face
-            # self.spinYFace = self.spin_y_face
-            # self.origX = self.original_x_rotation
-            # self.origY = self.original_y_rotation
-
             self.update()
 
         # Handle translation with right mouse button
@@ -193,11 +167,6 @@ class PySideEventHandlingMixin:
 
             self.model_position.x += self.translation_sensitivity * diff_x
             self.model_position.y -= self.translation_sensitivity * diff_y
-
-            # # Sync legacy attributes
-            # self.origXPos = self.original_x_pos
-            # self.origYPos = self.original_y_pos
-            # self.modelPos = self.model_position
 
             self.update()
 
@@ -218,18 +187,10 @@ class PySideEventHandlingMixin:
             self.original_y_rotation = position.y()
             self.rotate = True
 
-            # # Sync legacy attributes
-            # self.origX = self.original_x_rotation
-            # self.origY = self.original_y_rotation
-
         elif event.button() == Qt.RightButton:
             self.original_x_pos = position.x()
             self.original_y_pos = position.y()
             self.translate = True
-
-            # # Sync legacy attributes
-            # self.origXPos = self.original_x_pos
-            # self.origYPos = self.original_y_pos
 
     def mouseReleaseEvent(self, event) -> None:
         """
@@ -304,15 +265,6 @@ class PySideEventHandlingMixin:
         z = pos[2] if len(pos) > 2 else 0
         self.model_position.set(x, y, z)
 
-        self.rotation_sensitivity = state.get(
-            "rotation_sensitivity", self.DEFAULT_ROTATION_SENSITIVITY
-        )
-        self.translation_sensitivity = state.get(
-            "translation_sensitivity", self.DEFAULT_TRANSLATION_SENSITIVITY
-        )
-        self.zoom_sensitivity = state.get(
-            "zoom_sensitivity", self.DEFAULT_ZOOM_SENSITIVITY
-        )
-
-        # # Sync legacy attributes
-        # self.sync_legacy_attributes()
+        self.rotation_sensitivity = state.get("rotation_sensitivity", self.DEFAULT_ROTATION_SENSITIVITY)
+        self.translation_sensitivity = state.get("translation_sensitivity", self.DEFAULT_TRANSLATION_SENSITIVITY)
+        self.zoom_sensitivity = state.get("zoom_sensitivity", self.DEFAULT_ZOOM_SENSITIVITY)

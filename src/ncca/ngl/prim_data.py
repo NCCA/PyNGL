@@ -6,6 +6,9 @@ import numpy as np
 
 from .vec3 import Vec3
 
+RAD_POS = "Radius must be positive"
+NON_NEG = "Height must be non-negative"
+
 
 class Prims(enum.Enum):
     """Enum for the default primitives that can be loaded."""
@@ -355,9 +358,9 @@ class PrimData:
         and adapted
         """
         if radius <= 0.0:
-            raise ValueError("Radius must be positive")
+            raise ValueError(RAD_POS)
         if height < 0.0:
-            raise ValueError("Height must be non-negative")
+            raise ValueError(NON_NEG)
         if precision < 4:
             precision = 4
 
@@ -430,9 +433,9 @@ class PrimData:
         This method generates the cylinder walls, but not the top and bottom caps.
         """
         if radius <= 0.0:
-            raise ValueError("Radius must be positive")
+            raise ValueError(RAD_POS)
         if height < 0.0:
-            raise ValueError("Height must be non-negative")
+            raise ValueError(NON_NEG)
         if slices < 3:
             slices = 3
         if stacks < 1:
@@ -486,7 +489,7 @@ class PrimData:
             slices: The number of slices to divide the disk into.
         """
         if radius <= 0.0:
-            raise ValueError("Radius must be positive")
+            raise ValueError(RAD_POS)
         if slices < 3:
             slices = 3
 
@@ -540,7 +543,7 @@ class PrimData:
             rings: The number of rings for the torus.
         """
         if minor_radius <= 0 or major_radius <= 0:
-            raise ValueError("Radii must be positive")
+            raise ValueError(RAD_POS)
         if sides < 3 or rings < 3:
             raise ValueError("Sides and rings must be at least 3")
 
