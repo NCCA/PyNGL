@@ -369,7 +369,7 @@ def test_transform_matrix_full_transform(qtbot):
             assert result_matrix[i][j] == pytest.approx(expected_matrix[i][j])
 
 
-def test_multiple_valueChanged_emissions(qtbot):
+def test_multiple_value_changed_emissions(qtbot):
     """Test that multiple changes emit multiple signals."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
