@@ -68,7 +68,7 @@ def test_value_signals_for_each_component(qtbot):
     assert sig_z.args == [pytest.approx(3.45)]
 
 
-def test_set_value_blocks_axis_signals_but_emits_valueChanged(qtbot):
+def test_set_value_blocks_axis_signals_but_emits_value_changed(qtbot):
     v3 = Vec3Widget()
     qtbot.addWidget(v3)
 

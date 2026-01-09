@@ -265,11 +265,11 @@ def test_division():
     assert d == Vec4(0.5, 1.0, 1.0, 1.0)
     # test divide by zero
     with pytest.raises(ZeroDivisionError):
-        b = a / 0.0
+        _ = a / 0.0
     with pytest.raises(ZeroDivisionError):
-        b = a / Vec4(0.0, 1.0, 1.0, 1.0)
+        _ = a / Vec4(0.0, 1.0, 1.0, 1.0)
     with pytest.raises(ValueError):
-        b = a / "hello"
+        _ = a / "hello"
 
 
 def test_coverage_vec4():

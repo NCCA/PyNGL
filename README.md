@@ -2,8 +2,13 @@
 
 This is the code for the full python version of [NGL](https://github.com/NCCA/NGL) the ncca graphics library.
 
-More details soon as this is work in progress.
+This project is available on PyPI and can be installed using uv.
 
+For the current build status see our CI logs here 
+
+[![UV Tests](https://github.com/NCCA/PyNGL/actions/workflows/uv.yml/badge.svg)](https://github.com/NCCA/PyNGL/actions/workflows/uv.yml)[![Sonar Scanner](https://github.com/NCCA/PyNGL/actions/workflows/sonar-scan.yml/badge.svg)](https://github.com/NCCA/PyNGL/actions/workflows/sonar-scan.yml)
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=NCCA_PyNGL&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=NCCA_PyNGL)[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=NCCA_PyNGL&metric=bugs)](https://sonarcloud.io/summary/new_code?id=NCCA_PyNGL)[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=NCCA_PyNGL&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=NCCA_PyNGL)[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=NCCA_PyNGL&metric=coverage)](https://sonarcloud.io/summary/new_code?id=NCCA_PyNGL)[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=NCCA_PyNGL&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=NCCA_PyNGL)
 
 ## Test
 

@@ -68,10 +68,10 @@ def test_value_signals_for_each_component(qtbot):
     assert sig_z.args == [pytest.approx(3.45)]
     with qtbot.waitSignal(v4.wValueChanged, timeout=1000) as sig_w:
         v4.w_spinbox.setValue(4.56)
-    assert sig_z.args == [pytest.approx(3.45)]
+    assert sig_w.args == [pytest.approx(4.56)]
 
 
-def test_set_value_blocks_axis_signals_but_emits_valueChanged(qtbot):
+def test_set_value_blocks_axis_signals_but_emits_value_changed(qtbot):
     v4 = Vec4Widget()
     qtbot.addWidget(v4)
 
