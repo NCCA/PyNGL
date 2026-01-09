@@ -36,6 +36,19 @@ def test_create_simple_image_rgba(tmp_path):
     assert np.array_equal(pixels[3, 0], [255, 255, 255, 255])
 
 
+def test_create_simple_image_grey(tmp_path):
+    size = 4
+    img = Image(width=size, height=size, mode=ImageModes.GRAY)
+
+    filename = tmp_path / "simpleGrey.png"
+    assert img.save(str(filename))
+
+    loaded_img = Image(str(filename))
+    assert loaded_img.width == size
+    assert loaded_img.height == size
+    assert loaded_img.mode == ImageModes.GRAY
+
+
 def test_load_save_fail():
     loaded_img = Image()
     assert not loaded_img.load("notthere")
