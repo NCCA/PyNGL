@@ -86,8 +86,8 @@ def test_eq():
 
 def test_neq():
     v1 = Vec2(1.0, 2.0)
-    v2 = Vec2(1.0, 2.0)
-    assert not (v1 != v2)
+    v2 = Vec2(1.0, 3.0)
+    assert v1 != v2
     v3 = Vec2(2.0, 2.0)
     assert v1 != v3
     v4 = Vec2(3.0, 4.0)

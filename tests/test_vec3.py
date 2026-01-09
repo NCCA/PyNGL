@@ -29,7 +29,7 @@ def test_ctor():
     assert v.z == pytest.approx(0.0)
 
 
-def test_userCtor():
+def test_user_ctor():
     v = Vec3(2.0, 3.0, 4.0)
     assert v.x == pytest.approx(2.0)
     assert v.y == pytest.approx(3.0)

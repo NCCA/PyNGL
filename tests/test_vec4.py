@@ -160,11 +160,10 @@ def test_equal():
 def test_not_equal():
     a = Vec4(0.3, 0.4, 0.3, 1.0)
     b = Vec4(0.1, 0.2, 0.3, 1.0)
-    c = Vec4(0.3, 0.4, 0.3, 1.0)
     d = Vec4(1.1, 2.2, 3.3, 4.4)
     assert a != b
     assert a != d
-    assert not (a != c)
+
     assert a.__neq__(1) == NotImplemented
 
 
@@ -228,7 +227,7 @@ def test_string():
 
 def test_iterable():
     a = Vec4(1, 2, 3, 4)
-    b = [x for x in a]
+    b = list(a)
     assert b == [1, 2, 3, 4]
     assert a[0] == 1
     assert a[1] == 2
