@@ -286,10 +286,6 @@ class ShaderProgram:
             logger.warning(f"Uniform location not found for '{name}'")
             return
 
-        # Get uniform info for better type handling
-        uniform_info = self.get_uniform_info(name)
-        _, uniform_type, array_size, is_array = uniform_info
-
         if len(value) == 1:
             self._set_single_value_uniform(loc, name, value[0])
         else:

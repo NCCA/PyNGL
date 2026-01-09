@@ -2,6 +2,7 @@
 Note opengl_context created once in conftest.py
 """
 
+import numpy as np
 import OpenGL.GL as gl
 import pytest
 
@@ -146,14 +147,12 @@ def test_set_uniform(opengl_context):
     mat = Mat3.from_list([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0])
     ShaderLib.set_uniform("testMat3", mat.to_list())
     result = ShaderLib.get_uniform_mat3("testMat3")
-    # assert np.array_equal(result, mat.get_numpy())
     assert result == mat.to_list()
     # fmt: off
     mat = Mat4.from_list([1.0, 2.0, 3.0, 4.0,  5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0,13.0, 14.0, 15.0, 16.0,])
     #fmt :on
     ShaderLib.set_uniform("testMat4", mat.to_list())
     result = ShaderLib.get_uniform_mat4("testMat4")
-    # assert np.array_equal(result, mat.to_list())
     assert result == mat.to_list()
 
 
@@ -614,7 +613,6 @@ def test_shaderprogram_uniform_blocks_not_found(opengl_context, uniform_block_sh
 
 def test_shaderprogram_set_uniform_buffer(opengl_context, uniform_block_shader):
     """Test setting uniform buffer data"""
-    import numpy as np
 
     # Create test data (3 4x4 matrices = 192 bytes)
     matrix_data = np.array(
@@ -689,7 +687,6 @@ def test_shaderprogram_set_uniform_buffer(opengl_context, uniform_block_shader):
 
 def test_shaderprogram_set_uniform_buffer_not_found(opengl_context, uniform_block_shader):
     """Test setting uniform buffer for non-existent block"""
-    import numpy as np
 
     data = np.array([1.0, 2.0, 3.0, 4.0], dtype=np.float32)
     result = uniform_block_shader.set_uniform_buffer("NonExistent", data.nbytes, data)
@@ -894,7 +891,6 @@ def test_shaderlib_uniform_buffer_shader(opengl_context):
     ShaderLib.use("UBOTest")
 
     # Test uniform buffer via ShaderLib
-    import numpy as np
 
     matrix_data = np.array(
         [
@@ -960,7 +956,6 @@ def test_shaderlib_uniform_buffer_shader(opengl_context):
 
 def test_shaderlib_uniform_buffer_no_shader(opengl_context):
     """Test ShaderLib uniform buffer with no current shader"""
-    import numpy as np
 
     # Clear current shader first
     ShaderLib.use(None)
@@ -1015,7 +1010,6 @@ def test_get_gl_type_string_edge_cases(opengl_context, simple_shader):
     assert simple_shader.get_gl_type_string(gl.GL_FLOAT_MAT3) == "mat3"
     assert simple_shader.get_gl_type_string(gl.GL_FLOAT_MAT4) == "mat4"
     assert simple_shader.get_gl_type_string(gl.GL_INT) == "int"
-    # assert simple_shader.get_gl_type_string(gl.GL_UNSIGNED_INT) == "unsigned int"
     assert simple_shader.get_gl_type_string(gl.GL_BOOL) == "bool"
     assert simple_shader.get_gl_type_string(gl.GL_DOUBLE) == "double"
     assert simple_shader.get_gl_type_string(gl.GL_SAMPLER_2D) == "sampler2D"
@@ -1042,7 +1036,6 @@ def test_shaderprogram_set_uniform_buffer_exception_handling(opengl_context, uni
         except Exception as e:
             # If exception is raised instead of caught, that's also valid
             print(e)
-            pass
 
 
 def test_shaderprogram_array_methods_with_invalid_location(opengl_context):

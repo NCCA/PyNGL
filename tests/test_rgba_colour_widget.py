@@ -64,7 +64,7 @@ def test_value_signals_for_each_component(qtbot):
     assert sig_b.args == [pytest.approx(0.75)]
 
 
-def test_set_colour_blocks_channel_signals_but_emits_colourChanged(qtbot):
+def test_set_colour_blocks_channel_signals_but_emits_colour_changed(qtbot):
     w = RGBColourWidget()
     qtbot.addWidget(w)
 
