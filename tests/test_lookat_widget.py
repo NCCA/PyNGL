@@ -265,7 +265,7 @@ def test_matrix_recalculation_with_different_up_vectors(qtbot):
     assert matrix_x_up != matrix_z_up
 
 
-def test_multiple_valueChanged_emissions(qtbot):
+def test_multiple_value_changed_emissions(qtbot):
     """Test that multiple changes emit multiple signals."""
     widget = LookAtWidget()
     qtbot.addWidget(widget)

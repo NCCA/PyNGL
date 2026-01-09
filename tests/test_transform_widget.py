@@ -90,7 +90,7 @@ def test_scale_range(qtbot):
     assert widget._scale.z_spinbox.maximum() == pytest.approx(20)
 
 
-def test_valueChanged_signal_on_position_change(qtbot):
+def test_value_changed_signal_on_position_change(qtbot):
     """Test that valueChanged signal emits when position changes."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -102,7 +102,7 @@ def test_valueChanged_signal_on_position_change(qtbot):
     assert isinstance(signal.args[0], Mat4)
 
 
-def test_valueChanged_signal_on_rotation_change(qtbot):
+def test_value_changed_signal_on_rotation_change(qtbot):
     """Test that valueChanged signal emits when rotation changes."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -114,7 +114,7 @@ def test_valueChanged_signal_on_rotation_change(qtbot):
     assert isinstance(signal.args[0], Mat4)
 
 
-def test_valueChanged_signal_on_scale_change(qtbot):
+def test_value_changed_signal_on_scale_change(qtbot):
     """Test that valueChanged signal emits when scale changes."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -126,7 +126,7 @@ def test_valueChanged_signal_on_scale_change(qtbot):
     assert isinstance(signal.args[0], Mat4)
 
 
-def test_valueChanged_signal_on_rotation_order_change(qtbot):
+def test_value_changed_signal_on_rotation_order_change(qtbot):
     """Test that valueChanged signal emits when rotation order changes."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -201,8 +201,6 @@ def test_toggle_collapsed_toggle_sequence(qtbot):
     # Expand again
     widget.toggle_collapsed(True)
     assert widget._content_widget.isVisible()
-
-
 
 
 def test_transform_matrix_calculation_identity(qtbot):

@@ -589,7 +589,7 @@ def test_setup_event_handling_with_none_position():
     assert window.model_position.z == 0
 
 
-def test_wheelEvent_priority_y_over_x(event_window):
+def test_wheel_event_priority_y_over_x(event_window):
     """Test that y delta takes priority over x delta when both are non-zero"""
     event_window.zoom_sensitivity = 0.5
     initial_z = event_window.model_position.z
