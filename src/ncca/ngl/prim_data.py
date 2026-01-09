@@ -1,7 +1,5 @@
-import enum
 from pathlib import Path
-from typing import Union
-
+from enum import Enum
 import numpy as np
 
 from .vec3 import Vec3
@@ -10,7 +8,7 @@ RAD_POS = "Radius must be positive"
 NON_NEG = "Height must be non-negative"
 
 
-class Prims(enum.Enum):
+class Prims(Enum):
     """Enum for the default primitives that can be loaded."""
 
     BUDDHA = "buddah"
@@ -605,7 +603,7 @@ class PrimData:
         return np.array(data, dtype=np.float32)
 
     @staticmethod
-    def primitive(name: Union[str, enum]) -> np.ndarray:
+    def primitive(name: str | Enum) -> np.ndarray:
         prim_folder = Path(__file__).parent / "PrimData"
         prims = np.load(prim_folder / "Primitives.npz")
         if isinstance(name, Prims):

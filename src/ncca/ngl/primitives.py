@@ -6,7 +6,7 @@ We need to create the data first which is stored in a map as part of the class, 
 which will generate a pipeline for this object and draw into the current context.
 """
 
-from typing import Dict, Union
+from typing import Dict
 
 import numpy as np
 import OpenGL.GL as gl
@@ -104,7 +104,7 @@ class Primitives:
             cls._loaded = True
 
     @classmethod
-    def draw(cls, name: Union[str, Prims]) -> None:
+    def draw(cls, name: str | Prims) -> None:
         """
         Draws the specified primitive.
 

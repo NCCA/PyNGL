@@ -281,6 +281,7 @@ class ShaderProgram:
             *value: The value(s) to set
         """
         loc = self.get_uniform_location(name)
+
         if loc == -1:
             logger.warning(f"Uniform location not found for '{name}'")
             return
@@ -290,50 +291,69 @@ class ShaderProgram:
         _, uniform_type, array_size, is_array = uniform_info
 
         if len(value) == 1:
-            val = value[0]
-            if isinstance(val, int):
-                gl.glUniform1i(loc, val)
-            elif isinstance(val, float):
-                gl.glUniform1f(loc, val)
-            elif isinstance(val, Mat2):
-                gl.glUniformMatrix2fv(loc, 1, gl.GL_FALSE, (ctypes.c_float * 4)(*val.get_matrix()))
-            elif isinstance(val, Mat3):
-                gl.glUniformMatrix3fv(loc, 1, gl.GL_FALSE, (ctypes.c_float * 9)(*val.get_matrix()))
-            elif isinstance(val, Mat4):
-                gl.glUniformMatrix4fv(loc, 1, gl.GL_FALSE, (ctypes.c_float * 16)(*val.get_matrix()))
-            elif isinstance(val, Vec2):
-                gl.glUniform2f(loc, *val)
-            elif isinstance(val, Vec3):
-                gl.glUniform3f(loc, *val)
-            elif isinstance(val, Vec4):
-                gl.glUniform4f(loc, *val)
-            else:
-                try:
-                    val = list(value[0])
-                    if len(val) == 4:
-                        gl.glUniformMatrix2fv(loc, 1, gl.GL_FALSE, (ctypes.c_float * 4)(*val))
-                    elif len(val) == 9:
-                        gl.glUniformMatrix3fv(loc, 1, gl.GL_FALSE, (ctypes.c_float * 9)(*val))
-                    elif len(val) == 16:
-                        gl.glUniformMatrix4fv(loc, 1, gl.GL_FALSE, (ctypes.c_float * 16)(*val))
-                except TypeError:
-                    logger.warning(f"Warning: uniform '{name}' has unknown type: {type(val)}")
+            self._set_single_value_uniform(loc, name, value[0])
+        else:
+            self._set_multi_value_uniform(loc, value)
 
-        elif len(value) == 2:
-            if isinstance(value[0], int):
-                gl.glUniform2i(loc, *value)
-            else:
-                gl.glUniform2f(loc, *value)
-        elif len(value) == 3:
-            if isinstance(value[0], int):
-                gl.glUniform3i(loc, *value)
-            else:
-                gl.glUniform3f(loc, *value)
-        elif len(value) == 4:
-            if isinstance(value[0], int):
-                gl.glUniform4i(loc, *value)
-            else:
-                gl.glUniform4f(loc, *value)
+    def _set_single_value_uniform(self, loc: int, name: str, val: Any) -> None:
+        """Handle setting a uniform from a single value."""
+        if isinstance(val, int):
+            gl.glUniform1i(loc, val)
+        elif isinstance(val, float):
+            gl.glUniform1f(loc, val)
+        elif isinstance(val, (Mat2, Mat3, Mat4)):
+            self._set_matrix_uniform(loc, val)
+        elif isinstance(val, (Vec2, Vec3, Vec4)):
+            self._set_vector_uniform(loc, val)
+        else:
+            self._set_list_based_uniform(loc, name, val)
+
+    def _set_matrix_uniform(self, loc: int, matrix: Any) -> None:
+        """Set a matrix uniform value."""
+        matrix_configs = {
+            Mat2: (4, gl.glUniformMatrix2fv),
+            Mat3: (9, gl.glUniformMatrix3fv),
+            Mat4: (16, gl.glUniformMatrix4fv),
+        }
+
+        size, func = matrix_configs[type(matrix)]
+        data = (ctypes.c_float * size)(*matrix.get_matrix())
+        func(loc, 1, gl.GL_FALSE, data)
+
+    def _set_vector_uniform(self, loc: int, vector: Any) -> None:
+        """Set a vector uniform value."""
+        vector_funcs = {Vec2: gl.glUniform2f, Vec3: gl.glUniform3f, Vec4: gl.glUniform4f}
+
+        func = vector_funcs[type(vector)]
+        func(loc, *vector)
+
+    def _set_list_based_uniform(self, loc: int, name: str, val: Any) -> None:
+        """Handle setting uniform from list-like values (potential matrices)."""
+        try:
+            val_list = list(val)
+            matrix_sizes = {4: gl.glUniformMatrix2fv, 9: gl.glUniformMatrix3fv, 16: gl.glUniformMatrix4fv}
+
+            if len(val_list) in matrix_sizes:
+                func = matrix_sizes[len(val_list)]
+                data = (ctypes.c_float * len(val_list))(*val_list)
+                func(loc, 1, gl.GL_FALSE, data)
+        except TypeError:
+            logger.warning(f"Warning: uniform '{name}' has unknown type: {type(val)}")
+
+    def _set_multi_value_uniform(self, loc: int, value: tuple) -> None:
+        """Handle setting uniform from multiple values (vectors)."""
+        value_len = len(value)
+        is_int = isinstance(value[0], int)
+
+        uniform_funcs = {
+            2: (gl.glUniform2i if is_int else gl.glUniform2f),
+            3: (gl.glUniform3i if is_int else gl.glUniform3f),
+            4: (gl.glUniform4i if is_int else gl.glUniform4f),
+        }
+
+        if value_len in uniform_funcs:
+            func = uniform_funcs[value_len]
+            func(loc, *value)
 
     def set_uniform_1fv(self, name: str, values: List[float]) -> None:
         """
@@ -845,7 +865,7 @@ class ShaderProgram:
         # Print array elements grouped by base name
         for base_name, elements in array_elements.items():
             logger.info(f"  Array elements for {base_name}:")
-            for element_name, location, uniform_type, size, is_array in elements:
+            for element_name, location, uniform_type, _, _ in elements:
                 type_str = self.get_gl_type_string(uniform_type)
                 logger.info(f"    {element_name} (type: {type_str}, location: {location})")
 
