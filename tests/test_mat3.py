@@ -129,7 +129,6 @@ def test_mult_mat3_equal():
 
 
 def test_mat3_mult_vec3():
-    t1 = Mat3()
     v1 = Vec3(1.0, 2.0, 3.0)
     t1 = Mat3.rotate_x(45.0)
     result = t1 @ v1

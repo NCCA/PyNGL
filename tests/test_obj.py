@@ -1,3 +1,5 @@
+import io
+
 import pytest
 
 from ncca.ngl import (
@@ -71,21 +73,21 @@ def test_check_verts():
     obj = Obj.from_file("tests/files/Triangle1.obj")
 
     result = [Vec3(2.0, 0.0, 0.0), Vec3(0.0, 4.0, 0.0), Vec3(-2.0, 0.0, 0.0)]
-    assert [r == v for r, v in zip(result, obj.vertex)]
+    assert [r == v for r, v in zip(result, obj.vertex, strict=False)]
 
 
 def test_check_normals():
     obj = Obj.from_file("tests/files/Triangle1.obj")
 
     result = [Vec3(0.0, 0.0, 1.0), Vec3(0.0, 0.0, 1.0), Vec3(0.0, 0.0, 1.0)]
-    assert [r == v for r, v in zip(result, obj.normals)]
+    assert [r == v for r, v in zip(result, obj.normals, strict=False)]
 
 
 def test_check_uvs():
     obj = Obj.from_file("tests/files/Triangle1.obj")
 
     result = [Vec3(1.0, 0.0, 0.0), Vec3(0.5, 1.0, 0.0), Vec3(0.004399, 0.008916, 0.0)]
-    assert [r == v for r, v in zip(result, obj.uv)]
+    assert [r == v for r, v in zip(result, obj.uv, strict=False)]
 
 
 def test_check_face_vert_only():
@@ -293,17 +295,17 @@ def test_parse_face_error():
         obj._parse_face_vertex_uv(tokens)
 
 
-# def test_write_face_v_vn():
-#     obj = Obj()
-#     face = Face()
-#     face.vertex.extend([0, 1, 2])
-#     face.normal.extend([0, 1, 2])
-#     obj.add_face(face)
+def test_write_face_v_vn():
+    obj = Obj()
+    face = Face()
+    face.vertex.extend([0, 1, 2])
+    face.normal.extend([0, 1, 2])
+    obj.add_face(face)
 
-#     with io.StringIO() as s:
-#         obj._write_faces(s)
-#         s.seek(0)
-#         assert s.read() == "f 1//1 2//2 3//3  \n"
+    with io.StringIO() as s:
+        obj._write_faces(s)
+        s.seek(0)
+        assert s.read() == "f 1//1 2//2 3//3\n"
 
 
 def test_obj_with_vao(opengl_context):

@@ -102,7 +102,8 @@ def test_property_accessors(qtbot):
     widget.name = "PropertyCamera"
     assert widget.get_name() == "PropertyCamera"
 
-def test_valueChanged_signal_on_eye_change(qtbot):
+
+def test_value_changed_signal_on_eye_change(qtbot):
     """Test that valueChanged signal emits when eye position changes."""
     widget = LookAtWidget()
     qtbot.addWidget(widget)
@@ -114,7 +115,7 @@ def test_valueChanged_signal_on_eye_change(qtbot):
     assert isinstance(signal.args[0], Mat4)
 
 
-def test_valueChanged_signal_on_look_change(qtbot):
+def test_value_changed_signal_on_look_change(qtbot):
     """Test that valueChanged signal emits when look position changes."""
     widget = LookAtWidget()
     qtbot.addWidget(widget)
@@ -126,7 +127,7 @@ def test_valueChanged_signal_on_look_change(qtbot):
     assert isinstance(signal.args[0], Mat4)
 
 
-def test_valueChanged_signal_on_up_change(qtbot):
+def test_value_changed_signal_on_up_change(qtbot):
     """Test that valueChanged signal emits when up vector changes."""
     widget = LookAtWidget()
     qtbot.addWidget(widget)
@@ -157,8 +158,6 @@ def test_view_matrix_calculation(qtbot):
     for i in range(4):
         for j in range(4):
             assert view_matrix[i][j] == pytest.approx(expected_matrix[i][j])
-
-
 
 
 def test_view_matrix_updates_on_parameter_change(qtbot):
@@ -264,7 +263,6 @@ def test_matrix_recalculation_with_different_up_vectors(qtbot):
     assert matrix_y_up != matrix_x_up
     assert matrix_y_up != matrix_z_up
     assert matrix_x_up != matrix_z_up
-
 
 
 def test_multiple_valueChanged_emissions(qtbot):
