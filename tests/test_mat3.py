@@ -248,3 +248,8 @@ def test_copy():
     # check that changing the copy doesn't change the original
     c.m[0][0] = 100
     assert m.m[0][0] == 1
+
+
+def to_list():
+    m = Mat3.from_list([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+    assert m.to_list() == [1, 2, 3, 4, 5, 6, 7, 8, 9]

@@ -68,10 +68,6 @@ class Mat4:
         else:
             raise Mat4NotSquare
 
-    def _is_square(self) -> bool:
-        "ensure matrix is square"
-        return self.m.shape == (4, 4)
-
     def to_list(self):
         "convert matrix to list"
         return self.m.flatten("C").tolist()

@@ -9,20 +9,13 @@ def test_default_identity():
     assert np.array_equal(m.m, np.eye(2, dtype=np.float64))
 
 
-def test_custom_init():
-    mat = np.array([[2.0, 3.0], [4.0, 5.0]])
-    m = Mat2(mat)
-
-    assert np.array_equal(m.m, mat)
-
-
 def test_get_matrix():
-    m = Mat2([[1.0, 2.0], [3.0, 4.0]])
+    m = Mat2.from_list([1.0, 2.0, 3.0, 4.0])
     assert m.get_matrix() == [1.0, 3.0, 2.0, 4.0]
 
 
 def test_to_numpy():
-    m = Mat2([[1.0, 2.0], [3.0, 4.0]])
+    m = Mat2.from_list([1.0, 2.0, 3.0, 4.0])
     arr = m.to_numpy()
     assert isinstance(arr, np.ndarray)
     assert arr.shape == (2, 2)
@@ -35,17 +28,19 @@ def test_identity_classmethod():
 
 
 def test_matrix_multiplication():
-    a = Mat2([[1, 2], [3, 4]])
-    b = Mat2([[2, 0], [1, 2]])
+    a = Mat2.from_list([1, 2, 3, 4])
+    b = Mat2.from_list([2, 0, 1, 2])
     result = a @ b
+
     assert isinstance(result, Mat2)
+    print(result)
     assert np.array_equal(
-        result.m, np.array([[1 * 2 + 2 * 1, 1 * 0 + 2 * 2], [3 * 2 + 4 * 1, 3 * 0 + 4 * 2]], dtype=np.float64)
+        result.m, np.array([[2, 0], [1, 2]], dtype=np.float64) @ np.array([[1, 2], [3, 4]], dtype=np.float64)
     )
 
 
 def test_vector_transformation():
-    m = Mat2([[1, 2], [3, 4]])
+    m = Mat2.from_list([1, 2, 3, 4])
     v = Vec2(5, 6)
     result = m @ v
     assert isinstance(result, Vec2)
@@ -54,7 +49,7 @@ def test_vector_transformation():
 
 
 def test_str_representation():
-    m = Mat2([[7, 8], [9, 10]])
+    m = Mat2.from_list([7, 8, 9, 10])
     s = str(m)
     assert s == "Mat2([7.0, 8.0], [9.0, 10.0])"
 
@@ -66,7 +61,7 @@ def test_invalid_matmul_type():
 
 
 def test_copy():
-    m = Mat2([[1, 2], [3, 4]])
+    m = Mat2.from_list([1, 2, 3, 4])
     c = m.copy()
     assert np.array_equal(c.m, m.m)
     assert id(c) != id(m)

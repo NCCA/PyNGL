@@ -11,35 +11,40 @@ class Mat2Error(Exception):
     pass
 
 
+class Mat2NotSquare(Exception):
+    """If we try to construct from a non square (2x2) value or 4 elements this exception will be thrown"""
+
+    pass
+
+
 class Mat2:
     __slots__ = ["m"]
 
-    def __init__(self, m=None):
+    def __init__(self):
         """
         Initialize a 2x2 matrix.
 
-        Args:
-            m (list): A 2D list representing the matrix.
-                        If not provided, an identity matrix is created.
+
         """
-        if m is None:
-            self.m = np.eye(2, dtype=np.float64)
-        elif isinstance(m, list) and len(m) == 4 and not isinstance(m[0], list):
-            # Flat list - reshape to 2x2
-            self.m = np.array(m, dtype=np.float64).reshape(2, 2, order="C")
-        else:
-            # 2D list
-            self.m = np.array(m, dtype=np.float64)
+        self.m = np.eye(2, dtype=np.float64)
 
     @classmethod
-    def from_list(cls, m: list[float]):
-        """
-        Initialize a 2x2 matrix from a flat list.
-
-        Args:
-            m (list[float]): A flat list representing the matrix.
-        """
-        return cls(m)
+    def from_list(cls, lst):
+        "class method to create mat2 from list"
+        v = Mat2()
+        if isinstance(lst, list) and len(lst) == 2 and all(isinstance(row, list) for row in lst):
+            # 2D list
+            if all(len(row) == 2 for row in lst):
+                v.m = np.array(lst, dtype=np.float64)
+                return v
+            elif any(len(row) != 2 for row in lst):
+                raise Mat2NotSquare
+        elif isinstance(lst, list) and len(lst) == 4:
+            # flat list - reshape to 2x2 in row-major order
+            v.m = np.array(lst, dtype=np.float64).reshape(2, 2, order="C")
+            return v
+        else:
+            raise Mat2NotSquare
 
     def get_matrix(self) -> list[float]:
         """
@@ -70,6 +75,13 @@ class Mat2:
         """
         return cls()
 
+    def _mat_mul(self, rhs):
+        "matrix mult for 3D OpenGL style graphics"
+        result = Mat2()
+        # Use numpy's @ operator which does standard matrix multiplication
+        result.m = rhs.m @ self.m
+        return result
+
     def __matmul__(self, rhs):
         """
         Matrix multiplication or vector transformation with a 2D matrix.
@@ -87,7 +99,7 @@ class Mat2:
             ValueError: If rhs is neither a Mat2 nor Vec2 object.
         """
         if isinstance(rhs, Mat2):
-            return Mat2(self.m @ rhs.m)
+            return self._mat_mul(rhs)
         elif isinstance(rhs, Vec2):
             vec = np.array([rhs.x, rhs.y], dtype=np.float64)
             res = self.m @ vec

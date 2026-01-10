@@ -215,7 +215,7 @@ def test_matmul():
     from ncca.ngl import Mat2
 
     v = Vec2(1.0, 2.0)
-    m = Mat2([[1.0, 2.0], [3.0, 4.0]])
+    m = Mat2.from_list([1.0, 2.0, 3.0, 4.0])
     r = v @ m
     assert r.x == pytest.approx(7.0)
     assert r.y == pytest.approx(10.0)

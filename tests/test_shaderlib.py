@@ -139,7 +139,7 @@ def test_set_uniform(opengl_context):
     assert result[2] == pytest.approx(-22.2)
     assert result[3] == pytest.approx(1230.4)
 
-    mat = Mat2([1.0, 2.0, 3.0, 4.0])
+    mat = Mat2.from_list([1.0, 2.0, 3.0, 4.0])
     ShaderLib.set_uniform("testMat2", mat.to_list())
     result = ShaderLib.get_uniform_mat2("testMat2")
     assert result == mat.to_list()
@@ -254,7 +254,7 @@ def test_shaderprogram_set_uniforms(opengl_context, uniform_shader):
     # Note getUniform1i doesn't exist we use the float version as it works
     assert uniform_shader.get_uniform_1f("testInt") == 12
 
-    mat = Mat2([1.0, 2.0, 3.0, 4.0])
+    mat = Mat2.from_list([1.0, 2.0, 3.0, 4.0])
     uniform_shader.set_uniform("testMat2", mat)
     assert uniform_shader.get_uniform_mat2("testMat2") == mat.to_list()
 
@@ -455,7 +455,7 @@ def test_shaderprogram_array_uniform_methods(opengl_context, array_uniform_shade
     array_uniform_shader.set_uniform_1iv("intArray", int_values)
 
     # Test set_uniform_matrix2fv with Mat2 objects
-    mat2_list = [Mat2([1.0, 2.0, 3.0, 4.0]), Mat2([5.0, 6.0, 7.0, 8.0])]
+    mat2_list = [Mat2.from_list([1.0, 2.0, 3.0, 4.0]), Mat2.from_list([5.0, 6.0, 7.0, 8.0])]
     array_uniform_shader.set_uniform_matrix2fv("mat2Array", mat2_list)
 
     # Test set_uniform_matrix2fv with lists
