@@ -355,3 +355,14 @@ class Mat3:
         m = Mat3()
         m.m = mat4.m[:3, :3].copy()
         return m
+
+    def __eq__(self, other):
+        """Value-based equality for Mat3: compare underlying matrices numerically.
+
+        Returns NotImplemented for non-Mat3 types so Python can try reflected comparisons
+        or handle it appropriately.
+        """
+        if not isinstance(other, Mat3):
+            return NotImplemented
+        # self.m and other.m should be numpy arrays; compare with tolerance
+        return np.allclose(self.m, other.m, rtol=1e-8, atol=1e-12)

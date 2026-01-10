@@ -33,10 +33,7 @@ def test_matrix_multiplication():
     result = a @ b
 
     assert isinstance(result, Mat2)
-    print(result)
-    assert np.array_equal(
-        result.m, np.array([[2, 0], [1, 2]], dtype=np.float64) @ np.array([[1, 2], [3, 4]], dtype=np.float64)
-    )
+    assert result == Mat2.from_list([2, 4, 7, 10])
 
 
 def test_vector_transformation():

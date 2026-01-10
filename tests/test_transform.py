@@ -1,6 +1,6 @@
 import pytest
 
-from ncca.ngl import Transform, TransformRotationOrder, Vec3, Vec4
+from ncca.ngl import Mat4, Transform, TransformRotationOrder, Vec3, Vec4
 
 orders = ["xyz", "yzx", "zxy", "xzy", "yxz", "zyx"]
 
@@ -158,3 +158,9 @@ def test_rotation_orders():
     result=[0.7424038052558899, 0.6503721475601196, 0.16078753769397736, 0.0, -0.5198368430137634, 0.4078224301338196, 0.7506334781646729, 0.0, 0.4226182997226715, -0.6408563852310181, 0.6408563256263733, 0.0, 0.0, 0.0, 0.0, 1.0]
     # fmt: on
     assert tx.get_matrix().get_matrix() == pytest.approx(result, rel=1e-4)
+
+
+def test_reset():
+    tx = Transform()
+    tx.reset()
+    assert tx.get_matrix() == Mat4.identity()

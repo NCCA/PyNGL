@@ -277,3 +277,14 @@ class Mat4:
     def __repr__(self) -> str:
         rows = [self.m[i].tolist() for i in range(4)]
         return f"Mat4({rows})"
+
+    def __eq__(self, other):
+        """Value-based equality for Mat4: compare underlying matrices numerically.
+
+        Returns NotImplemented for non-Mat4 types so Python can try reflected comparisons
+        or handle it appropriately.
+        """
+        if not isinstance(other, Mat4):
+            return NotImplemented
+        # self.m and other.m should be numpy arrays; compare with tolerance
+        return np.allclose(self.m, other.m, rtol=1e-8, atol=1e-12)
