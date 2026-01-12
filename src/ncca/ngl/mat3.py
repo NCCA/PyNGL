@@ -359,7 +359,7 @@ class Mat3:
         or handle it appropriately.
         """
         if not isinstance(other, Mat3):
-            raise NotImplementedError
+            return NotImplemented
         # self.m and other.m should be numpy arrays; compare with tolerance
         return np.allclose(self.m, other.m, rtol=1e-8, atol=1e-12)
 
@@ -370,6 +370,6 @@ class Mat3:
         or handle it appropriately.
         """
         if not isinstance(other, Mat3):
-            raise NotImplementedError
+            return NotImplemented
         # Return the negation of equality
         return not np.allclose(self.m, other.m, rtol=1e-8, atol=1e-12)

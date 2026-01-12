@@ -260,5 +260,6 @@ def test__eq__():
     b = Mat3.identity()
     assert a == b
     assert a != Mat3.zero()
-    with pytest.raises(NotImplementedError):
-        _ = a == "hello"
+    # Directly test that __eq__ returns NotImplemented
+    result = a.__eq__(5)
+    assert result == NotImplemented

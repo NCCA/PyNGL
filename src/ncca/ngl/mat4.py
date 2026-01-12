@@ -285,6 +285,17 @@ class Mat4:
         or handle it appropriately.
         """
         if not isinstance(other, Mat4):
-            raise NotImplementedError
+            return NotImplemented
         # self.m and other.m should be numpy arrays; compare with tolerance
         return np.allclose(self.m, other.m, rtol=1e-8, atol=1e-12)
+
+    def __neq__(self, other):
+        """Value-based not equality for Mat4: compare underlying matrices numerically.
+
+        Returns NotImplemented for non-Mat4 types so Python can try reflected comparisons
+        or handle it appropriately.
+        """
+        if not isinstance(other, Mat4):
+            return NotImplemented
+        # self.m and other.m should be numpy arrays; compare with tolerance
+        return not np.allclose(self.m, other.m, rtol=1e-8, atol=1e-12)

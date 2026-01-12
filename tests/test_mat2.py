@@ -72,8 +72,10 @@ def test__eq__():
     b = Mat2.identity()
     assert a == b
     assert a != Mat2.zero()
-    with pytest.raises(NotImplementedError):
-        _ = a == "hello"
+
+    # Directly test that __eq__ returns NotImplemented
+    result = a.__eq__(5)
+    assert result == NotImplemented
 
 
 def test_to_list():
