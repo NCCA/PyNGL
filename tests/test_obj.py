@@ -313,3 +313,59 @@ def test_obj_with_vao(opengl_context):
     assert mesh.texture_id != 0
     # check if vao is created
     assert mesh.vao is not None
+
+
+def test_negative_indices():
+    obj = Obj()
+    obj._current_vertex_offset = 4
+    obj._current_normal_offset = 4
+    obj._current_uv_offset = 4
+
+    tokens_v_vt_vn = ["f", "-4/-4/-4", "-3/-3/-3", "-2/-2/-2", "-1/-1/-1"]
+    obj._parse_face_vertex_normal_uv(tokens_v_vt_vn)
+    assert obj.faces[-1].vertex == [0, 1, 2, 3]
+    assert obj.faces[-1].normal == [0, 1, 2, 3]
+    assert obj.faces[-1].uv == [0, 1, 2, 3]
+
+    tokens_v_vn = ["f", "-4//-4", "-3//-3", "-2//-2", "-1//-1"]
+    obj._parse_face_vertex_normal(tokens_v_vn)
+    assert obj.faces[-1].vertex == [0, 1, 2, 3]
+    assert obj.faces[-1].normal == [0, 1, 2, 3]
+
+    tokens_v_vt = ["f", "-4/-4", "-3/-3", "-2/-2", "-1/-1"]
+    obj._parse_face_vertex_uv(tokens_v_vt)
+    assert obj.faces[-1].vertex == [0, 1, 2, 3]
+    assert obj.faces[-1].uv == [0, 1, 2, 3]
+
+
+def test_parse_face_error():
+    obj = Obj()
+    tokens = ["f", "a/b/c"]
+    with pytest.raises(ObjParseFaceError):
+        obj._parse_face_vertex_normal_uv(tokens)
+    tokens = ["f", "a//c"]
+    with pytest.raises(ObjParseFaceError):
+        obj._parse_face_vertex_normal(tokens)
+    tokens = ["f", "a/b"]
+    with pytest.raises(ObjParseFaceError):
+        obj._parse_face_vertex_uv(tokens)
+
+
+def test_write_face_v_vn():
+    obj = Obj()
+    face = Face()
+    face.vertex.extend([0, 1, 2])
+    face.normal.extend([0, 1, 2])
+    obj.add_face(face)
+
+    with io.StringIO() as s:
+        obj._write_faces(s)
+        s.seek(0)
+        assert s.read() == "f 1//1 2//2 3//3\n"
+
+
+def test_obj_with_vao(opengl_context):
+    mesh = Obj.obj_with_vao("tests/files/Triangle1.obj", "tests/files/simpleRGB.png")
+    assert mesh.texture_id != 0
+    # check if vao is created
+    assert mesh.vao is not None
