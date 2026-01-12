@@ -1,16 +1,6 @@
 import pytest
 
-from ncca.ngl import (
-    Mat4,
-    Vec3,
-    calc_normal,
-    clamp,
-    frustum,
-    lerp,
-    look_at,
-    ortho,
-    perspective,
-)
+from ncca.ngl import Mat4, PerspMode, Vec3, calc_normal, clamp, frustum, lerp, look_at, ortho, perspective
 
 
 def test_clamp():
@@ -58,18 +48,28 @@ def test_perspective():
 
     assert project.to_list() == pytest.approx(result.to_list(), abs=1e-3)
 
+    # fmt: off
+    result=Mat4.from_list([1.69749,0,0,0,0,2.41421,0,0,0,0,-1.002004008016032,-1,0,0,-0.02004008016032064,0])
+    # fmt: on
+
+    project = perspective(fov, aspect, near, far, PerspMode.WebGPU)
+    assert project.to_list() == pytest.approx(result.to_list(), abs=1e-3)
+
 
 def test_ortho():
     project = ortho(-1.0, 1.0, -1.0, 1.0, 1.0, -1.0)
     # fmt:  off
     m = [ +1.000000,+0.000000, +0.000000, -0.000000, +0.000000, +1.000000,  +0.000000,-0.000000,+0.000000,+0.000000,+1.000000,+0.000000,+0.000000,+0.000000,+0.000000,+1.000000,]
     # fmt: on
-
     result = Mat4.from_list(m)
-
-    # fmt: on
+    # fmt:  off
 
     assert project.to_list() == pytest.approx(result.to_list(), abs=1e-3)
+    m = [ +1.000000,+0.000000, +0.000000, -0.000000, +0.000000, +1.000000,  +0.000000,-0.000000,+0.000000,+0.000000,+0.500000,+0.000000,+0.000000,+0.000000,+0.500000,+1.000000,]
+    # fmt: on
+    result = Mat4.from_list(m)
+
+    project = ortho(-1.0, 1.0, -1.0, 1.0, 1.0, -1.0, PerspMode.WebGPU)
 
 
 def test_calc_normal():

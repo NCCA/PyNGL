@@ -45,6 +45,28 @@ def test_extend():
         a.extend(["not a vec4"])
 
 
+def test_extend_existing():
+    """Test the extend method with existing array"""
+    a = Vec4Array([Vec4(1, 2, 3, 4), Vec4(5, 6, 7, 8)])
+    v = [Vec4(9, 10, 11, 12), Vec4(13, 14, 15, 16)]
+    a.extend(v)
+    assert len(a) == 4
+    assert a[2] == Vec4(9, 10, 11, 12)
+    assert a[3] == Vec4(13, 14, 15, 16)
+    with pytest.raises(TypeError):
+        a.extend(["not a vec4"])
+
+
+def test_eq():
+    """Test the __eq__ method"""
+    a = Vec4Array([Vec4(1, 2, 3, 4), Vec4(5, 6, 7, 8)])
+    b = Vec4Array([Vec4(1, 2, 3, 4), Vec4(5, 6, 7, 8)])
+    assert a == b
+    c = Vec4Array([Vec4(1, 2, 3, 4), Vec4(5, 6, 7, 9)])
+    assert a != c
+    assert a.__eq__(1) == NotImplemented
+
+
 def test_getitem():
     """Test the __getitem__ method"""
     v = [Vec4(1, 2, 3, 4), Vec4(5, 6, 7, 8)]
@@ -53,6 +75,40 @@ def test_getitem():
     assert a[1] == Vec4(5, 6, 7, 8)
     with pytest.raises(IndexError):
         _ = a[2]
+
+
+def test_slice():
+    """Test the __getitem__ method with slice"""
+    v = [Vec4(1, 2, 3, 4), Vec4(5, 6, 7, 8), Vec4(9, 10, 11, 12)]
+    a = Vec4Array(v)
+    assert a[0:2] == Vec4Array([Vec4(1, 2, 3, 4), Vec4(5, 6, 7, 8)])
+    assert a[1:] == Vec4Array([Vec4(5, 6, 7, 8), Vec4(9, 10, 11, 12)])
+    assert a[:] == Vec4Array(v)
+    with pytest.raises(IndexError):
+        _ = a[3]
+
+
+def test_setitem():
+    """Test the __setitem__ method"""
+    v = [Vec4(1, 2, 3, 4), Vec4(5, 6, 7, 8)]
+    a = Vec4Array(v)
+    a[0] = Vec4(9, 10, 11, 12)
+    assert a[0] == Vec4(9, 10, 11, 12)
+    a[1] = Vec4(13, 14, 15, 16)
+    assert a[1] == Vec4(13, 14, 15, 16)
+    with pytest.raises(IndexError):
+        a[2] = Vec4()
+    with pytest.raises(TypeError):
+        a[0] = "not a vec4"
+
+
+def test_get_array():
+    """Test the get_array method"""
+    a = Vec4Array([Vec4(1, 2, 3, 4), Vec4(5, 6, 7, 8)])
+    arr = a.get_array()
+    assert len(arr) == 2
+    assert np.equal(arr[0], np.array([1.0, 2.0, 3.0, 4.0])).all()
+    assert np.equal(arr[1], np.array([5.0, 6.0, 7.0, 8.0])).all()
 
 
 def test_len():

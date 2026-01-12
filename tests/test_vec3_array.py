@@ -33,6 +33,27 @@ def test_append():
         a.append("not a vec3")
 
 
+def test_get_array():
+    """Test the get_array method"""
+    a = Vec3Array([Vec3(1, 2, 3), Vec3(4, 5, 6)])
+    arr = a.get_array()
+    assert len(arr) == 2
+    assert np.equal(arr[0], np.array([1.0, 2.0, 3.0])).all()
+    assert np.equal(arr[1], np.array([4.0, 5.0, 6.0])).all()
+
+
+def test_setitem():
+    """Test the __setitem__ method"""
+    a = Vec3Array([Vec3(1, 2, 3), Vec3(4, 5, 6)])
+    v = Vec3(7, 8, 9)
+    a[1] = v
+    assert len(a) == 2
+    assert a[0] == Vec3(1, 2, 3)
+    assert a[1] == v
+    with pytest.raises(TypeError):
+        a[1] = "not a vec3"
+
+
 def test_getitem():
     """Test the __getitem__ method"""
     v = [Vec3(1, 2, 3), Vec3(4, 5, 6)]
@@ -94,6 +115,18 @@ def test_extend():
         a.extend(["not a vec3"])
 
 
+def test_extend_existing():
+    """Test the extend method with existing array"""
+    a = Vec3Array([Vec3(1, 2, 3), Vec3(4, 5, 6)])
+    v = [Vec3(7, 8, 9), Vec3(10, 11, 12)]
+    a.extend(v)
+    assert len(a) == 4
+    assert a[2] == Vec3(7, 8, 9)
+    assert a[3] == Vec3(10, 11, 12)
+    with pytest.raises(TypeError):
+        a.extend(["not a vec3"])
+
+
 def test_repr():
     a = Vec3Array([Vec3(1, 2, 3)])
     assert repr(a) == "Vec3Array([Vec3 [1.0,2.0,3.0]])"
@@ -130,3 +163,24 @@ def test_setitem():
     # Test index out of range
     with pytest.raises(IndexError):
         a[2] = Vec3()
+
+
+def test_eq():
+    """Test the __eq__ method"""
+    a = Vec3Array([Vec3(1, 2, 3), Vec3(4, 5, 6)])
+    b = Vec3Array([Vec3(1, 2, 3), Vec3(4, 5, 6)])
+    assert a == b
+    c = Vec3Array([Vec3(1, 2, 3), Vec3(4, 5, 7)])
+    assert a != c
+    assert a.__eq__(1) == NotImplemented
+
+
+def test_slice():
+    """Test the __getitem__ method with slice"""
+    v = [Vec3(1, 2, 3), Vec3(5, 6, 7), Vec3(9, 10, 11)]
+    a = Vec3Array(v)
+    assert a[0:2] == Vec3Array([Vec3(1, 2, 3), Vec3(5, 6, 7)])
+    assert a[1:] == Vec3Array([Vec3(5, 6, 7), Vec3(9, 10, 11)])
+    assert a[:] == Vec3Array(v)
+    with pytest.raises(IndexError):
+        _ = a[3]

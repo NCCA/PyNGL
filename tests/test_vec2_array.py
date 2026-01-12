@@ -33,6 +33,27 @@ def test_append():
         a.append("not a vec2")
 
 
+def test_get_array():
+    """Test the get_array method"""
+    a = Vec2Array([Vec2(1, 2), Vec2(4, 5)])
+    arr = a.get_array()
+    assert len(arr) == 2
+    assert np.equal(arr[0], np.array([1.0, 2.0])).all()
+    assert np.equal(arr[1], np.array([4.0, 5.0])).all()
+
+
+def test_setitem():
+    """Test the __setitem__ method"""
+    a = Vec2Array([Vec2(1, 2), Vec2(4, 5)])
+    v = Vec2(7, 8)
+    a[1] = v
+    assert len(a) == 2
+    assert a[0] == Vec2(1, 2)
+    assert a[1] == v
+    with pytest.raises(TypeError):
+        a[1] = "not a vec2"
+
+
 def test_extend():
     """Test the extend method"""
     a = Vec2Array()
@@ -41,6 +62,18 @@ def test_extend():
     assert len(a) == 2
     assert a[0] == Vec2(1, 2)
     assert a[1] == Vec2(4, 5)
+    with pytest.raises(TypeError):
+        a.extend(["not a vec2"])
+
+
+def test_extend_existing():
+    """Test the extend method with existing array"""
+    a = Vec2Array([Vec2(1, 2), Vec2(4, 5)])
+    v = [Vec2(7, 8), Vec2(10, 11)]
+    a.extend(v)
+    assert len(a) == 4
+    assert a[2] == Vec2(7, 8)
+    assert a[3] == Vec2(10, 11)
     with pytest.raises(TypeError):
         a.extend(["not a vec2"])
 
@@ -104,6 +137,16 @@ def test_str():
     assert str(a) == "[Vec2 [1.0,2.0]]"
 
 
+def test_eq():
+    """Test the __eq__ method"""
+    a = Vec2Array([Vec2(1, 2), Vec2(4, 5)])
+    b = Vec2Array([Vec2(1, 2), Vec2(4, 5)])
+    assert a == b
+    c = Vec2Array([Vec2(1, 2), Vec2(4, 6)])
+    assert a != c
+    assert a.__eq__(1) == NotImplemented
+
+
 def test_sizeof():
     a = Vec2Array()
     assert a.sizeof() == 0
@@ -115,3 +158,14 @@ def test_sizeof():
     assert a.sizeof() == 3 * Vec2.sizeof()
     a.append(Vec2())
     assert a.sizeof() == 4 * Vec2.sizeof()
+
+
+def test_slice():
+    """Test the __getitem__ method with slice"""
+    v = [Vec2(1, 2), Vec2(4, 5), Vec2(7, 8)]
+    a = Vec2Array(v)
+    assert a[0:2] == Vec2Array([Vec2(1, 2), Vec2(4, 5)])
+    assert a[1:] == Vec2Array([Vec2(4, 5), Vec2(7, 8)])
+    assert a[:] == Vec2Array(v)
+    with pytest.raises(IndexError):
+        _ = a[3]

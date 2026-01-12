@@ -86,6 +86,20 @@ class Vec2Array:
             row = self._data[i]
             yield Vec2(row[0], row[1])
 
+    def __eq__(self, other):
+        """
+        Compare two Vec2Array instances for equality.
+
+        Args:
+            other: Another Vec2Array instance to compare with.
+
+        Returns:
+            bool: True if the arrays contain the same data, False otherwise.
+        """
+        if not isinstance(other, Vec2Array):
+            return NotImplemented
+        return np.array_equal(self._data, other._data)
+
     def append(self, value):
         """
         Append a Vec2 object to the array.

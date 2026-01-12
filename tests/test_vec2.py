@@ -189,6 +189,25 @@ def test_truediv():
     v2 = v / 2.0
     assert v2.x == pytest.approx(1.0)
     assert v2.y == pytest.approx(2.0)
+    with pytest.raises(ValueError):
+        _ = v / "a"
+
+
+def test_div():
+    v = Vec2(2.0, 4.0)
+    v2 = v / 2.0
+    assert v2.x == pytest.approx(1.0)
+    assert v2.y == pytest.approx(2.0)
+    with pytest.raises(ZeroDivisionError):
+        _ = v / 0.0
+    with pytest.raises(ZeroDivisionError):
+        _ = v / Vec2(0.0, 0.0)
+
+    # v3 = v / Vec2(2.0, 2.0)
+    # result = v2 / v3
+    # print(result)
+    # assert result.x == pytest.approx(1.0)
+    # assert result.y == pytest.approx(2.0)
 
 
 def test_str():

@@ -333,7 +333,7 @@ class Vec3:
             ValueError: If the right-hand side is not a float.
         """
         if isinstance(rhs, (float, int)):
-            if math.isclose(rhs, 0.0):
+            if rhs == 0.0:
                 raise ZeroDivisionError("division by zero")
             r = Vec3()
             r._data = self._data / rhs

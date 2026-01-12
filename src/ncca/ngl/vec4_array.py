@@ -86,6 +86,20 @@ class Vec4Array:
             row = self._data[i]
             yield Vec4(row[0], row[1], row[2], row[3])
 
+    def __eq__(self, other):
+        """
+        Compare two Vec4Array instances for equality.
+
+        Args:
+            other: Another Vec4Array instance to compare with.
+
+        Returns:
+            bool: True if the arrays contain the same data, False otherwise.
+        """
+        if not isinstance(other, Vec4Array):
+            return NotImplemented
+        return np.array_equal(self._data, other._data)
+
     def append(self, value):
         """
         Append a Vec4 object to the array.
