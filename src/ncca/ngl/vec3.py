@@ -70,19 +70,6 @@ class Vec3:
             raise IndexError("Index out of range. Valid indices are 0, 1, and 2.")
         return self._data[index]
 
-    def _validate_and_set(self, v, name):
-        """
-        check if v is a float or int
-        Args:
-            v (number): The value to check.
-        Raises:
-            ValueError: If v is not a float or int.
-        """
-        if not isinstance(v, (int, float, np.float32)):
-            raise ValueError("need float or int")
-        else:
-            setattr(self, name, v)
-
     def copy(self) -> "Vec3":
         """
         Create a copy of the current vector.
