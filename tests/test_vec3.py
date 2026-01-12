@@ -1,6 +1,7 @@
 import copy
 import ctypes
 
+import numpy as np
 import pytest
 
 from ncca.ngl import Mat3, Vec3
@@ -331,3 +332,9 @@ def test_hash():
     assert d[a] == "a"
     assert d[b] == "a"
     assert d[c] == "c"
+
+
+def test_to_metods():
+    a = Vec3(1, 2, 3)
+    assert a.to_list() == [1, 2, 3]
+    assert np.array_equal(a.to_numpy(), np.array([1, 2, 3]))

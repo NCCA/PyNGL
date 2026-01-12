@@ -95,10 +95,6 @@ class Mat3:
         else:
             raise Mat3NotSquare
 
-    def _is_square(self) -> bool:
-        """ensure matrix is square"""
-        return self.m.shape == (3, 3)
-
     def transpose(self):
         """transpose this matrix"""
         self.m = self.m.T

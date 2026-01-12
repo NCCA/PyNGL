@@ -340,6 +340,12 @@ class Vec2:
             self.x * rhs.m[0, 1] + self.y * rhs.m[1, 1],
         )
 
+    def to_list(self):
+        return self._data.tolist()
+
+    def to_numpy(self):
+        return np.array(self._data)
+
 
 # Helper function to create properties
 def _create_property(index):

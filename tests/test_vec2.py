@@ -1,6 +1,7 @@
 import ctypes
 import math
 
+import numpy as np
 import pytest
 
 from ncca.ngl import Vec2
@@ -238,3 +239,9 @@ def test_hash():
     assert d[a] == "a"
     assert d[b] == "a"
     assert d[c] == "c"
+
+
+def test_to_metods():
+    a = Vec2(1, 2)
+    assert a.to_list() == [1, 2]
+    assert np.array_equal(a.to_numpy(), np.array([1, 2]))
