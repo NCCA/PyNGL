@@ -1,4 +1,4 @@
-import mat4Data  # noqa
+import mat4Data as mat4Data  # this is generated from the julia file gen_mat4_tests.jl
 import pytest
 
 from ncca.ngl import Mat4, Mat4Error, Mat4NotSquare, Vec4
@@ -295,3 +295,12 @@ def test_copy():
     # check that changing the copy doesn't change the original
     c.m[0][0] = 100
     assert m.m[0][0] == 1
+
+
+def test__eq__():
+    a = Mat4.identity()
+    b = Mat4.identity()
+    assert a == b
+    assert a != Mat4.zero()
+    with pytest.raises(NotImplementedError):
+        _ = a == "hello"

@@ -363,6 +363,6 @@ class Mat3:
         or handle it appropriately.
         """
         if not isinstance(other, Mat3):
-            return NotImplemented
+            raise NotImplementedError
         # self.m and other.m should be numpy arrays; compare with tolerance
         return np.allclose(self.m, other.m, rtol=1e-8, atol=1e-12)

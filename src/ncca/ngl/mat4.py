@@ -285,6 +285,6 @@ class Mat4:
         or handle it appropriately.
         """
         if not isinstance(other, Mat4):
-            return NotImplemented
+            raise NotImplementedError
         # self.m and other.m should be numpy arrays; compare with tolerance
         return np.allclose(self.m, other.m, rtol=1e-8, atol=1e-12)

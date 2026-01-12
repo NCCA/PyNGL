@@ -22,22 +22,6 @@ from PySide6.QtCore import Qt
 from .vec3 import Vec3
 
 
-class EventHandlingTarget(Protocol):
-    """
-    Protocol defining the interface that classes using EventHandlingMixin must implement.
-
-    This ensures that the mixin has access to the necessary methods and attributes.
-    """
-
-    def update(self) -> None:
-        """Trigger a redraw of the window."""
-        ...
-
-    def close(self) -> None:
-        """Close the window."""
-        ...
-
-
 class PySideEventHandlingMixin:
     """
     Mixin class providing standard event handling for PyNGL applications.
@@ -223,48 +207,4 @@ class PySideEventHandlingMixin:
         elif delta < 0:
             self.model_position.z -= self.zoom_sensitivity
 
-        # # Sync legacy attributes
-        # self.modelPos = self.model_position
-
         self.update()
-
-    def get_camera_state(self) -> dict:
-        """
-        Get the current camera state for serialization or debugging.
-
-        Returns:
-            Dictionary containing current camera state
-        """
-        return {
-            "spin_x_face": self.spin_x_face,
-            "spin_y_face": self.spin_y_face,
-            "model_position": [
-                self.model_position.x,
-                self.model_position.y,
-                self.model_position.z,
-            ],
-            "rotation_sensitivity": self.rotation_sensitivity,
-            "translation_sensitivity": self.translation_sensitivity,
-            "zoom_sensitivity": self.zoom_sensitivity,
-        }
-
-    def set_camera_state(self, state: dict) -> None:
-        """
-        Restore camera state from a dictionary.
-
-        Args:
-            state: Dictionary containing camera state (from get_camera_state())
-        """
-        self.spin_x_face = state.get("spin_x_face", 0)
-        self.spin_y_face = state.get("spin_y_face", 0)
-
-        pos = state.get("model_position", [0, 0, 0])
-        # Handle cases where pos might have fewer than 3 elements
-        x = pos[0] if len(pos) > 0 else 0
-        y = pos[1] if len(pos) > 1 else 0
-        z = pos[2] if len(pos) > 2 else 0
-        self.model_position.set(x, y, z)
-
-        self.rotation_sensitivity = state.get("rotation_sensitivity", self.DEFAULT_ROTATION_SENSITIVITY)
-        self.translation_sensitivity = state.get("translation_sensitivity", self.DEFAULT_TRANSLATION_SENSITIVITY)
-        self.zoom_sensitivity = state.get("zoom_sensitivity", self.DEFAULT_ZOOM_SENSITIVITY)

@@ -136,6 +136,6 @@ class Mat2:
         or handle it appropriately.
         """
         if not isinstance(rhs, Mat2):
-            return NotImplemented
+            raise NotImplementedError
         # self.m and other.m should be numpy arrays; compare with tolerance
         return bool(np.allclose(self.m, rhs.m, rtol=1e-8, atol=1e-12))
