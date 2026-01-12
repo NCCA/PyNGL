@@ -362,3 +362,14 @@ class Mat3:
             raise NotImplementedError
         # self.m and other.m should be numpy arrays; compare with tolerance
         return np.allclose(self.m, other.m, rtol=1e-8, atol=1e-12)
+
+    def __ne__(self, other):
+        """Value-based inequality for Mat3: compare underlying matrices numerically.
+
+        Returns NotImplemented for non-Mat3 types so Python can try reflected comparisons
+        or handle it appropriately.
+        """
+        if not isinstance(other, Mat3):
+            raise NotImplementedError
+        # Return the negation of equality
+        return not np.allclose(self.m, other.m, rtol=1e-8, atol=1e-12)

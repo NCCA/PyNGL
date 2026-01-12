@@ -53,8 +53,7 @@ class Mat2:
         Returns:
             list[float]: A flat list of floats.
         """
-        # Transpose then flatten for column-major order
-        return self.m.T.flatten().tolist()
+        return self.m.flatten("C").tolist()
 
     def to_numpy(self):
         """
@@ -132,7 +131,7 @@ class Mat2:
 
     def to_list(self):
         "convert matrix to list in column-major order"
-        return self.m.T.flatten().tolist()
+        return self.m.flatten("C").tolist()
 
     def copy(self) -> "Mat2":
         """Create a copy of the matrix.

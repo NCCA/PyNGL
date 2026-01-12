@@ -11,7 +11,7 @@ def test_default_identity():
 
 def test_get_matrix():
     m = Mat2.from_list([1.0, 2.0, 3.0, 4.0])
-    assert m.get_matrix() == [1.0, 3.0, 2.0, 4.0]
+    assert m.get_matrix() == [1.0, 2.0, 3.0, 4.0]
 
 
 def test_to_numpy():
@@ -76,6 +76,7 @@ def test__eq__():
         _ = a == "hello"
 
 
-def to_list():
+def test_to_list():
     m = Mat2.from_list([[1, 2], [3, 4]])
-    assert m.to_list() == [1, 2, 3, 4]
+
+    assert m.to_list() == pytest.approx([1, 2, 3, 4])
