@@ -78,6 +78,14 @@ def test__eq__():
     assert result == NotImplemented
 
 
+def test__ne__():
+    a = Mat2.identity()
+    assert a != Mat2.zero()
+    # Directly test that __ne__ returns NotImplemented
+    result = a.__ne__(5)
+    assert result == NotImplemented
+
+
 def test_to_list():
     m = Mat2.from_list([[1, 2], [3, 4]])
 
