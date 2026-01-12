@@ -75,6 +75,20 @@ class Mat2:
         """
         return cls()
 
+    @classmethod
+    def zero(cls):
+        """class method to return a new zero matrix
+
+        Returns
+        -------
+        Mat2
+            new Mat2 matrix as all zeros
+
+        """
+        v = Mat2()
+        v.m = np.zeros((2, 2), dtype=np.float64)
+        return v
+
     def _mat_mul(self, rhs):
         "matrix mult for 3D OpenGL style graphics"
         result = Mat2()

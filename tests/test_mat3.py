@@ -253,3 +253,12 @@ def test_copy():
 def to_list():
     m = Mat3.from_list([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
     assert m.to_list() == [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+
+def test__eq__():
+    a = Mat3.identity()
+    b = Mat3.identity()
+    assert a == b
+    assert a != Mat3.zero()
+    with pytest.raises(NotImplementedError):
+        _ = a == "hello"
