@@ -300,3 +300,54 @@ def test_to_metods():
     a = Vec4(1, 2, 3, 4)
     assert a.to_list() == [1, 2, 3, 4]
     assert np.array_equal(a.to_numpy(), np.array([1, 2, 3, 4]))
+
+
+def test_outer():
+    a = Vec4(1, 2, 3, 4)
+    b = Vec4(5, 6, 7, 8)
+    m = a.outer(b)
+    expected = np.array(
+        [[5, 6, 7, 8], [10, 12, 14, 16], [15, 18, 21, 24], [20, 24, 28, 32]]
+    )
+    assert np.array_equal(m.m, expected)
+
+
+def test_inner():
+    a = Vec4(1, 2, 3, 4)
+    b = Vec4(5, 6, 7, 8)
+    assert a.inner(b) == pytest.approx(70.0)
+
+
+def test_null():
+    a = Vec4(1, 2, 3, 4)
+    a.null()
+    assert a == Vec4(0, 0, 0, 0)
+
+
+def test_cross():
+    a = Vec4(1, 2, 3, 0)
+    b = Vec4(4, 5, 6, 0)
+    c = a.cross(b)
+    assert c.x == pytest.approx(-3.0)
+    assert c.y == pytest.approx(6.0)
+    assert c.z == pytest.approx(-3.0)
+    assert c.w == pytest.approx(0.0)
+    assert c.w == pytest.approx(0.0)
+
+
+def test_reflect():
+    a = Vec4(1, 0, -1, 0)
+    n = Vec4(0, 0, 1, 0)  # Normal pointing up
+    r = a.reflect(n)
+    assert r.x == pytest.approx(1.0)
+    assert r.y == pytest.approx(0.0)
+    assert r.z == pytest.approx(1.0)
+
+
+def test_clamp():
+    a = Vec4(-2.0, 0.5, 2.5, 1.5)
+    a.clamp(0.0, 1.0)
+    assert a.x == pytest.approx(0.0)
+    assert a.y == pytest.approx(0.5)
+    assert a.z == pytest.approx(1.0)
+    assert a.w == pytest.approx(1.0)

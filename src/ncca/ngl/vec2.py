@@ -300,7 +300,9 @@ class Vec2:
             r._data = self._data * rhs
             return r
         else:
-            raise ValueError(f"can only do piecewise multiplication with a scalar {rhs=}")
+            raise ValueError(
+                f"can only do piecewise multiplication with a scalar {rhs=}"
+            )
 
     def __rmul__(self, rhs):
         """
@@ -332,6 +334,20 @@ class Vec2:
 
     def to_numpy(self):
         return np.array(self._data)
+
+    def outer(self, rhs):
+        """
+        outer product of two vectors a x b
+        Args:
+            rhs (Vec2): The right-hand side vector to outer product with.
+        Returns:
+            Mat2: A new 2x2 matrix that is the result of the outer product.
+        """
+        from .mat2 import Mat2
+
+        result = Mat2()
+        result.m = np.outer(self._data, rhs._data)
+        return result
 
 
 # Helper function to create properties

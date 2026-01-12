@@ -31,38 +31,6 @@ class Quaternion:
         """
         self._data = np.array([float(s), float(x), float(y), float(z)], dtype=np.float64)
 
-    @property
-    def s(self):
-        return self._data[0]
-
-    @s.setter
-    def s(self, value):
-        self._data[0] = float(value)
-
-    @property
-    def x(self):
-        return self._data[1]
-
-    @x.setter
-    def x(self, value):
-        self._data[1] = float(value)
-
-    @property
-    def y(self):
-        return self._data[2]
-
-    @y.setter
-    def y(self, value):
-        self._data[2] = float(value)
-
-    @property
-    def z(self):
-        return self._data[3]
-
-    @z.setter
-    def z(self, value):
-        self._data[3] = float(value)
-
     @staticmethod
     def from_mat4(mat: "Mat4") -> "Quaternion":
         """
@@ -218,3 +186,21 @@ class Quaternion:
     def to_list(self):
         """Return the quaternion as a list [s, x, y, z]"""
         return self._data.tolist()
+
+
+# Helper function to create properties
+def _create_property(index):
+    def getter(self):
+        return self._data[index]
+
+    def setter(self, value):
+        if not isinstance(value, (int, float, np.float32)):
+            raise ValueError("need float or int")
+        self._data[index] = value
+
+    return property(getter, setter)
+
+
+# Dynamically add properties for s, x, y, z, w
+for i, attr in enumerate(["s", "x", "y", "z"]):
+    setattr(Quaternion, attr, _create_property(i))

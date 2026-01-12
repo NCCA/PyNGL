@@ -264,3 +264,23 @@ def test_to_metods():
     a = Vec2(1, 2)
     assert a.to_list() == [1, 2]
     assert np.array_equal(a.to_numpy(), np.array([1, 2]))
+
+
+def test_truediv_vec2():
+    v1 = Vec2(2.0, 4.0)
+    v2 = Vec2(2.0, 2.0)
+    result = v1 / v2
+    assert result.x == pytest.approx(1.0)
+    assert result.y == pytest.approx(2.0)
+    with pytest.raises(ZeroDivisionError):
+        _ = v1 / Vec2(0.0, 1.0)
+
+
+def test_outer():
+    v1 = Vec2(1.0, 2.0)
+    v2 = Vec2(3.0, 4.0)
+    result = v1.outer(v2)
+    assert result.m[0, 0] == pytest.approx(3.0)
+    assert result.m[0, 1] == pytest.approx(4.0)
+    assert result.m[1, 0] == pytest.approx(6.0)
+    assert result.m[1, 1] == pytest.approx(8.0)

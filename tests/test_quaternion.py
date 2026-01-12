@@ -1,6 +1,7 @@
+import numpy as np
 import pytest
 
-from ncca.ngl import Mat4, Quaternion
+from ncca.ngl import Mat4, Quaternion, Vec3
 
 
 def test_quaternion():
@@ -131,3 +132,27 @@ def test_str_repr():
     quat = Quaternion(1.0, 2.0, 3.0, 4.0)
     assert str(quat) == "Quaternion(1.0, [2.0, 3.0, 4.0])"
     assert repr(quat) == "Quaternion(1.0, [2.0, 3.0, 4.0])"
+
+
+def test_from_axis_angle():
+    axis = Vec3(1.0, 0.0, 0.0)
+    angle = np.pi / 2.0
+    # from_axis angle works in degrees
+    quat = Quaternion.from_axis_angle(axis, np.degrees(angle))
+    assert quat.s == pytest.approx(np.cos(angle / 2.0), rel=1e-3)
+    assert quat.x == pytest.approx(np.sin(angle / 2.0), rel=1e-3)
+    assert quat.y == pytest.approx(0.0, rel=1e-3)
+    assert quat.z == pytest.approx(0.0, rel=1e-3)
+
+
+# def test_mult_vec3():
+#     axis = Vec3(1.0, 0.0, 0.0)
+#     angle = np.pi / 2.0
+#     # from_axis angle works in degrees
+#     quat = Quaternion.from_axis_angle(axis, np.degrees(angle))
+#     vec = Vec3(1.0, 2.0, 3.0)
+#     result = quat * vec
+#     print(result)
+#     assert result.x == pytest.approx(1.0, rel=1e-3)
+#     assert result.y == pytest.approx(2.0, rel=1e-3)
+#     assert result.z == pytest.approx(3.0, rel=1e-3)
