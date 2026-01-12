@@ -278,3 +278,18 @@ def test_coverage_vec4():
         a = a * "fail"
     a = 2.0 * a
     assert a.w == pytest.approx(2.0)
+
+
+def test_hash():
+    a = Vec4(1, 2, 3)
+    b = Vec4(1, 2, 3)
+    assert hash(a) == hash(b)
+    c = Vec4(1, 2, 4)
+    assert hash(a) != hash(c)
+    # hash can be used as a key in a dictionary so test it
+    d = {}
+    d[a] = "a"
+    d[c] = "c"
+    assert d[a] == "a"
+    assert d[b] == "a"
+    assert d[c] == "c"

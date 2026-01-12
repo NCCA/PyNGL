@@ -316,3 +316,18 @@ def test_division():
         _ = a / Vec3(0.0, 1.0, 1.0)
     with pytest.raises(ValueError):
         _ = a / "hello"
+
+
+def test_hash():
+    a = Vec3(1, 2, 3)
+    b = Vec3(1, 2, 3)
+    assert hash(a) == hash(b)
+    c = Vec3(1, 2, 4)
+    assert hash(a) != hash(c)
+    # hash can be used as a key in a dictionary so test it
+    d = {}
+    d[a] = "a"
+    d[c] = "c"
+    assert d[a] == "a"
+    assert d[b] == "a"
+    assert d[c] == "c"

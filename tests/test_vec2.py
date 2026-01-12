@@ -223,3 +223,18 @@ def test_matmul():
 
 def test_sizeof():
     assert Vec2.sizeof() == 2 * ctypes.sizeof(ctypes.c_float)
+
+
+def test_hash():
+    a = Vec2(1, 2)
+    b = Vec2(1, 2)
+    assert hash(a) == hash(b)
+    c = Vec2(1, 3)
+    assert hash(a) != hash(c)
+    # hash can be used as a key in a dictionary so test it
+    d = {}
+    d[a] = "a"
+    d[c] = "c"
+    assert d[a] == "a"
+    assert d[b] == "a"
+    assert d[c] == "c"
