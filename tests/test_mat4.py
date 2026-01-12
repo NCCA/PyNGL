@@ -305,3 +305,11 @@ def test__eq__():
     # Directly test that __eq__ returns NotImplemented
     result = a.__eq__(5)
     assert result == NotImplemented
+
+
+def test__ne__():
+    a = Mat4.identity()
+    assert a != Mat4.zero()
+    # Directly test that __ne__ returns NotImplemented
+    result = a.__ne__(5)
+    assert result == NotImplemented
