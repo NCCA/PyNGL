@@ -98,7 +98,7 @@ def test_neq():
 
 def test_neq_not_implemented():
     v = Vec2(1, 2)
-    assert v.__neq__(2) is NotImplemented
+    assert v.__ne__(2) is NotImplemented
 
 
 def test_neg():

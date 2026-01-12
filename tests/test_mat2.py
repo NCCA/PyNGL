@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from ncca.ngl import Mat2, Vec2
+from ncca.ngl import Mat2, Mat2NotSquare, Vec2
 
 
 def test_default_identity():
@@ -90,3 +90,18 @@ def test_to_list():
     m = Mat2.from_list([[1, 2], [3, 4]])
 
     assert m.to_list() == pytest.approx([1, 2, 3, 4])
+
+
+def test_from_list():
+    m = Mat2.from_list([[1, 2], [3, 4]])
+    result = list(range(1, 5))
+    assert m.get_matrix() == pytest.approx(result)
+    m = Mat2.from_list([1, 2, 3, 4])
+    assert m.get_matrix() == pytest.approx(result)
+
+
+def test_not_square():
+    with pytest.raises(Mat2NotSquare):
+        _ = Mat2.from_list([[1.0, 2.0, 3.0, 50], [4.0, 5.0], [7.0, 8.0, 9.0]])
+    with pytest.raises(Mat2NotSquare):
+        _ = Mat2.from_list([[], []])

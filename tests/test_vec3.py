@@ -162,7 +162,7 @@ def test_not_equal():
     c = Vec3(1, 2, 3)
     d = Vec3(4, 5, 6)
     assert c != d
-    assert a.__neq__(1) == NotImplemented
+    assert a.__ne__(1) == NotImplemented
 
 
 def test_inner():

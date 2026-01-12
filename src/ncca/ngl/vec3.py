@@ -141,7 +141,7 @@ class Vec3:
             return NotImplemented
         return np.allclose(self._data, rhs._data)
 
-    def __neq__(self, rhs):
+    def __ne__(self, rhs):
         """
         vector comparison a!=b using math.isclose not we only compare to 6 decimal places
         Args:

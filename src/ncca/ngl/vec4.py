@@ -124,7 +124,7 @@ class Vec4:
             return NotImplemented
         return np.allclose(self._data, rhs._data)
 
-    def __neq__(self, rhs):
+    def __ne__(self, rhs):
         "test a!=b using math.isclose"
         if not isinstance(rhs, Vec4):
             return NotImplemented

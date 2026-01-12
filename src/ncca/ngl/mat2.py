@@ -153,7 +153,7 @@ class Mat2:
         # self.m and other.m should be numpy arrays; compare with tolerance
         return bool(np.allclose(self.m, rhs.m, rtol=1e-8, atol=1e-12))
 
-    def __neq__(self, rhs):
+    def __ne__(self, rhs):
         """Value-based equality for Mat2: compare underlying matrices numerically.
         Returns NotImplemented for non-Mat2 types so Python can try reflected comparisons
         or handle it appropriately.

@@ -165,7 +165,7 @@ def test_not_equal():
     assert a != b
     assert a != d
 
-    assert a.__neq__(1) == NotImplemented
+    assert a.__ne__(1) == NotImplemented
 
 
 def test_negate():
