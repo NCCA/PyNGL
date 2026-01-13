@@ -50,6 +50,10 @@ class Texture:
         return self._image.get_pixels().tobytes()
 
     def set_texture_gl(self) -> int:
+        """ "
+        Generate a texture ID and set the texture parameters, if the image is valid if not return 0
+        which is the default texture ID for not active in OpenGL
+        """
         if self._image.width > 0 and self._image.height > 0:
             self._texture_id = gl.glGenTextures(1)
             gl.glActiveTexture(gl.GL_TEXTURE0 + self._multi_texture_id)
@@ -68,8 +72,7 @@ class Texture:
                 self.get_pixels(),
             )
             gl.glGenerateMipmap(gl.GL_TEXTURE_2D)
-            return self._texture_id
-        return 0
+        return self._texture_id
 
     def set_multi_texture(self, id: int) -> None:
         self._multi_texture_id = id

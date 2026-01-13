@@ -203,11 +203,11 @@ def test_div():
     with pytest.raises(ZeroDivisionError):
         _ = v / Vec2(0.0, 0.0)
 
-    # v3 = v / Vec2(2.0, 2.0)
-    # result = v2 / v3
-    # print(result)
-    # assert result.x == pytest.approx(1.0)
-    # assert result.y == pytest.approx(2.0)
+    v3 = v / Vec2(2.0, 2.0)
+    result = v2 / v3
+    print(result)
+    assert result.x == pytest.approx(1.0)
+    assert result.y == pytest.approx(1.0)
 
 
 def test_str():
