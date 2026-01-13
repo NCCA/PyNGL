@@ -7,8 +7,6 @@ import pytest
 def opengl_context():
     if not glfw.init():
         pytest.skip("Failed to initialize GLFW")
-    # OSMesa requires this
-    glfw.window_hint(glfw.CONTEXT_CREATION_API, glfw.OSMESA_CONTEXT_API)
 
     glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 4)
     glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 1)
