@@ -85,15 +85,9 @@ class Vec3(VectorBase["Vec3"]):
             Vec3: A new vector that is the result of multiplying this vector by the matrix.
         """
         return Vec3(
-            self._data[0] * rhs.m[0, 0]
-            + self._data[1] * rhs.m[1, 0]
-            + self._data[2] * rhs.m[2, 0],
-            self._data[0] * rhs.m[0, 1]
-            + self._data[1] * rhs.m[1, 1]
-            + self._data[2] * rhs.m[2, 1],
-            self._data[0] * rhs.m[0, 2]
-            + self._data[1] * rhs.m[1, 2]
-            + self._data[2] * rhs.m[2, 2],
+            self._data[0] * rhs.m[0, 0] + self._data[1] * rhs.m[1, 0] + self._data[2] * rhs.m[2, 0],
+            self._data[0] * rhs.m[0, 1] + self._data[1] * rhs.m[1, 1] + self._data[2] * rhs.m[2, 1],
+            self._data[0] * rhs.m[0, 2] + self._data[1] * rhs.m[1, 2] + self._data[2] * rhs.m[2, 2],
         )
 
     def set(self, *args: float) -> None:
@@ -126,4 +120,3 @@ class Vec3(VectorBase["Vec3"]):
 
 # Add properties for x, y, z components
 _create_properties(Vec3)
-print("Vec3 properties created")

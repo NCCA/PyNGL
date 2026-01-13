@@ -90,7 +90,7 @@ def test_plus_equal():
 
 def test_sub():
     a = Vec4(1, 2, 3)
-    b = Vec4(4, 5, 6)
+    b = Vec4(4, 5, 6, 1.0)  # Include w parameter
     c = a - b
     assert c.x == pytest.approx(-3.0)
     assert c.y == pytest.approx(-3.0)

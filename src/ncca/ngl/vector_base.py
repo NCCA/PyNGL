@@ -64,11 +64,15 @@ class VectorBase(ABC, Generic[T]):
             # Handle positional arguments only
             if len(args) == 0:
                 self._data = np.array(self.DEFAULT_VALUES, dtype=np.float64)
-            elif len(args) == self.DIMENSION:
-                self._data = np.array(args, dtype=np.float64)
+            elif len(args) <= self.DIMENSION:
+                # Allow fewer arguments than dimension, use defaults for missing components
+                values = list(self.DEFAULT_VALUES)
+                for i, arg in enumerate(args):
+                    values[i] = float(arg)
+                self._data = np.array(values, dtype=np.float64)
             else:
                 raise ValueError(
-                    f"{self.__class__.__name__} requires {self.DIMENSION} components"
+                    f"{self.__class__.__name__} requires at most {self.DIMENSION} components"
                 )
 
     @classmethod
@@ -500,67 +504,27 @@ class VectorBase(ABC, Generic[T]):
             f"'{self.__class__.__name__}' object has no attribute '{name}'"
         )
 
-    @abstractmethod
-    def reflect(self, n: T) -> T:
+    def __setattr__(self, name: str, value: Any) -> None:
         """
-        Reflect a vector about a normal.
+        Control attribute setting to prevent non-component attributes.
 
         Args:
-            n (VectorBase): The normal to reflect about.
-
-        Returns:
-            VectorBase: A new vector that is the result of reflecting this vector about the normal.
-        """
-        pass
-
-    @abstractmethod
-    def outer(self, rhs: T) -> Any:
-        """
-        Outer product of two vectors a x b.
-
-        Args:
-            rhs (VectorBase): The right-hand side vector to outer product with.
-
-        Returns:
-            Any: A matrix that is the result of the outer product.
-        """
-        pass
-
-    @abstractmethod
-    def __matmul__(self, rhs: Any) -> T:
-        """
-        Matrix multiplication Vector @ Matrix.
-
-        Args:
-            rhs (Any): The matrix to multiply by.
-
-        Returns:
-            VectorBase: A new vector that is the result of multiplying this vector by the matrix.
-        """
-        pass
-
-    @abstractmethod
-    def set(self, *args: float) -> None:
-        """
-        Set the components of the vector.
-
-        Args:
-            *args: Component values to set.
+            name: The attribute name to set
+            value: The value to set
 
         Raises:
-            ValueError: If the wrong number of arguments is provided or they are not floats.
+            AttributeError: If trying to set non-component attributes
         """
-        pass
-
-    @abstractmethod
-    def __repr__(self) -> str:
-        """Object representation for debugging."""
-        pass
-
-    @abstractmethod
-    def __str__(self) -> str:
-        """String representation of the vector."""
-        pass
+        # Allow setting internal _data
+        if name == "_data":
+            super().__setattr__(name, value)
+        # Allow setting component properties (x, y, z, w) during initialization
+        elif name in self.COMPONENT_NAMES:
+            super().__setattr__(name, value)
+        else:
+            raise AttributeError(
+                f"'{self.__class__.__name__}' object has no attribute '{name}'"
+            )
 
 
 def _create_properties(cls: type) -> None:
