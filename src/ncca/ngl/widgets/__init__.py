@@ -17,4 +17,12 @@ from .vec2widget import Vec2Widget
 from .vec3widget import Vec3Widget
 from .vec4widget import Vec4Widget
 
-__all__ = ["Vec2Widget", "Vec3Widget", "Vec4Widget", "TransformWidget", "LookAtWidget", "RGBColourWidget"]
+__all__ = [
+    "Vec2Widget",
+    "Vec3Widget",
+    "Vec4Widget",
+    "TransformWidget",
+    "LookAtWidget",
+    "RGBColourWidget",
+    "RGBAColourWidget",
+]
