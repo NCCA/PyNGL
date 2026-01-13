@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       QT_QPA_PLATFORM: offscreen
+      GLFW_CONTEXT_API: osmesa
     strategy:
       matrix:
         python-version: ["3.13"]
@@ -31,6 +32,14 @@ jobs:
             libgl1 \
             libxkbcommon-x11-0 \
             libxcb-xinerama0
+
+      - name: Install OpenGL (OSMesa)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libgl1-mesa-dev \
+            libosmesa6-dev \
+            mesa-utils
 
       - name: Install the project
         run: uv sync --locked --all-extras --dev
