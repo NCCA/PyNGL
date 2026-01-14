@@ -1,5 +1,4 @@
 #!/usr/bin/env -S uv run --active --script
-import argparse
 import sys
 import time
 
@@ -325,98 +324,85 @@ class WebGPUScene(WebGPUWidget):
 
         self.update()
 
-    def _render_multi_colour_pipeline(self, render_pass, positions, point_size=None):
-        self.pipelines[self.current_pipeline_index][0].set_data(positions, self.colours)
-        self.pipelines[self.current_pipeline_index][0].render(render_pass)
-        if point_size is not None:
-            self.pipelines[self.current_pipeline_index][0].update_uniforms(
-                mvp=self.mvp_matrix, view_matrix=self.view_matrix, point_size=point_size
-            )
+    def _render_pipeline(
+        self, render_pass, positions, colours=None, point_size=None, colour=None
+    ):
+        """Generic pipeline rendering method to eliminate code duplication."""
+        pipeline = self.pipelines[self.current_pipeline_index][0]
+
+        # Set data based on whether we have colours
+        if colours is not None:
+            pipeline.set_data(positions, colours)
         else:
-            self.pipelines[self.current_pipeline_index][0].update_uniforms(
-                mvp=self.mvp_matrix
-            )
+            pipeline.set_data(positions)
 
-    def _render_single_colour_pipeline(self, render_pass, positions, point_size=None):
-        self.pipelines[self.current_pipeline_index][0].set_data(positions)
-        self.pipelines[self.current_pipeline_index][0].render(render_pass)
+        pipeline.render(render_pass)
+
+        # Update uniforms based on what's provided
         if point_size is not None:
-            self.pipelines[self.current_pipeline_index][0].update_uniforms(
-                mvp=self.mvp_matrix,
-                view_matrix=self.view_matrix,
-                colour=np.array([1, 1, 1], dtype=np.float32),
-                point_size=point_size,
-            )
+            if colours is not None:
+                pipeline.update_uniforms(
+                    mvp=self.mvp_matrix,
+                    view_matrix=self.view_matrix,
+                    point_size=point_size,
+                )
+            else:
+                pipeline.update_uniforms(
+                    mvp=self.mvp_matrix,
+                    view_matrix=self.view_matrix,
+                    colour=np.array([1, 1, 1], dtype=np.float32),
+                    point_size=point_size,
+                )
         else:
-            self.pipelines[self.current_pipeline_index][0].update_uniforms(
-                mvp=self.mvp_matrix
-            )
-
-    def _render_multi_colour_with_custom_colours(self, render_pass, positions, colours):
-        self.pipelines[self.current_pipeline_index][0].set_data(positions, colours)
-        self.pipelines[self.current_pipeline_index][0].render(render_pass)
-        self.pipelines[self.current_pipeline_index][0].update_uniforms(
-            mvp=self.mvp_matrix
-        )
-
-    def _render_single_colour_with_custom_data(self, render_pass, positions):
-        self.pipelines[self.current_pipeline_index][0].set_data(positions)
-        self.pipelines[self.current_pipeline_index][0].render(render_pass)
-        self.pipelines[self.current_pipeline_index][0].update_uniforms(
-            mvp=self.mvp_matrix
-        )
+            pipeline.update_uniforms(mvp=self.mvp_matrix)
 
     def _render_multi_colour_point_pipeline(self, render_pass):
-        self._render_multi_colour_pipeline(render_pass, self.positions, point_size=0.05)
+        self._render_pipeline(
+            render_pass, self.positions, colours=self.colours, point_size=0.05
+        )
 
     def _render_single_colour_point_pipeline(self, render_pass):
-        self._render_single_colour_pipeline(
-            render_pass, self.positions, point_size=0.05
-        )
+        self._render_pipeline(render_pass, self.positions, point_size=0.05)
 
     def _render_multi_colour_line_pipeline(self, render_pass):
-        self._render_multi_colour_with_custom_colours(
-            render_pass, self.positions_2d, self.colours
-        )
+        self._render_pipeline(render_pass, self.positions_2d, colours=self.colours)
 
     def _render_single_colour_line_pipeline(self, render_pass):
-        self._render_single_colour_with_custom_data(render_pass, self.positions_2d)
+        self._render_pipeline(render_pass, self.positions_2d)
 
     def _render_multi_colour_triangle_pipeline(self, render_pass):
-        self._render_multi_colour_with_custom_colours(
-            render_pass, self.triangle_positions, self.triangle_colours
+        self._render_pipeline(
+            render_pass, self.triangle_positions, colours=self.triangle_colours
         )
 
     def _render_single_colour_triangle_pipeline(self, render_pass):
-        self._render_single_colour_with_custom_data(
-            render_pass, self.triangle_positions
-        )
+        self._render_pipeline(render_pass, self.triangle_positions)
 
     def _render_triangle_list_multi_colour_pipeline(self, render_pass):
-        self._render_multi_colour_with_custom_colours(
-            render_pass, self.triangle_positions, self.triangle_colours
+        self._render_pipeline(
+            render_pass, self.triangle_positions, colours=self.triangle_colours
         )
 
     def _render_triangle_list_single_colour_pipeline(self, render_pass):
-        self._render_single_colour_with_custom_data(
-            render_pass, self.triangle_positions
-        )
+        self._render_pipeline(render_pass, self.triangle_positions)
 
     def _render_triangle_strip_multi_colour_pipeline(self, render_pass):
-        self._render_multi_colour_with_custom_colours(
-            render_pass, self.triangle_strip_positions, self.triangle_strip_colours
+        self._render_pipeline(
+            render_pass,
+            self.triangle_strip_positions,
+            colours=self.triangle_strip_colours,
         )
 
     def _render_triangle_strip_single_colour_pipeline(self, render_pass):
-        self._render_single_colour_with_custom_data(
-            render_pass, self.triangle_strip_positions
-        )
+        self._render_pipeline(render_pass, self.triangle_strip_positions)
 
     def _render_point_list_multi_colour_pipeline(self, render_pass):
-        self._render_multi_colour_pipeline(render_pass, self.positions, point_size=5.0)
+        self._render_pipeline(
+            render_pass, self.positions, colours=self.colours, point_size=5.0
+        )
 
     def _render_point_list_single_colour_pipeline(self, render_pass):
-        self._render_single_colour_pipeline(render_pass, self.positions, point_size=5.0)
+        self._render_pipeline(render_pass, self.positions, point_size=5.0)
 
     def update_uniform_buffers(self) -> None:
         """
@@ -436,9 +422,9 @@ class WebGPUScene(WebGPUWidget):
             event: The QKeyEvent object containing information about the key press.
         """
         key = event.key()
-        if key == Qt.Key_Escape:
+        if key == Qt.Key.Key_Escape:
             self.close()  # Exit the application
-        elif key == Qt.Key_Space:
+        elif key == Qt.Key.Key_Space:
             self.animate = not self.animate
         self.update()
 
