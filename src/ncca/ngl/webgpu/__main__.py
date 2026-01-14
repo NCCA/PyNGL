@@ -54,66 +54,114 @@ class WebGPUScene(WebGPUWidget):
         self._create_buffers(NUM_POINTS)
 
         self.pipelines = []
-        self.pipelines.append((
-            PipelineFactory.create_pipeline(self.device, PipelineType.MULTI_COLOURED_POINTS),
-            self._render_multi_colour_point_pipeline,
-            "PipelineType.MULTI_COLOURED_POINTS",
-        ))
-        self.pipelines.append((
-            PipelineFactory.create_pipeline(self.device, PipelineType.SINGLE_COLOUR_POINTS),
-            self._render_single_colour_point_pipeline,
-            "PipelineType.SINGLE_COLOUR_POINTS",
-        ))
-        self.pipelines.append((
-            PipelineFactory.create_pipeline(self.device, PipelineType.MULTI_COLOURED_LINES),
-            self._render_multi_colour_line_pipeline,
-            "PipelineType.MULTI_COLOURED_LINES",
-        ))
-        self.pipelines.append((
-            PipelineFactory.create_pipeline(self.device, PipelineType.SINGLE_COLOUR_LINES),
-            self._render_single_colour_line_pipeline,
-            "PipelineType.SINGLE_COLOUR_LINES",
-        ))
-        self.pipelines.append((
-            PipelineFactory.create_pipeline(self.device, PipelineType.MULTI_COLOURED_TRIANGLES),
-            self._render_multi_colour_triangle_pipeline,
-            "PipelineType.MULTI_COLOURED_TRIANGLES",
-        ))
-        self.pipelines.append((
-            PipelineFactory.create_pipeline(self.device, PipelineType.SINGLE_COLOUR_TRIANGLES),
-            self._render_single_colour_triangle_pipeline,
-            "PipelineType.SINGLE_COLOUR_TRIANGLES",
-        ))
-        self.pipelines.append((
-            PipelineFactory.create_pipeline(self.device, PipelineType.TRIANGLE_LIST_MULTI_COLOURED),
-            self._render_triangle_list_multi_colour_pipeline,
-            "PipelineType.TRIANGLE_LIST_MULTI_COLOURED",
-        ))
-        self.pipelines.append((
-            PipelineFactory.create_pipeline(self.device, PipelineType.TRIANGLE_LIST_SINGLE_COLOUR),
-            self._render_triangle_list_single_colour_pipeline,
-            "PipelineType.TRIANGLE_LIST_SINGLE_COLOUR",
-        ))
-        self.pipelines.append((
-            PipelineFactory.create_pipeline(self.device, PipelineType.TRIANGLE_STRIP_MULTI_COLOURED),
-            self._render_triangle_strip_multi_colour_pipeline,
-            "PipelineType.TRIANGLE_STRIP_MULTI_COLOURED",
-        ))
-        self.pipelines.append((
-            PipelineFactory.create_pipeline(self.device, PipelineType.TRIANGLE_STRIP_SINGLE_COLOUR),
-            self._render_triangle_strip_single_colour_pipeline,
-            "PipelineType.TRIANGLE_STRIP_SINGLE_COLOUR",
-        ))
-        self.pipelines.append((
-            PipelineFactory.create_pipeline(self.device, PipelineType.POINT_LIST_MULTI_COLOURED),
-            self._render_point_list_multi_colour_pipeline,
-            "PipelineType.POINT_LIST_MULTI_COLOURED",
-        ))
-        self.pipelines.append((
-            PipelineFactory.create_pipeline(self.device, PipelineType.POINT_LIST_SINGLE_COLOUR),
-            self._render_point_list_single_colour_pipeline,
-            "PipelineType.POINT_LIST_SINGLE_COLOUR",
-        ))
+        self.pipelines.append(
+            (
+                PipelineFactory.create_pipeline(
+                    self.device, PipelineType.MULTI_COLOURED_POINTS
+                ),
+                self._render_multi_colour_point_pipeline,
+                "PipelineType.MULTI_COLOURED_POINTS",
+            )
+        )
+        self.pipelines.append(
+            (
+                PipelineFactory.create_pipeline(
+                    self.device, PipelineType.SINGLE_COLOUR_POINTS
+                ),
+                self._render_single_colour_point_pipeline,
+                "PipelineType.SINGLE_COLOUR_POINTS",
+            )
+        )
+        self.pipelines.append(
+            (
+                PipelineFactory.create_pipeline(
+                    self.device, PipelineType.MULTI_COLOURED_LINES
+                ),
+                self._render_multi_colour_line_pipeline,
+                "PipelineType.MULTI_COLOURED_LINES",
+            )
+        )
+        self.pipelines.append(
+            (
+                PipelineFactory.create_pipeline(
+                    self.device, PipelineType.SINGLE_COLOUR_LINES
+                ),
+                self._render_single_colour_line_pipeline,
+                "PipelineType.SINGLE_COLOUR_LINES",
+            )
+        )
+        self.pipelines.append(
+            (
+                PipelineFactory.create_pipeline(
+                    self.device, PipelineType.MULTI_COLOURED_TRIANGLES
+                ),
+                self._render_multi_colour_triangle_pipeline,
+                "PipelineType.MULTI_COLOURED_TRIANGLES",
+            )
+        )
+        self.pipelines.append(
+            (
+                PipelineFactory.create_pipeline(
+                    self.device, PipelineType.SINGLE_COLOUR_TRIANGLES
+                ),
+                self._render_single_colour_triangle_pipeline,
+                "PipelineType.SINGLE_COLOUR_TRIANGLES",
+            )
+        )
+        self.pipelines.append(
+            (
+                PipelineFactory.create_pipeline(
+                    self.device, PipelineType.TRIANGLE_LIST_MULTI_COLOURED
+                ),
+                self._render_triangle_list_multi_colour_pipeline,
+                "PipelineType.TRIANGLE_LIST_MULTI_COLOURED",
+            )
+        )
+        self.pipelines.append(
+            (
+                PipelineFactory.create_pipeline(
+                    self.device, PipelineType.TRIANGLE_LIST_SINGLE_COLOUR
+                ),
+                self._render_triangle_list_single_colour_pipeline,
+                "PipelineType.TRIANGLE_LIST_SINGLE_COLOUR",
+            )
+        )
+        self.pipelines.append(
+            (
+                PipelineFactory.create_pipeline(
+                    self.device, PipelineType.TRIANGLE_STRIP_MULTI_COLOURED
+                ),
+                self._render_triangle_strip_multi_colour_pipeline,
+                "PipelineType.TRIANGLE_STRIP_MULTI_COLOURED",
+            )
+        )
+        self.pipelines.append(
+            (
+                PipelineFactory.create_pipeline(
+                    self.device, PipelineType.TRIANGLE_STRIP_SINGLE_COLOUR
+                ),
+                self._render_triangle_strip_single_colour_pipeline,
+                "PipelineType.TRIANGLE_STRIP_SINGLE_COLOUR",
+            )
+        )
+        self.pipelines.append(
+            (
+                PipelineFactory.create_pipeline(
+                    self.device, PipelineType.POINT_LIST_MULTI_COLOURED
+                ),
+                self._render_point_list_multi_colour_pipeline,
+                "PipelineType.POINT_LIST_MULTI_COLOURED",
+            )
+        )
+        self.pipelines.append(
+            (
+                PipelineFactory.create_pipeline(
+                    self.device, PipelineType.POINT_LIST_SINGLE_COLOUR
+                ),
+                self._render_point_list_single_colour_pipeline,
+                "PipelineType.POINT_LIST_SINGLE_COLOUR",
+            )
+        )
         self.current_pipeline_index = 1
         # Initialize render textures with default size
         self.texture_size = (1024, 720)
@@ -131,7 +179,9 @@ class WebGPUScene(WebGPUWidget):
         # Create 3D positions for line rendering with Z elevation
         self.positions = rng.uniform(-4.0, 4.0, size=(num_points, 3)).astype(np.float32)
         # For line rendering, we can use the full 3D positions or just X,Y depending on desired effect
-        self.positions_2d = self.positions[:, :2]  # Take only X,Y components for 2D line effects
+        self.positions_2d = self.positions[
+            :, :2
+        ]  # Take only X,Y components for 2D line effects
 
         # Create triangle data for triangle list
         num_triangles = 100
@@ -147,29 +197,35 @@ class WebGPUScene(WebGPUWidget):
             # First vertex
             theta1 = rng.uniform(0, 2 * np.pi)  # azimuth
             phi1 = rng.uniform(0, np.pi)  # polar
-            vertex1 = radius * np.array([
-                np.sin(phi1) * np.cos(theta1),
-                np.sin(phi1) * np.sin(theta1),
-                np.cos(phi1),
-            ])
+            vertex1 = radius * np.array(
+                [
+                    np.sin(phi1) * np.cos(theta1),
+                    np.sin(phi1) * np.sin(theta1),
+                    np.cos(phi1),
+                ]
+            )
 
             # Second vertex (different orientation)
             theta2 = theta1 + rng.uniform(2.0, 3.0)
             phi2 = rng.uniform(0, np.pi)
-            vertex2 = radius * np.array([
-                np.sin(phi2) * np.cos(theta2),
-                np.sin(phi2) * np.sin(theta2),
-                np.cos(phi2),
-            ])
+            vertex2 = radius * np.array(
+                [
+                    np.sin(phi2) * np.cos(theta2),
+                    np.sin(phi2) * np.sin(theta2),
+                    np.cos(phi2),
+                ]
+            )
 
             # Third vertex (completes the triangle)
             theta3 = theta2 + rng.uniform(2.0, 3.0)
             phi3 = rng.uniform(0, np.pi)
-            vertex3 = radius * np.array([
-                np.sin(phi3) * np.cos(theta3),
-                np.sin(phi3) * np.sin(theta3),
-                np.cos(phi3),
-            ])
+            vertex3 = radius * np.array(
+                [
+                    np.sin(phi3) * np.cos(theta3),
+                    np.sin(phi3) * np.sin(theta3),
+                    np.cos(phi3),
+                ]
+            )
 
             self.triangle_positions[i * 3] = center + vertex1
             self.triangle_positions[i * 3 + 1] = center + vertex2
@@ -240,112 +296,136 @@ class WebGPUScene(WebGPUWidget):
                 },
             )
             self.update_uniform_buffers()
-            render_pass.set_viewport(0, 0, self.texture_size[0], self.texture_size[1], 0, 1)
+            render_pass.set_viewport(
+                0, 0, self.texture_size[0], self.texture_size[1], 0, 1
+            )
             self.pipelines[self.current_pipeline_index][1](render_pass)
             render_pass.end()
             self.device.queue.submit([command_encoder.finish()])
         except Exception as e:
             print(f"Failed to paint WebGPU content: {e}")
 
-    def resizeWebGPU(self, width, height) -> None:
+    def resizeWebGPU(self, w, h) -> None:
         """
         Called whenever the window is resized.
         It's crucial to update the viewport and projection matrix here.
 
         Args:
-            width: The new width of the window.
-            height: The new height of the window.
+            w: The new width of the window.
+            h: The new height of the window.
         """
 
         # Update texture size to match window dimensions
-        self.texture_size = (width, height)
+        self.texture_size = (w, h)
 
         # Update projection matrix
-        self.project = perspective(45.0, width / height if height > 0 else 1, 0.1, 100.0, PerspMode.WebGPU)
+        self.project = perspective(
+            45.0, w / h if h > 0 else 1, 0.1, 100.0, PerspMode.WebGPU
+        )
 
         self.update()
 
-    def _render_multi_colour_point_pipeline(self, render_pass):
-        self.pipelines[self.current_pipeline_index][0].set_data(self.positions, self.colours)
+    def _render_multi_colour_pipeline(self, render_pass, positions, point_size=None):
+        self.pipelines[self.current_pipeline_index][0].set_data(positions, self.colours)
+        self.pipelines[self.current_pipeline_index][0].render(render_pass)
+        if point_size is not None:
+            self.pipelines[self.current_pipeline_index][0].update_uniforms(
+                mvp=self.mvp_matrix, view_matrix=self.view_matrix, point_size=point_size
+            )
+        else:
+            self.pipelines[self.current_pipeline_index][0].update_uniforms(
+                mvp=self.mvp_matrix
+            )
+
+    def _render_single_colour_pipeline(self, render_pass, positions, point_size=None):
+        self.pipelines[self.current_pipeline_index][0].set_data(positions)
+        self.pipelines[self.current_pipeline_index][0].render(render_pass)
+        if point_size is not None:
+            self.pipelines[self.current_pipeline_index][0].update_uniforms(
+                mvp=self.mvp_matrix,
+                view_matrix=self.view_matrix,
+                colour=np.array([1, 1, 1], dtype=np.float32),
+                point_size=point_size,
+            )
+        else:
+            self.pipelines[self.current_pipeline_index][0].update_uniforms(
+                mvp=self.mvp_matrix
+            )
+
+    def _render_multi_colour_with_custom_colours(self, render_pass, positions, colours):
+        self.pipelines[self.current_pipeline_index][0].set_data(positions, colours)
         self.pipelines[self.current_pipeline_index][0].render(render_pass)
         self.pipelines[self.current_pipeline_index][0].update_uniforms(
-            mvp=self.mvp_matrix, view_matrix=self.view_matrix, point_size=0.05
+            mvp=self.mvp_matrix
         )
 
-    def _render_single_colour_point_pipeline(self, render_pass):
-        self.pipelines[self.current_pipeline_index][0].set_data(self.positions)
+    def _render_single_colour_with_custom_data(self, render_pass, positions):
+        self.pipelines[self.current_pipeline_index][0].set_data(positions)
         self.pipelines[self.current_pipeline_index][0].render(render_pass)
         self.pipelines[self.current_pipeline_index][0].update_uniforms(
-            mvp=self.mvp_matrix,
-            view_matrix=self.view_matrix,
-            colour=np.array([1, 1, 1], dtype=np.float32),
-            point_size=0.05,
+            mvp=self.mvp_matrix
+        )
+
+    def _render_multi_colour_point_pipeline(self, render_pass):
+        self._render_multi_colour_pipeline(render_pass, self.positions, point_size=0.05)
+
+    def _render_single_colour_point_pipeline(self, render_pass):
+        self._render_single_colour_pipeline(
+            render_pass, self.positions, point_size=0.05
         )
 
     def _render_multi_colour_line_pipeline(self, render_pass):
-        self.pipelines[self.current_pipeline_index][0].set_data(self.positions_2d, self.colours)
-        self.pipelines[self.current_pipeline_index][0].render(render_pass)
-        self.pipelines[self.current_pipeline_index][0].update_uniforms(mvp=self.mvp_matrix)
-        self.pipelines[self.current_pipeline_index][0].render(render_pass)
-        self.pipelines[self.current_pipeline_index][0].update_uniforms(mvp=self.mvp_matrix)
+        self._render_multi_colour_with_custom_colours(
+            render_pass, self.positions_2d, self.colours
+        )
 
     def _render_single_colour_line_pipeline(self, render_pass):
-        self.pipelines[self.current_pipeline_index][0].set_data(self.positions_2d)
-        self.pipelines[self.current_pipeline_index][0].render(render_pass)
-        self.pipelines[self.current_pipeline_index][0].update_uniforms(mvp=self.mvp_matrix)
+        self._render_single_colour_with_custom_data(render_pass, self.positions_2d)
 
     def _render_multi_colour_triangle_pipeline(self, render_pass):
-        self.pipelines[self.current_pipeline_index][0].set_data(self.triangle_positions, self.triangle_colours)
-        self.pipelines[self.current_pipeline_index][0].render(render_pass)
-        self.pipelines[self.current_pipeline_index][0].update_uniforms(mvp=self.mvp_matrix)
+        self._render_multi_colour_with_custom_colours(
+            render_pass, self.triangle_positions, self.triangle_colours
+        )
 
     def _render_single_colour_triangle_pipeline(self, render_pass):
-        self.pipelines[self.current_pipeline_index][0].set_data(self.triangle_positions)
-        self.pipelines[self.current_pipeline_index][0].render(render_pass)
-        self.pipelines[self.current_pipeline_index][0].update_uniforms(mvp=self.mvp_matrix)
+        self._render_single_colour_with_custom_data(
+            render_pass, self.triangle_positions
+        )
 
     def _render_triangle_list_multi_colour_pipeline(self, render_pass):
-        self.pipelines[self.current_pipeline_index][0].set_data(self.triangle_positions, self.triangle_colours)
-        self.pipelines[self.current_pipeline_index][0].render(render_pass)
-        self.pipelines[self.current_pipeline_index][0].update_uniforms(mvp=self.mvp_matrix)
+        self._render_multi_colour_with_custom_colours(
+            render_pass, self.triangle_positions, self.triangle_colours
+        )
 
     def _render_triangle_list_single_colour_pipeline(self, render_pass):
-        self.pipelines[self.current_pipeline_index][0].set_data(self.triangle_positions)
-        self.pipelines[self.current_pipeline_index][0].render(render_pass)
-        self.pipelines[self.current_pipeline_index][0].update_uniforms(mvp=self.mvp_matrix)
+        self._render_single_colour_with_custom_data(
+            render_pass, self.triangle_positions
+        )
 
     def _render_triangle_strip_multi_colour_pipeline(self, render_pass):
-        self.pipelines[self.current_pipeline_index][0].set_data(
-            self.triangle_strip_positions, self.triangle_strip_colours
+        self._render_multi_colour_with_custom_colours(
+            render_pass, self.triangle_strip_positions, self.triangle_strip_colours
         )
-        self.pipelines[self.current_pipeline_index][0].render(render_pass)
-        self.pipelines[self.current_pipeline_index][0].update_uniforms(mvp=self.mvp_matrix)
 
     def _render_triangle_strip_single_colour_pipeline(self, render_pass):
-        self.pipelines[self.current_pipeline_index][0].set_data(self.triangle_strip_positions)
-        self.pipelines[self.current_pipeline_index][0].render(render_pass)
-        self.pipelines[self.current_pipeline_index][0].update_uniforms(mvp=self.mvp_matrix)
+        self._render_single_colour_with_custom_data(
+            render_pass, self.triangle_strip_positions
+        )
 
     def _render_point_list_multi_colour_pipeline(self, render_pass):
-        self.pipelines[self.current_pipeline_index][0].set_data(self.positions, self.colours)
-        self.pipelines[self.current_pipeline_index][0].render(render_pass)
-        self.pipelines[self.current_pipeline_index][0].update_uniforms(mvp=self.mvp_matrix, point_size=5.0)
+        self._render_multi_colour_pipeline(render_pass, self.positions, point_size=5.0)
 
     def _render_point_list_single_colour_pipeline(self, render_pass):
-        self.pipelines[self.current_pipeline_index][0].set_data(self.positions)
-        self.pipelines[self.current_pipeline_index][0].render(render_pass)
-        self.pipelines[self.current_pipeline_index][0].update_uniforms(
-            mvp=self.mvp_matrix,
-            colour=np.array([1, 1, 1], dtype=np.float32),
-            point_size=5.0,
-        )
+        self._render_single_colour_pipeline(render_pass, self.positions, point_size=5.0)
 
     def update_uniform_buffers(self) -> None:
         """
         update the uniform buffers for the line pipeline.
         """
         rotation = Mat4.rotate_y(self.rotation)
-        self.mvp_matrix = (self.project @ self.view @ rotation).to_numpy().astype(np.float32)
+        self.mvp_matrix = (
+            (self.project @ self.view @ rotation).to_numpy().astype(np.float32)
+        )
         self.view_matrix = (self.view @ rotation).to_numpy().astype(np.float32)
 
     def keyPressEvent(self, event) -> None:
@@ -367,7 +447,9 @@ class WebGPUScene(WebGPUWidget):
 
     def switch_pipeline(self) -> None:
         """Switch to the next pipeline in the list."""
-        self.current_pipeline_index = (self.current_pipeline_index + 1) % len(self.pipelines)
+        self.current_pipeline_index = (self.current_pipeline_index + 1) % len(
+            self.pipelines
+        )
         print(f"Switched to {self.pipelines[self.current_pipeline_index][2]}")
         self.update()
 
