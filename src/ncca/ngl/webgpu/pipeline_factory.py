@@ -6,11 +6,14 @@ Provides abstract base class and factory for creating various pipeline types.
 
 from abc import ABC, abstractmethod
 from enum import Enum
+from multiprocessing import Pipe
 from pathlib import Path
 from typing import Any, Dict, Optional, Type
 
 import numpy as np
 import wgpu
+
+from .point_pipeline import PointPipelineMultiColour, PointPipelineSingleColour
 
 
 class PipelineType(Enum):
@@ -61,6 +64,11 @@ class BasePipeline(ABC):
         pass
 
     @abstractmethod
+    def get_dtype(self) -> np.dtype:
+        """Get the data type of the pipeline."""
+        pass
+
+    @abstractmethod
     def set_data(self, **kwargs) -> None:
         """
         Set rendering data (vertices, colors, etc.).
@@ -97,14 +105,16 @@ class BasePipeline(ABC):
             self.uniform_buffer.destroy()
 
 
-class PipelineFactory:
+class _PipelineFactory:
     """
     Factory for creating pipeline instances with various configurations.
     """
 
     def __init__(self):
         """Initialize the pipeline factory with default pipeline types."""
-        self._pipeline_registry: Dict[PipelineType, Type[BasePipeline]] = dict()
+        self._pipeline_registry: Dict[PipelineType, Type[BasePipeline]] = {}
+        self.register_pipeline(PipelineType.MULTI_COLOURED_POINTS, PointPipelineMultiColour)
+        self.register_pipeline(PipelineType.SINGLE_COLOUR_POINTS, PointPipelineSingleColour)
 
     def register_pipeline(self, pipeline_type: PipelineType, pipeline_class: Type[BasePipeline]) -> None:
         """
@@ -139,59 +149,5 @@ class PipelineFactory:
         pipeline_class = self._pipeline_registry[pipeline_type]
         return pipeline_class(device, **kwargs)
 
-    # def create_line_pipeline(
-    #     self,
-    #     device: wgpu.GPUDevice,
-    #     topology: wgpu.PrimitiveTopology = wgpu.PrimitiveTopology.line_strip,
-    #     shader_path: Optional[Path] = None,
-    #     **kwargs,
-    # ) -> LinePipeline:
-    #     """
-    #     Convenience method to create a line pipeline.
 
-    #     Args:
-    #         device: WebGPU device
-    #         topology: Line topology
-    #         shader_path: Optional custom shader file
-    #         **kwargs: Additional pipeline parameters
-
-    #     Returns:
-    #         Configured line pipeline
-    #     """
-    #     return self.create_pipeline(device, PipelineType.LINE, topology=topology, shader_path=shader_path, **kwargs)
-
-
-# Example usage:
-"""
-# Initialize factory
-factory = PipelineFactory()
-
-# Create a basic line pipeline with defaults
-line_pipeline = factory.create_line_pipeline(
-    device=gpu_device,
-    topology=wgpu.PrimitiveTopology.line_strip
-)
-
-# Create a line pipeline with custom shader
-custom_line_pipeline = factory.create_line_pipeline(
-    device=gpu_device,
-    shader_path=Path("shaders/custom_line.wgsl"),
-    topology=wgpu.PrimitiveTopology.line_list
-)
-
-# Set data and render
-vertices = np.array([[0, 0], [1, 0], [1, 1]], dtype=np.float32)
-colors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)
-
-line_pipeline.set_data(vertices=vertices, colors=colors)
-line_pipeline.update_uniforms(mvp=projection_matrix, line_width=2.0)
-line_pipeline.render(render_pass)
-
-# Register custom pipeline type
-class MyCustomPipeline(BasePipeline):
-    # ... implementation ...
-    pass
-
-factory.register_pipeline(PipelineType.CUSTOM, MyCustomPipeline)
-custom_pipeline = factory.create_pipeline(device, PipelineType.CUSTOM)
-"""
+PipelineFactory = _PipelineFactory()
