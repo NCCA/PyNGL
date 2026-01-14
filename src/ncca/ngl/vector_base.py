@@ -8,16 +8,14 @@ while allowing dimension-specific behavior through abstract methods.
 import ctypes
 import math
 from abc import ABC, abstractmethod
-from typing import Any, ClassVar, Generic, Tuple, TypeVar, Union
+from typing import Any, ClassVar, Self, Tuple, Union
 
 import numpy as np
 
 from .util import clamp, hash_combine
 
-T = TypeVar("T", bound="VectorBase")
 
-
-class VectorBase(ABC, Generic[T]):
+class VectorBase[T](ABC):
     """
     Base class for all vector types providing common functionality.
 
@@ -37,39 +35,58 @@ class VectorBase(ABC, Generic[T]):
 
     def __init__(self, *args: float, **kwargs: float) -> None:
         """Initialize vector with components."""
-        # Handle keyword arguments for backward compatibility
         if kwargs:
-            if len(kwargs) + len(args) > self.DIMENSION:
-                raise ValueError(f"{self.__class__.__name__} requires at most {self.DIMENSION} components")
-
-            # Create array with default values
-            values = list(self.DEFAULT_VALUES)
-
-            # Set positional arguments
-            for i, arg in enumerate(args):
-                values[i] = float(arg)
-
-            # Set keyword arguments
-            for key, value in kwargs.items():
-                if key in self.COMPONENT_NAMES:
-                    idx = self.COMPONENT_NAMES.index(key)
-                    values[idx] = float(value)
-                else:
-                    raise ValueError(f"Unknown component name: {key}")
-
-            self._data = np.array(values, dtype=np.float64)
+            self._init_from_kwargs(args, kwargs)
         else:
-            # Handle positional arguments only
-            if len(args) == 0:
-                self._data = np.array(self.DEFAULT_VALUES, dtype=np.float64)
-            elif len(args) <= self.DIMENSION:
-                # Allow fewer arguments than dimension, use defaults for missing components
-                values = list(self.DEFAULT_VALUES)
-                for i, arg in enumerate(args):
-                    values[i] = float(arg)
-                self._data = np.array(values, dtype=np.float64)
+            self._init_from_args(args)
+
+    def _init_from_kwargs(
+        self, args: tuple[float, ...], kwargs: dict[str, float]
+    ) -> None:
+        """Initialize vector from keyword arguments."""
+        self._validate_component_count(len(args) + len(kwargs))
+
+        values = list(self.DEFAULT_VALUES)
+        self._set_positional_args(values, args)
+        self._set_keyword_args(values, kwargs)
+
+        self._data = np.array(values, dtype=np.float64)
+
+    def _init_from_args(self, args: tuple[float, ...]) -> None:
+        """Initialize vector from positional arguments only."""
+        if not args:
+            self._data = np.array(self.DEFAULT_VALUES, dtype=np.float64)
+            return
+
+        self._validate_component_count(len(args))
+
+        values = list(self.DEFAULT_VALUES)
+        self._set_positional_args(values, args)
+
+        self._data = np.array(values, dtype=np.float64)
+
+    def _validate_component_count(self, count: int) -> None:
+        """Validate the number of components doesn't exceed dimension."""
+        if count > self.DIMENSION:
+            raise ValueError(
+                f"{self.__class__.__name__} requires at most {self.DIMENSION} components"
+            )
+
+    def _set_positional_args(
+        self, values: list[float], args: tuple[float, ...]
+    ) -> None:
+        """Set positional argument values."""
+        for i, arg in enumerate(args):
+            values[i] = float(arg)
+
+    def _set_keyword_args(self, values: list[float], kwargs: dict[str, float]) -> None:
+        """Set keyword argument values."""
+        for key, value in kwargs.items():
+            if key in self.COMPONENT_NAMES:
+                idx = self.COMPONENT_NAMES.index(key)
+                values[idx] = float(value)
             else:
-                raise ValueError(f"{self.__class__.__name__} requires at most {self.DIMENSION} components")
+                raise ValueError(f"Unknown component name: {key}")
 
     @classmethod
     def sizeof(cls) -> int:
@@ -119,7 +136,7 @@ class VectorBase(ABC, Generic[T]):
             seed = hash_combine(seed, h)
         return seed
 
-    def copy(self) -> T:
+    def copy(self) -> Self:
         """
         Create a copy of the vector.
 
@@ -128,7 +145,7 @@ class VectorBase(ABC, Generic[T]):
         """
         return self.__class__(*self._data)
 
-    def __add__(self, rhs: T) -> T:
+    def __add__(self, rhs: Self) -> Self:
         """
         Vector addition a+b.
 
@@ -139,12 +156,14 @@ class VectorBase(ABC, Generic[T]):
             VectorBase: A new vector that is the result of adding this vector and the rhs vector.
         """
         if not isinstance(rhs, self.__class__):
-            raise ValueError(f"Can only add {self.__class__.__name__} to {self.__class__.__name__}")
+            raise ValueError(
+                f"Can only add {self.__class__.__name__} to {self.__class__.__name__}"
+            )
         result = self.__class__()
         result._data = self._data + rhs._data
         return result
 
-    def __iadd__(self, rhs: T) -> T:
+    def __iadd__(self, rhs: Self) -> Self:
         """
         Vector addition a+=b.
 
@@ -155,11 +174,13 @@ class VectorBase(ABC, Generic[T]):
             VectorBase: Returns this vector after adding the rhs vector.
         """
         if not isinstance(rhs, self.__class__):
-            raise ValueError(f"Can only add {self.__class__.__name__} to {self.__class__.__name__}")
+            raise ValueError(
+                f"Can only add {self.__class__.__name__} to {self.__class__.__name__}"
+            )
         self._data += rhs._data
         return self
 
-    def __sub__(self, rhs: T) -> T:
+    def __sub__(self, rhs: Self) -> Self:
         """
         Vector subtraction a-b.
 
@@ -170,12 +191,14 @@ class VectorBase(ABC, Generic[T]):
             VectorBase: A new vector that is the result of subtracting this vector and the rhs vector.
         """
         if not isinstance(rhs, self.__class__):
-            raise ValueError(f"Can only subtract {self.__class__.__name__} from {self.__class__.__name__}")
+            raise ValueError(
+                f"Can only subtract {self.__class__.__name__} from {self.__class__.__name__}"
+            )
         result = self.__class__()
         result._data = self._data - rhs._data
         return result
 
-    def __isub__(self, rhs: T) -> T:
+    def __isub__(self, rhs: Self) -> Self:
         """
         Vector subtraction a-=b.
 
@@ -186,7 +209,9 @@ class VectorBase(ABC, Generic[T]):
             VectorBase: Returns this vector after subtracting the rhs vector.
         """
         if not isinstance(rhs, self.__class__):
-            raise ValueError(f"Can only subtract {self.__class__.__name__} from {self.__class__.__name__}")
+            raise ValueError(
+                f"Can only subtract {self.__class__.__name__} from {self.__class__.__name__}"
+            )
         self._data -= rhs._data
         return self
 
@@ -220,7 +245,7 @@ class VectorBase(ABC, Generic[T]):
             return NotImplemented
         return not np.allclose(self._data, rhs._data)
 
-    def __neg__(self) -> T:
+    def __neg__(self) -> Self:
         """
         Negate a vector -a.
 
@@ -231,7 +256,7 @@ class VectorBase(ABC, Generic[T]):
         result._data = -self._data
         return result
 
-    def __mul__(self, rhs: Union[float, int]) -> T:
+    def __mul__(self, rhs: Union[float, int]) -> Self:
         """
         Piecewise scalar multiplication.
 
@@ -249,7 +274,9 @@ class VectorBase(ABC, Generic[T]):
             result._data = self._data * rhs
             return result
         else:
-            raise ValueError(f"Can only do piecewise multiplication with a scalar, got {type(rhs)}")
+            raise ValueError(
+                f"Can only do piecewise multiplication with a scalar, got {type(rhs)}"
+            )
 
     def __rmul__(self, rhs: Union[float, int]) -> T:
         """
@@ -305,7 +332,9 @@ class VectorBase(ABC, Generic[T]):
             float: The dot product of the two vectors.
         """
         if not isinstance(rhs, self.__class__):
-            raise ValueError(f"Can only compute dot product with {self.__class__.__name__}")
+            raise ValueError(
+                f"Can only compute dot product with {self.__class__.__name__}"
+            )
         return np.dot(self._data, rhs._data)
 
     def length(self) -> float:
@@ -484,7 +513,9 @@ class VectorBase(ABC, Generic[T]):
         Raises:
             AttributeError: If the attribute does not exist.
         """
-        raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
+        raise AttributeError(
+            f"'{self.__class__.__name__}' object has no attribute '{name}'"
+        )
 
     def __setattr__(self, name: str, value: Any) -> None:
         """
@@ -504,7 +535,9 @@ class VectorBase(ABC, Generic[T]):
         elif name in self.COMPONENT_NAMES:
             super().__setattr__(name, value)
         else:
-            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
+            raise AttributeError(
+                f"'{self.__class__.__name__}' object has no attribute '{name}'"
+            )
 
 
 def _create_properties(cls: type) -> None:

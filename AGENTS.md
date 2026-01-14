@@ -163,7 +163,7 @@ def load_shader(vertex_path: str, fragment_path: str) -> int:
 - **Coverage**: Maintain high test coverage (excluding GUI widgets in CI)
 - **Test data**: Use files in `tests/files/` for models, textures, shaders
 - **OpenGL tests**: Use custom fixtures in `conftest.py` for context setup
-
+- **running tests** : always run the whole test suite on changes
 ### Performance Optimizations
 - Use `__slots__` in data-heavy classes (vectors, matrices)
 - Prefer numpy arrays over Python lists for numerical data
