@@ -117,11 +117,9 @@ class LinePipelineMultiColour(BaseLinePipeline):
 
     def get_dtype(self) -> np.dtype:
         """Get the data type of the pipeline."""
-        return np.dtype(
-            [
-                ("MVP", "float32", (4, 4)),
-            ]
-        )
+        return np.dtype([
+            ("MVP", "float32", (4, 4)),
+        ])
 
     def _get_shader_code(self) -> str:
         """Get the WGSL shader code for this pipeline."""
@@ -193,13 +191,12 @@ class LinePipelineMultiColour(BaseLinePipeline):
                     padding_size=4,  # Pad to vec4 for alignment
                     buffer_label="line_pipeline_multi_coloured_colour_buffer",
                 )
-                self.color_buffer = (
-                    color_result
-                    if isinstance(color_result, wgpu.GPUBuffer)
-                    else color_result[0]
-                    if color_result
-                    else None
-                )
+                if isinstance(color_result, wgpu.GPUBuffer):
+                    self.color_buffer = color_result
+                elif color_result:
+                    self.color_buffer = color_result[0]
+                else:
+                    self.color_buffer = None
 
     def update_uniforms(self, **kwargs) -> None:
         """
@@ -212,9 +209,7 @@ class LinePipelineMultiColour(BaseLinePipeline):
         if "mvp" in kwargs and kwargs["mvp"] is not None:
             self.uniform_data["MVP"] = kwargs["mvp"]
 
-        self.device.queue.write_buffer(
-            self.uniform_buffer, 0, self.uniform_data.tobytes()
-        )
+        self.device.queue.write_buffer(self.uniform_buffer, 0, self.uniform_data.tobytes())
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
         """
@@ -293,11 +288,9 @@ class LinePipelineSingleColour(BaseLinePipeline):
 
     def get_dtype(self) -> np.dtype:
         """Get the data type of the pipeline."""
-        return np.dtype(
-            [
-                ("MVP", "float32", (4, 4)),
-            ]
-        )
+        return np.dtype([
+            ("MVP", "float32", (4, 4)),
+        ])
 
     def _get_shader_code(self) -> str:
         """Get the WGSL shader code for this pipeline."""
@@ -359,9 +352,7 @@ class LinePipelineSingleColour(BaseLinePipeline):
         if "mvp" in kwargs and kwargs["mvp"] is not None:
             self.uniform_data["MVP"] = kwargs["mvp"]
 
-        self.device.queue.write_buffer(
-            self.uniform_buffer, 0, self.uniform_data.tobytes()
-        )
+        self.device.queue.write_buffer(self.uniform_buffer, 0, self.uniform_data.tobytes())
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
         """

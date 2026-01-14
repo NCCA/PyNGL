@@ -235,13 +235,12 @@ class TrianglePipelineMultiColour(BaseTrianglePipeline):
                     padding_size=4,  # Pad to vec4 for alignment
                     buffer_label=f"triangle_pipeline_multi_coloured_colour_buffer_{self._get_pipeline_label()}",
                 )
-                self.color_buffer = (
-                    color_result
-                    if isinstance(color_result, wgpu.GPUBuffer)
-                    else color_result[0]
-                    if color_result
-                    else None
-                )
+                if isinstance(color_result, wgpu.GPUBuffer):
+                    self.color_buffer = color_result
+                elif color_result:
+                    self.color_buffer = color_result[0]
+                else:
+                    self.color_buffer = None
 
     def update_uniforms(self, **kwargs) -> None:
         """

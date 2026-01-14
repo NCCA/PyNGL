@@ -312,9 +312,6 @@ class WebGPUScene(WebGPUWidget):
     def _render_single_colour_triangle_pipeline(self, render_pass):
         self._render_pipeline(render_pass, self.triangle_positions)
 
-    def _render_triangle_list_multi_colour_pipeline(self, render_pass):
-        self._render_pipeline(render_pass, self.triangle_positions, colours=self.triangle_colours)
-
     def _render_triangle_list_single_colour_pipeline(self, render_pass):
         self._render_pipeline(render_pass, self.triangle_positions)
 

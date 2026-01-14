@@ -260,13 +260,12 @@ class PointPipelineMultiColour(BasePointPipeline):
                 padding_size=4,  # Pad to vec4 for alignment
                 buffer_label="point_pipeline_multi_coloured_colour_buffer",
             )
-            self.colour_buffer = (
-                colour_result
-                if isinstance(colour_result, wgpu.GPUBuffer)
-                else colour_result[0]
-                if colour_result
-                else None
-            )
+            if isinstance(colour_result, wgpu.GPUBuffer):
+                self.colour_buffer = colour_result
+            elif colour_result:
+                self.colour_buffer = colour_result[0]
+            else:
+                self.colour_buffer = None
 
     def update_uniforms(self, **kwargs) -> None:
         """
