@@ -40,9 +40,7 @@ class VectorBase[T](ABC):
         else:
             self._init_from_args(args)
 
-    def _init_from_kwargs(
-        self, args: tuple[float, ...], kwargs: dict[str, float]
-    ) -> None:
+    def _init_from_kwargs(self, args: tuple[float, ...], kwargs: dict[str, float]) -> None:
         """Initialize vector from keyword arguments."""
         self._validate_component_count(len(args) + len(kwargs))
 
@@ -68,13 +66,9 @@ class VectorBase[T](ABC):
     def _validate_component_count(self, count: int) -> None:
         """Validate the number of components doesn't exceed dimension."""
         if count > self.DIMENSION:
-            raise ValueError(
-                f"{self.__class__.__name__} requires at most {self.DIMENSION} components"
-            )
+            raise ValueError(f"{self.__class__.__name__} requires at most {self.DIMENSION} components")
 
-    def _set_positional_args(
-        self, values: list[float], args: tuple[float, ...]
-    ) -> None:
+    def _set_positional_args(self, values: list[float], args: tuple[float, ...]) -> None:
         """Set positional argument values."""
         for i, arg in enumerate(args):
             values[i] = float(arg)
@@ -156,9 +150,7 @@ class VectorBase[T](ABC):
             VectorBase: A new vector that is the result of adding this vector and the rhs vector.
         """
         if not isinstance(rhs, self.__class__):
-            raise ValueError(
-                f"Can only add {self.__class__.__name__} to {self.__class__.__name__}"
-            )
+            raise ValueError(f"Can only add {self.__class__.__name__} to {self.__class__.__name__}")
         result = self.__class__()
         result._data = self._data + rhs._data
         return result
@@ -174,9 +166,7 @@ class VectorBase[T](ABC):
             VectorBase: Returns this vector after adding the rhs vector.
         """
         if not isinstance(rhs, self.__class__):
-            raise ValueError(
-                f"Can only add {self.__class__.__name__} to {self.__class__.__name__}"
-            )
+            raise ValueError(f"Can only add {self.__class__.__name__} to {self.__class__.__name__}")
         self._data += rhs._data
         return self
 
@@ -191,9 +181,7 @@ class VectorBase[T](ABC):
             VectorBase: A new vector that is the result of subtracting this vector and the rhs vector.
         """
         if not isinstance(rhs, self.__class__):
-            raise ValueError(
-                f"Can only subtract {self.__class__.__name__} from {self.__class__.__name__}"
-            )
+            raise ValueError(f"Can only subtract {self.__class__.__name__} from {self.__class__.__name__}")
         result = self.__class__()
         result._data = self._data - rhs._data
         return result
@@ -209,9 +197,7 @@ class VectorBase[T](ABC):
             VectorBase: Returns this vector after subtracting the rhs vector.
         """
         if not isinstance(rhs, self.__class__):
-            raise ValueError(
-                f"Can only subtract {self.__class__.__name__} from {self.__class__.__name__}"
-            )
+            raise ValueError(f"Can only subtract {self.__class__.__name__} from {self.__class__.__name__}")
         self._data -= rhs._data
         return self
 
@@ -274,11 +260,9 @@ class VectorBase[T](ABC):
             result._data = self._data * rhs
             return result
         else:
-            raise ValueError(
-                f"Can only do piecewise multiplication with a scalar, got {type(rhs)}"
-            )
+            raise ValueError(f"Can only do piecewise multiplication with a scalar, got {type(rhs)}")
 
-    def __rmul__(self, rhs: Union[float, int]) -> T:
+    def __rmul__(self, rhs: Union[float, int]) -> Self:
         """
         Piecewise scalar multiplication (right operand).
 
@@ -290,7 +274,7 @@ class VectorBase[T](ABC):
         """
         return self * rhs
 
-    def __truediv__(self, rhs: Union[float, int, T]) -> T:
+    def __truediv__(self, rhs: Union[float, int, Self]) -> Self:
         """
         Piecewise scalar or vector division.
 
@@ -321,7 +305,7 @@ class VectorBase[T](ABC):
                 f"Can only do piecewise division with a scalar or {self.__class__.__name__}, got {type(rhs)}"
             )
 
-    def dot(self, rhs: T) -> float:
+    def dot(self, rhs: Self) -> float:
         """
         Dot product of two vectors a.b.
 
@@ -332,9 +316,7 @@ class VectorBase[T](ABC):
             float: The dot product of the two vectors.
         """
         if not isinstance(rhs, self.__class__):
-            raise ValueError(
-                f"Can only compute dot product with {self.__class__.__name__}"
-            )
+            raise ValueError(f"Can only compute dot product with {self.__class__.__name__}")
         return np.dot(self._data, rhs._data)
 
     def length(self) -> float:
@@ -355,7 +337,7 @@ class VectorBase[T](ABC):
         """
         return np.dot(self._data, self._data)
 
-    def inner(self, rhs: T) -> float:
+    def inner(self, rhs: Self) -> float:
         """
         Inner product of two vectors a.b (alias for dot product).
 
@@ -367,7 +349,7 @@ class VectorBase[T](ABC):
         """
         return self.dot(rhs)
 
-    def normalize(self) -> T:
+    def normalize(self) -> Self:
         """
         Normalize the vector to unit length.
 
@@ -429,7 +411,7 @@ class VectorBase[T](ABC):
 
     # Abstract methods that must be implemented by subclasses
     @abstractmethod
-    def cross(self, rhs: T) -> Union[T, float]:
+    def cross(self, rhs: Self) -> Union[Self, float]:
         """
         Cross product of two vectors a x b.
 
@@ -442,7 +424,7 @@ class VectorBase[T](ABC):
         pass
 
     @abstractmethod
-    def reflect(self, n: T) -> T:
+    def reflect(self, n: Self) -> Self:
         """
         Reflect a vector about a normal.
 
@@ -455,7 +437,7 @@ class VectorBase[T](ABC):
         pass
 
     @abstractmethod
-    def outer(self, rhs: T) -> Any:
+    def outer(self, rhs: Self) -> Any:
         """
         Outer product of two vectors a x b.
 
@@ -468,7 +450,7 @@ class VectorBase[T](ABC):
         pass
 
     @abstractmethod
-    def __matmul__(self, rhs: Any) -> T:
+    def __matmul__(self, rhs: Any) -> Self:
         """
         Matrix multiplication Vector @ Matrix.
 
@@ -513,9 +495,7 @@ class VectorBase[T](ABC):
         Raises:
             AttributeError: If the attribute does not exist.
         """
-        raise AttributeError(
-            f"'{self.__class__.__name__}' object has no attribute '{name}'"
-        )
+        raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
 
     def __setattr__(self, name: str, value: Any) -> None:
         """
@@ -535,9 +515,7 @@ class VectorBase[T](ABC):
         elif name in self.COMPONENT_NAMES:
             super().__setattr__(name, value)
         else:
-            raise AttributeError(
-                f"'{self.__class__.__name__}' object has no attribute '{name}'"
-            )
+            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
 
 
 def _create_properties(cls: type) -> None:
