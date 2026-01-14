@@ -17,7 +17,9 @@ def run_command(cmd: str, description: str) -> bool:
     print(f"{'=' * 60}")
 
     try:
-        result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
+        result = subprocess.run(
+            cmd, shell=True, check=True, capture_output=True, text=True
+        )
         print(result.stdout)
         if result.stderr:
             print("STDERR:", result.stderr)
@@ -91,7 +93,7 @@ def main():
     test_files = " ".join(cpu_only_tests)
 
     # Run coverage
-    coverage_cmd = f'uv run coverage run --source=src/ncca/ngl --omit="*/tests/*,*/test_*" -m pytest {test_files} -v'
+    coverage_cmd = f'uv run coverage run --source=src/ncca/ngl --omit="*/tests/*,*/test_*" -m pytest -p no:pytest-qt {test_files} -v'
 
     success = run_command(coverage_cmd, "Coverage for CPU-only tests")
 
