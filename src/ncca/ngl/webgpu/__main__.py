@@ -126,7 +126,8 @@ class WebGPUScene(WebGPUWidget):
         self.pipeline_timer.start(1000)  # Switch every 5 seconds
 
     def _create_buffers(self, num_points):
-        self.colours = np.random.random((num_points, 3)).astype(np.float32)
+        rng = np.random.default_rng()
+        self.colours = rng.random((num_points, 3)).astype(np.float32)
         # Create 3D positions for line rendering with Z elevation
         self.positions = np.random.uniform(-4.0, 4.0, size=(num_points, 3)).astype(np.float32)
         # For line rendering, we can use the full 3D positions or just X,Y depending on desired effect
@@ -277,7 +278,7 @@ class WebGPUScene(WebGPUWidget):
         self.pipelines[self.current_pipeline_index][0].update_uniforms(
             mvp=self.mvp_matrix,
             view_matrix=self.view_matrix,
-            colour=np.array([1, 0, 0], dtype=np.float32),
+            colour=np.array([1, 1, 1], dtype=np.float32),
             point_size=0.05,
         )
 
@@ -285,11 +286,6 @@ class WebGPUScene(WebGPUWidget):
         self.pipelines[self.current_pipeline_index][0].set_data(self.positions_2d, self.colours)
         self.pipelines[self.current_pipeline_index][0].render(render_pass)
         self.pipelines[self.current_pipeline_index][0].update_uniforms(mvp=self.mvp_matrix)
-        self.pipelines[self.current_pipeline_index][0].render(render_pass)
-        self.pipelines[self.current_pipeline_index][0].update_uniforms(mvp=self.mvp_matrix)
-
-    def _render_single_colour_line_pipeline(self, render_pass):
-        self.pipelines[self.current_pipeline_index][0].set_data(self.positions_2d)
         self.pipelines[self.current_pipeline_index][0].render(render_pass)
         self.pipelines[self.current_pipeline_index][0].update_uniforms(mvp=self.mvp_matrix)
 
@@ -340,7 +336,7 @@ class WebGPUScene(WebGPUWidget):
         self.pipelines[self.current_pipeline_index][0].render(render_pass)
         self.pipelines[self.current_pipeline_index][0].update_uniforms(
             mvp=self.mvp_matrix,
-            colour=np.array([1, 0, 0], dtype=np.float32),
+            colour=np.array([1, 1, 1], dtype=np.float32),
             point_size=5.0,
         )
 

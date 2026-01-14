@@ -17,10 +17,6 @@ _POINT_LIST_SHADER_MULTI_COLOURED = """
 struct Uniforms
 {
     MVP : mat4x4<f32>,
-    point_size: f32,
-    padding: u32,
-    padding2: u32,
-    padding3: u32,
 };
 
 struct VertexIn {
@@ -53,8 +49,11 @@ _POINT_LIST_SHADER_SINGLE_COLOUR = """
 
 struct Uniforms
 {
-    MVP : mat4x4<f32>,
-    ColourSize: vec4<f32>,
+    MVP : mat4x4<f32>, 
+    Colour: vec3<f32>,
+    padding : f32
+
+
 };
 
 struct VertexIn {
@@ -75,7 +74,7 @@ fn vertex_main(input: VertexIn) -> VertexOut {
 @fragment
 fn fragment_main(fragData: VertexOut) -> @location(0) vec4<f32>
 {
-    return vec4<f32>(uniforms.ColourSize.xyz, 1.0);
+    return vec4<f32>(uniforms.Colour, 1.0);
 }
 """
 
@@ -86,8 +85,6 @@ class PointListPipelineMultiColour(BaseWebGPUPipeline):
 
     Features:
     - Native WebGPU point-list rendering (no billboarding)
-    - Per-point colours
-    - Configurable point size
     - Model, View Projection matrix support
     - MSAA support
     """
@@ -131,8 +128,6 @@ class PointListPipelineMultiColour(BaseWebGPUPipeline):
         return np.dtype(
             [
                 ("MVP", "float32", (4, 4)),
-                ("point_size", "float32"),
-                ("padding", np.uint32, 3),
             ]
         )
 
@@ -174,7 +169,7 @@ class PointListPipelineMultiColour(BaseWebGPUPipeline):
 
     def _set_default_uniforms(self) -> None:
         """Set default values for uniform data."""
-        self.uniform_data["point_size"] = 1.0  # Default point size
+        ...
 
     def _get_pipeline_label(self) -> str:
         """Get the label for the pipeline."""
@@ -231,13 +226,9 @@ class PointListPipelineMultiColour(BaseWebGPUPipeline):
         Args:
             **kwargs: Pipeline-specific uniform parameters
                 - mvp: 4x4 model view projection matrix
-                - point_size: Size of points
         """
         if "mvp" in kwargs and kwargs["mvp"] is not None:
             self.uniform_data["MVP"] = kwargs["mvp"]
-
-        if "point_size" in kwargs and kwargs["point_size"] is not None:
-            self.uniform_data["point_size"] = kwargs["point_size"]
 
         self.device.queue.write_buffer(
             self.uniform_buffer, 0, self.uniform_data.tobytes()
@@ -282,7 +273,6 @@ class PointListPipelineSingleColour(BaseWebGPUPipeline):
     Features:
     - Native WebGPU point-list rendering (no billboarding)
     - Single colour for all points
-    - Configurable point size
     - Model, View Projection matrix support
     - MSAA support
     """
@@ -325,7 +315,8 @@ class PointListPipelineSingleColour(BaseWebGPUPipeline):
         return np.dtype(
             [
                 ("MVP", "float32", (4, 4)),
-                ("ColourSize", "float32", 4),
+                ("Colour", "float32", 3),
+                ("padding", "float32"),
             ]
         )
 
@@ -355,9 +346,10 @@ class PointListPipelineSingleColour(BaseWebGPUPipeline):
 
     def _set_default_uniforms(self) -> None:
         """Set default values for uniform data."""
-        self.uniform_data["ColourSize"] = np.array(
-            [1.0, 1.0, 1.0, 1.0], dtype=np.float32
-        )  # Default White with point size 1
+        self.uniform_data["Colour"] = np.array(
+            [1.0, 1.0, 1.0], dtype=np.float32
+        )  # Default White
+        self.uniform_data["padding"] = 0.0
 
     def _get_pipeline_label(self) -> str:
         """Get the label for the pipeline."""
@@ -398,10 +390,7 @@ class PointListPipelineSingleColour(BaseWebGPUPipeline):
             self.uniform_data["MVP"] = kwargs["mvp"]
 
         if "colour" in kwargs and kwargs["colour"] is not None:
-            self.uniform_data["ColourSize"][:3] = kwargs["colour"]
-
-        if "point_size" in kwargs and kwargs["point_size"] is not None:
-            self.uniform_data["ColourSize"][3] = kwargs["point_size"]
+            self.uniform_data["Colour"] = kwargs["colour"]
 
         self.device.queue.write_buffer(
             self.uniform_buffer, 0, self.uniform_data.tobytes()
