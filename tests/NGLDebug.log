@@ -1,0 +1,255 @@
+09:31:27 - INFO - This is an info message from the application
+09:31:27 - WARNING - This is a warning message
+09:31:27 - ERROR - This is an error message
+09:31:27 - ERROR - Can only create VBO from all Triangle data at present
+09:31:27 - WARNING - VAO exist so returning
+09:31:27 - WARNING - Creating new VAO
+09:31:28 - WARNING - Default shaders not loaded loading now
+09:31:28 - INFO - Registered uniform: MVP (type: mat4, location: 0)
+09:31:28 - INFO - Registered uniform: Colour (type: vec4, location: 4)
+09:31:28 - INFO - FOUND UNIFORM BLOCKS 0
+09:31:28 - INFO - Shader program 'DefaultShader.COLOUR' created
+09:31:28 - INFO - DefaultShader.COLOUR shader loaded successfully
+09:31:28 - INFO - Registered uniform: MV (type: mat4, location: 0)
+09:31:28 - INFO - Registered uniform: normalMatrix (type: mat3, location: 4)
+09:31:28 - INFO - Registered uniform: MVP (type: mat4, location: 7)
+09:31:28 - INFO - Registered uniform: Colour (type: vec4, location: 11)
+09:31:28 - INFO - Registered uniform: lightDiffuse (type: vec4, location: 12)
+09:31:28 - INFO - Registered uniform: lightPos (type: vec3, location: 13)
+09:31:28 - INFO - FOUND UNIFORM BLOCKS 0
+09:31:28 - INFO - Shader program 'DefaultShader.DIFFUSE' created
+09:31:28 - INFO - DefaultShader.DIFFUSE shader loaded successfully
+09:31:28 - INFO - Registered uniform: colour1 (type: vec4, location: 0)
+09:31:28 - INFO - Registered uniform: normalMatrix (type: mat3, location: 1)
+09:31:28 - INFO - Registered uniform: MVP (type: mat4, location: 4)
+09:31:28 - INFO - Registered uniform: checkSize (type: float, location: 8)
+09:31:28 - INFO - Registered uniform: checkOn (type: bool, location: 9)
+09:31:28 - INFO - Registered uniform: lightDiffuse (type: vec4, location: 10)
+09:31:28 - INFO - Registered uniform: colour2 (type: vec4, location: 11)
+09:31:28 - INFO - Registered uniform: lightPos (type: vec3, location: 12)
+09:31:28 - INFO - FOUND UNIFORM BLOCKS 0
+09:31:28 - INFO - Shader program 'DefaultShader.CHECKER' created
+09:31:28 - INFO - DefaultShader.CHECKER shader loaded successfully
+09:31:28 - INFO - Registered uniform: textureID (type: sampler2D, location: 0)
+09:31:28 - INFO - Registered uniform: textColour (type: vec4, location: 1)
+09:31:28 - INFO - Registered uniform: fontSize (type: float, location: 2)
+09:31:28 - INFO - Registered uniform: screenSize (type: vec2, location: 3)
+09:31:28 - INFO - FOUND UNIFORM BLOCKS 0
+09:31:28 - INFO - Shader program 'DefaultShader.TEXT' created
+09:31:28 - INFO - DefaultShader.TEXT  shader loaded successfully
+09:31:28 - ERROR - Shader 'Test' not found
+09:31:28 - ERROR - Shader 'unknown' not found
+09:31:28 - ERROR - Shader 'nglColourShader' not found
+09:31:28 - INFO - Registered array uniform: colors[2] (type: vec4, location: 0)
+09:31:28 - INFO -   Also registered individual elements: colors[0] to colors[1]
+09:31:28 - INFO - FOUND UNIFORM BLOCKS 0
+09:31:28 - INFO - Registered uniform: testMat4x3 (type: mat4x3, location: 0)
+09:31:28 - INFO - FOUND UNIFORM BLOCKS 0
+09:31:28 - INFO - Registered uniform: mat4Array (type: mat4, location: 0)
+09:31:28 - INFO - Registered uniform: vec4Array (type: vec4, location: 4)
+09:31:28 - INFO - Registered uniform: mat3Array (type: mat3, location: 5)
+09:31:28 - INFO - Registered uniform: vec2Array (type: vec2, location: 8)
+09:31:28 - INFO - Registered uniform: vec3Array (type: vec3, location: 9)
+09:31:28 - INFO - Registered uniform: mat2Array (type: mat2, location: 10)
+09:31:28 - INFO - Registered uniform: floatArray (type: float, location: 12)
+09:31:28 - INFO - Registered uniform: intArray (type: int, location: 13)
+09:31:28 - INFO - FOUND UNIFORM BLOCKS 0
+09:31:28 - INFO - Registered uniform: mat4Array (type: mat4, location: 0)
+09:31:28 - INFO - Registered uniform: vec4Array (type: vec4, location: 4)
+09:31:28 - INFO - Registered uniform: mat3Array (type: mat3, location: 5)
+09:31:28 - INFO - Registered uniform: vec2Array (type: vec2, location: 8)
+09:31:28 - INFO - Registered uniform: vec3Array (type: vec3, location: 9)
+09:31:28 - INFO - Registered uniform: mat2Array (type: mat2, location: 10)
+09:31:28 - INFO - Registered uniform: floatArray (type: float, location: 12)
+09:31:28 - INFO - Registered uniform: intArray (type: int, location: 13)
+09:31:28 - INFO - FOUND UNIFORM BLOCKS 0
+09:31:28 - WARNING - Uniform 'nonexistent' not found in shader 'array_uniform'
+09:31:28 - WARNING - Uniform 'nonexistent' not found in shader 'array_uniform'
+09:31:28 - WARNING - Uniform 'nonexistent' not found in shader 'array_uniform'
+09:31:28 - WARNING - Uniform 'nonexistent' not found in shader 'array_uniform'
+09:31:28 - WARNING - Uniform 'nonexistent' not found in shader 'array_uniform'
+09:31:28 - WARNING - Uniform 'nonexistent' not found in shader 'array_uniform'
+09:31:28 - WARNING - Uniform 'nonexistent' not found in shader 'array_uniform'
+09:31:28 - WARNING - Uniform 'nonexistent' not found in shader 'array_uniform'
+09:31:28 - INFO - Registered uniform: mat4Array (type: mat4, location: 0)
+09:31:28 - INFO - Registered uniform: vec4Array (type: vec4, location: 4)
+09:31:28 - INFO - Registered uniform: mat3Array (type: mat3, location: 5)
+09:31:28 - INFO - Registered uniform: vec2Array (type: vec2, location: 8)
+09:31:28 - INFO - Registered uniform: vec3Array (type: vec3, location: 9)
+09:31:28 - INFO - Registered uniform: mat2Array (type: mat2, location: 10)
+09:31:28 - INFO - Registered uniform: floatArray (type: float, location: 12)
+09:31:28 - INFO - Registered uniform: intArray (type: int, location: 13)
+09:31:28 - INFO - FOUND UNIFORM BLOCKS 0
+09:31:28 - WARNING - Uniform 'floatArray[0]' not found in shader 'array_uniform'
+09:31:28 - WARNING - Uniform location not found for 'floatArray[0]'
+09:31:28 - WARNING - Uniform 'floatArray[1]' not found in shader 'array_uniform'
+09:31:28 - WARNING - Uniform location not found for 'floatArray[1]'
+09:31:28 - WARNING - Uniform 'vec2Array[0]' not found in shader 'array_uniform'
+09:31:28 - WARNING - Uniform location not found for 'vec2Array[0]'
+09:31:28 - WARNING - Uniform 'vec3Array[0]' not found in shader 'array_uniform'
+09:31:28 - WARNING - Uniform location not found for 'vec3Array[0]'
+09:31:28 - WARNING - Uniform 'vec4Array[0]' not found in shader 'array_uniform'
+09:31:28 - WARNING - Uniform location not found for 'vec4Array[0]'
+09:31:28 - INFO - Registered uniform: modelMatrix (type: mat4, location: -1)
+09:31:28 - INFO - Registered uniform: viewMatrix (type: mat4, location: -1)
+09:31:28 - INFO - Registered uniform: projMatrix (type: mat4, location: -1)
+09:31:28 - INFO - Registered uniform: diffuseColor (type: vec4, location: -1)
+09:31:28 - INFO - Registered uniform: specularColor (type: vec4, location: -1)
+09:31:28 - INFO - Registered uniform: shininess (type: float, location: -1)
+09:31:28 - INFO - FOUND UNIFORM BLOCKS 2
+09:31:28 - INFO - Uniform Block TransformBlock 0 13
+09:31:28 - INFO - Uniform Block MaterialBlock 1 14
+09:31:28 - INFO - Registered uniform: modelMatrix (type: mat4, location: -1)
+09:31:28 - INFO - Registered uniform: viewMatrix (type: mat4, location: -1)
+09:31:28 - INFO - Registered uniform: projMatrix (type: mat4, location: -1)
+09:31:28 - INFO - Registered uniform: diffuseColor (type: vec4, location: -1)
+09:31:28 - INFO - Registered uniform: specularColor (type: vec4, location: -1)
+09:31:28 - INFO - Registered uniform: shininess (type: float, location: -1)
+09:31:28 - INFO - FOUND UNIFORM BLOCKS 2
+09:31:28 - INFO - Uniform Block TransformBlock 0 15
+09:31:28 - INFO - Uniform Block MaterialBlock 1 16
+09:31:28 - WARNING - Uniform block 'NonExistent' not found in shader 'uniform_block'
+09:31:28 - WARNING - Uniform block 'NonExistent' not found in shader 'uniform_block'
+09:31:28 - INFO - Registered uniform: modelMatrix (type: mat4, location: -1)
+09:31:28 - INFO - Registered uniform: viewMatrix (type: mat4, location: -1)
+09:31:28 - INFO - Registered uniform: projMatrix (type: mat4, location: -1)
+09:31:28 - INFO - Registered uniform: diffuseColor (type: vec4, location: -1)
+09:31:28 - INFO - Registered uniform: specularColor (type: vec4, location: -1)
+09:31:28 - INFO - Registered uniform: shininess (type: float, location: -1)
+09:31:28 - INFO - FOUND UNIFORM BLOCKS 2
+09:31:28 - INFO - Uniform Block TransformBlock 0 17
+09:31:28 - INFO - Uniform Block MaterialBlock 1 18
+09:31:28 - INFO - Registered uniform: modelMatrix (type: mat4, location: -1)
+09:31:28 - INFO - Registered uniform: viewMatrix (type: mat4, location: -1)
+09:31:28 - INFO - Registered uniform: projMatrix (type: mat4, location: -1)
+09:31:28 - INFO - Registered uniform: diffuseColor (type: vec4, location: -1)
+09:31:28 - INFO - Registered uniform: specularColor (type: vec4, location: -1)
+09:31:28 - INFO - Registered uniform: shininess (type: float, location: -1)
+09:31:28 - INFO - FOUND UNIFORM BLOCKS 2
+09:31:28 - INFO - Uniform Block TransformBlock 0 19
+09:31:28 - INFO - Uniform Block MaterialBlock 1 20
+09:31:28 - ERROR - Uniform block 'NonExistent' not found in shader 'uniform_block'
+09:31:28 - INFO - Registered uniform: mat4Array (type: mat4, location: 0)
+09:31:28 - INFO - Registered uniform: vec4Array (type: vec4, location: 4)
+09:31:28 - INFO - Registered uniform: mat3Array (type: mat3, location: 5)
+09:31:28 - INFO - Registered uniform: vec2Array (type: vec2, location: 8)
+09:31:28 - INFO - Registered uniform: vec3Array (type: vec3, location: 9)
+09:31:28 - INFO - Registered uniform: mat2Array (type: mat2, location: 10)
+09:31:28 - INFO - Registered uniform: floatArray (type: float, location: 12)
+09:31:28 - INFO - Registered uniform: intArray (type: int, location: 13)
+09:31:28 - INFO - FOUND UNIFORM BLOCKS 0
+09:31:28 - INFO - Registered uniform: mat4Array (type: mat4, location: 0)
+09:31:28 - INFO - Registered uniform: vec4Array (type: vec4, location: 4)
+09:31:28 - INFO - Registered uniform: mat3Array (type: mat3, location: 5)
+09:31:28 - INFO - Registered uniform: vec2Array (type: vec2, location: 8)
+09:31:28 - INFO - Registered uniform: vec3Array (type: vec3, location: 9)
+09:31:28 - INFO - Registered uniform: mat2Array (type: mat2, location: 10)
+09:31:28 - INFO - Registered uniform: floatArray (type: float, location: 12)
+09:31:28 - INFO - Registered uniform: intArray (type: int, location: 13)
+09:31:28 - INFO - FOUND UNIFORM BLOCKS 0
+09:31:28 - INFO - Registered uniform: mat4Array (type: mat4, location: 0)
+09:31:28 - INFO - Registered uniform: vec4Array (type: vec4, location: 4)
+09:31:28 - INFO - Registered uniform: mat3Array (type: mat3, location: 5)
+09:31:28 - INFO - Registered uniform: vec2Array (type: vec2, location: 8)
+09:31:28 - INFO - Registered uniform: vec3Array (type: vec3, location: 9)
+09:31:28 - INFO - Registered uniform: mat2Array (type: mat2, location: 10)
+09:31:28 - INFO - Registered uniform: floatArray (type: float, location: 12)
+09:31:28 - INFO - Registered uniform: intArray (type: int, location: 13)
+09:31:28 - INFO - FOUND UNIFORM BLOCKS 0
+09:31:28 - INFO - Registered uniform: modelMatrix (type: mat4, location: -1)
+09:31:28 - INFO - Registered uniform: viewMatrix (type: mat4, location: -1)
+09:31:28 - INFO - Registered uniform: projMatrix (type: mat4, location: -1)
+09:31:28 - INFO - Registered uniform: diffuseColor (type: vec4, location: -1)
+09:31:28 - INFO - Registered uniform: specularColor (type: vec4, location: -1)
+09:31:28 - INFO - Registered uniform: shininess (type: float, location: -1)
+09:31:28 - INFO - FOUND UNIFORM BLOCKS 2
+09:31:28 - INFO - Uniform Block TransformBlock 0 21
+09:31:28 - INFO - Uniform Block MaterialBlock 1 22
+09:31:28 - INFO - Registered uniforms for array_uniform:
+09:31:28 - INFO -   mat4Array (type: mat4, location: 0)
+09:31:28 - INFO -   vec4Array (type: vec4, location: 4)
+09:31:28 - INFO -   mat3Array (type: mat3, location: 5)
+09:31:28 - INFO -   vec2Array (type: vec2, location: 8)
+09:31:28 - INFO -   vec3Array (type: vec3, location: 9)
+09:31:28 - INFO -   mat2Array (type: mat2, location: 10)
+09:31:28 - INFO -   floatArray (type: float, location: 12)
+09:31:28 - INFO -   intArray (type: int, location: 13)
+09:31:28 - INFO - Registered uniform blocks for uniform_block:
+09:31:28 - INFO -   TransformBlock (index: 0, buffer: 21)
+09:31:28 - INFO -   MaterialBlock (index: 1, buffer: 22)
+09:31:28 - INFO - Properties for shader program uniform_block:
+09:31:28 - INFO -   ID: 85
+09:31:28 - INFO -   Link status: 1
+09:31:28 - INFO -   Validate status: 0
+09:31:28 - INFO -   Attached shaders: 2
+09:31:28 - INFO -   Active attributes: 0
+09:31:28 - INFO -   Active uniforms: 6
+09:31:28 - INFO -   Active uniform blocks: 2
+09:31:28 - INFO -   Registered uniform blocks:
+09:31:28 - INFO -     TransformBlock (index: 0, buffer: 21)
+09:31:28 - INFO -     MaterialBlock (index: 1, buffer: 22)
+09:31:28 - ERROR - Error: shader nonExistent not found
+09:31:28 - ERROR - Error: shader nonExistent not found
+09:31:28 - ERROR - Error: program nonExistentProgram or shader nonExistentShader not found
+09:31:28 - ERROR - Error: program nonExistent not found
+09:31:28 - INFO - Registered uniform: lightPositions (type: vec3, location: 0)
+09:31:28 - INFO - Registered uniform: lightColors (type: vec3, location: 1)
+09:31:28 - INFO - Registered uniform: weights (type: float, location: 2)
+09:31:28 - INFO - FOUND UNIFORM BLOCKS 0
+09:31:28 - WARNING - Uniform 'lightPositions[0]' not found in shader 'ArrayTest'
+09:31:28 - WARNING - Uniform location not found for 'lightPositions[0]'
+09:31:28 - WARNING - Uniform 'lightColors[0]' not found in shader 'ArrayTest'
+09:31:28 - WARNING - Uniform location not found for 'lightColors[0]'
+09:31:28 - WARNING - Uniform 'weights[0]' not found in shader 'ArrayTest'
+09:31:28 - WARNING - Uniform location not found for 'weights[0]'
+09:31:28 - WARNING - Uniform 'lightPositions[1]' not found in shader 'ArrayTest'
+09:31:28 - WARNING - Uniform location not found for 'lightPositions[1]'
+09:31:28 - WARNING - Uniform 'lightColors[1]' not found in shader 'ArrayTest'
+09:31:28 - WARNING - Uniform location not found for 'lightColors[1]'
+09:31:28 - WARNING - Uniform 'weights[1]' not found in shader 'ArrayTest'
+09:31:28 - WARNING - Uniform location not found for 'weights[1]'
+09:31:28 - INFO - Registered uniform: modelMatrix (type: mat4, location: -1)
+09:31:28 - INFO - Registered uniform: viewMatrix (type: mat4, location: -1)
+09:31:28 - INFO - Registered uniform: projMatrix (type: mat4, location: -1)
+09:31:28 - INFO - FOUND UNIFORM BLOCKS 1
+09:31:28 - INFO - Uniform Block TransformUBO 0 23
+09:31:28 - ERROR - No current shader active
+09:31:28 - INFO - FOUND UNIFORM BLOCKS 1
+09:31:28 - INFO - Uniform Block TransformUBO 0 24
+09:31:28 - ERROR - Shader 'TestUniform' not found
+09:31:28 - ERROR - Shader 'None' not found
+09:31:28 - WARNING - Warning no currently active shader to print properties for None 
+09:31:28 - INFO - Registered uniform: modelMatrix (type: mat4, location: -1)
+09:31:28 - INFO - Registered uniform: viewMatrix (type: mat4, location: -1)
+09:31:28 - INFO - Registered uniform: projMatrix (type: mat4, location: -1)
+09:31:28 - INFO - Registered uniform: diffuseColor (type: vec4, location: -1)
+09:31:28 - INFO - Registered uniform: specularColor (type: vec4, location: -1)
+09:31:28 - INFO - Registered uniform: shininess (type: float, location: -1)
+09:31:28 - INFO - FOUND UNIFORM BLOCKS 2
+09:31:28 - INFO - Uniform Block TransformBlock 0 25
+09:31:28 - INFO - Uniform Block MaterialBlock 1 26
+09:31:28 - ERROR - Failed to set uniform buffer 'TransformBlock': a bytes-like object is required, not 'str'
+09:31:28 - INFO - FOUND UNIFORM BLOCKS 0
+09:31:28 - WARNING - Uniform 'nonexistent' not found in shader 'invalid_array'
+09:31:28 - WARNING - Uniform 'nonexistent' not found in shader 'invalid_array'
+09:31:28 - WARNING - Uniform 'nonexistent' not found in shader 'invalid_array'
+09:31:28 - WARNING - Uniform 'nonexistent' not found in shader 'invalid_array'
+09:31:28 - WARNING - Uniform 'nonexistent' not found in shader 'invalid_array'
+09:31:28 - WARNING - Uniform 'nonexistent' not found in shader 'invalid_array'
+09:31:28 - WARNING - Uniform 'nonexistent' not found in shader 'invalid_array'
+09:31:28 - WARNING - Uniform 'nonexistent' not found in shader 'invalid_array'
+09:31:28 - INFO - FOUND UNIFORM BLOCKS 0
+09:31:28 - WARNING - Uniform 'nonexistent' not found in shader 'getter_test'
+09:31:28 - WARNING - Uniform 'nonexistent' not found in shader 'getter_test'
+09:31:28 - WARNING - Uniform 'nonexistent' not found in shader 'getter_test'
+09:31:28 - WARNING - Uniform 'nonexistent' not found in shader 'getter_test'
+09:31:28 - WARNING - Uniform 'nonexistent' not found in shader 'getter_test'
+09:31:28 - WARNING - Uniform 'nonexistent' not found in shader 'getter_test'
+09:31:28 - WARNING - Uniform 'nonexistent' not found in shader 'getter_test'
+09:31:28 - WARNING - Uniform 'nonexistent' not found in shader 'getter_test'
+09:31:28 - ERROR - Shader 'Test' not found
+09:31:28 - ERROR - tests/files/Arial.ttf could not be loaded FT_Exception:  (cannot open resource)
+09:31:28 - WARNING - VAO type 'nonExistentVAO' not found.
+09:31:28 - ERROR - VAO not bound in set_vertex_attribute_pointer
+09:31:28 - ERROR - MultiBufferVAO is not bound or not allocated
+09:31:28 - ERROR - MultiBufferVAO: Invalid data type

@@ -104,6 +104,16 @@ class WebGPUScene(WebGPUWidget):
             self._render_triangle_strip_single_colour_pipeline,
             "PipelineType.TRIANGLE_STRIP_SINGLE_COLOUR",
         ))
+        self.pipelines.append((
+            PipelineFactory.create_pipeline(self.device, PipelineType.POINT_LIST_MULTI_COLOURED),
+            self._render_point_list_multi_colour_pipeline,
+            "PipelineType.POINT_LIST_MULTI_COLOURED",
+        ))
+        self.pipelines.append((
+            PipelineFactory.create_pipeline(self.device, PipelineType.POINT_LIST_SINGLE_COLOUR),
+            self._render_point_list_single_colour_pipeline,
+            "PipelineType.POINT_LIST_SINGLE_COLOUR",
+        ))
         self.current_pipeline_index = 1
         # Initialize render textures with default size
         self.texture_size = (1024, 720)
@@ -274,14 +284,19 @@ class WebGPUScene(WebGPUWidget):
     def _render_multi_colour_line_pipeline(self, render_pass):
         self.pipelines[self.current_pipeline_index][0].set_data(self.positions_2d, self.colours)
         self.pipelines[self.current_pipeline_index][0].render(render_pass)
-        self.pipelines[self.current_pipeline_index][0].update_uniforms(mvp=self.mvp_matrix, line_width=0.05)
+        self.pipelines[self.current_pipeline_index][0].update_uniforms(mvp=self.mvp_matrix)
         self.pipelines[self.current_pipeline_index][0].render(render_pass)
-        self.pipelines[self.current_pipeline_index][0].update_uniforms(mvp=self.mvp_matrix, line_width=0.05)
+        self.pipelines[self.current_pipeline_index][0].update_uniforms(mvp=self.mvp_matrix)
 
     def _render_single_colour_line_pipeline(self, render_pass):
         self.pipelines[self.current_pipeline_index][0].set_data(self.positions_2d)
         self.pipelines[self.current_pipeline_index][0].render(render_pass)
-        self.pipelines[self.current_pipeline_index][0].update_uniforms(mvp=self.mvp_matrix, line_width=0.05)
+        self.pipelines[self.current_pipeline_index][0].update_uniforms(mvp=self.mvp_matrix)
+
+    def _render_single_colour_line_pipeline(self, render_pass):
+        self.pipelines[self.current_pipeline_index][0].set_data(self.positions_2d)
+        self.pipelines[self.current_pipeline_index][0].render(render_pass)
+        self.pipelines[self.current_pipeline_index][0].update_uniforms(mvp=self.mvp_matrix)
 
     def _render_multi_colour_triangle_pipeline(self, render_pass):
         self.pipelines[self.current_pipeline_index][0].set_data(self.triangle_positions, self.triangle_colours)
@@ -314,6 +329,20 @@ class WebGPUScene(WebGPUWidget):
         self.pipelines[self.current_pipeline_index][0].set_data(self.triangle_strip_positions)
         self.pipelines[self.current_pipeline_index][0].render(render_pass)
         self.pipelines[self.current_pipeline_index][0].update_uniforms(mvp=self.mvp_matrix)
+
+    def _render_point_list_multi_colour_pipeline(self, render_pass):
+        self.pipelines[self.current_pipeline_index][0].set_data(self.positions, self.colours)
+        self.pipelines[self.current_pipeline_index][0].render(render_pass)
+        self.pipelines[self.current_pipeline_index][0].update_uniforms(mvp=self.mvp_matrix, point_size=5.0)
+
+    def _render_point_list_single_colour_pipeline(self, render_pass):
+        self.pipelines[self.current_pipeline_index][0].set_data(self.positions)
+        self.pipelines[self.current_pipeline_index][0].render(render_pass)
+        self.pipelines[self.current_pipeline_index][0].update_uniforms(
+            mvp=self.mvp_matrix,
+            colour=np.array([1, 0, 0], dtype=np.float32),
+            point_size=5.0,
+        )
 
     def update_uniform_buffers(self) -> None:
         """

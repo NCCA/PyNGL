@@ -1,6 +1,6 @@
 """
 Generic line rendering pipeline for WebGPU.
-Handles line rendering with customizable width, color, and projection.
+Handles line rendering with customizable color and projection.
 """
 
 from typing import Optional, Tuple, Union
@@ -15,10 +15,6 @@ _LINE_SHADER_SINGLE_COLOUR = """
 // LineShader.wgsl
 struct Uniforms {
     MVP: mat4x4<f32>,
-    line_width: f32,
-    padding: u32,
-    padding2: u32,
-    padding3: u32,
 };
 
 @binding(0) @group(0) var<uniform> uniforms: Uniforms;
@@ -38,10 +34,6 @@ _LINE_SHADER_MULTI_COLOURED = """
 // LineShader.wgsl
 struct Uniforms {
     MVP: mat4x4<f32>,
-    line_width: f32,
-    padding: u32,
-    padding2: u32,
-    padding3: u32,
 };
 
 @binding(0) @group(0) var<uniform> uniforms: Uniforms;
@@ -86,7 +78,6 @@ class LinePipelineMultiColour(BaseLinePipeline):
     Features:
     - Line strips or line segments
     - Per-vertex colors
-    - Configurable line width
     - MVP matrix support
     - MSAA support
     """
@@ -126,11 +117,11 @@ class LinePipelineMultiColour(BaseLinePipeline):
 
     def get_dtype(self) -> np.dtype:
         """Get the data type of the pipeline."""
-        return np.dtype([
-            ("MVP", "float32", (4, 4)),
-            ("line_width", "float32"),
-            ("padding", np.uint32, 3),
-        ])
+        return np.dtype(
+            [
+                ("MVP", "float32", (4, 4)),
+            ]
+        )
 
     def _get_shader_code(self) -> str:
         """Get the WGSL shader code for this pipeline."""
@@ -141,7 +132,7 @@ class LinePipelineMultiColour(BaseLinePipeline):
         return [
             {
                 "array_stride": self._stride,
-                "step_mode": "vertex",
+                "step_mode": wgpu.VertexStepMode.vertex,
                 "attributes": [
                     {
                         "format": NGLToWebGPU.vertex_format(self._data_type),
@@ -152,7 +143,7 @@ class LinePipelineMultiColour(BaseLinePipeline):
             },
             {
                 "array_stride": NGLToWebGPU.stride_from_type("Vec3"),
-                "step_mode": "vertex",
+                "step_mode": wgpu.VertexStepMode.vertex,
                 "attributes": [
                     {
                         "format": NGLToWebGPU.vertex_format("Vec3"),
@@ -165,7 +156,7 @@ class LinePipelineMultiColour(BaseLinePipeline):
 
     def _set_default_uniforms(self) -> None:
         """Set default values for uniform data."""
-        self.uniform_data["line_width"] = 1.0  # Default line width
+        pass
 
     def _get_pipeline_label(self) -> str:
         """Get the label for the pipeline."""
@@ -217,15 +208,13 @@ class LinePipelineMultiColour(BaseLinePipeline):
         Args:
             **kwargs: Pipeline-specific uniform parameters
                 - mvp: 4x4 projection matrix
-                - line_width: Width of lines
         """
         if "mvp" in kwargs and kwargs["mvp"] is not None:
             self.uniform_data["MVP"] = kwargs["mvp"]
 
-        if "line_width" in kwargs and kwargs["line_width"] is not None:
-            self.uniform_data["line_width"] = kwargs["line_width"]
-
-        self.device.queue.write_buffer(self.uniform_buffer, 0, self.uniform_data.tobytes())
+        self.device.queue.write_buffer(
+            self.uniform_buffer, 0, self.uniform_data.tobytes()
+        )
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
         """
@@ -266,7 +255,6 @@ class LinePipelineSingleColour(BaseLinePipeline):
     Features:
     - Line strips or line segments
     - Single color for all lines
-    - Configurable line width
     - MVP matrix support
     - MSAA support
     """
@@ -305,11 +293,11 @@ class LinePipelineSingleColour(BaseLinePipeline):
 
     def get_dtype(self) -> np.dtype:
         """Get the data type of the pipeline."""
-        return np.dtype([
-            ("MVP", "float32", (4, 4)),
-            ("line_width", "float32"),
-            ("Colour", np.uint32, 3),
-        ])
+        return np.dtype(
+            [
+                ("MVP", "float32", (4, 4)),
+            ]
+        )
 
     def _get_shader_code(self) -> str:
         """Get the WGSL shader code for this pipeline."""
@@ -320,7 +308,7 @@ class LinePipelineSingleColour(BaseLinePipeline):
         return [
             {
                 "array_stride": self._stride,
-                "step_mode": "vertex",
+                "step_mode": wgpu.VertexStepMode.vertex,
                 "attributes": [
                     {
                         "format": NGLToWebGPU.vertex_format(self._data_type),
@@ -333,7 +321,7 @@ class LinePipelineSingleColour(BaseLinePipeline):
 
     def _set_default_uniforms(self) -> None:
         """Set default values for uniform data."""
-        self.uniform_data["line_width"] = 1.0  # Default line width
+        pass
 
     def _get_pipeline_label(self) -> str:
         """Get the label for the pipeline."""
@@ -367,15 +355,13 @@ class LinePipelineSingleColour(BaseLinePipeline):
         Args:
             **kwargs: Pipeline-specific uniform parameters
                 - mvp: 4x4 projection matrix
-                - line_width: Width of lines
         """
         if "mvp" in kwargs and kwargs["mvp"] is not None:
             self.uniform_data["MVP"] = kwargs["mvp"]
 
-        if "line_width" in kwargs and kwargs["line_width"] is not None:
-            self.uniform_data["line_width"] = kwargs["line_width"]
-
-        self.device.queue.write_buffer(self.uniform_buffer, 0, self.uniform_data.tobytes())
+        self.device.queue.write_buffer(
+            self.uniform_buffer, 0, self.uniform_data.tobytes()
+        )
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
         """

@@ -12,6 +12,14 @@ import wgpu
 
 from .base_webgpu_pipeline import BaseWebGPUPipeline
 from .point_pipeline import PointPipelineMultiColour, PointPipelineSingleColour
+from .point_list_pipeline import (
+    PointListPipelineMultiColour,
+    PointListPipelineSingleColour,
+)
+from .point_list_pipeline import (
+    PointListPipelineMultiColour,
+    PointListPipelineSingleColour,
+)
 from .line_pipeline import LinePipelineMultiColour, LinePipelineSingleColour
 from .triangle_pipeline import TrianglePipelineMultiColour, TrianglePipelineSingleColour
 
@@ -29,6 +37,8 @@ class PipelineType(Enum):
     TRIANGLE_LIST_SINGLE_COLOUR = "triangle_list_single_colour"
     TRIANGLE_STRIP_MULTI_COLOURED = "triangle_strip_multi_coloured"
     TRIANGLE_STRIP_SINGLE_COLOUR = "triangle_strip_single_colour"
+    POINT_LIST_MULTI_COLOURED = "point_list_multi_coloured"
+    POINT_LIST_SINGLE_COLOUR = "point_list_single_colour"
 
 
 # Backward compatibility alias
@@ -117,6 +127,12 @@ class _PipelineFactory:
             lambda device: TrianglePipelineSingleColour(
                 device, topology=wgpu.PrimitiveTopology.triangle_strip
             ),
+        )
+        self.register_pipeline(
+            PipelineType.POINT_LIST_MULTI_COLOURED, PointListPipelineMultiColour
+        )
+        self.register_pipeline(
+            PipelineType.POINT_LIST_SINGLE_COLOUR, PointListPipelineSingleColour
         )
 
     def register_pipeline(
