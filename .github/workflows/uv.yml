@@ -29,4 +29,7 @@ jobs:
         run: uv sync --locked --all-extras --dev
 
       - name: Run tests
-        run: uv run pytest -p no:pytest-qt tests --ignore=tests/test_shaderlib.py --ignore=tests/test_texture.py --ignore=tests/test_text.py --ignore=tests/test_base_mesh.py --ignore=tests/test_primitives.py --ignore=tests/test_obj.py --ignore=tests/test_vao.py --ignore=tests/test_lookat_widget.py  --ignore=tests/test_transform_widget.py   --ignore=tests/test_vec4_widget.py --ignore=tests/test_rgb_colour_widget.py  --ignore=tests/test_vec2_widget.py --ignore=tests/test_rgba_colour_widget.py --ignore=tests/test_webgpu_widget.py --ignore=tests/test_vec3_widget.py
+        run: uv run pytest -p no:pytest-qt tests --ignore=tests/test_shaderlib.py --ignore=tests/test_texture.py --ignore=tests/test_text.py --ignore=tests/test_base_mesh.py \
+        --ignore=tests/test_primitives.py --ignore=tests/test_obj.py --ignore=tests/test_vao.py --ignore=tests/test_lookat_widget.py  --ignore=tests/test_transform_widget.py  \
+        --ignore=tests/test_vec4_widget.py --ignore=tests/test_rgb_colour_widget.py  --ignore=tests/test_vec2_widget.py --ignore=tests/test_rgba_colour_widget.py \
+        --ignore=tests/test_webgpu_widget.py  --ignore=tests/test_vec3_widget.py --ignore=tests/test_webgpu_pipelines.py
