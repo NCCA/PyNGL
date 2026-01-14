@@ -54,6 +54,7 @@ def main():
         "tests/test_first_person_camera.py",
         "tests/test_pyside_event_handling_mixin.py",
         "tests/test_image.py",
+        "tests/test_webgpu_constants.py",
     ]
 
     # GPU-dependent tests (require OpenGL context)
@@ -65,7 +66,6 @@ def main():
         "tests/test_base_mesh.py",
         "tests/test_primitives.py",
         "tests/test_obj.py",
-        "tests/test_webgpu_constants.py",
         "tests/test_webgpu_pipelines.py",
         "tests/test_webgpu_widget.py",
     ]
