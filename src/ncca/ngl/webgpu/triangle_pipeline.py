@@ -1,6 +1,6 @@
 """
-Generic line rendering pipeline for WebGPU.
-Handles line rendering with customizable width, color, and projection.
+Generic triangle rendering pipeline for WebGPU.
+Handles triangle rendering with customizable colors, projection, and topology.
 """
 
 from typing import Optional, Tuple, Union
@@ -11,14 +11,14 @@ import wgpu
 from .base_webgpu_pipeline import BaseWebGPUPipeline
 from .webgpu_constants import NGLToWebGPU
 
-_LINE_SHADER_SINGLE_COLOUR = """
-// LineShader.wgsl
+_TRIANGLE_SHADER_SINGLE_COLOUR = """
+// TriangleShader.wgsl
 struct Uniforms {
     MVP: mat4x4<f32>,
-    line_width: f32,
-    padding: u32,
-    padding2: u32,
-    padding3: u32,
+    padding: f32,
+    padding2: f32,
+    padding3: f32,
+    padding4: f32,
 };
 
 @binding(0) @group(0) var<uniform> uniforms: Uniforms;
@@ -30,18 +30,18 @@ fn vertex_main(@location(0) pos: vec3<f32>) -> @builtin(position) vec4<f32> {
 
 @fragment
 fn fragment_main() -> @location(0) vec4<f32> {
-    return vec4<f32>(1.0, 1.0, 1.0, 1.0); // Grey color for grid lines
+    return vec4<f32>(1.0, 1.0, 1.0, 1.0); // White color
 }
 """
 
-_LINE_SHADER_MULTI_COLOURED = """
-// LineShader.wgsl
+_TRIANGLE_SHADER_MULTI_COLOURED = """
+// TriangleShader.wgsl
 struct Uniforms {
     MVP: mat4x4<f32>,
-    line_width: f32,
-    padding: u32,
-    padding2: u32,
-    padding3: u32,
+    padding: f32,
+    padding2: f32,
+    padding3: f32,
+    padding4: f32,
 };
 
 @binding(0) @group(0) var<uniform> uniforms: Uniforms;
@@ -71,22 +71,52 @@ fn fragment_main(input: VertexOut) -> @location(0) vec4<f32> {
 """
 
 
-class BaseLinePipeline(BaseWebGPUPipeline):
-    """Base class for line rendering pipelines."""
+class BaseTrianglePipeline(BaseWebGPUPipeline):
+    """Base class for triangle rendering pipelines."""
+
+    def __init__(
+        self,
+        device: wgpu.GPUDevice,
+        data_type: str = "Vec3",
+        texture_format: wgpu.TextureFormat = wgpu.TextureFormat.rgba8unorm,
+        depth_format: wgpu.TextureFormat = wgpu.TextureFormat.depth24plus,
+        msaa_sample_count: int = 4,
+        stride: int = 0,
+        topology: wgpu.PrimitiveTopology = wgpu.PrimitiveTopology.triangle_list,
+    ):
+        """
+        Initialize the triangle rendering pipeline.
+
+        Args:
+            device: WebGPU device
+            texture_format: Color attachment format
+            depth_format: Depth attachment format
+            msaa_sample_count: Number of MSAA samples
+            stride: The stride of the vertex buffer. If 0, it is inferred from data_type.
+            topology: Triangle topology (triangle_list or triangle_strip)
+        """
+        self._topology = topology
+        super().__init__(
+            device=device,
+            texture_format=texture_format,
+            depth_format=depth_format,
+            msaa_sample_count=msaa_sample_count,
+            data_type=data_type,
+            stride=stride,
+        )
 
     def _get_primitive_topology(self) -> wgpu.PrimitiveTopology:
-        """Line pipelines use line strip by default."""
-        return wgpu.PrimitiveTopology.line_list
+        """Triangle pipelines use configurable topology."""
+        return self._topology
 
 
-class LinePipelineMultiColour(BaseLinePipeline):
+class TrianglePipelineMultiColour(BaseTrianglePipeline):
     """
-    A reusable pipeline for rendering lines in WebGPU with per-vertex colors.
+    A reusable pipeline for rendering triangles in WebGPU with per-vertex colors.
 
     Features:
-    - Line strips or line segments
+    - Triangle lists or triangle strips
     - Per-vertex colors
-    - Configurable line width
     - MVP matrix support
     - MSAA support
     """
@@ -99,9 +129,10 @@ class LinePipelineMultiColour(BaseLinePipeline):
         depth_format: wgpu.TextureFormat = wgpu.TextureFormat.depth24plus,
         msaa_sample_count: int = 4,
         stride: int = 0,
+        topology: wgpu.PrimitiveTopology = wgpu.PrimitiveTopology.triangle_list,
     ):
         """
-        Initialize the line rendering pipeline.
+        Initialize the triangle rendering pipeline.
 
         Args:
             device: WebGPU device
@@ -109,6 +140,7 @@ class LinePipelineMultiColour(BaseLinePipeline):
             depth_format: Depth attachment format
             msaa_sample_count: Number of MSAA samples
             stride: The stride of the vertex buffer. If 0, it is inferred from data_type.
+            topology: Triangle topology (triangle_list or triangle_strip)
         """
         # Pipeline-specific buffer tracking
         self.vertex_buffer: Optional[wgpu.GPUBuffer] = None
@@ -122,19 +154,19 @@ class LinePipelineMultiColour(BaseLinePipeline):
             msaa_sample_count=msaa_sample_count,
             data_type=data_type,
             stride=stride,
+            topology=topology,
         )
 
     def get_dtype(self) -> np.dtype:
         """Get the data type of the pipeline."""
         return np.dtype([
             ("MVP", "float32", (4, 4)),
-            ("line_width", "float32"),
-            ("padding", np.uint32, 3),
+            ("padding", "float32", 4),
         ])
 
     def _get_shader_code(self) -> str:
         """Get the WGSL shader code for this pipeline."""
-        return _LINE_SHADER_MULTI_COLOURED
+        return _TRIANGLE_SHADER_MULTI_COLOURED
 
     def _get_vertex_buffer_layouts(self):
         """Get vertex buffer layout configurations for the pipeline."""
@@ -165,19 +197,20 @@ class LinePipelineMultiColour(BaseLinePipeline):
 
     def _set_default_uniforms(self) -> None:
         """Set default values for uniform data."""
-        self.uniform_data["line_width"] = 1.0  # Default line width
+        pass  # No specific defaults for triangle pipeline
 
     def _get_pipeline_label(self) -> str:
         """Get the label for the pipeline."""
-        return "line_pipeline_multi_coloured"
+        topology_name = "list" if self._topology == wgpu.PrimitiveTopology.triangle_list else "strip"
+        return f"triangle_pipeline_multi_coloured_{topology_name}"
 
     def set_data(self, positions=None, colors=None, **kwargs) -> None:
         """
-        Set the line data for rendering.
+        Set the triangle data for rendering.
 
         Args:
-            positions: Nx2/Nx3 array of line positions or a pre-existing GPUBuffer.
-            colors: Nx3 array of line colors (RGB) or a pre-existing GPUBuffer.
+            positions: Nx2/Nx3 array of triangle positions or a pre-existing GPUBuffer.
+            colors: Nx3 array of triangle colors (RGB) or a pre-existing GPUBuffer.
         """
         if positions is not None:
             if isinstance(positions, wgpu.GPUBuffer):
@@ -188,7 +221,7 @@ class LinePipelineMultiColour(BaseLinePipeline):
                     self.vertex_buffer,
                     positions,
                     wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
-                    "line_pipeline_multi_coloured_position_buffer",
+                    f"triangle_pipeline_multi_coloured_position_buffer_{self._get_pipeline_label()}",
                 )
                 self.num_vertices = buffer_size // self._stride
 
@@ -200,7 +233,7 @@ class LinePipelineMultiColour(BaseLinePipeline):
                     colors,
                     None,
                     padding_size=4,  # Pad to vec4 for alignment
-                    buffer_label="line_pipeline_multi_coloured_colour_buffer",
+                    buffer_label=f"triangle_pipeline_multi_coloured_colour_buffer_{self._get_pipeline_label()}",
                 )
                 self.color_buffer = (
                     color_result
@@ -217,19 +250,15 @@ class LinePipelineMultiColour(BaseLinePipeline):
         Args:
             **kwargs: Pipeline-specific uniform parameters
                 - mvp: 4x4 projection matrix
-                - line_width: Width of lines
         """
         if "mvp" in kwargs and kwargs["mvp"] is not None:
             self.uniform_data["MVP"] = kwargs["mvp"]
-
-        if "line_width" in kwargs and kwargs["line_width"] is not None:
-            self.uniform_data["line_width"] = kwargs["line_width"]
 
         self.device.queue.write_buffer(self.uniform_buffer, 0, self.uniform_data.tobytes())
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
         """
-        Render the lines.
+        Render the triangles.
 
         Args:
             render_pass: Active render pass encoder
@@ -259,14 +288,13 @@ class LinePipelineMultiColour(BaseLinePipeline):
         super().cleanup()
 
 
-class LinePipelineSingleColour(BaseLinePipeline):
+class TrianglePipelineSingleColour(BaseTrianglePipeline):
     """
-    A reusable pipeline for rendering lines in WebGPU with single color.
+    A reusable pipeline for rendering triangles in WebGPU with single color.
 
     Features:
-    - Line strips or line segments
-    - Single color for all lines
-    - Configurable line width
+    - Triangle lists or triangle strips
+    - Single color for all triangles
     - MVP matrix support
     - MSAA support
     """
@@ -279,9 +307,10 @@ class LinePipelineSingleColour(BaseLinePipeline):
         depth_format: wgpu.TextureFormat = wgpu.TextureFormat.depth24plus,
         msaa_sample_count: int = 4,
         stride: int = 0,
+        topology: wgpu.PrimitiveTopology = wgpu.PrimitiveTopology.triangle_list,
     ):
         """
-        Initialize the line rendering pipeline.
+        Initialize the triangle rendering pipeline.
 
         Args:
             device: WebGPU device
@@ -289,6 +318,7 @@ class LinePipelineSingleColour(BaseLinePipeline):
             depth_format: Depth attachment format
             msaa_sample_count: Number of MSAA samples
             stride: The stride of the vertex buffer. If 0, it is inferred from data_type.
+            topology: Triangle topology (triangle_list or triangle_strip)
         """
         # Pipeline-specific buffer tracking
         self.vertex_buffer: Optional[wgpu.GPUBuffer] = None
@@ -301,19 +331,19 @@ class LinePipelineSingleColour(BaseLinePipeline):
             msaa_sample_count=msaa_sample_count,
             data_type=data_type,
             stride=stride,
+            topology=topology,
         )
 
     def get_dtype(self) -> np.dtype:
         """Get the data type of the pipeline."""
         return np.dtype([
             ("MVP", "float32", (4, 4)),
-            ("line_width", "float32"),
-            ("Colour", np.uint32, 3),
+            ("padding", "float32", 4),
         ])
 
     def _get_shader_code(self) -> str:
         """Get the WGSL shader code for this pipeline."""
-        return _LINE_SHADER_SINGLE_COLOUR
+        return _TRIANGLE_SHADER_SINGLE_COLOUR
 
     def _get_vertex_buffer_layouts(self):
         """Get vertex buffer layout configurations for the pipeline."""
@@ -333,18 +363,19 @@ class LinePipelineSingleColour(BaseLinePipeline):
 
     def _set_default_uniforms(self) -> None:
         """Set default values for uniform data."""
-        self.uniform_data["line_width"] = 1.0  # Default line width
+        pass  # No specific defaults for triangle pipeline
 
     def _get_pipeline_label(self) -> str:
         """Get the label for the pipeline."""
-        return "line_pipeline_single_colour"
+        topology_name = "list" if self._topology == wgpu.PrimitiveTopology.triangle_list else "strip"
+        return f"triangle_pipeline_single_colour_{topology_name}"
 
     def set_data(self, positions=None, colors=None, **kwargs) -> None:
         """
-        Set the line data for rendering.
+        Set the triangle data for rendering.
 
         Args:
-            positions: Nx2/Nx3 array of line positions or a pre-existing GPUBuffer.
+            positions: Nx2/Nx3 array of triangle positions or a pre-existing GPUBuffer.
             colors: Ignored for single colour pipeline
         """
         if positions is not None:
@@ -356,7 +387,7 @@ class LinePipelineSingleColour(BaseLinePipeline):
                     self.vertex_buffer,
                     positions,
                     wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
-                    "line_pipeline_single_colour_position_buffer",
+                    f"triangle_pipeline_single_colour_position_buffer_{self._get_pipeline_label()}",
                 )
                 self.num_vertices = buffer_size // self._stride
 
@@ -367,19 +398,15 @@ class LinePipelineSingleColour(BaseLinePipeline):
         Args:
             **kwargs: Pipeline-specific uniform parameters
                 - mvp: 4x4 projection matrix
-                - line_width: Width of lines
         """
         if "mvp" in kwargs and kwargs["mvp"] is not None:
             self.uniform_data["MVP"] = kwargs["mvp"]
-
-        if "line_width" in kwargs and kwargs["line_width"] is not None:
-            self.uniform_data["line_width"] = kwargs["line_width"]
 
         self.device.queue.write_buffer(self.uniform_buffer, 0, self.uniform_data.tobytes())
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
         """
-        Render the lines.
+        Render the triangles.
 
         Args:
             render_pass: Active render pass encoder
@@ -406,5 +433,9 @@ class LinePipelineSingleColour(BaseLinePipeline):
         super().cleanup()
 
 
-# Backward compatibility alias
-LinePipeline = LinePipelineSingleColour
+# Backward compatibility aliases
+TrianglePipeline = TrianglePipelineSingleColour
+TriangleListPipeline = TrianglePipelineSingleColour
+TriangleStripPipeline = TrianglePipelineSingleColour
+TriangleListPipelineMultiColour = TrianglePipelineMultiColour
+TriangleStripPipelineMultiColour = TrianglePipelineMultiColour

@@ -105,6 +105,12 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
             event (QPaintEvent): The paint event.
         """
         self.paintWebGPU()
+        if (
+            hasattr(self, "device")
+            and self.device is not None
+            and hasattr(self, "colour_buffer_texture")
+        ):
+            self._update_colour_buffer()
         painter = QPainter(self)
 
         if self.frame_buffer is not None:

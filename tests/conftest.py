@@ -1,6 +1,8 @@
 import glfw
 import OpenGL.GL as gl
 import pytest
+import wgpu
+import wgpu.utils
 
 
 @pytest.fixture(scope="session")
@@ -23,3 +25,12 @@ def opengl_context():
     yield
 
     glfw.terminate()
+
+
+@pytest.fixture(scope="session")
+def webgpu_device():
+    # Get the default WebGPU device
+    device = wgpu.utils.get_default_device()
+    if device is None:
+        raise RuntimeError("Could not get a WebGPU device.")
+    yield device

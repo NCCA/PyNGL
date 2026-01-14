@@ -83,6 +83,7 @@ from ncca.ngl.mat4 import Mat4
 - **Variables**: snake_case (`camera_position`, `shader_program`)
 - **Constants**: UPPER_SNAKE_CASE (`MAX_LIGHTS`, `DEFAULT_SHADER`)
 - **Private members**: Single underscore (`_data`, `_internal_method`)
+- **Colour** is the correct spelling for **color** when referring to variable names 
 
 ### Type Hints
 ```python
