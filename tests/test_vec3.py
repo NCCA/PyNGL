@@ -1,10 +1,11 @@
 import copy
 import ctypes
+from typing import cast
 
 import numpy as np
 import pytest
 
-from ncca.ngl import Mat3, Vec3
+from ncca.ngl import Mat3, Vec3, Vec2, Vec4
 
 
 def test_properties():
@@ -345,3 +346,44 @@ def test_to_metods():
     a = Vec3(1, 2, 3)
     assert a.to_list() == [1, 2, 3]
     assert np.array_equal(a.to_numpy(), np.array([1, 2, 3]))
+    assert a.to_tuple() == (1, 2, 3)
+
+
+def test_unknown_component_kwarg():
+    with pytest.raises(ValueError, match="Unknown component name"):
+        Vec3(invalid_component=1.0)
+
+
+def test_add_incompatible_type():
+    a = Vec3(1, 2, 3)
+    b = cast(Vec3, Vec2(1, 2))
+    with pytest.raises(ValueError, match="Can only add Vec3 to Vec3"):
+        _ = a + b
+
+
+def test_iadd_incompatible_type():
+    a = Vec3(1, 2, 3)
+    b = cast(Vec3, Vec2(1, 2))
+    with pytest.raises(ValueError, match="Can only add Vec3 to Vec3"):
+        a += b
+
+
+def test_sub_incompatible_type():
+    a = Vec3(1, 2, 3)
+    b = cast(Vec3, Vec2(1, 2))
+    with pytest.raises(ValueError, match="Can only subtract Vec3 from Vec3"):
+        _ = a - b
+
+
+def test_isub_incompatible_type():
+    a = Vec3(1, 2, 3)
+    b = cast(Vec3, Vec2(1, 2))
+    with pytest.raises(ValueError, match="Can only subtract Vec3 from Vec3"):
+        a -= b
+
+
+def test_dot_incompatible_type():
+    a = Vec3(1, 2, 3)
+    b = cast(Vec3, Vec2(1, 2))
+    with pytest.raises(ValueError, match="Can only compute dot product with Vec3"):
+        _ = a.dot(b)

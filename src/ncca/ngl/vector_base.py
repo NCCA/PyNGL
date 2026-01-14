@@ -421,7 +421,7 @@ class VectorBase[T](ABC):
         Returns:
             Union[VectorBase, float]: The cross product (scalar for 2D, vector for 3D/4D).
         """
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def reflect(self, n: Self) -> Self:
@@ -434,7 +434,7 @@ class VectorBase[T](ABC):
         Returns:
             VectorBase: A new vector that is the result of reflecting this vector about the normal.
         """
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def outer(self, rhs: Self) -> Any:
@@ -447,7 +447,7 @@ class VectorBase[T](ABC):
         Returns:
             Any: A matrix that is the result of the outer product.
         """
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def __matmul__(self, rhs: Any) -> Self:
@@ -460,7 +460,7 @@ class VectorBase[T](ABC):
         Returns:
             VectorBase: A new vector that is the result of multiplying this vector by the matrix.
         """
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def set(self, *args: float) -> None:
@@ -473,17 +473,17 @@ class VectorBase[T](ABC):
         Raises:
             ValueError: If wrong number of arguments is provided or they are not floats.
         """
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def __repr__(self) -> str:
         """Object representation for debugging."""
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def __str__(self) -> str:
         """String representation of the vector."""
-        pass
+        pass  # pragma: no cover
 
     def __getattr__(self, name: str):
         """

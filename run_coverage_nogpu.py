@@ -67,7 +67,6 @@ def main():
         "tests/test_base_mesh.py",
         "tests/test_primitives.py",
         "tests/test_obj.py",
-        "tests/test_webgpu_widget.py",
     ]
 
     # Qt widget tests (require pytest-qt)
@@ -79,6 +78,7 @@ def main():
         "tests/test_rgba_colour_widget.py",
         "tests/test_lookat_widget.py",
         "tests/test_transform_widget.py",
+        "tests/test_webgpu_widget.py",
     ]
 
     print("PyNGL Coverage without GPU")

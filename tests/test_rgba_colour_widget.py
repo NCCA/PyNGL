@@ -21,9 +21,7 @@ def test_rgb_widget_initial_value(qtbot):
 
 def test_rgba_widget_constructor_initial_value_and_name(qtbot):
     start_val = Vec4(0.5, 0.6, 0.7, 1.0)
-    w = RGBAColourWidget(
-        name="InitName", r=start_val.x, g=start_val.y, b=start_val.z, a=start_val.w
-    )
+    w = RGBAColourWidget(name="InitName", r=start_val.x, g=start_val.y, b=start_val.z, a=start_val.w)
     qtbot.addWidget(w)
 
     assert w.colour() == start_val
@@ -65,6 +63,10 @@ def test_value_signals_for_each_component(qtbot):
     with qtbot.waitSignal(w.bValueChanged, timeout=1000) as sig_b:
         w.b_spinbox.setValue(0.75)
     assert sig_b.args == [pytest.approx(0.75)]
+
+    with qtbot.waitSignal(w.aValueChanged, timeout=1000) as sig_a:
+        w.a_spinbox.setValue(0.75)
+    assert sig_a.args == [pytest.approx(0.75)]
 
 
 def test_set_colour_blocks_channel_signals_but_emits_colour_changed(qtbot):
