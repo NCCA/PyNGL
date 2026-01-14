@@ -126,27 +126,27 @@ class WebGPUScene(WebGPUWidget):
         self.pipeline_timer.start(1000)  # Switch every 5 seconds
 
     def _create_buffers(self, num_points):
-        rng = np.random.default_rng()
+        rng = np.random.default_rng(int(time.time()))
         self.colours = rng.random((num_points, 3)).astype(np.float32)
         # Create 3D positions for line rendering with Z elevation
-        self.positions = np.random.uniform(-4.0, 4.0, size=(num_points, 3)).astype(np.float32)
+        self.positions = rng.uniform(-4.0, 4.0, size=(num_points, 3)).astype(np.float32)
         # For line rendering, we can use the full 3D positions or just X,Y depending on desired effect
         self.positions_2d = self.positions[:, :2]  # Take only X,Y components for 2D line effects
 
         # Create triangle data for triangle list
         num_triangles = 100
         self.triangle_positions = np.zeros((num_triangles * 3, 3), dtype=np.float32)
-        self.triangle_colours = np.random.random((num_triangles * 3, 3)).astype(np.float32)
+        self.triangle_colours = rng.random((num_triangles * 3, 3)).astype(np.float32)
 
         for i in range(num_triangles):
             # Create a triangle around a random center point in 3D space
-            center = np.random.uniform(-3.0, 3.0, 3)
-            radius = np.random.uniform(0.2, 0.8)
+            center = rng.uniform(-3.0, 3.0, 3)
+            radius = rng.uniform(0.2, 0.8)
 
             # Generate random triangle vertices in 3D using spherical coordinates
             # First vertex
-            theta1 = np.random.uniform(0, 2 * np.pi)  # azimuth
-            phi1 = np.random.uniform(0, np.pi)  # polar
+            theta1 = rng.uniform(0, 2 * np.pi)  # azimuth
+            phi1 = rng.uniform(0, np.pi)  # polar
             vertex1 = radius * np.array([
                 np.sin(phi1) * np.cos(theta1),
                 np.sin(phi1) * np.sin(theta1),
@@ -154,8 +154,8 @@ class WebGPUScene(WebGPUWidget):
             ])
 
             # Second vertex (different orientation)
-            theta2 = theta1 + np.random.uniform(2.0, 3.0)
-            phi2 = np.random.uniform(0, np.pi)
+            theta2 = theta1 + rng.uniform(2.0, 3.0)
+            phi2 = rng.uniform(0, np.pi)
             vertex2 = radius * np.array([
                 np.sin(phi2) * np.cos(theta2),
                 np.sin(phi2) * np.sin(theta2),
@@ -163,8 +163,8 @@ class WebGPUScene(WebGPUWidget):
             ])
 
             # Third vertex (completes the triangle)
-            theta3 = theta2 + np.random.uniform(2.0, 3.0)
-            phi3 = np.random.uniform(0, np.pi)
+            theta3 = theta2 + rng.uniform(2.0, 3.0)
+            phi3 = rng.uniform(0, np.pi)
             vertex3 = radius * np.array([
                 np.sin(phi3) * np.cos(theta3),
                 np.sin(phi3) * np.sin(theta3),
@@ -178,7 +178,7 @@ class WebGPUScene(WebGPUWidget):
         # Create triangle strip data with 3D helix/spring pattern
         strip_length = 50
         self.triangle_strip_positions = np.zeros((strip_length, 3), dtype=np.float32)
-        self.triangle_strip_colours = np.random.random((strip_length, 3)).astype(np.float32)
+        self.triangle_strip_colours = rng.random((strip_length, 3)).astype(np.float32)
 
         for i in range(strip_length):
             t = i / (strip_length - 1)
