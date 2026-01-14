@@ -115,6 +115,14 @@ def test_set():
     assert a.y == pytest.approx(0.1)
     assert a.z == pytest.approx(0.5)
     assert a.w == pytest.approx(0.2)
+    a = Vec4()
+    a.set(1, 2, 3)
+    assert a.x == pytest.approx(1.0)
+    assert a.y == pytest.approx(2.0)
+    assert a.z == pytest.approx(3.0)
+    assert a.w == pytest.approx(1.0)
+    with pytest.raises(ValueError):
+        a.set(1, 2, 3, 4, 5)
 
 
 def test_error_set():
@@ -306,9 +314,7 @@ def test_outer():
     a = Vec4(1, 2, 3, 4)
     b = Vec4(5, 6, 7, 8)
     m = a.outer(b)
-    expected = np.array(
-        [[5, 6, 7, 8], [10, 12, 14, 16], [15, 18, 21, 24], [20, 24, 28, 32]]
-    )
+    expected = np.array([[5, 6, 7, 8], [10, 12, 14, 16], [15, 18, 21, 24], [20, 24, 28, 32]])
     assert np.array_equal(m.m, expected)
 
 

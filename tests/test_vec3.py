@@ -54,6 +54,11 @@ def test_ctor_single_value():
     assert v.z == pytest.approx(2.0)
 
 
+def test_ctor_too_many_args():
+    with pytest.raises(ValueError):
+        Vec3(1, 2, 3, 4)
+
+
 def test_add():
     a = Vec3(1, 2, 3)
     b = Vec3(4, 5, 6)
@@ -104,6 +109,8 @@ def test_set():
     assert a.x == pytest.approx(2.5)
     assert a.y == pytest.approx(0.1)
     assert a.z == pytest.approx(0.5)
+    with pytest.raises(ValueError):
+        a.set(2, 3, 4, 5)
 
 
 def test_error_set():

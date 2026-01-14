@@ -118,6 +118,8 @@ def test_set():
     assert v.y == pytest.approx(2.0)
     with pytest.raises(ValueError):
         v.set("a", "b")
+    with pytest.raises(ValueError):
+        v.set(1, 2, 3)
 
 
 def test_dot():
