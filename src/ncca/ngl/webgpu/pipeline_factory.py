@@ -4,16 +4,16 @@ and allow the user to create custom pipelines.
 Provides abstract base class and factory for creating various pipeline types.
 """
 
-from abc import ABC, abstractmethod
 from enum import Enum
-from multiprocessing import Pipe
-from pathlib import Path
 from typing import Any, Dict, Optional, Type
 
 import numpy as np
 import wgpu
 
+from .base_webgpu_pipeline import BaseWebGPUPipeline
 from .point_pipeline import PointPipelineMultiColour, PointPipelineSingleColour
+from .line_pipeline import LinePipelineMultiColour, LinePipelineSingleColour
+from .triangle_pipeline import TrianglePipelineMultiColour, TrianglePipelineSingleColour
 
 
 class PipelineType(Enum):
@@ -23,86 +23,16 @@ class PipelineType(Enum):
     SINGLE_COLOUR_LINES = "single_colour_lines"
     MULTI_COLOURED_POINTS = "multi_coloured_points"
     SINGLE_COLOUR_POINTS = "single_colour_points"
+    MULTI_COLOURED_TRIANGLES = "multi_coloured_triangles"
+    SINGLE_COLOUR_TRIANGLES = "single_colour_triangles"
+    TRIANGLE_LIST_MULTI_COLOURED = "triangle_list_multi_coloured"
+    TRIANGLE_LIST_SINGLE_COLOUR = "triangle_list_single_colour"
+    TRIANGLE_STRIP_MULTI_COLOURED = "triangle_strip_multi_coloured"
+    TRIANGLE_STRIP_SINGLE_COLOUR = "triangle_strip_single_colour"
 
 
-class BasePipeline(ABC):
-    """
-    Abstract base class for all rendering pipelines.
-
-    Defines the interface that all pipeline implementations must follow.
-    """
-
-    def __init__(
-        self,
-        device: wgpu.GPUDevice,
-        texture_format: wgpu.TextureFormat = wgpu.TextureFormat.rgba8unorm,
-        depth_format: wgpu.TextureFormat = wgpu.TextureFormat.depth24plus,
-        msaa_sample_count: int = 4,
-    ):
-        """
-        Initialize base pipeline.
-
-        Args:
-            device: WebGPU device
-            texture_format: Color attachment format
-            depth_format: Depth attachment format
-            msaa_sample_count: Number of MSAA samples
-        """
-        self.device = device
-        self.texture_format = texture_format
-        self.depth_format = depth_format
-        self.msaa_sample_count = msaa_sample_count
-
-        # Core pipeline resources
-        self.pipeline: Optional[wgpu.GPURenderPipeline] = None
-        self.uniform_buffer: Optional[wgpu.GPUBuffer] = None
-        self.bind_group: Optional[wgpu.GPUBindGroup] = None
-
-    @abstractmethod
-    def _create_pipeline(self) -> None:
-        """Create the render pipeline. Must be implemented by subclasses."""
-        pass
-
-    @abstractmethod
-    def get_dtype(self) -> np.dtype:
-        """Get the data type of the pipeline."""
-        pass
-
-    @abstractmethod
-    def set_data(self, **kwargs) -> None:
-        """
-        Set rendering data (vertices, colors, etc.).
-
-        Args:
-            **kwargs: Pipeline-specific data parameters
-        """
-        pass
-
-    @abstractmethod
-    def update_uniforms(self, **kwargs) -> None:
-        """
-        Update uniform buffer values.
-
-        Args:
-            **kwargs: Pipeline-specific uniform parameters
-        """
-        pass
-
-    @abstractmethod
-    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
-        """
-        Render using this pipeline.
-
-        Args:
-            render_pass: Active render pass encoder
-            **kwargs: Pipeline-specific render parameters
-        """
-        pass
-
-    def cleanup(self) -> None:
-        """Release pipeline resources. Can be overridden for additional cleanup."""
-        if self.uniform_buffer:
-            self.uniform_buffer.destroy()
+# Backward compatibility alias
+BasePipeline = BaseWebGPUPipeline
 
 
 class _PipelineFactory:
@@ -113,10 +43,85 @@ class _PipelineFactory:
     def __init__(self):
         """Initialize the pipeline factory with default pipeline types."""
         self._pipeline_registry: Dict[PipelineType, Type[BasePipeline]] = {}
-        self.register_pipeline(PipelineType.MULTI_COLOURED_POINTS, PointPipelineMultiColour)
-        self.register_pipeline(PipelineType.SINGLE_COLOUR_POINTS, PointPipelineSingleColour)
+        self.register_pipeline(
+            PipelineType.MULTI_COLOURED_POINTS, PointPipelineMultiColour
+        )
+        self.register_pipeline(
+            PipelineType.SINGLE_COLOUR_POINTS, PointPipelineSingleColour
+        )
+        self.register_pipeline(
+            PipelineType.MULTI_COLOURED_LINES, LinePipelineMultiColour
+        )
+        self.register_pipeline(
+            PipelineType.SINGLE_COLOUR_LINES, LinePipelineSingleColour
+        )
+        self.register_pipeline(
+            PipelineType.MULTI_COLOURED_TRIANGLES, TrianglePipelineMultiColour
+        )
+        self.register_pipeline(
+            PipelineType.SINGLE_COLOUR_TRIANGLES, TrianglePipelineSingleColour
+        )
 
-    def register_pipeline(self, pipeline_type: PipelineType, pipeline_class: Type[BasePipeline]) -> None:
+        # Create wrapper classes for specific topology types
+        class TriangleListMultiColour(TrianglePipelineMultiColour):
+            def __init__(self, device):
+                super().__init__(device, topology=wgpu.PrimitiveTopology.triangle_list)
+
+        class TriangleListSingleColour(TrianglePipelineSingleColour):
+            def __init__(self, device):
+                super().__init__(device, topology=wgpu.PrimitiveTopology.triangle_list)
+
+        class TriangleStripMultiColour(TrianglePipelineMultiColour):
+            def __init__(self, device):
+                super().__init__(device, topology=wgpu.PrimitiveTopology.triangle_strip)
+
+        class TriangleStripSingleColour(TrianglePipelineSingleColour):
+            def __init__(self, device):
+                super().__init__(device, topology=wgpu.PrimitiveTopology.triangle_strip)
+
+        self.register_pipeline(
+            PipelineType.TRIANGLE_LIST_MULTI_COLOURED, TriangleListMultiColour
+        )
+        self.register_pipeline(
+            PipelineType.TRIANGLE_LIST_SINGLE_COLOUR, TriangleListSingleColour
+        )
+        self.register_pipeline(
+            PipelineType.TRIANGLE_STRIP_MULTI_COLOURED, TriangleStripMultiColour
+        )
+        self.register_pipeline(
+            PipelineType.TRIANGLE_STRIP_SINGLE_COLOUR, TriangleStripSingleColour
+        )
+        self.register_pipeline(
+            PipelineType.SINGLE_COLOUR_TRIANGLES, TrianglePipelineSingleColour
+        )
+        self.register_pipeline(
+            PipelineType.TRIANGLE_LIST_MULTI_COLOURED,
+            lambda device: TrianglePipelineMultiColour(
+                device, topology=wgpu.PrimitiveTopology.triangle_list
+            ),
+        )
+        self.register_pipeline(
+            PipelineType.TRIANGLE_LIST_SINGLE_COLOUR,
+            lambda device: TrianglePipelineSingleColour(
+                device, topology=wgpu.PrimitiveTopology.triangle_list
+            ),
+        )
+        self.register_pipeline(
+            PipelineType.TRIANGLE_STRIP_MULTI_COLOURED,
+            lambda device: TrianglePipelineMultiColour(
+                device, topology=wgpu.PrimitiveTopology.triangle_strip
+            ),
+        )
+        self.register_pipeline(
+            PipelineType.TRIANGLE_STRIP_SINGLE_COLOUR,
+            lambda device: TrianglePipelineSingleColour(
+                device, topology=wgpu.PrimitiveTopology.triangle_strip
+            ),
+        )
+
+    def register_pipeline(
+        self, pipeline_type: PipelineType, pipeline_class: Type[BaseWebGPUPipeline]
+    ) -> None:
         """
         Register a custom pipeline type.
 
@@ -126,7 +131,9 @@ class _PipelineFactory:
         """
         self._pipeline_registry[pipeline_type] = pipeline_class
 
-    def create_pipeline(self, device: wgpu.GPUDevice, pipeline_type: PipelineType, **kwargs) -> BasePipeline:
+    def create_pipeline(
+        self, device: wgpu.GPUDevice, pipeline_type: PipelineType, **kwargs
+    ) -> BaseWebGPUPipeline:
         """
         Create a pipeline instance.
 
