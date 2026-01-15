@@ -43,14 +43,14 @@ struct VertexOut {
 @vertex
 fn vertex_main(instance_data: InstanceData, geom_vertex: GeometryVertex, @builtin(vertex_index) vertex_index: u32) -> VertexOut {
     var output: VertexOut;
-    
+
     // Transform geometry vertex by instance transform and position
     let transformed_vertex = uniforms.instance_transform * vec4<f32>(geom_vertex.geometry_position, 1.0);
     let world_position = transformed_vertex.xyz + instance_data.position;
-    
+
     output.position = uniforms.MVP * vec4<f32>(world_position, 1.0);
     output.fragColour = instance_data.colour;
-    
+
     // Transform normal by instance transform (skip translation)
     let normal_matrix = mat3x3<f32>(
         uniforms.instance_transform[0].xyz,
@@ -68,27 +68,27 @@ fn vertex_main(instance_data: InstanceData, geom_vertex: GeometryVertex, @builti
 fn fragment_main(fragData: VertexOut) -> @location(0) vec4<f32>
 {
     // Enhanced diffuse lighting calculation
-    
+
     // Light properties
     let light_direction = normalize(vec3<f32>(0.5, 1.0, 0.3));  // World space light direction
     let light_color = vec3<f32>(1.0, 1.0, 1.0);  // White light
     let ambient_intensity = 0.15;  // Lower ambient for better contrast
     let diffuse_intensity = 0.85;  // Higher diffuse for stronger lighting
-    
+
     // Ambient component (base illumination)
     let ambient = vec3<f32>(ambient_intensity);
-    
+
     // Diffuse component (Lambertian reflection)
     let normal = normalize(fragData.fragNormal);
     let n_dot_l = max(dot(normal, light_direction), 0.0);
     let diffuse = light_color * n_dot_l * diffuse_intensity;
-    
+
     // Combine lighting components
     let final_lighting = ambient + diffuse;
-    
+
     // Apply lighting to the fragment color
     let lit_color = fragData.fragColour * final_lighting;
-    
+
     return vec4<f32>(lit_color, 1.0);
 }
 """
@@ -126,13 +126,13 @@ struct VertexOutSingle {
 @vertex
 fn vertex_main(instance_data: InstanceData, geom_vertex: GeometryVertexSingle, @builtin(vertex_index) vertex_index: u32) -> VertexOutSingle {
     var output: VertexOutSingle;
-    
+
     // Transform geometry vertex by instance transform and position
     let transformed_vertex = uniforms.instance_transform * vec4<f32>(geom_vertex.geometry_position, 1.0);
     let world_position = transformed_vertex.xyz + instance_data.position;
-    
+
     output.position = uniforms.MVP * vec4<f32>(world_position, 1.0);
-    
+
     // Transform normal by instance transform (skip translation)
     let normal_matrix = mat3x3<f32>(
         uniforms.instance_transform[0].xyz,
@@ -150,27 +150,27 @@ fn vertex_main(instance_data: InstanceData, geom_vertex: GeometryVertexSingle, @
 fn fragment_main(fragData: VertexOutSingle) -> @location(0) vec4<f32>
 {
     // Enhanced diffuse lighting calculation
-    
+
     // Light properties
     let light_direction = normalize(vec3<f32>(0.5, 1.0, 0.3));  // World space light direction
     let light_color = vec3<f32>(1.0, 1.0, 1.0);  // White light
     let ambient_intensity = 0.15;  // Lower ambient for better contrast
     let diffuse_intensity = 0.85;  // Higher diffuse for stronger lighting
-    
+
     // Ambient component (base illumination)
     let ambient = vec3<f32>(ambient_intensity);
-    
+
     // Diffuse component (Lambertian reflection)
     let normal = normalize(fragData.fragNormal);
     let n_dot_l = max(dot(normal, light_direction), 0.0);
     let diffuse = light_color * n_dot_l * diffuse_intensity;
-    
+
     // Combine lighting components
     let final_lighting = ambient + diffuse;
-    
+
     // Apply lighting to the uniform color
     let lit_color = uniforms.colour * final_lighting;
-    
+
     return vec4<f32>(lit_color, 1.0);
 }
 """
@@ -211,9 +211,7 @@ class BaseInstancedGeometryPipeline(BaseWebGPUPipeline):
         self.position_buffer: Optional[wgpu.GPUBuffer] = None
         self.colour_buffer: Optional[wgpu.GPUBuffer] = None
         self.instance_id_buffer: Optional[wgpu.GPUBuffer] = None
-        self.geometry_buffer: Optional[wgpu.GPUBuffer] = (
-            None  # Single interleaved buffer x,y,z,nx,ny,nz,u,v
-        )
+        self.geometry_buffer: Optional[wgpu.GPUBuffer] = None  # Single interleaved buffer x,y,z,nx,ny,nz,u,v
         self.num_instances: int = 0
         self.num_vertices: int = 0
 
@@ -230,12 +228,11 @@ class BaseInstancedGeometryPipeline(BaseWebGPUPipeline):
         """Default to triangle list for geometry rendering."""
         return wgpu.PrimitiveTopology.triangle_list
 
-    def _get_default_vertex_layouts(self, has_colour_buffer: bool = False) -> list:
+    def _get_default_vertex_layouts(self) -> list:
         """
         Get default vertex buffer layouts for instanced geometry rendering.
 
-        Args:
-            has_colour_buffer: Whether to include colour buffer layout
+
 
         Returns:
             List of vertex buffer layout configurations
@@ -256,59 +253,53 @@ class BaseInstancedGeometryPipeline(BaseWebGPUPipeline):
         ]
 
         # Always add colour buffer layout (used or not by shader)
-        layouts.append(
-            {
-                "array_stride": NGLToWebGPU.stride_from_type("Vec3"),
-                "step_mode": "instance",
-                "attributes": [
-                    {
-                        "format": NGLToWebGPU.vertex_format("Vec3"),
-                        "offset": 0,
-                        "shader_location": 1,
-                    },
-                ],
-            }
-        )
+        layouts.append({
+            "array_stride": NGLToWebGPU.stride_from_type("Vec3"),
+            "step_mode": "instance",
+            "attributes": [
+                {
+                    "format": NGLToWebGPU.vertex_format("Vec3"),
+                    "offset": 0,
+                    "shader_location": 1,
+                },
+            ],
+        })
 
         # Add instance ID buffer for potential use in shaders
-        layouts.append(
-            {
-                "array_stride": 4,  # float32
-                "step_mode": "instance",
-                "attributes": [
-                    {
-                        "format": wgpu.VertexFormat.float32,
-                        "offset": 0,
-                        "shader_location": 2,
-                    },
-                ],
-            }
-        )
+        layouts.append({
+            "array_stride": 4,  # float32
+            "step_mode": "instance",
+            "attributes": [
+                {
+                    "format": wgpu.VertexFormat.float32,
+                    "offset": 0,
+                    "shader_location": 2,
+                },
+            ],
+        })
 
         # Single interleaved geometry buffer (step_mode="vertex")
-        layouts.append(
-            {
-                "array_stride": 8 * 4,  # 8 floats * 4 bytes each
-                "step_mode": "vertex",
-                "attributes": [
-                    {
-                        "format": NGLToWebGPU.vertex_format("Vec3"),
-                        "offset": 0,
-                        "shader_location": 3,  # geometry_position
-                    },
-                    {
-                        "format": NGLToWebGPU.vertex_format("Vec3"),
-                        "offset": 3 * 4,  # 12 bytes offset
-                        "shader_location": 4,  # geometry_normal
-                    },
-                    {
-                        "format": NGLToWebGPU.vertex_format("Vec2"),
-                        "offset": 6 * 4,  # 24 bytes offset
-                        "shader_location": 5,  # geometry_uv
-                    },
-                ],
-            }
-        )
+        layouts.append({
+            "array_stride": 8 * 4,  # 8 floats * 4 bytes each
+            "step_mode": "vertex",
+            "attributes": [
+                {
+                    "format": NGLToWebGPU.vertex_format("Vec3"),
+                    "offset": 0,
+                    "shader_location": 3,  # geometry_position
+                },
+                {
+                    "format": NGLToWebGPU.vertex_format("Vec3"),
+                    "offset": 3 * 4,  # 12 bytes offset
+                    "shader_location": 4,  # geometry_normal
+                },
+                {
+                    "format": NGLToWebGPU.vertex_format("Vec2"),
+                    "offset": 6 * 4,  # 24 bytes offset
+                    "shader_location": 5,  # geometry_uv
+                },
+            ],
+        })
 
         return layouts
 
@@ -337,13 +328,11 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
 
     def get_dtype(self) -> np.dtype:
         """Get the data type of the pipeline."""
-        return np.dtype(
-            [
-                ("MVP", "float32", (4, 4)),
-                ("ViewMatrix", "float32", (4, 4)),
-                ("instance_transform", "float32", (4, 4)),
-            ]
-        )
+        return np.dtype([
+            ("MVP", "float32", (4, 4)),
+            ("ViewMatrix", "float32", (4, 4)),
+            ("instance_transform", "float32", (4, 4)),
+        ])
 
     def _get_shader_code(self) -> str:
         """Get the WGSL shader code for this pipeline."""
@@ -351,7 +340,7 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
 
     def _get_vertex_buffer_layouts(self) -> list:
         """Get vertex buffer layout configurations for the pipeline."""
-        return self._get_default_vertex_layouts(has_colour_buffer=True)
+        return self._get_default_vertex_layouts()
 
     def _set_default_uniforms(self) -> None:
         """Set default values for uniform data."""
@@ -424,9 +413,7 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
 
         # Handle geometry data (required, interleaved format x,y,z,nx,ny,nz,u,v)
         if geometry_data is None:
-            raise ValueError(
-                "geometry_data is required for instanced geometry pipelines"
-            )
+            raise ValueError("geometry_data is required for instanced geometry pipelines")
 
         if isinstance(geometry_data, wgpu.GPUBuffer):
             # Use GPU buffer directly
@@ -438,9 +425,7 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
             if geometry_data.ndim == 1:
                 geometry_data = geometry_data.reshape(-1, 8)
             elif geometry_data.ndim != 2:
-                raise ValueError(
-                    f"geometry_data must be 1D or 2D array, got {geometry_data.ndim}D"
-                )
+                raise ValueError(f"geometry_data must be 1D or 2D array, got {geometry_data.ndim}D")
 
             if geometry_data.shape[1] != 8:
                 raise ValueError(
@@ -477,9 +462,7 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
         if "instance_transform" in kwargs and kwargs["instance_transform"] is not None:
             self.uniform_data["instance_transform"] = kwargs["instance_transform"]
 
-        self.device.queue.write_buffer(
-            self.uniform_buffer, 0, self.uniform_data.tobytes()
-        )
+        self.device.queue.write_buffer(self.uniform_buffer, 0, self.uniform_data.tobytes())
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
         """
@@ -509,14 +492,10 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
         # Set instance buffers (match shader layout)
         render_pass.set_vertex_buffer(0, self.position_buffer)  # location(0) position
         render_pass.set_vertex_buffer(1, self.colour_buffer)  # location(1) colour
-        render_pass.set_vertex_buffer(
-            2, self.instance_id_buffer
-        )  # location(2) instance_id
+        render_pass.set_vertex_buffer(2, self.instance_id_buffer)  # location(2) instance_id
 
         # Set single interleaved geometry buffer
-        render_pass.set_vertex_buffer(
-            3, self.geometry_buffer
-        )  # locations(3,4,5) interleaved
+        render_pass.set_vertex_buffer(3, self.geometry_buffer)  # locations(3,4,5) interleaved
 
         render_pass.draw(self.num_vertices, count)
 
@@ -549,14 +528,12 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
 
     def get_dtype(self) -> np.dtype:
         """Get the data type of the pipeline."""
-        return np.dtype(
-            [
-                ("MVP", "float32", (4, 4)),
-                ("ViewMatrix", "float32", (4, 4)),
-                ("colour", "float32", 4),  # Vec4 for alignment (RGB + padding)
-                ("instance_transform", "float32", (4, 4)),
-            ]
-        )
+        return np.dtype([
+            ("MVP", "float32", (4, 4)),
+            ("ViewMatrix", "float32", (4, 4)),
+            ("colour", "float32", 4),  # Vec4 for alignment (RGB + padding)
+            ("instance_transform", "float32", (4, 4)),
+        ])
 
     def _get_shader_code(self) -> str:
         """Get the WGSL shader code for this pipeline."""
@@ -564,13 +541,11 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
 
     def _get_vertex_buffer_layouts(self) -> list:
         """Get vertex buffer layout configurations for the pipeline."""
-        return self._get_default_vertex_layouts(has_colour_buffer=False)
+        return self._get_default_vertex_layouts()
 
     def _set_default_uniforms(self) -> None:
         """Set default values for uniform data."""
-        self.uniform_data["colour"] = np.array(
-            [1.0, 1.0, 1.0, 1.0], dtype=np.float32
-        )  # White
+        self.uniform_data["colour"] = np.array([1.0, 1.0, 1.0, 1.0], dtype=np.float32)  # White
         self.uniform_data["instance_transform"] = np.eye(4, dtype=np.float32)
         self.uniform_data["ViewMatrix"] = np.eye(4, dtype=np.float32)
 
@@ -621,9 +596,7 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
 
         # Handle geometry data (required, interleaved format x,y,z,nx,ny,nz,u,v)
         if geometry_data is None:
-            raise ValueError(
-                "geometry_data is required for instanced geometry pipelines"
-            )
+            raise ValueError("geometry_data is required for instanced geometry pipelines")
 
         if isinstance(geometry_data, wgpu.GPUBuffer):
             # Use GPU buffer directly
@@ -635,9 +608,7 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
             if geometry_data.ndim == 1:
                 geometry_data = geometry_data.reshape(-1, 8)
             elif geometry_data.ndim != 2:
-                raise ValueError(
-                    f"geometry_data must be 1D or 2D array, got {geometry_data.ndim}D"
-                )
+                raise ValueError(f"geometry_data must be 1D or 2D array, got {geometry_data.ndim}D")
 
             if geometry_data.shape[1] != 8:
                 raise ValueError(
@@ -678,9 +649,7 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
         if "instance_transform" in kwargs and kwargs["instance_transform"] is not None:
             self.uniform_data["instance_transform"] = kwargs["instance_transform"]
 
-        self.device.queue.write_buffer(
-            self.uniform_buffer, 0, self.uniform_data.tobytes()
-        )
+        self.device.queue.write_buffer(self.uniform_buffer, 0, self.uniform_data.tobytes())
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
         """
@@ -713,9 +682,7 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
         render_pass.set_vertex_buffer(2, self.instance_id_buffer)
 
         # Set single interleaved geometry buffer
-        render_pass.set_vertex_buffer(
-            3, self.geometry_buffer
-        )  # locations(3,4,5) interleaved
+        render_pass.set_vertex_buffer(3, self.geometry_buffer)  # locations(3,4,5) interleaved
 
         render_pass.draw(self.num_vertices, count)
 
