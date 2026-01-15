@@ -175,6 +175,8 @@ fn fragment_main(fragData: VertexOutSingle) -> @location(0) vec4<f32>
 }
 """
 
+GEOM_ERROR = "geometry_data is required for instanced geometry pipelines"
+
 
 class BaseInstancedGeometryPipeline(BaseWebGPUPipeline):
     """
@@ -427,7 +429,7 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
     def _set_geometry_data(self, geometry_data) -> None:
         """Set geometry data from GPUBuffer or numpy array."""
         if geometry_data is None:
-            raise ValueError("geometry_data is required for instanced geometry pipelines")
+            raise ValueError(GEOM_ERROR)
 
         if isinstance(geometry_data, wgpu.GPUBuffer):
             self.geometry_buffer = geometry_data
@@ -647,7 +649,7 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
     def _set_geometry_data(self, geometry_data) -> None:
         """Set geometry data from GPUBuffer or numpy array."""
         if geometry_data is None:
-            raise ValueError("geometry_data is required for instanced geometry pipelines")
+            raise ValueError(GEOM_ERROR)
 
         if isinstance(geometry_data, wgpu.GPUBuffer):
             self.geometry_buffer = geometry_data
@@ -697,7 +699,7 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
 
         # Handle geometry data (required, interleaved format x,y,z,nx,ny,nz,u,v)
         if geometry_data is None:
-            raise ValueError("geometry_data is required for instanced geometry pipelines")
+            raise ValueError(GEOM_ERROR)
 
         if isinstance(geometry_data, wgpu.GPUBuffer):
             # Use GPU buffer directly
