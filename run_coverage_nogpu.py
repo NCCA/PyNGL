@@ -91,7 +91,7 @@ def main():
     test_files = " ".join(cpu_only_tests)
 
     # Run coverage
-    coverage_cmd = f'uv run coverage run --source=src/ncca/ngl --omit="*/tests/*,*/test_*" -m pytest -p no:pytest-qt {test_files} -v'
+    coverage_cmd = f'uv run coverage run --source=src/ncca/ngl --omit="*/tests/*,*/test_*/__main__.py" -m pytest -p no:pytest-qt {test_files} -v'
 
     success = run_command(coverage_cmd, "Coverage for CPU-only tests")
 
