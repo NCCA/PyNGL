@@ -351,30 +351,35 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
         """Get the label for the pipeline."""
         return "instanced_geometry_pipeline_multi_colour"
 
-    def set_data(
-        self,
-        positions,
-        colours=None,
-        geometry_data=None,
-    ) -> None:
+    def set_data(self, **kwargs) -> None:
         """
         Set the instanced geometry data for rendering.
 
         Args:
-            positions: Nx3 array of instance positions or a pre-existing GPUBuffer.
-            colours: Nx3 array of instance colors (RGB) or a pre-existing GPUBuffer.
-                     If None, uses white.
-            geometry_data: Mx8 array of interleaved geometry data in format
-                          x,y,z,nx,ny,nz,u,v or pre-existing GPUBuffer.
-                          Must match the format output by PrimData methods.
+            **kwargs: Pipeline-specific data parameters
+                - positions: Nx3 array of instance positions or a pre-existing GPUBuffer.
+                - colours: Nx3 array of instance colors (RGB) or a pre-existing GPUBuffer.
+                           If None, uses white.
+                - geometry_data: Mx8 array of interleaved geometry data in format
+                                x,y,z,nx,ny,nz,u,v or pre-existing GPUBuffer.
+                                Must match the format output by PrimData methods.
         """
-        # Handle instance positions
+        positions = kwargs.get("positions")
+        colours = kwargs.get("colours")
+        geometry_data = kwargs.get("geometry_data")
+
+        self._set_position_data(positions)
+        self._setup_instance_id_buffer()
+        self._set_colour_data(colours)
+        self._set_geometry_data(geometry_data)
+
+    def _set_position_data(self, positions) -> None:
+        """Set instance position data from GPUBuffer or numpy array."""
         if isinstance(positions, wgpu.GPUBuffer):
             self.position_buffer = positions
             self.num_instances = positions.size // self._stride
-        else:  # numpy array
+        else:
             self.num_instances = len(positions)
-            # Always recreate to avoid caching issues
             if self.position_buffer:
                 self.position_buffer.destroy()
             self.position_buffer = self.device.create_buffer_with_data(
@@ -383,65 +388,78 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
                 label="instanced_geometry_multi_colour_position_buffer",
             )
 
-        # Create instance ID buffer
+    def _setup_instance_id_buffer(self) -> None:
+        """Create buffer containing instance IDs."""
         if self.instance_id_buffer:
             self.instance_id_buffer.destroy()
-        self.instance_id_buffer = self._create_instance_id_buffer(self.num_instances)
+        self.instance_id_buffer = super()._create_instance_id_buffer(self.num_instances)
 
-        # Handle colours - always recreate to avoid stale buffer issues
+    def _set_colour_data(self, colours) -> None:
+        """Set colour data from GPUBuffer, numpy array, or create default."""
         if self.colour_buffer:
             self.colour_buffer.destroy()
-            self.colour_buffer = None  # Clear reference immediately
+            self.colour_buffer = None
 
         if colours is None:
-            # Create default white colours
-            default_colours = np.ones((self.num_instances, 3), dtype=np.float32)
+            self._create_default_colours()
+        else:
+            self._create_colour_buffer(colours)
+
+    def _create_default_colours(self) -> None:
+        """Create default white colours for all instances."""
+        default_colours = np.ones((self.num_instances, 3), dtype=np.float32)
+        self.colour_buffer = self.device.create_buffer_with_data(
+            data=default_colours.tobytes(),
+            usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
+        )
+
+    def _create_colour_buffer(self, colours) -> None:
+        """Create colour buffer from GPUBuffer or numpy array."""
+        if isinstance(colours, wgpu.GPUBuffer):
+            self.colour_buffer = colours
+        else:
+            colour_array = colours.astype(np.float32)
             self.colour_buffer = self.device.create_buffer_with_data(
-                data=default_colours.tobytes(),
+                data=colour_array.tobytes(),
                 usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
             )
-        else:
-            # Colors are already (num_instances, 3), create buffer directly
-            if isinstance(colours, wgpu.GPUBuffer):
-                self.colour_buffer = colours
-            else:
-                colour_array = colours.astype(np.float32)
-                self.colour_buffer = self.device.create_buffer_with_data(
-                    data=colour_array.tobytes(),
-                    usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
-                )
 
-        # Handle geometry data (required, interleaved format x,y,z,nx,ny,nz,u,v)
+    def _set_geometry_data(self, geometry_data) -> None:
+        """Set geometry data from GPUBuffer or numpy array."""
         if geometry_data is None:
             raise ValueError("geometry_data is required for instanced geometry pipelines")
 
         if isinstance(geometry_data, wgpu.GPUBuffer):
-            # Use GPU buffer directly
             self.geometry_buffer = geometry_data
-            self.num_vertices = geometry_data.size // (8 * 4)  # 8 floats * 4 bytes each
+            self.num_vertices = geometry_data.size // (8 * 4)
         else:
-            # Handle numpy array
-            geometry_data = np.asarray(geometry_data, dtype=np.float32)
-            if geometry_data.ndim == 1:
-                geometry_data = geometry_data.reshape(-1, 8)
-            elif geometry_data.ndim != 2:
-                raise ValueError(f"geometry_data must be 1D or 2D array, got {geometry_data.ndim}D")
+            self._process_geometry_array(geometry_data)
 
-            if geometry_data.shape[1] != 8:
-                raise ValueError(
-                    f"geometry_data must have 8 components (x,y,z,nx,ny,nz,u,v), got {geometry_data.shape[1]}"
-                )
+    def _process_geometry_array(self, geometry_data) -> None:
+        """Process geometry numpy array and create buffer."""
+        geometry_data = np.asarray(geometry_data, dtype=np.float32)
+        geometry_data = self._validate_and_reshape_geometry(geometry_data)
+        self.num_vertices = geometry_data.shape[0]
 
-            self.num_vertices = geometry_data.shape[0]  # Number of vertices
+        if self.geometry_buffer:
+            self.geometry_buffer.destroy()
+        self.geometry_buffer = self.device.create_buffer_with_data(
+            data=geometry_data.tobytes(),
+            usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
+            label="instanced_geometry_buffer",
+        )
 
-            # Create single interleaved buffer
-            if self.geometry_buffer:
-                self.geometry_buffer.destroy()
-            self.geometry_buffer = self.device.create_buffer_with_data(
-                data=geometry_data.tobytes(),
-                usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
-                label="instanced_geometry_buffer",
-            )
+    def _validate_and_reshape_geometry(self, geometry_data) -> np.ndarray:
+        """Validate geometry data dimensions and reshape if needed."""
+        if geometry_data.ndim == 1:
+            geometry_data = geometry_data.reshape(-1, 8)
+        elif geometry_data.ndim != 2:
+            raise ValueError(f"geometry_data must be 1D or 2D array, got {geometry_data.ndim}D")
+
+        if geometry_data.shape[1] != 8:
+            raise ValueError(f"geometry_data must have 8 components (x,y,z,nx,ny,nz,u,v), got {geometry_data.shape[1]}")
+
+        return geometry_data
 
     def update_uniforms(self, **kwargs) -> None:
         """
@@ -553,32 +571,115 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
         """Get the label for the pipeline."""
         return "instanced_geometry_pipeline_single_colour"
 
-    def set_data(
-        self,
-        positions,
-        geometry_data=None,
-    ) -> None:
+    def set_data(self, **kwargs) -> None:
         """
         Set the instanced geometry data for rendering.
 
         Args:
-            positions: Nx3 array of instance positions or a pre-existing GPUBuffer.
-            geometry_data: Mx8 array of interleaved geometry data in format
-                          x,y,z,nx,ny,nz,u,v or pre-existing GPUBuffer.
-                          Must match the format output by PrimData methods.
+            **kwargs: Pipeline-specific data parameters
+                - positions: Nx3 array of instance positions or a pre-existing GPUBuffer.
+                - colours: Nx3 array of instance colors (RGB) or a pre-existing GPUBuffer.
+                           If None, uses white.
+                - geometry_data: Mx8 array of interleaved geometry data in format
+                                x,y,z,nx,ny,nz,u,v or pre-existing GPUBuffer.
+                                Must match the format output by PrimData methods.
         """
-        # Handle instance positions
+        positions = kwargs.get("positions")
+        colours = kwargs.get("colours")
+        geometry_data = kwargs.get("geometry_data")
+
+        self._set_position_data(positions)
+        self._setup_instance_id_buffer()
+        self._set_colour_data(colours)
+        self._set_geometry_data(geometry_data)
+
+    def _set_position_data(self, positions) -> None:
+        """Set instance position data from GPUBuffer or numpy array."""
         if isinstance(positions, wgpu.GPUBuffer):
             self.position_buffer = positions
             self.num_instances = positions.size // self._stride
-        else:  # numpy array
+        else:
             self.num_instances = len(positions)
-            self.position_buffer, _ = self._create_or_update_buffer(
-                self.position_buffer,
-                positions,
-                wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
-                "instanced_geometry_single_colour_position_buffer",
+            if self.position_buffer:
+                self.position_buffer.destroy()
+            self.position_buffer = self.device.create_buffer_with_data(
+                data=positions.astype(np.float32).tobytes(),
+                usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
+                label="instanced_geometry_multi_colour_position_buffer",
             )
+
+    def _setup_instance_id_buffer(self) -> None:
+        """Create buffer containing instance IDs."""
+        if self.instance_id_buffer:
+            self.instance_id_buffer.destroy()
+        self.instance_id_buffer = super()._create_instance_id_buffer(self.num_instances)
+
+    def _set_colour_data(self, colours) -> None:
+        """Set colour data from GPUBuffer, numpy array, or create default."""
+        if self.colour_buffer:
+            self.colour_buffer.destroy()
+            self.colour_buffer = None
+
+        if colours is None:
+            self._create_default_colours()
+        else:
+            self._create_colour_buffer(colours)
+
+    def _create_default_colours(self) -> None:
+        """Create default white colours for all instances."""
+        default_colours = np.ones((self.num_instances, 3), dtype=np.float32)
+        self.colour_buffer = self.device.create_buffer_with_data(
+            data=default_colours.tobytes(),
+            usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
+        )
+
+    def _create_colour_buffer(self, colours) -> None:
+        """Create colour buffer from GPUBuffer or numpy array."""
+        if isinstance(colours, wgpu.GPUBuffer):
+            self.colour_buffer = colours
+        else:
+            colour_array = colours.astype(np.float32)
+            self.colour_buffer = self.device.create_buffer_with_data(
+                data=colour_array.tobytes(),
+                usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
+            )
+
+    def _set_geometry_data(self, geometry_data) -> None:
+        """Set geometry data from GPUBuffer or numpy array."""
+        if geometry_data is None:
+            raise ValueError("geometry_data is required for instanced geometry pipelines")
+
+        if isinstance(geometry_data, wgpu.GPUBuffer):
+            self.geometry_buffer = geometry_data
+            self.num_vertices = geometry_data.size // (8 * 4)
+        else:
+            self._process_geometry_array(geometry_data)
+
+    def _process_geometry_array(self, geometry_data) -> None:
+        """Process geometry numpy array and create buffer."""
+        geometry_data = np.asarray(geometry_data, dtype=np.float32)
+        geometry_data = self._validate_and_reshape_geometry(geometry_data)
+        self.num_vertices = geometry_data.shape[0]
+
+        if self.geometry_buffer:
+            self.geometry_buffer.destroy()
+        self.geometry_buffer = self.device.create_buffer_with_data(
+            data=geometry_data.tobytes(),
+            usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
+            label="instanced_geometry_buffer",
+        )
+
+    def _validate_and_reshape_geometry(self, geometry_data) -> np.ndarray:
+        """Validate geometry data dimensions and reshape if needed."""
+        if geometry_data.ndim == 1:
+            geometry_data = geometry_data.reshape(-1, 8)
+        elif geometry_data.ndim != 2:
+            raise ValueError(f"geometry_data must be 1D or 2D array, got {geometry_data.ndim}D")
+
+        if geometry_data.shape[1] != 8:
+            raise ValueError(f"geometry_data must have 8 components (x,y,z,nx,ny,nz,u,v), got {geometry_data.shape[1]}")
+
+        return geometry_data
 
         # Create instance ID buffer
         if self.instance_id_buffer:
