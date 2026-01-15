@@ -1,10 +1,9 @@
 #!/usr/bin/env -S uv run --active --script
 import sys
 import time
+from typing import Tuple
 
 import numpy as np
-import wgpu
-import wgpu.utils
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import QApplication
@@ -24,9 +23,12 @@ class WebGPUScene(WebGPUWidget):
     painting, and resizing the WebGPU context.
     """
 
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("WebGPU Points")
+    def __init__(
+        self,
+        background_colour: Tuple[float, float, float, float] = (0.4, 0.4, 0.4, 1.0),
+    ):
+        super().__init__(background_colour=background_colour)
+        self.setWindowTitle("WebGPU Pipeline Demo - Dynamic Background Colors")
         self.device = None
         self.pipeline = None
         self.vertex_buffer = None
@@ -53,65 +55,95 @@ class WebGPUScene(WebGPUWidget):
         self._create_buffers(NUM_POINTS)
 
         self.pipelines = []
+        self.pipeline_backgrounds = {}  # Store background colors for each pipeline
+
+        # Define subtle background colors for each pipeline type
+        pipeline_colors = {
+            "MULTI_COLOURED_POINTS": (0.1, 0.1, 0.3, 1.0),  # Dark blue
+            "SINGLE_COLOUR_POINTS": (0.3, 0.1, 0.1, 1.0),  # Dark red
+            "MULTI_COLOURED_LINES": (0.1, 0.3, 0.1, 1.0),  # Dark green
+            "SINGLE_COLOUR_LINES": (0.3, 0.3, 0.1, 1.0),  # Dark yellow
+            "MULTI_COLOURED_TRIANGLES": (0.3, 0.1, 0.3, 1.0),  # Dark magenta
+            "SINGLE_COLOUR_TRIANGLES": (0.1, 0.3, 0.3, 1.0),  # Dark cyan
+            "TRIANGLE_LIST_MULTI_COLOURED": (0.2, 0.1, 0.4, 1.0),  # Dark purple
+            "TRIANGLE_LIST_SINGLE_COLOUR": (0.4, 0.2, 0.1, 1.0),  # Dark orange
+            "TRIANGLE_STRIP_MULTI_COLOURED": (0.1, 0.4, 0.2, 1.0),  # Dark teal
+            "TRIANGLE_STRIP_SINGLE_COLOUR": (0.2, 0.2, 0.2, 1.0),  # Dark gray
+            "POINT_LIST_MULTI_COLOURED": (0.4, 0.1, 0.2, 1.0),  # Dark pink
+            "POINT_LIST_SINGLE_COLOUR": (0.1, 0.2, 0.4, 1.0),  # Dark indigo
+        }
+
         self.pipelines.append((
             PipelineFactory.create_pipeline(self.device, PipelineType.MULTI_COLOURED_POINTS),
             self._render_multi_colour_point_pipeline,
             "PipelineType.MULTI_COLOURED_POINTS",
+            pipeline_colors["MULTI_COLOURED_POINTS"],
         ))
         self.pipelines.append((
             PipelineFactory.create_pipeline(self.device, PipelineType.SINGLE_COLOUR_POINTS),
             self._render_single_colour_point_pipeline,
             "PipelineType.SINGLE_COLOUR_POINTS",
+            pipeline_colors["SINGLE_COLOUR_POINTS"],
         ))
         self.pipelines.append((
             PipelineFactory.create_pipeline(self.device, PipelineType.MULTI_COLOURED_LINES),
             self._render_multi_colour_line_pipeline,
             "PipelineType.MULTI_COLOURED_LINES",
+            pipeline_colors["MULTI_COLOURED_LINES"],
         ))
         self.pipelines.append((
             PipelineFactory.create_pipeline(self.device, PipelineType.SINGLE_COLOUR_LINES),
             self._render_single_colour_line_pipeline,
             "PipelineType.SINGLE_COLOUR_LINES",
+            pipeline_colors["SINGLE_COLOUR_LINES"],
         ))
         self.pipelines.append((
             PipelineFactory.create_pipeline(self.device, PipelineType.MULTI_COLOURED_TRIANGLES),
             self._render_multi_colour_triangle_pipeline,
             "PipelineType.MULTI_COLOURED_TRIANGLES",
+            pipeline_colors["MULTI_COLOURED_TRIANGLES"],
         ))
         self.pipelines.append((
             PipelineFactory.create_pipeline(self.device, PipelineType.SINGLE_COLOUR_TRIANGLES),
             self._render_single_colour_triangle_pipeline,
             "PipelineType.SINGLE_COLOUR_TRIANGLES",
+            pipeline_colors["SINGLE_COLOUR_TRIANGLES"],
         ))
         self.pipelines.append((
             PipelineFactory.create_pipeline(self.device, PipelineType.TRIANGLE_LIST_MULTI_COLOURED),
             self._render_multi_colour_triangle_pipeline,
             "PipelineType.TRIANGLE_LIST_MULTI_COLOURED",
+            pipeline_colors["TRIANGLE_LIST_MULTI_COLOURED"],
         ))
         self.pipelines.append((
             PipelineFactory.create_pipeline(self.device, PipelineType.TRIANGLE_LIST_SINGLE_COLOUR),
             self._render_triangle_list_single_colour_pipeline,
             "PipelineType.TRIANGLE_LIST_SINGLE_COLOUR",
+            pipeline_colors["TRIANGLE_LIST_SINGLE_COLOUR"],
         ))
         self.pipelines.append((
             PipelineFactory.create_pipeline(self.device, PipelineType.TRIANGLE_STRIP_MULTI_COLOURED),
             self._render_triangle_strip_multi_colour_pipeline,
             "PipelineType.TRIANGLE_STRIP_MULTI_COLOURED",
+            pipeline_colors["TRIANGLE_STRIP_MULTI_COLOURED"],
         ))
         self.pipelines.append((
             PipelineFactory.create_pipeline(self.device, PipelineType.TRIANGLE_STRIP_SINGLE_COLOUR),
             self._render_triangle_strip_single_colour_pipeline,
             "PipelineType.TRIANGLE_STRIP_SINGLE_COLOUR",
+            pipeline_colors["TRIANGLE_STRIP_SINGLE_COLOUR"],
         ))
         self.pipelines.append((
             PipelineFactory.create_pipeline(self.device, PipelineType.POINT_LIST_MULTI_COLOURED),
             self._render_point_list_multi_colour_pipeline,
             "PipelineType.POINT_LIST_MULTI_COLOURED",
+            pipeline_colors["POINT_LIST_MULTI_COLOURED"],
         ))
         self.pipelines.append((
             PipelineFactory.create_pipeline(self.device, PipelineType.POINT_LIST_SINGLE_COLOUR),
             self._render_point_list_single_colour_pipeline,
             "PipelineType.POINT_LIST_SINGLE_COLOUR",
+            pipeline_colors["POINT_LIST_SINGLE_COLOUR"],
         ))
         self.current_pipeline_index = 1
         # Initialize render textures with default size
@@ -207,37 +239,30 @@ class WebGPUScene(WebGPUWidget):
 
     def paintWebGPU(self) -> None:
         """
-        Paint the WebGPU content.
+        Paint WebGPU content.
 
-        This method renders the WebGPU content for the scene.
+        This method renders WebGPU content for the scene.
         """
+        # Get the current pipeline and its background color
+        current_pipeline = self.pipelines[self.current_pipeline_index]
+        pipeline_name = current_pipeline[2]
+        pipeline_bg_color = current_pipeline[3]
+
+        # Temporarily update the background color for this pipeline
+        original_bg_color = self.background_colour
+        self.background_colour = pipeline_bg_color
+
         self.render_text(
             10,
             20,
-            f"{self.pipelines[self.current_pipeline_index][2]}",
+            f"{pipeline_name}",
             size=20,
-            colour=QColor(255, 255, 0),  # Yellow
+            colour=QColor(255, 255, 255),  # White text for better contrast
         )
         try:
             # Create a new command encoder for the render pass
             command_encoder = self.device.create_command_encoder()
-            render_pass = command_encoder.begin_render_pass(
-                color_attachments=[
-                    {
-                        "view": self.multisample_texture_view,
-                        "resolve_target": self.colour_buffer_texture_view,
-                        "load_op": wgpu.LoadOp.clear,
-                        "store_op": wgpu.StoreOp.store,
-                        "clear_value": (0.4, 0.4, 0.4, 1.0),
-                    }
-                ],
-                depth_stencil_attachment={
-                    "view": self.depth_buffer_view,
-                    "depth_load_op": wgpu.LoadOp.clear,
-                    "depth_store_op": wgpu.StoreOp.store,
-                    "depth_clear_value": 1.0,
-                },
-            )
+            render_pass = self._create_render_pass(command_encoder)
             self.update_uniform_buffers()
             render_pass.set_viewport(0, 0, self.texture_size[0], self.texture_size[1], 0, 1)
             self.pipelines[self.current_pipeline_index][1](render_pass)
@@ -245,6 +270,9 @@ class WebGPUScene(WebGPUWidget):
             self.device.queue.submit([command_encoder.finish()])
         except Exception as e:
             print(f"Failed to paint WebGPU content: {e}")
+        finally:
+            # Restore original background color
+            self.background_colour = original_bg_color
 
     def resizeWebGPU(self, w, h) -> None:
         """
@@ -377,7 +405,12 @@ def main():
     Parses command line arguments and initializes the WebGPUScene.
     """
     app = QApplication(sys.argv)
-    win = WebGPUScene()
+
+    # Use basic blue background as requested
+    # Each pipeline will override this with its own subtle background color
+    background_colour = (0.1, 0.1, 0.3, 1.0)  # Basic blue background
+
+    win = WebGPUScene(background_colour=background_colour)
     win.resize(1024, 720)
     win.show()
     sys.exit(app.exec())

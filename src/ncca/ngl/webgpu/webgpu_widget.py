@@ -27,14 +27,19 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
         initialized (bool): A flag indicating whether the widget has been initialized, default is False and will allow initializeWebGPU to be called once.
     """
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        background_colour: Tuple[float, float, float, float] = (0.4, 0.4, 0.4, 1.0),
+    ) -> None:
         """
         Initialize the class.
 
-        This constructor initializes the QWidget and sets the initialized flag to False.
+        Args:
+            background_colour: RGBA background color as tuple of floats (0.0-1.0)
         """
         super().__init__()
         self.msaa_sample_count = 4
+        self.background_colour = background_colour
         self.text_buffer: List[Tuple[int, int, str, int, str, QColor]] = []
         self.frame_buffer = None
         self._update_timer = QTimer(self)
@@ -293,3 +298,33 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
         rect1 = QRect(0, 0, width, height)
         rect2 = self.rect()
         painter.drawImage(rect2, image, rect1)
+
+    def _create_render_pass(
+        self, command_encoder: wgpu.GPUCommandEncoder
+    ) -> wgpu.GPURenderPassEncoder:
+        """
+        Create a render pass with the configured background color.
+
+        Args:
+            command_encoder: WebGPU command encoder
+
+        Returns:
+            Configured render pass encoder
+        """
+        return command_encoder.begin_render_pass(
+            color_attachments=[
+                {
+                    "view": self.multisample_texture_view,
+                    "resolve_target": self.colour_buffer_texture_view,
+                    "load_op": wgpu.LoadOp.clear,
+                    "store_op": wgpu.StoreOp.store,
+                    "clear_value": self.background_colour,
+                }
+            ],
+            depth_stencil_attachment={
+                "view": self.depth_buffer_view,
+                "depth_load_op": wgpu.LoadOp.clear,
+                "depth_store_op": wgpu.StoreOp.store,
+                "depth_clear_value": 1.0,
+            },
+        )

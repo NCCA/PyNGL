@@ -37,7 +37,7 @@ class BaseWebGPUPipeline(ABC):
 
         Args:
             device: WebGPU device
-            texture_format: Color attachment format
+            texture_format: Colour attachment format
             depth_format: Depth attachment format
             msaa_sample_count: Number of MSAA samples
             data_type: Vertex data type (e.g., "Vec3", "Vec2")
@@ -235,7 +235,7 @@ class BaseWebGPUPipeline(ABC):
     @abstractmethod
     def set_data(self, **kwargs) -> None:
         """
-        Set rendering data (vertices, colors, etc.).
+        Set rendering data (vertices, colours, etc.).
 
         Args:
             **kwargs: Pipeline-specific data parameters
@@ -283,9 +283,7 @@ class BasePointPipeline(BaseWebGPUPipeline):
         """Points are rendered as triangle strips for quad generation."""
         return wgpu.PrimitiveTopology.triangle_strip
 
-    def _get_default_vertex_layouts(
-        self, has_colour_buffer: bool = False
-    ) -> List[Dict[str, Any]]:
+    def _get_default_vertex_layouts(self, has_colour_buffer: bool = False) -> List[Dict[str, Any]]:
         """
         Get default vertex buffer layouts for point rendering.
 
@@ -310,19 +308,17 @@ class BasePointPipeline(BaseWebGPUPipeline):
         ]
 
         if has_colour_buffer:
-            layouts.append(
-                {
-                    "array_stride": NGLToWebGPU.stride_from_type("Vec3"),
-                    "step_mode": "instance",
-                    "attributes": [
-                        {
-                            "format": NGLToWebGPU.vertex_format("Vec3"),
-                            "offset": 0,
-                            "shader_location": 1,
-                        },
-                    ],
-                }
-            )
+            layouts.append({
+                "array_stride": NGLToWebGPU.stride_from_type("Vec3"),
+                "step_mode": "instance",
+                "attributes": [
+                    {
+                        "format": NGLToWebGPU.vertex_format("Vec3"),
+                        "offset": 0,
+                        "shader_location": 1,
+                    },
+                ],
+            })
 
         return layouts
 
