@@ -205,16 +205,13 @@ class PointPipelineMultiColour(BasePointPipeline):
     def _set_default_uniforms(self) -> None:
         """Set default values for uniform data."""
         self.uniform_data["size"] = 1.0  # Default point size
+        self.uniform_data["ViewMatrix"] = np.eye(4, dtype=np.float32)
 
     def _get_pipeline_label(self) -> str:
         """Get the label for the pipeline."""
         return "point_pipeline_multi_coloured"
 
-    def set_data(
-        self,
-        positions,
-        colours=None,
-    ) -> None:
+    def set_data(self, positions, colours=None) -> None:
         """
         Set the point data for rendering.
 
@@ -276,6 +273,7 @@ class PointPipelineMultiColour(BasePointPipeline):
                 - view_matrix: 4x4 view matrix for billboarding calculations
                 - point_size: Size of points in world units
         """
+
         if "mvp" in kwargs and kwargs["mvp"] is not None:
             self.uniform_data["MVP"] = kwargs["mvp"]
 
@@ -384,6 +382,7 @@ class PointPipelineSingleColour(BasePointPipeline):
         self.uniform_data["ColourSize"] = np.array(
             [1.0, 1.0, 1.0, 1.0], dtype=np.float32
         )  # Default White with point size 1
+        self.uniform_data["ViewMatrix"] = np.eye(4, dtype=np.float32)
 
     def _get_pipeline_label(self) -> str:
         """Get the label for the pipeline."""

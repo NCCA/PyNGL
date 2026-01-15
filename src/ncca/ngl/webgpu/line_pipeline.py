@@ -3,7 +3,7 @@ Generic line rendering pipeline for WebGPU.
 Handles line rendering with customizable color and projection.
 """
 
-from typing import Optional, Tuple, Union
+from typing import Optional
 
 import numpy as np
 import wgpu
@@ -66,9 +66,40 @@ fn fragment_main(input: VertexOut) -> @location(0) vec4<f32> {
 class BaseLinePipeline(BaseWebGPUPipeline):
     """Base class for line rendering pipelines."""
 
+    def __init__(
+        self,
+        device: wgpu.GPUDevice,
+        data_type: str = "Vec3",
+        texture_format: wgpu.TextureFormat = wgpu.TextureFormat.rgba8unorm,
+        depth_format: wgpu.TextureFormat = wgpu.TextureFormat.depth24plus,
+        msaa_sample_count: int = 4,
+        stride: int = 0,
+        topology: wgpu.PrimitiveTopology = wgpu.PrimitiveTopology.line_list,
+    ):
+        """
+        Initialize the base line pipeline.
+
+        Args:
+            device: WebGPU device
+            texture_format: Color attachment format
+            depth_format: Depth attachment format
+            msaa_sample_count: Number of MSAA samples
+            stride: The stride of the vertex buffer. If 0, it is inferred from data_type.
+            topology: Primitive topology (line_list or line_strip)
+        """
+        self._topology = topology
+        super().__init__(
+            device=device,
+            texture_format=texture_format,
+            depth_format=depth_format,
+            msaa_sample_count=msaa_sample_count,
+            data_type=data_type,
+            stride=stride,
+        )
+
     def _get_primitive_topology(self) -> wgpu.PrimitiveTopology:
-        """Line pipelines use line strip by default."""
-        return wgpu.PrimitiveTopology.line_list
+        """Line pipelines use configurable topology."""
+        return self._topology
 
 
 class LinePipelineMultiColour(BaseLinePipeline):
@@ -90,6 +121,7 @@ class LinePipelineMultiColour(BaseLinePipeline):
         depth_format: wgpu.TextureFormat = wgpu.TextureFormat.depth24plus,
         msaa_sample_count: int = 4,
         stride: int = 0,
+        topology: wgpu.PrimitiveTopology = wgpu.PrimitiveTopology.line_list,
     ):
         """
         Initialize the line rendering pipeline.
@@ -100,6 +132,7 @@ class LinePipelineMultiColour(BaseLinePipeline):
             depth_format: Depth attachment format
             msaa_sample_count: Number of MSAA samples
             stride: The stride of the vertex buffer. If 0, it is inferred from data_type.
+            topology: Primitive topology (line_list or line_strip)
         """
         # Pipeline-specific buffer tracking
         self.vertex_buffer: Optional[wgpu.GPUBuffer] = None
@@ -113,6 +146,7 @@ class LinePipelineMultiColour(BaseLinePipeline):
             msaa_sample_count=msaa_sample_count,
             data_type=data_type,
             stride=stride,
+            topology=topology,
         )
 
     def get_dtype(self) -> np.dtype:
@@ -191,12 +225,13 @@ class LinePipelineMultiColour(BaseLinePipeline):
                     padding_size=4,  # Pad to vec4 for alignment
                     buffer_label="line_pipeline_multi_coloured_colour_buffer",
                 )
-                if isinstance(color_result, wgpu.GPUBuffer):
-                    self.color_buffer = color_result
-                elif color_result:
-                    self.color_buffer = color_result[0]
-                else:
-                    self.color_buffer = None
+                self.color_buffer = (
+                    color_result
+                    if isinstance(color_result, wgpu.GPUBuffer)
+                    else color_result[0]
+                    if color_result
+                    else None
+                )
 
     def update_uniforms(self, **kwargs) -> None:
         """
@@ -262,6 +297,7 @@ class LinePipelineSingleColour(BaseLinePipeline):
         depth_format: wgpu.TextureFormat = wgpu.TextureFormat.depth24plus,
         msaa_sample_count: int = 4,
         stride: int = 0,
+        topology: wgpu.PrimitiveTopology = wgpu.PrimitiveTopology.line_list,
     ):
         """
         Initialize the line rendering pipeline.
@@ -272,6 +308,7 @@ class LinePipelineSingleColour(BaseLinePipeline):
             depth_format: Depth attachment format
             msaa_sample_count: Number of MSAA samples
             stride: The stride of the vertex buffer. If 0, it is inferred from data_type.
+            topology: Primitive topology (line_list or line_strip)
         """
         # Pipeline-specific buffer tracking
         self.vertex_buffer: Optional[wgpu.GPUBuffer] = None
@@ -284,6 +321,7 @@ class LinePipelineSingleColour(BaseLinePipeline):
             msaa_sample_count=msaa_sample_count,
             data_type=data_type,
             stride=stride,
+            topology=topology,
         )
 
     def get_dtype(self) -> np.dtype:
