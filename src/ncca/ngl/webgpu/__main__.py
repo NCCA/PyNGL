@@ -9,7 +9,7 @@ from PySide6.QtGui import QColor
 from PySide6.QtWidgets import QApplication
 from wgpu.utils import get_default_device
 
-from ncca.ngl import Mat4, PerspMode, PrimData, Prims, Vec3, look_at, perspective
+from ncca.ngl import Mat4, PerspMode, PrimData, Vec3, look_at, perspective
 from ncca.ngl.webgpu import PipelineFactory, PipelineType, WebGPUWidget, __version__
 
 NUM_POINTS = 10000
@@ -319,13 +319,13 @@ class WebGPUScene(WebGPUWidget):
 
     def _create_instanced_geometry_data(self, rng):
         """Create data for instanced geometry rendering."""
-        # Create geometry using PrimData (try different shapes)
+        # Create geometry using PrimData (in correct interleaved format)
         # geometry_data = PrimData.sphere(0.25, 16)  # Small sphere with good detail
         # geometry_data = PrimData.cylinder(0.25, 1, 40, 40)  # Small cylinder with good detail
-        geometry_data = PrimData.cone(0.25, 1, 20, 10)  # Small cone with good detail
+        # geometry_data = PrimData.cone(0.25, 1, 20, 10)  # Small cone with good detail
         geometry_data = PrimData.primitive("teapot")
-        # Ensure data is in (num_vertices, 8) format
-        # Some PrimData methods return 1D arrays, others return 2D arrays
+
+        # Ensure data is in (num_vertices, 8) format for new API
         if geometry_data.ndim == 1:
             geometry_data = geometry_data.reshape(-1, 8)
         elif geometry_data.shape[1] != 8:
@@ -333,12 +333,8 @@ class WebGPUScene(WebGPUWidget):
                 f"Expected 8 components per vertex, got {geometry_data.shape[1]}"
             )
 
-        num_vertices = len(geometry_data)
-
-        # Extract vertices, normals, and UVs from the interleaved data
-        self.geometry_vertices = geometry_data[:, :3]  # x, y, z
-        self.geometry_normals = geometry_data[:, 3:6]  # nx, ny, nz
-        self.geometry_uvs = geometry_data[:, 6:8]  # u, v
+        # Store the complete interleaved geometry data (x,y,z,nx,ny,nz,u,v)
+        self.geometry_data = geometry_data
 
         # Create instance positions (grid of geometry instances)
         grid_size = 5
@@ -506,13 +502,11 @@ class WebGPUScene(WebGPUWidget):
         """Render multi-colour instanced geometry."""
         pipeline = self.pipelines[self.current_pipeline_index][0]
 
-        # Set instanced geometry data
+        # Set instanced geometry data using new simplified API
         pipeline.set_data(
             positions=self.instance_positions,
             colours=self.instance_colours,
-            geometry_vertices=self.geometry_vertices,
-            geometry_normals=self.geometry_normals,
-            geometry_uvs=self.geometry_uvs,
+            geometry_data=self.geometry_data,  # Single interleaved parameter!
         )
 
         # Update uniforms
@@ -528,12 +522,10 @@ class WebGPUScene(WebGPUWidget):
         """Render single-colour instanced geometry."""
         pipeline = self.pipelines[self.current_pipeline_index][0]
 
-        # Set instanced geometry data
+        # Set instanced geometry data using new simplified API
         pipeline.set_data(
             positions=self.instance_positions,
-            geometry_vertices=self.geometry_vertices,
-            geometry_normals=self.geometry_normals,
-            geometry_uvs=self.geometry_uvs,
+            geometry_data=self.geometry_data,  # Single interleaved parameter!
         )
 
         # Update uniforms with orange color
@@ -568,6 +560,26 @@ class WebGPUScene(WebGPUWidget):
             self.close()  # Exit the application
         elif key == Qt.Key.Key_Space:
             self.animate = not self.animate
+        elif key == Qt.Key.Key_Left:
+            # Switch to previous pipeline
+            self.current_pipeline_index = (self.current_pipeline_index - 1) % len(
+                self.pipelines
+            )
+            print(f"Switched to {self.pipelines[self.current_pipeline_index][2]}")
+        elif key == Qt.Key.Key_Right:
+            # Switch to next pipeline
+            self.current_pipeline_index = (self.current_pipeline_index + 1) % len(
+                self.pipelines
+            )
+            print(f"Switched to {self.pipelines[self.current_pipeline_index][2]}")
+        elif key == Qt.Key.Key_A:
+            # Toggle automatic pipeline switching
+            if self.pipeline_timer.isActive():
+                self.pipeline_timer.stop()
+                print("Pipeline auto-switch disabled")
+            else:
+                self.pipeline_timer.start(1000)
+                print("Pipeline auto-switch enabled")
         self.update()
 
         # Call the base class implementation for any unhandled events

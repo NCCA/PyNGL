@@ -211,9 +211,9 @@ class BaseInstancedGeometryPipeline(BaseWebGPUPipeline):
         self.position_buffer: Optional[wgpu.GPUBuffer] = None
         self.colour_buffer: Optional[wgpu.GPUBuffer] = None
         self.instance_id_buffer: Optional[wgpu.GPUBuffer] = None
-        self.geometry_vertex_buffer: Optional[wgpu.GPUBuffer] = None
-        self.geometry_normal_buffer: Optional[wgpu.GPUBuffer] = None
-        self.geometry_uv_buffer: Optional[wgpu.GPUBuffer] = None
+        self.geometry_buffer: Optional[wgpu.GPUBuffer] = (
+            None  # Single interleaved buffer x,y,z,nx,ny,nz,u,v
+        )
         self.num_instances: int = 0
         self.num_vertices: int = 0
 
@@ -285,43 +285,29 @@ class BaseInstancedGeometryPipeline(BaseWebGPUPipeline):
             }
         )
 
-        # Geometry vertex buffers (step_mode="vertex")
-        layouts.extend(
-            [
-                {
-                    "array_stride": NGLToWebGPU.stride_from_type("Vec3"),
-                    "step_mode": "vertex",
-                    "attributes": [
-                        {
-                            "format": NGLToWebGPU.vertex_format("Vec3"),
-                            "offset": 0,
-                            "shader_location": 3,
-                        },
-                    ],
-                },
-                {
-                    "array_stride": NGLToWebGPU.stride_from_type("Vec3"),
-                    "step_mode": "vertex",
-                    "attributes": [
-                        {
-                            "format": NGLToWebGPU.vertex_format("Vec3"),
-                            "offset": 0,
-                            "shader_location": 4,
-                        },
-                    ],
-                },
-                {
-                    "array_stride": NGLToWebGPU.stride_from_type("Vec2"),
-                    "step_mode": "vertex",
-                    "attributes": [
-                        {
-                            "format": NGLToWebGPU.vertex_format("Vec2"),
-                            "offset": 0,
-                            "shader_location": 5,
-                        },
-                    ],
-                },
-            ]
+        # Single interleaved geometry buffer (step_mode="vertex")
+        layouts.append(
+            {
+                "array_stride": 8 * 4,  # 8 floats * 4 bytes each
+                "step_mode": "vertex",
+                "attributes": [
+                    {
+                        "format": NGLToWebGPU.vertex_format("Vec3"),
+                        "offset": 0,
+                        "shader_location": 3,  # geometry_position
+                    },
+                    {
+                        "format": NGLToWebGPU.vertex_format("Vec3"),
+                        "offset": 3 * 4,  # 12 bytes offset
+                        "shader_location": 4,  # geometry_normal
+                    },
+                    {
+                        "format": NGLToWebGPU.vertex_format("Vec2"),
+                        "offset": 6 * 4,  # 24 bytes offset
+                        "shader_location": 5,  # geometry_uv
+                    },
+                ],
+            }
         )
 
         return layouts
@@ -341,7 +327,7 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
     A reusable pipeline for rendering instanced geometry in WebGPU with per-instance colors.
 
     Features:
-    - Instanced rendering of arbitrary geometry
+    - Instanced rendering of arbitrary geometry using interleaved x,y,z,nx,ny,nz,u,v format
     - Per-instance colors
     - Per-instance positioning
     - Configurable instance transformation matrix
@@ -380,9 +366,7 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
         self,
         positions,
         colours=None,
-        geometry_vertices=None,
-        geometry_normals=None,
-        geometry_uvs=None,
+        geometry_data=None,
     ) -> None:
         """
         Set the instanced geometry data for rendering.
@@ -391,9 +375,9 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
             positions: Nx3 array of instance positions or a pre-existing GPUBuffer.
             colours: Nx3 array of instance colors (RGB) or a pre-existing GPUBuffer.
                      If None, uses white.
-            geometry_vertices: Mx3 array of geometry vertices or pre-existing GPUBuffer.
-            geometry_normals: Mx3 array of geometry normals or pre-existing GPUBuffer.
-            geometry_uvs: Mx2 array of geometry UVs or pre-existing GPUBuffer.
+            geometry_data: Mx8 array of interleaved geometry data in format
+                          x,y,z,nx,ny,nz,u,v or pre-existing GPUBuffer.
+                          Must match the format output by PrimData methods.
         """
         # Handle instance positions
         if isinstance(positions, wgpu.GPUBuffer):
@@ -433,64 +417,46 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
                 self.colour_buffer = colours
             else:
                 colour_array = colours.astype(np.float32)
-                expected_size = self.num_instances * 3 * 4  # 3 floats * 4 bytes each
                 self.colour_buffer = self.device.create_buffer_with_data(
                     data=colour_array.tobytes(),
                     usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
                 )
 
-                # Validate buffer size
-                if self.colour_buffer.size != expected_size:
-                    print(
-                        f"ERROR: Colour buffer size mismatch! Expected {expected_size}, got {self.colour_buffer.size}"
-                    )
-                    self.colour_buffer = self.device.create_buffer_with_data(
-                        data=colour_array.tobytes(),
-                        usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
-                    )
-                print(
-                    f"DEBUG: Created colour buffer with {len(colour_array)} colors, shape: {colour_array.shape}"
+        # Handle geometry data (required, interleaved format x,y,z,nx,ny,nz,u,v)
+        if geometry_data is None:
+            raise ValueError(
+                "geometry_data is required for instanced geometry pipelines"
+            )
+
+        if isinstance(geometry_data, wgpu.GPUBuffer):
+            # Use GPU buffer directly
+            self.geometry_buffer = geometry_data
+            self.num_vertices = geometry_data.size // (8 * 4)  # 8 floats * 4 bytes each
+        else:
+            # Handle numpy array
+            geometry_data = np.asarray(geometry_data, dtype=np.float32)
+            if geometry_data.ndim == 1:
+                geometry_data = geometry_data.reshape(-1, 8)
+            elif geometry_data.ndim != 2:
+                raise ValueError(
+                    f"geometry_data must be 1D or 2D array, got {geometry_data.ndim}D"
                 )
 
-        # Handle geometry vertices
-        if geometry_vertices is not None:
-            if isinstance(geometry_vertices, wgpu.GPUBuffer):
-                self.geometry_vertex_buffer = geometry_vertices
-                self.num_vertices = (
-                    geometry_vertices.size // NGLToWebGPU.stride_from_type("Vec3")
-                )
-            else:
-                self.num_vertices = len(geometry_vertices)
-                self.geometry_vertex_buffer, _ = self._create_or_update_buffer(
-                    self.geometry_vertex_buffer,
-                    geometry_vertices,
-                    wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
-                    "instanced_geometry_vertex_buffer",
+            if geometry_data.shape[1] != 8:
+                raise ValueError(
+                    f"geometry_data must have 8 components (x,y,z,nx,ny,nz,u,v), got {geometry_data.shape[1]}"
                 )
 
-        # Handle geometry normals
-        if geometry_normals is not None:
-            if isinstance(geometry_normals, wgpu.GPUBuffer):
-                self.geometry_normal_buffer = geometry_normals
-            else:
-                self.geometry_normal_buffer, _ = self._create_or_update_buffer(
-                    self.geometry_normal_buffer,
-                    geometry_normals,
-                    wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
-                    "instanced_geometry_normal_buffer",
-                )
+            self.num_vertices = geometry_data.shape[0]  # Number of vertices
 
-        # Handle geometry UVs
-        if geometry_uvs is not None:
-            if isinstance(geometry_uvs, wgpu.GPUBuffer):
-                self.geometry_uv_buffer = geometry_uvs
-            else:
-                self.geometry_uv_buffer, _ = self._create_or_update_buffer(
-                    self.geometry_uv_buffer,
-                    geometry_uvs,
-                    wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
-                    "instanced_geometry_uv_buffer",
-                )
+            # Create single interleaved buffer
+            if self.geometry_buffer:
+                self.geometry_buffer.destroy()
+            self.geometry_buffer = self.device.create_buffer_with_data(
+                data=geometry_data.tobytes(),
+                usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
+                label="instanced_geometry_buffer",
+            )
 
     def update_uniforms(self, **kwargs) -> None:
         """
@@ -530,7 +496,7 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
             self.position_buffer is None
             or self.colour_buffer is None
             or self.instance_id_buffer is None
-            or self.geometry_vertex_buffer is None
+            or self.geometry_buffer is None
         ):
             return
 
@@ -547,42 +513,10 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
             2, self.instance_id_buffer
         )  # location(2) instance_id
 
-        # Debug: Check buffer sizes
-        pos_size = self.position_buffer.size // (3 * 4)  # Vec3 = 12 bytes
-        colour_size = self.colour_buffer.size // (3 * 4)  # Vec3 = 12 bytes
-        id_size = self.instance_id_buffer.size // 4  # f32 = 4 bytes
-        print(
-            f"DEBUG: Buffer sizes - Pos:{pos_size}, Colour:{colour_size}, ID:{id_size}, Instances:{self.num_instances}"
-        )
-
-        # Set geometry buffers (always set all 3, creating dummy buffers if needed)
-        render_pass.set_vertex_buffer(3, self.geometry_vertex_buffer)
-
-        # Always set normal buffer (create dummy if missing)
-        if self.geometry_normal_buffer:
-            render_pass.set_vertex_buffer(4, self.geometry_normal_buffer)
-        else:
-            # Create dummy normal buffer if needed
-            if not hasattr(self, "_dummy_normal_buffer"):
-                dummy_normals = np.zeros((self.num_vertices, 3), dtype=np.float32)
-                self._dummy_normal_buffer = self.device.create_buffer_with_data(
-                    data=dummy_normals.tobytes(),
-                    usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
-                )
-            render_pass.set_vertex_buffer(4, self._dummy_normal_buffer)
-
-        # Always set UV buffer (create dummy if missing)
-        if self.geometry_uv_buffer:
-            render_pass.set_vertex_buffer(5, self.geometry_uv_buffer)
-        else:
-            # Create dummy UV buffer if needed
-            if not hasattr(self, "_dummy_uv_buffer"):
-                dummy_uvs = np.zeros((self.num_vertices, 2), dtype=np.float32)
-                self._dummy_uv_buffer = self.device.create_buffer_with_data(
-                    data=dummy_uvs.tobytes(),
-                    usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
-                )
-            render_pass.set_vertex_buffer(5, self._dummy_uv_buffer)
+        # Set single interleaved geometry buffer
+        render_pass.set_vertex_buffer(
+            3, self.geometry_buffer
+        )  # locations(3,4,5) interleaved
 
         render_pass.draw(self.num_vertices, count)
 
@@ -594,18 +528,8 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
             self.colour_buffer.destroy()
         if self.instance_id_buffer:
             self.instance_id_buffer.destroy()
-        if self.geometry_vertex_buffer:
-            self.geometry_vertex_buffer.destroy()
-        if self.geometry_normal_buffer:
-            self.geometry_normal_buffer.destroy()
-        if self.geometry_uv_buffer:
-            self.geometry_uv_buffer.destroy()
-
-        # Clean up dummy buffers if they exist
-        if hasattr(self, "_dummy_normal_buffer") and self._dummy_normal_buffer:
-            self._dummy_normal_buffer.destroy()
-        if hasattr(self, "_dummy_uv_buffer") and self._dummy_uv_buffer:
-            self._dummy_uv_buffer.destroy()
+        if self.geometry_buffer:
+            self.geometry_buffer.destroy()
 
         super().cleanup()
 
@@ -615,7 +539,7 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
     A reusable pipeline for rendering instanced geometry in WebGPU with single color.
 
     Features:
-    - Instanced rendering of arbitrary geometry
+    - Instanced rendering of arbitrary geometry using interleaved x,y,z,nx,ny,nz,u,v format
     - Single color for all instances
     - Per-instance positioning
     - Configurable instance transformation matrix
@@ -657,18 +581,16 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
     def set_data(
         self,
         positions,
-        geometry_vertices=None,
-        geometry_normals=None,
-        geometry_uvs=None,
+        geometry_data=None,
     ) -> None:
         """
         Set the instanced geometry data for rendering.
 
         Args:
             positions: Nx3 array of instance positions or a pre-existing GPUBuffer.
-            geometry_vertices: Mx3 array of geometry vertices or pre-existing GPUBuffer.
-            geometry_normals: Mx3 array of geometry normals or pre-existing GPUBuffer.
-            geometry_uvs: Mx2 array of geometry UVs or pre-existing GPUBuffer.
+            geometry_data: Mx8 array of interleaved geometry data in format
+                          x,y,z,nx,ny,nz,u,v or pre-existing GPUBuffer.
+                          Must match the format output by PrimData methods.
         """
         # Handle instance positions
         if isinstance(positions, wgpu.GPUBuffer):
@@ -697,45 +619,41 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
             usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
         )
 
-        # Handle geometry vertices
-        if geometry_vertices is not None:
-            if isinstance(geometry_vertices, wgpu.GPUBuffer):
-                self.geometry_vertex_buffer = geometry_vertices
-                self.num_vertices = (
-                    geometry_vertices.size // NGLToWebGPU.stride_from_type("Vec3")
-                )
-            else:
-                self.num_vertices = len(geometry_vertices)
-                self.geometry_vertex_buffer, _ = self._create_or_update_buffer(
-                    self.geometry_vertex_buffer,
-                    geometry_vertices,
-                    wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
-                    "instanced_geometry_vertex_buffer",
+        # Handle geometry data (required, interleaved format x,y,z,nx,ny,nz,u,v)
+        if geometry_data is None:
+            raise ValueError(
+                "geometry_data is required for instanced geometry pipelines"
+            )
+
+        if isinstance(geometry_data, wgpu.GPUBuffer):
+            # Use GPU buffer directly
+            self.geometry_buffer = geometry_data
+            self.num_vertices = geometry_data.size // (8 * 4)  # 8 floats * 4 bytes each
+        else:
+            # Handle numpy array
+            geometry_data = np.asarray(geometry_data, dtype=np.float32)
+            if geometry_data.ndim == 1:
+                geometry_data = geometry_data.reshape(-1, 8)
+            elif geometry_data.ndim != 2:
+                raise ValueError(
+                    f"geometry_data must be 1D or 2D array, got {geometry_data.ndim}D"
                 )
 
-        # Handle geometry normals
-        if geometry_normals is not None:
-            if isinstance(geometry_normals, wgpu.GPUBuffer):
-                self.geometry_normal_buffer = geometry_normals
-            else:
-                self.geometry_normal_buffer, _ = self._create_or_update_buffer(
-                    self.geometry_normal_buffer,
-                    geometry_normals,
-                    wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
-                    "instanced_geometry_normal_buffer",
+            if geometry_data.shape[1] != 8:
+                raise ValueError(
+                    f"geometry_data must have 8 components (x,y,z,nx,ny,nz,u,v), got {geometry_data.shape[1]}"
                 )
 
-        # Handle geometry UVs
-        if geometry_uvs is not None:
-            if isinstance(geometry_uvs, wgpu.GPUBuffer):
-                self.geometry_uv_buffer = geometry_uvs
-            else:
-                self.geometry_uv_buffer, _ = self._create_or_update_buffer(
-                    self.geometry_uv_buffer,
-                    geometry_uvs,
-                    wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
-                    "instanced_geometry_uv_buffer",
-                )
+            self.num_vertices = geometry_data.shape[0]  # Number of vertices
+
+            # Create single interleaved buffer
+            if self.geometry_buffer:
+                self.geometry_buffer.destroy()
+            self.geometry_buffer = self.device.create_buffer_with_data(
+                data=geometry_data.tobytes(),
+                usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
+                label="instanced_geometry_buffer",
+            )
 
     def update_uniforms(self, **kwargs) -> None:
         """
@@ -779,7 +697,7 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
             self.position_buffer is None
             or self.colour_buffer is None
             or self.instance_id_buffer is None
-            or self.geometry_vertex_buffer is None
+            or self.geometry_buffer is None
         ):
             return
 
@@ -794,34 +712,10 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
         render_pass.set_vertex_buffer(1, self.colour_buffer)  # Dummy colour buffer
         render_pass.set_vertex_buffer(2, self.instance_id_buffer)
 
-        # Set geometry buffers (always set all 3, creating dummy buffers if needed)
-        render_pass.set_vertex_buffer(3, self.geometry_vertex_buffer)
-
-        # Always set normal buffer (create dummy if missing)
-        if self.geometry_normal_buffer:
-            render_pass.set_vertex_buffer(4, self.geometry_normal_buffer)
-        else:
-            # Create dummy normal buffer if needed
-            if not hasattr(self, "_dummy_normal_buffer"):
-                dummy_normals = np.zeros((self.num_vertices, 3), dtype=np.float32)
-                self._dummy_normal_buffer = self.device.create_buffer_with_data(
-                    data=dummy_normals.tobytes(),
-                    usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
-                )
-            render_pass.set_vertex_buffer(4, self._dummy_normal_buffer)
-
-        # Always set UV buffer (create dummy if missing)
-        if self.geometry_uv_buffer:
-            render_pass.set_vertex_buffer(5, self.geometry_uv_buffer)
-        else:
-            # Create dummy UV buffer if needed
-            if not hasattr(self, "_dummy_uv_buffer"):
-                dummy_uvs = np.zeros((self.num_vertices, 2), dtype=np.float32)
-                self._dummy_uv_buffer = self.device.create_buffer_with_data(
-                    data=dummy_uvs.tobytes(),
-                    usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
-                )
-            render_pass.set_vertex_buffer(5, self._dummy_uv_buffer)
+        # Set single interleaved geometry buffer
+        render_pass.set_vertex_buffer(
+            3, self.geometry_buffer
+        )  # locations(3,4,5) interleaved
 
         render_pass.draw(self.num_vertices, count)
 
@@ -833,17 +727,7 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
             self.colour_buffer.destroy()
         if self.instance_id_buffer:
             self.instance_id_buffer.destroy()
-        if self.geometry_vertex_buffer:
-            self.geometry_vertex_buffer.destroy()
-        if self.geometry_normal_buffer:
-            self.geometry_normal_buffer.destroy()
-        if self.geometry_uv_buffer:
-            self.geometry_uv_buffer.destroy()
-
-        # Clean up dummy buffers if they exist
-        if hasattr(self, "_dummy_normal_buffer") and self._dummy_normal_buffer:
-            self._dummy_normal_buffer.destroy()
-        if hasattr(self, "_dummy_uv_buffer") and self._dummy_uv_buffer:
-            self._dummy_uv_buffer.destroy()
+        if self.geometry_buffer:
+            self.geometry_buffer.destroy()
 
         super().cleanup()
