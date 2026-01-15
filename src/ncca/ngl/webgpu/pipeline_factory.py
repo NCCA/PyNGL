@@ -22,6 +22,10 @@ from .point_list_pipeline import (
 )
 from .line_pipeline import LinePipelineMultiColour, LinePipelineSingleColour
 from .triangle_pipeline import TrianglePipelineMultiColour, TrianglePipelineSingleColour
+from .instanced_geometry_pipeline import (
+    InstancedGeometryPipelineMultiColour,
+    InstancedGeometryPipelineSingleColour,
+)
 
 
 class PipelineType(Enum):
@@ -39,6 +43,8 @@ class PipelineType(Enum):
     TRIANGLE_STRIP_SINGLE_COLOUR = "triangle_strip_single_colour"
     POINT_LIST_MULTI_COLOURED = "point_list_multi_coloured"
     POINT_LIST_SINGLE_COLOUR = "point_list_single_colour"
+    MULTI_COLOURED_INSTANCED_GEOMETRY = "multi_coloured_instanced_geometry"
+    SINGLE_COLOUR_INSTANCED_GEOMETRY = "single_colour_instanced_geometry"
 
 
 # Backward compatibility alias
@@ -133,6 +139,14 @@ class _PipelineFactory:
         )
         self.register_pipeline(
             PipelineType.POINT_LIST_SINGLE_COLOUR, PointListPipelineSingleColour
+        )
+        self.register_pipeline(
+            PipelineType.MULTI_COLOURED_INSTANCED_GEOMETRY,
+            InstancedGeometryPipelineMultiColour,
+        )
+        self.register_pipeline(
+            PipelineType.SINGLE_COLOUR_INSTANCED_GEOMETRY,
+            InstancedGeometryPipelineSingleColour,
         )
 
     def register_pipeline(

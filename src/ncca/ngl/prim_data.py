@@ -1,5 +1,6 @@
-from pathlib import Path
 from enum import Enum
+from pathlib import Path
+
 import numpy as np
 
 from .vec3 import Vec3
