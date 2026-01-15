@@ -683,52 +683,6 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
 
         return geometry_data
 
-        # Create instance ID buffer
-        if self.instance_id_buffer:
-            self.instance_id_buffer.destroy()
-        self.instance_id_buffer = self._create_instance_id_buffer(self.num_instances)
-
-        # Create dummy colour buffer for shader compatibility
-        if self.colour_buffer:
-            self.colour_buffer.destroy()
-        default_colours = np.ones((self.num_instances, 3), dtype=np.float32)
-        self.colour_buffer = self.device.create_buffer_with_data(
-            data=default_colours.tobytes(),
-            usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
-        )
-
-        # Handle geometry data (required, interleaved format x,y,z,nx,ny,nz,u,v)
-        if geometry_data is None:
-            raise ValueError(GEOM_ERROR)
-
-        if isinstance(geometry_data, wgpu.GPUBuffer):
-            # Use GPU buffer directly
-            self.geometry_buffer = geometry_data
-            self.num_vertices = geometry_data.size // (8 * 4)  # 8 floats * 4 bytes each
-        else:
-            # Handle numpy array
-            geometry_data = np.asarray(geometry_data, dtype=np.float32)
-            if geometry_data.ndim == 1:
-                geometry_data = geometry_data.reshape(-1, 8)
-            elif geometry_data.ndim != 2:
-                raise ValueError(f"geometry_data must be 1D or 2D array, got {geometry_data.ndim}D")
-
-            if geometry_data.shape[1] != 8:
-                raise ValueError(
-                    f"geometry_data must have 8 components (x,y,z,nx,ny,nz,u,v), got {geometry_data.shape[1]}"
-                )
-
-            self.num_vertices = geometry_data.shape[0]  # Number of vertices
-
-            # Create single interleaved buffer
-            if self.geometry_buffer:
-                self.geometry_buffer.destroy()
-            self.geometry_buffer = self.device.create_buffer_with_data(
-                data=geometry_data.tobytes(),
-                usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
-                label="instanced_geometry_buffer",
-            )
-
     def update_uniforms(self, **kwargs) -> None:
         """
         Update uniform buffer values.
