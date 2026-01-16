@@ -53,6 +53,8 @@ omit = [
     "*/test_*",
     "*/__pycache__/*",
     "*/site-packages/*",
+    "__main__.py",
+    "__init__.py",
 ]
 
 [tool.coverage.report]

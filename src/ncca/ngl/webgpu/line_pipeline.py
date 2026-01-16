@@ -418,7 +418,3 @@ class LinePipelineSingleColour(BaseLinePipeline):
         if self.vertex_buffer:
             self.vertex_buffer.destroy()
         super().cleanup()
-
-
-# Backward compatibility alias
-LinePipeline = LinePipelineSingleColour

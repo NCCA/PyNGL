@@ -430,11 +430,3 @@ class TrianglePipelineSingleColour(BaseTrianglePipeline):
         if self.vertex_buffer:
             self.vertex_buffer.destroy()
         super().cleanup()
-
-
-# Backward compatibility aliases
-TrianglePipeline = TrianglePipelineSingleColour
-TriangleListPipeline = TrianglePipelineSingleColour
-TriangleStripPipeline = TrianglePipelineSingleColour
-TriangleListPipelineMultiColour = TrianglePipelineMultiColour
-TriangleStripPipelineMultiColour = TrianglePipelineMultiColour
