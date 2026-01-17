@@ -3,7 +3,7 @@ Generic line rendering pipeline for WebGPU.
 Handles line rendering with customizable color and projection.
 """
 
-from typing import Optional
+from typing import Optional, Tuple
 
 import numpy as np
 import wgpu
@@ -101,9 +101,11 @@ class LinePipelineMultiColour(BaseLinePipeline):
 
     def get_dtype(self) -> np.dtype:
         """Get the data type of the pipeline."""
-        return np.dtype([
-            ("MVP", "float32", (4, 4)),
-        ])
+        return np.dtype(
+            [
+                ("MVP", "float32", (4, 4)),
+            ]
+        )
 
     def _get_shader_code(self) -> str:
         """Get the WGSL shader code for this pipeline."""
@@ -193,7 +195,9 @@ class LinePipelineMultiColour(BaseLinePipeline):
         if "mvp" in kwargs and kwargs["mvp"] is not None:
             self.uniform_data["MVP"] = kwargs["mvp"]
 
-        self.device.queue.write_buffer(self.uniform_buffer, 0, self.uniform_data.tobytes())
+        self.device.queue.write_buffer(
+            self.uniform_buffer, 0, self.uniform_data.tobytes()
+        )
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
         """
@@ -247,9 +251,10 @@ class LinePipelineSingleColour(BaseLinePipeline):
         msaa_sample_count: int = 4,
         stride: int = 0,
         topology: wgpu.PrimitiveTopology = wgpu.PrimitiveTopology.line_list,
+        colour: Tuple[float, float, float] = (1.0, 1.0, 1.0),
     ):
         """
-        Initialize the line rendering pipeline.
+        Initialize line rendering pipeline.
 
         Args:
             device: WebGPU device
@@ -258,10 +263,12 @@ class LinePipelineSingleColour(BaseLinePipeline):
             msaa_sample_count: Number of MSAA samples
             stride: The stride of the vertex buffer. If 0, it is inferred from data_type.
             topology: Primitive topology (line_list or line_strip)
+            colour: RGB color tuple for lines (default white)
         """
         # Pipeline-specific buffer tracking
         self.vertex_buffer: Optional[wgpu.GPUBuffer] = None
         self.num_vertices: int = 0
+        self._colour = np.array(colour, dtype=np.float32)
 
         super().__init__(
             device=device,
@@ -275,9 +282,13 @@ class LinePipelineSingleColour(BaseLinePipeline):
 
     def get_dtype(self) -> np.dtype:
         """Get the data type of the pipeline."""
-        return np.dtype([
-            ("MVP", "float32", (4, 4)),
-        ])
+        return np.dtype(
+            [
+                ("MVP", "float32", (4, 4)),
+                ("Colour", "float32", 3),
+                ("padding", "float32", 1),
+            ]
+        )
 
     def _get_shader_code(self) -> str:
         """Get the WGSL shader code for this pipeline."""
@@ -335,11 +346,35 @@ class LinePipelineSingleColour(BaseLinePipeline):
         Args:
             **kwargs: Pipeline-specific uniform parameters
                 - mvp: 4x4 projection matrix
+                - colour: RGB color tuple
         """
         if "mvp" in kwargs and kwargs["mvp"] is not None:
             self.uniform_data["MVP"] = kwargs["mvp"]
 
-        self.device.queue.write_buffer(self.uniform_buffer, 0, self.uniform_data.tobytes())
+        if "colour" in kwargs and kwargs["colour"] is not None:
+            colour = np.array(kwargs["colour"], dtype=np.float32)
+            if colour.shape == (3,):
+                self.uniform_data["Colour"] = colour
+                self._colour = colour
+
+        self.device.queue.write_buffer(
+            self.uniform_buffer, 0, self.uniform_data.tobytes()
+        )
+
+    def set_color(self, colour: Tuple[float, float, float]) -> None:
+        """
+        Set the color for the lines.
+
+        Args:
+            colour: RGB color tuple
+        """
+        colour_array = np.array(colour, dtype=np.float32)
+        if colour_array.shape == (3,):
+            self.uniform_data["Colour"] = colour_array
+            self._colour = colour_array
+            self.device.queue.write_buffer(
+                self.uniform_buffer, 0, self.uniform_data.tobytes()
+            )
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
         """

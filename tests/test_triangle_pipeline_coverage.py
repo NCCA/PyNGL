@@ -87,6 +87,43 @@ def test_triangle_pipeline_single_colour_color_functionality(webgpu_device):
     )
 
 
+def test_line_pipeline_single_colour_color_functionality(webgpu_device):
+    """Test LinePipelineSingleColour color setting functionality."""
+    from ncca.ngl.webgpu.line_pipeline import LinePipelineSingleColour
+
+    # Test default color (white)
+    pipeline = LinePipelineSingleColour(webgpu_device)
+    assert np.array_equal(pipeline._colour, np.array([1.0, 1.0, 1.0], dtype=np.float32))
+
+    # Test setting color via constructor
+    red_color = (1.0, 0.0, 0.0)
+    pipeline_red = LinePipelineSingleColour(webgpu_device, colour=red_color)
+    assert np.array_equal(pipeline_red._colour, np.array(red_color, dtype=np.float32))
+
+    # Test setting color via update_uniforms
+    green_color = (0.0, 1.0, 0.0)
+    pipeline.update_uniforms(colour=green_color)
+    assert np.array_equal(pipeline._colour, np.array(green_color, dtype=np.float32))
+
+    # Test setting color via set_color method
+    blue_color = (0.0, 0.0, 1.0)
+    pipeline.set_color(blue_color)
+    assert np.array_equal(pipeline._colour, np.array(blue_color, dtype=np.float32))
+
+    # Test uniform buffer structure includes color
+    dtype = pipeline.get_dtype()
+    assert "Colour" in dtype.names
+    colour_field = dtype.fields["Colour"]
+    assert colour_field[0].shape == (3,)  # 3 components
+
+    # Test uniform data gets updated
+    orange_color = (1.0, 0.5, 0.0)
+    pipeline.update_uniforms(colour=orange_color)
+    assert np.array_equal(
+        pipeline.uniform_data["Colour"], np.array(orange_color, dtype=np.float32)
+    )
+
+
 def test_triangle_pipeline_multi_colour_color_processing_tuple_result(webgpu_device):
     """Test multi-colour pipeline when color processing returns tuple to hit lines 240-243."""
     pipeline = TrianglePipelineMultiColour(webgpu_device)
