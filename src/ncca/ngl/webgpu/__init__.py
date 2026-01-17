@@ -12,4 +12,9 @@ from .pipeline_factory import PipelineFactory, PipelineType
 from .webgpu_constants import NGLToWebGPU
 from .webgpu_widget import WebGPUWidget
 
-__all__ = ["WebGPUWidget", "NGLToWebGPU", "PipelineFactory", "PipelineType"]
+__all__ = [
+    "WebGPUWidget",
+    "NGLToWebGPU",
+    "PipelineFactory",
+    "PipelineType",
+]
