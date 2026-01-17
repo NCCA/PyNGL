@@ -9,7 +9,10 @@ import numpy as np
 import wgpu
 
 from .base_webgpu_pipeline import BaseWebGPUPipeline
-from .pipeline_shaders import TRIANGLE_SHADER_MULTI_COLOURED, TRIANGLE_SHADER_SINGLE_COLOUR
+from .pipeline_shaders import (
+    TRIANGLE_SHADER_MULTI_COLOURED,
+    TRIANGLE_SHADER_SINGLE_COLOUR,
+)
 from .webgpu_constants import NGLToWebGPU
 
 
@@ -101,10 +104,12 @@ class TrianglePipelineMultiColour(BaseTrianglePipeline):
 
     def get_dtype(self) -> np.dtype:
         """Get the data type of the pipeline."""
-        return np.dtype([
-            ("MVP", "float32", (4, 4)),
-            ("padding", "float32", 4),
-        ])
+        return np.dtype(
+            [
+                ("MVP", "float32", (4, 4)),
+                ("padding", "float32", 4),
+            ]
+        )
 
     def _get_shader_code(self) -> str:
         """Get the WGSL shader code for this pipeline."""
@@ -143,7 +148,11 @@ class TrianglePipelineMultiColour(BaseTrianglePipeline):
 
     def _get_pipeline_label(self) -> str:
         """Get the label for the pipeline."""
-        topology_name = "list" if self._topology == wgpu.PrimitiveTopology.triangle_list else "strip"
+        topology_name = (
+            "list"
+            if self._topology == wgpu.PrimitiveTopology.triangle_list
+            else "strip"
+        )
         return f"triangle_pipeline_multi_coloured_{topology_name}"
 
     def set_data(self, positions=None, colors=None, **kwargs) -> None:
@@ -195,7 +204,9 @@ class TrianglePipelineMultiColour(BaseTrianglePipeline):
         if "mvp" in kwargs and kwargs["mvp"] is not None:
             self.uniform_data["MVP"] = kwargs["mvp"]
 
-        self.device.queue.write_buffer(self.uniform_buffer, 0, self.uniform_data.tobytes())
+        self.device.queue.write_buffer(
+            self.uniform_buffer, 0, self.uniform_data.tobytes()
+        )
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
         """
@@ -249,6 +260,7 @@ class TrianglePipelineSingleColour(BaseTrianglePipeline):
         msaa_sample_count: int = 4,
         stride: int = 0,
         topology: wgpu.PrimitiveTopology = wgpu.PrimitiveTopology.triangle_list,
+        colour: Tuple[float, float, float] = (1.0, 1.0, 1.0),
     ):
         """
         Initialize the triangle rendering pipeline.
@@ -260,10 +272,12 @@ class TrianglePipelineSingleColour(BaseTrianglePipeline):
             msaa_sample_count: Number of MSAA samples
             stride: The stride of the vertex buffer. If 0, it is inferred from data_type.
             topology: Triangle topology (triangle_list or triangle_strip)
+            colour: RGB color tuple for triangles (default white)
         """
         # Pipeline-specific buffer tracking
         self.vertex_buffer: Optional[wgpu.GPUBuffer] = None
         self.num_vertices: int = 0
+        self._colour = np.array(colour, dtype=np.float32)
 
         super().__init__(
             device=device,
@@ -277,10 +291,13 @@ class TrianglePipelineSingleColour(BaseTrianglePipeline):
 
     def get_dtype(self) -> np.dtype:
         """Get the data type of the pipeline."""
-        return np.dtype([
-            ("MVP", "float32", (4, 4)),
-            ("padding", "float32", 4),
-        ])
+        return np.dtype(
+            [
+                ("MVP", "float32", (4, 4)),
+                ("Colour", "float32", 3),
+                ("padding", "float32", 1),
+            ]
+        )
 
     def _get_shader_code(self) -> str:
         """Get the WGSL shader code for this pipeline."""
@@ -308,7 +325,11 @@ class TrianglePipelineSingleColour(BaseTrianglePipeline):
 
     def _get_pipeline_label(self) -> str:
         """Get the label for the pipeline."""
-        topology_name = "list" if self._topology == wgpu.PrimitiveTopology.triangle_list else "strip"
+        topology_name = (
+            "list"
+            if self._topology == wgpu.PrimitiveTopology.triangle_list
+            else "strip"
+        )
         return f"triangle_pipeline_single_colour_{topology_name}"
 
     def set_data(self, positions=None, colors=None, **kwargs) -> None:
@@ -339,11 +360,35 @@ class TrianglePipelineSingleColour(BaseTrianglePipeline):
         Args:
             **kwargs: Pipeline-specific uniform parameters
                 - mvp: 4x4 projection matrix
+                - colour: RGB color tuple
         """
         if "mvp" in kwargs and kwargs["mvp"] is not None:
             self.uniform_data["MVP"] = kwargs["mvp"]
 
-        self.device.queue.write_buffer(self.uniform_buffer, 0, self.uniform_data.tobytes())
+        if "colour" in kwargs and kwargs["colour"] is not None:
+            colour = np.array(kwargs["colour"], dtype=np.float32)
+            if colour.shape == (3,):
+                self.uniform_data["Colour"] = colour
+                self._colour = colour
+
+        self.device.queue.write_buffer(
+            self.uniform_buffer, 0, self.uniform_data.tobytes()
+        )
+
+    def set_color(self, colour: Tuple[float, float, float]) -> None:
+        """
+        Set the color for the triangles.
+
+        Args:
+            colour: RGB color tuple
+        """
+        colour_array = np.array(colour, dtype=np.float32)
+        if colour_array.shape == (3,):
+            self.uniform_data["Colour"] = colour_array
+            self._colour = colour_array
+            self.device.queue.write_buffer(
+                self.uniform_buffer, 0, self.uniform_data.tobytes()
+            )
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
         """

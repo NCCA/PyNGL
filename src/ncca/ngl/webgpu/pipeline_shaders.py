@@ -414,6 +414,8 @@ TRIANGLE_SHADER_SINGLE_COLOUR = """
 // TriangleShader.wgsl
 struct Uniforms {
     MVP: mat4x4<f32>,
+    Colour: vec3<f32>,
+    padding: f32,
 };
 
 @binding(0) @group(0) var<uniform> uniforms: Uniforms;
@@ -425,7 +427,7 @@ fn vertex_main(@location(0) pos: vec3<f32>) -> @builtin(position) vec4<f32> {
 
 @fragment
 fn fragment_main() -> @location(0) vec4<f32> {
-    return vec4<f32>(1.0, 1.0, 1.0, 1.0); // White color
+    return vec4<f32>(uniforms.Colour, 1.0);
 }
 """
 
