@@ -9,58 +9,8 @@ import numpy as np
 import wgpu
 
 from .base_webgpu_pipeline import BaseWebGPUPipeline
+from .pipeline_shaders import LINE_SHADER_MULTI_COLOURED, LINE_SHADER_SINGLE_COLOUR
 from .webgpu_constants import NGLToWebGPU
-
-_LINE_SHADER_SINGLE_COLOUR = """
-// LineShader.wgsl
-struct Uniforms {
-    MVP: mat4x4<f32>,
-};
-
-@binding(0) @group(0) var<uniform> uniforms: Uniforms;
-
-@vertex
-fn vertex_main(@location(0) pos: vec3<f32>) -> @builtin(position) vec4<f32> {
-    return uniforms.MVP * vec4<f32>(pos, 1.0);
-}
-
-@fragment
-fn fragment_main() -> @location(0) vec4<f32> {
-    return vec4<f32>(1.0, 1.0, 1.0, 1.0); // Grey color for grid lines
-}
-"""
-
-_LINE_SHADER_MULTI_COLOURED = """
-// LineShader.wgsl
-struct Uniforms {
-    MVP: mat4x4<f32>,
-};
-
-@binding(0) @group(0) var<uniform> uniforms: Uniforms;
-
-struct VertexIn {
-    @location(0) pos: vec3<f32>,
-    @location(1) color: vec3<f32>,
-};
-
-struct VertexOut {
-    @builtin(position) position: vec4<f32>,
-    @location(0) color: vec3<f32>,
-};
-
-@vertex
-fn vertex_main(input: VertexIn) -> VertexOut {
-    var output: VertexOut;
-    output.position = uniforms.MVP * vec4<f32>(input.pos, 1.0);
-    output.color = input.color;
-    return output;
-}
-
-@fragment
-fn fragment_main(input: VertexOut) -> @location(0) vec4<f32> {
-    return vec4<f32>(input.color, 1.0);
-}
-"""
 
 
 class BaseLinePipeline(BaseWebGPUPipeline):
@@ -157,7 +107,7 @@ class LinePipelineMultiColour(BaseLinePipeline):
 
     def _get_shader_code(self) -> str:
         """Get the WGSL shader code for this pipeline."""
-        return _LINE_SHADER_MULTI_COLOURED
+        return LINE_SHADER_MULTI_COLOURED
 
     def _get_vertex_buffer_layouts(self):
         """Get vertex buffer layout configurations for the pipeline."""
@@ -331,7 +281,7 @@ class LinePipelineSingleColour(BaseLinePipeline):
 
     def _get_shader_code(self) -> str:
         """Get the WGSL shader code for this pipeline."""
-        return _LINE_SHADER_SINGLE_COLOUR
+        return LINE_SHADER_SINGLE_COLOUR
 
     def _get_vertex_buffer_layouts(self):
         """Get vertex buffer layout configurations for the pipeline."""

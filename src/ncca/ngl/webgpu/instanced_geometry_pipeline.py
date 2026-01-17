@@ -9,171 +9,8 @@ import numpy as np
 import wgpu
 
 from .base_webgpu_pipeline import BaseWebGPUPipeline
+from .pipeline_shaders import INSTANCED_SHADER_MULTI_COLOURED, INSTANCED_SHADER_SINGLE_COLOUR
 from .webgpu_constants import NGLToWebGPU
-
-_INSTANCED_SHADER_MULTI_COLOURED = """
-@group(0) @binding(0) var<uniform> uniforms : Uniforms;
-struct Uniforms
-{
-    MVP : mat4x4<f32>,
-    ViewMatrix : mat4x4<f32>,
-    instance_transform: mat4x4<f32>,
-};
-
-struct InstanceData {
-    @location(0) position: vec3<f32>,
-    @location(1) colour: vec3<f32>,
-    @location(2) instance_id: f32,
-};
-
-struct GeometryVertex {
-    @location(3) geometry_position: vec3<f32>,
-    @location(4) geometry_normal: vec3<f32>,
-    @location(5) geometry_uv: vec2<f32>,
-};
-
-struct VertexOut {
-    @builtin(position) position: vec4<f32>,
-    @location(0) fragColour: vec3<f32>,
-    @location(1) fragNormal: vec3<f32>,
-    @location(2) fragUV: vec2<f32>,
-    @location(3) worldPos: vec3<f32>,
-};
-
-@vertex
-fn vertex_main(instance_data: InstanceData, geom_vertex: GeometryVertex, @builtin(vertex_index) vertex_index: u32) -> VertexOut {
-    var output: VertexOut;
-
-    // Transform geometry vertex by instance transform and position
-    let transformed_vertex = uniforms.instance_transform * vec4<f32>(geom_vertex.geometry_position, 1.0);
-    let world_position = transformed_vertex.xyz + instance_data.position;
-
-    output.position = uniforms.MVP * vec4<f32>(world_position, 1.0);
-    output.fragColour = instance_data.colour;
-
-    // Transform normal by instance transform (skip translation)
-    let normal_matrix = mat3x3<f32>(
-        uniforms.instance_transform[0].xyz,
-        uniforms.instance_transform[1].xyz,
-        uniforms.instance_transform[2].xyz
-    );
-    output.fragNormal = normalize(normal_matrix * geom_vertex.geometry_normal);
-    output.fragUV = geom_vertex.geometry_uv;
-    output.worldPos = world_position;
-
-    return output;
-}
-
-@fragment
-fn fragment_main(fragData: VertexOut) -> @location(0) vec4<f32>
-{
-    // Enhanced diffuse lighting calculation
-
-    // Light properties
-    let light_direction = normalize(vec3<f32>(0.5, 1.0, 0.3));  // World space light direction
-    let light_color = vec3<f32>(1.0, 1.0, 1.0);  // White light
-    let ambient_intensity = 0.15;  // Lower ambient for better contrast
-    let diffuse_intensity = 0.85;  // Higher diffuse for stronger lighting
-
-    // Ambient component (base illumination)
-    let ambient = vec3<f32>(ambient_intensity);
-
-    // Diffuse component (Lambertian reflection)
-    let normal = normalize(fragData.fragNormal);
-    let n_dot_l = max(dot(normal, light_direction), 0.0);
-    let diffuse = light_color * n_dot_l * diffuse_intensity;
-
-    // Combine lighting components
-    let final_lighting = ambient + diffuse;
-
-    // Apply lighting to the fragment color
-    let lit_color = fragData.fragColour * final_lighting;
-
-    return vec4<f32>(lit_color, 1.0);
-}
-"""
-
-_INSTANCED_SHADER_SINGLE_COLOUR = """
-@group(0) @binding(0) var<uniform> uniforms : Uniforms;
-struct Uniforms
-{
-    MVP : mat4x4<f32>,
-    ViewMatrix : mat4x4<f32>,
-    colour: vec3<f32>,
-    padding: f32,
-    instance_transform: mat4x4<f32>,
-};
-
-struct InstanceData {
-    @location(0) position: vec3<f32>,
-    @location(1) instance_id: f32,
-    @location(2) colour: vec3<f32>,  // Provided but ignored
-};
-
-struct GeometryVertexSingle {
-    @location(3) geometry_position: vec3<f32>,
-    @location(4) geometry_normal: vec3<f32>,
-    @location(5) geometry_uv: vec2<f32>,
-};
-
-struct VertexOutSingle {
-    @builtin(position) position: vec4<f32>,
-    @location(0) fragNormal: vec3<f32>,
-    @location(1) fragUV: vec2<f32>,
-    @location(2) worldPos: vec3<f32>,
-};
-
-@vertex
-fn vertex_main(instance_data: InstanceData, geom_vertex: GeometryVertexSingle, @builtin(vertex_index) vertex_index: u32) -> VertexOutSingle {
-    var output: VertexOutSingle;
-
-    // Transform geometry vertex by instance transform and position
-    let transformed_vertex = uniforms.instance_transform * vec4<f32>(geom_vertex.geometry_position, 1.0);
-    let world_position = transformed_vertex.xyz + instance_data.position;
-
-    output.position = uniforms.MVP * vec4<f32>(world_position, 1.0);
-
-    // Transform normal by instance transform (skip translation)
-    let normal_matrix = mat3x3<f32>(
-        uniforms.instance_transform[0].xyz,
-        uniforms.instance_transform[1].xyz,
-        uniforms.instance_transform[2].xyz
-    );
-    output.fragNormal = normalize(normal_matrix * geom_vertex.geometry_normal);
-    output.fragUV = geom_vertex.geometry_uv;
-    output.worldPos = world_position;
-
-    return output;
-}
-
-@fragment
-fn fragment_main(fragData: VertexOutSingle) -> @location(0) vec4<f32>
-{
-    // Enhanced diffuse lighting calculation
-
-    // Light properties
-    let light_direction = normalize(vec3<f32>(0.5, 1.0, 0.3));  // World space light direction
-    let light_color = vec3<f32>(1.0, 1.0, 1.0);  // White light
-    let ambient_intensity = 0.15;  // Lower ambient for better contrast
-    let diffuse_intensity = 0.85;  // Higher diffuse for stronger lighting
-
-    // Ambient component (base illumination)
-    let ambient = vec3<f32>(ambient_intensity);
-
-    // Diffuse component (Lambertian reflection)
-    let normal = normalize(fragData.fragNormal);
-    let n_dot_l = max(dot(normal, light_direction), 0.0);
-    let diffuse = light_color * n_dot_l * diffuse_intensity;
-
-    // Combine lighting components
-    let final_lighting = ambient + diffuse;
-
-    // Apply lighting to the uniform color
-    let lit_color = uniforms.colour * final_lighting;
-
-    return vec4<f32>(lit_color, 1.0);
-}
-"""
 
 GEOM_ERROR = "geometry_data is required for instanced geometry pipelines"
 
@@ -338,7 +175,7 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
 
     def _get_shader_code(self) -> str:
         """Get the WGSL shader code for this pipeline."""
-        return _INSTANCED_SHADER_MULTI_COLOURED
+        return INSTANCED_SHADER_MULTI_COLOURED
 
     def _get_vertex_buffer_layouts(self) -> list:
         """Get vertex buffer layout configurations for the pipeline."""
@@ -557,7 +394,7 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
 
     def _get_shader_code(self) -> str:
         """Get the WGSL shader code for this pipeline."""
-        return _INSTANCED_SHADER_SINGLE_COLOUR
+        return INSTANCED_SHADER_SINGLE_COLOUR
 
     def _get_vertex_buffer_layouts(self) -> list:
         """Get vertex buffer layout configurations for the pipeline."""

@@ -9,74 +9,8 @@ import numpy as np
 import wgpu
 
 from .base_webgpu_pipeline import BaseWebGPUPipeline
+from .pipeline_shaders import POINT_LIST_SHADER_MULTI_COLOURED, POINT_LIST_SHADER_SINGLE_COLOUR
 from .webgpu_constants import NGLToWebGPU
-
-_POINT_LIST_SHADER_MULTI_COLOURED = """
-@group(0) @binding(0) var<uniform> uniforms : Uniforms;
-
-struct Uniforms
-{
-    MVP : mat4x4<f32>,
-};
-
-struct VertexIn {
-    @location(0) position: vec3<f32>,
-    @location(1) colour: vec3<f32>,
-};
-
-struct VertexOut {
-    @builtin(position) position: vec4<f32>,
-    @location(0) fragColour: vec3<f32>,
-};
-
-@vertex
-fn vertex_main(input: VertexIn) -> VertexOut {
-    var output: VertexOut;
-    output.position = uniforms.MVP * vec4<f32>(input.position, 1.0);
-    output.fragColour = input.colour;
-    return output;
-}
-
-@fragment
-fn fragment_main(fragData: VertexOut) -> @location(0) vec4<f32>
-{
-    return vec4<f32>(fragData.fragColour, 1.0);
-}
-"""
-
-_POINT_LIST_SHADER_SINGLE_COLOUR = """
-@group(0) @binding(0) var<uniform> uniforms : Uniforms;
-
-struct Uniforms
-{
-    MVP : mat4x4<f32>, 
-    Colour: vec3<f32>,
-    padding : f32
-
-
-};
-
-struct VertexIn {
-    @location(0) position: vec3<f32>,
-};
-
-struct VertexOut {
-    @builtin(position) position: vec4<f32>,
-};
-
-@vertex
-fn vertex_main(input: VertexIn) -> VertexOut {
-    var output: VertexOut;
-    output.position = uniforms.MVP * vec4<f32>(input.position, 1.0);
-    return output;
-}
-
-@fragment
-fn fragment_main(fragData: VertexOut) -> @location(0) vec4<f32>
-{
-    return vec4<f32>(uniforms.Colour, 1.0);
-}
-"""
 
 
 class PointListPipelineMultiColour(BaseWebGPUPipeline):
@@ -125,15 +59,13 @@ class PointListPipelineMultiColour(BaseWebGPUPipeline):
 
     def get_dtype(self) -> np.dtype:
         """Get the data type of the pipeline."""
-        return np.dtype(
-            [
-                ("MVP", "float32", (4, 4)),
-            ]
-        )
+        return np.dtype([
+            ("MVP", "float32", (4, 4)),
+        ])
 
     def _get_shader_code(self) -> str:
         """Get the WGSL shader code for this pipeline."""
-        return _POINT_LIST_SHADER_MULTI_COLOURED
+        return POINT_LIST_SHADER_MULTI_COLOURED
 
     def _get_primitive_topology(self) -> wgpu.PrimitiveTopology:
         """Points are rendered as point list."""
@@ -230,9 +162,7 @@ class PointListPipelineMultiColour(BaseWebGPUPipeline):
         if "mvp" in kwargs and kwargs["mvp"] is not None:
             self.uniform_data["MVP"] = kwargs["mvp"]
 
-        self.device.queue.write_buffer(
-            self.uniform_buffer, 0, self.uniform_data.tobytes()
-        )
+        self.device.queue.write_buffer(self.uniform_buffer, 0, self.uniform_data.tobytes())
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
         """
@@ -312,17 +242,15 @@ class PointListPipelineSingleColour(BaseWebGPUPipeline):
 
     def get_dtype(self) -> np.dtype:
         """Get the data type of the pipeline."""
-        return np.dtype(
-            [
-                ("MVP", "float32", (4, 4)),
-                ("Colour", "float32", 3),
-                ("padding", "float32"),
-            ]
-        )
+        return np.dtype([
+            ("MVP", "float32", (4, 4)),
+            ("Colour", "float32", 3),
+            ("padding", "float32"),
+        ])
 
     def _get_shader_code(self) -> str:
         """Get the WGSL shader code for this pipeline."""
-        return _POINT_LIST_SHADER_SINGLE_COLOUR
+        return POINT_LIST_SHADER_SINGLE_COLOUR
 
     def _get_primitive_topology(self) -> wgpu.PrimitiveTopology:
         """Points are rendered as point list."""
@@ -346,9 +274,7 @@ class PointListPipelineSingleColour(BaseWebGPUPipeline):
 
     def _set_default_uniforms(self) -> None:
         """Set default values for uniform data."""
-        self.uniform_data["Colour"] = np.array(
-            [1.0, 1.0, 1.0], dtype=np.float32
-        )  # Default White
+        self.uniform_data["Colour"] = np.array([1.0, 1.0, 1.0], dtype=np.float32)  # Default White
         self.uniform_data["padding"] = 0.0
 
     def _get_pipeline_label(self) -> str:
@@ -392,9 +318,7 @@ class PointListPipelineSingleColour(BaseWebGPUPipeline):
         if "colour" in kwargs and kwargs["colour"] is not None:
             self.uniform_data["Colour"] = kwargs["colour"]
 
-        self.device.queue.write_buffer(
-            self.uniform_buffer, 0, self.uniform_data.tobytes()
-        )
+        self.device.queue.write_buffer(self.uniform_buffer, 0, self.uniform_data.tobytes())
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
         """

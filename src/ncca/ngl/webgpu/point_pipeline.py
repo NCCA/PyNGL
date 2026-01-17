@@ -9,135 +9,8 @@ import numpy as np
 import wgpu
 
 from .base_webgpu_pipeline import BasePointPipeline
+from .pipeline_shaders import POINT_SHADER_MULTI_COLOURED, POINT_SHADER_SINGLE_COLOUR
 from .webgpu_constants import NGLToWebGPU
-
-_POINT_SHADER_MULTI_COLOURED = """
-@group(0) @binding(0) var<uniform> uniforms : Uniforms;
-struct Uniforms
-{
-    MVP : mat4x4<f32>,
-    ViewMatrix : mat4x4<f32>,
-    size: f32,
-    padding: u32,
-    padding2: u32,
-    padding3: u32,
-};
-
-struct VertexIn {
-    @location(0) position: vec3<f32>,
-    @location(1) colour: vec3<f32>,
-};
-
-// We now need to pass uv to the fragment shader
-struct VertexOut {
-    @builtin(position) position: vec4<f32>,
-    @location(0) fragColour: vec3<f32>,
-    @location(1) uv: vec2<f32>,
-};
-
-@vertex
-fn vertex_main(input: VertexIn, @builtin(vertex_index) vertex_index: u32) -> VertexOut {
-    var output: VertexOut;
-    let quad_offsets = array<vec2<f32>, 4>(
-        vec2<f32>(-1.0, -1.0), // bottom-left
-        vec2<f32>(1.0, -1.0),  // bottom-right
-        vec2<f32>(-1.0, 1.0),   // top-left
-        vec2<f32>(1.0, 1.0)    // top-right
-    );
-
-    // Extract camera right and up vectors from view matrix
-    let cameraRight = normalize(vec3<f32>(uniforms.ViewMatrix[0][0], uniforms.ViewMatrix[1][0], uniforms.ViewMatrix[2][0]));
-    let cameraUp = normalize(vec3<f32>(uniforms.ViewMatrix[0][1], uniforms.ViewMatrix[1][1], uniforms.ViewMatrix[2][1]));
-
-    // Calculate billboard offset in world space
-    let offset2D = quad_offsets[vertex_index] * uniforms.size;
-    let offset3D = cameraRight * offset2D.x + cameraUp * offset2D.y;
-    let worldPos = input.position + offset3D;
-
-    output.position = uniforms.MVP * vec4<f32>(worldPos, 1.0);
-    output.fragColour = input.colour;
-    // convert offset from -1 -> 1 to 0 -> 1 for uv
-    output.uv = quad_offsets[vertex_index] * 0.5 + 0.5;
-
-    return output;
-}
-
-@fragment
-fn fragment_main(fragData: VertexOut) -> @location(0) vec4<f32>
-{
-    let center = vec2<f32>(0.5, 0.5); // Center of the quad in UV space
-    let dist = distance(fragData.uv, center); // Distance from center
-    let radius = 0.5; // Circle radius (quad is 1.0 in UV space)
-
-    if (dist > radius)
-    {
-        discard; // Remove pixels outside the circle
-    }
-
-    return vec4<f32>(fragData.fragColour, 1.0); // Simple colour output
-}
-"""
-
-_POINT_SHADER_SINGLE_COLOUR = """
-@group(0) @binding(0) var<uniform> uniforms : Uniforms;
-struct Uniforms
-{
-    MVP : mat4x4<f32>,
-    ViewMatrix : mat4x4<f32>,
-    ColourSize: vec4<f32>,
-};
-
-struct VertexIn {
-    @location(0) position: vec3<f32>,
-};
-
-// We now need to pass uv to the fragment shader
-struct VertexOut {
-    @builtin(position) position: vec4<f32>,
-    @location(1) uv: vec2<f32>,
-};
-
-@vertex
-fn vertex_main(input: VertexIn, @builtin(vertex_index) vertex_index: u32) -> VertexOut {
-    var output: VertexOut;
-    let quad_offsets = array<vec2<f32>, 4>(
-        vec2<f32>(-1.0, -1.0), // bottom-left
-        vec2<f32>(1.0, -1.0),  // bottom-right
-        vec2<f32>(-1.0, 1.0),   // top-left
-        vec2<f32>(1.0, 1.0)    // top-right
-    );
-
-    // Extract camera right and up vectors from view matrix
-    let cameraRight = normalize(vec3<f32>(uniforms.ViewMatrix[0][0], uniforms.ViewMatrix[1][0], uniforms.ViewMatrix[2][0]));
-    let cameraUp = normalize(vec3<f32>(uniforms.ViewMatrix[0][1], uniforms.ViewMatrix[1][1], uniforms.ViewMatrix[2][1]));
-
-    // Calculate billboard offset in world space
-    let offset2D = quad_offsets[vertex_index] * uniforms.ColourSize.w;
-    let offset3D = cameraRight * offset2D.x + cameraUp * offset2D.y;
-    let worldPos = input.position + offset3D;
-
-    output.position = uniforms.MVP * vec4<f32>(worldPos, 1.0);
-    // convert offset from -1 -> 1 to 0 -> 1 for uv
-    output.uv = quad_offsets[vertex_index] * 0.5 + 0.5;
-
-    return output;
-}
-
-@fragment
-fn fragment_main(fragData: VertexOut) -> @location(0) vec4<f32>
-{
-    let center = vec2<f32>(0.5, 0.5); // Center of the quad in UV space
-    let dist = distance(fragData.uv, center); // Distance from center
-    let radius = 0.5; // Circle radius (quad is 1.0 in UV space)
-
-    if (dist > radius)
-    {
-        discard; // Remove pixels outside the circle
-    }
-
-    return vec4<f32>(uniforms.ColourSize.xyz, 1.0); // Simple colour output
-}
-"""
 
 
 class PointPipelineMultiColour(BasePointPipeline):
@@ -196,7 +69,7 @@ class PointPipelineMultiColour(BasePointPipeline):
 
     def _get_shader_code(self) -> str:
         """Get the WGSL shader code for this pipeline."""
-        return _POINT_SHADER_MULTI_COLOURED
+        return POINT_SHADER_MULTI_COLOURED
 
     def _get_vertex_buffer_layouts(self):
         """Get vertex buffer layout configurations for the pipeline."""
@@ -371,7 +244,7 @@ class PointPipelineSingleColour(BasePointPipeline):
 
     def _get_shader_code(self) -> str:
         """Get the WGSL shader code for this pipeline."""
-        return _POINT_SHADER_SINGLE_COLOUR
+        return POINT_SHADER_SINGLE_COLOUR
 
     def _get_vertex_buffer_layouts(self):
         """Get vertex buffer layout configurations for the pipeline."""
