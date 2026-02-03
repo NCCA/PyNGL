@@ -1,5 +1,3 @@
-import gc
-
 import glfw
 import OpenGL.GL as gl
 import pytest
@@ -7,30 +5,45 @@ import wgpu
 import wgpu.utils
 
 
+def pytest_configure(config):
+    """Configure pytest with custom markers."""
+    config.addinivalue_line("markers", "opengl: mark test as using an OpenGL context")
+    config.addinivalue_line("markers", "webgpu: mark test as using a WebGPU device")
+
+
 def pytest_collection_modifyitems(config, items):
     """
-    Ensure WebGPU tests run before OpenGL tests to avoid context conflicts
-    This is fine on mac as both are Metal backends.
+    If `-m` is specified on the command line, this function only adds the
+    'opengl' and 'webgpu' markers, allowing pytest to handle filtering.
+
+    If no `-m` is specified, this function manually deselects all tests
+    marked 'opengl' or 'webgpu' for the default test run.
     """
+    # If the user is specifying a marker, just add our markers and let pytest handle it.
+    if config.getoption("markexpr"):
+        for item in items:
+            fixtures = getattr(item, "fixturenames", [])
+            if "opengl_context" in fixtures:
+                item.add_marker(pytest.mark.opengl)
+            elif "webgpu_device" in fixtures:
+                item.add_marker(pytest.mark.webgpu)
+        return
 
-    opengl_tests = []
-    webgpu_tests = []
-    other_tests = []
-
+    # If no marker is specified, manually partition the tests.
+    remaining_items = []
+    deselected_items = []
     for item in items:
         fixtures = getattr(item, "fixturenames", [])
-        if "opengl_context" in fixtures or any("opengl" in f for f in fixtures):
-            opengl_tests.append(item)
-        elif "webgpu_device" in fixtures or any("webgpu" in f for f in fixtures):
-            webgpu_tests.append(item)
+        is_graphics = "opengl_context" in fixtures or "webgpu_device" in fixtures
+        if is_graphics:
+            deselected_items.append(item)
         else:
-            other_tests.append(item)
+            remaining_items.append(item)
 
-    # Reorder:  Other -> WebGPU -> OpenGL this avoids context conflicts on Linux
-    # WebGPU cleans nicely OpenGL not so much!
-    items[:] = other_tests + webgpu_tests + opengl_tests
-
-    print(f"\nTest execution order: {len(opengl_tests)} OpenGL, {len(other_tests)} Other, {len(webgpu_tests)} WebGPU")
+    # Modify the collection in-place and report the deselected items.
+    if deselected_items:
+        items[:] = remaining_items
+        config.hook.pytest_deselected(items=deselected_items)
 
 
 @pytest.fixture(scope="session")
@@ -62,5 +75,3 @@ def webgpu_device():
     if device is None:
         raise RuntimeError("Could not get a WebGPU device.")
     yield device
-    del device
-    gc.collect()

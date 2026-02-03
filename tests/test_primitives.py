@@ -16,7 +16,7 @@ def run_around_tests():
     clear_primitives()
 
 
-def test_create_line_grid_basic():
+def test_create_line_grid_basic(opengl_context):
     Primitives.create(Prims.LINE_GRID, "test_grid", width=2.0, depth=2.0, steps=2)
     prim = Primitives._primitives["test_grid"]
     assert hasattr(prim, "vao")
@@ -24,7 +24,7 @@ def test_create_line_grid_basic():
     assert prim.vao.num_indices() > 0
 
 
-def test_create_triangle_plane_basic():
+def test_create_triangle_plane_basic(opengl_context):
     Primitives.create(Prims.TRIANGLE_PLANE, "test_plane", width=2.0, depth=2.0, w_p=2, d_p=2, v_n=Vec3(0, 1, 0))
     prim = Primitives._primitives["test_plane"]
     assert hasattr(prim, "vao")
@@ -32,7 +32,7 @@ def test_create_triangle_plane_basic():
     assert prim.vao.num_indices() > 0
 
 
-def test_create_sphere_basic():
+def test_create_sphere_basic(opengl_context):
     Primitives.create(Prims.SPHERE, "test_sphere", radius=1.0, precision=8)
     prim = Primitives._primitives["test_sphere"]
     assert hasattr(prim, "vao")
@@ -40,102 +40,102 @@ def test_create_sphere_basic():
     assert prim.vao.num_indices() > 0
 
 
-def test_create_sphere_negative_radius():
+def test_create_sphere_negative_radius(opengl_context):
     Primitives.create(Prims.SPHERE, "neg_sphere", radius=-1.0, precision=8)
     prim = Primitives._primitives["neg_sphere"]
     assert prim.vao is not None
 
 
-def test_create_sphere_low_precision():
+def test_create_sphere_low_precision(opengl_context):
     Primitives.create(Prims.SPHERE, "low_prec_sphere", radius=1.0, precision=2)
     prim = Primitives._primitives["low_prec_sphere"]
     assert prim.vao is not None
 
 
-def test_create_cone_basic():
+def test_create_cone_basic(opengl_context):
     Primitives.create(Prims.CONE, "test_cone", base=1.0, height=2.0, stacks=2, slices=8)
     prim = Primitives._primitives["test_cone"]
     assert prim.vao is not None
 
 
-def test_create_capsule_basic():
+def test_create_capsule_basic(opengl_context):
     Primitives.create(Prims.CAPSULE, "test_capsule", radius=1.0, height=2.0, precision=8)
     prim = Primitives._primitives["test_capsule"]
     assert prim.vao is not None
 
 
-def test_create_capsule_invalid_radius():
+def test_create_capsule_invalid_radius(opengl_context):
     with pytest.raises(ValueError):
         Primitives.create(Prims.CAPSULE, "bad_capsule", radius=0.0, height=2.0, precision=8)
 
 
-def test_create_capsule_invalid_height():
+def test_create_capsule_invalid_height(opengl_context):
     with pytest.raises(ValueError):
         Primitives.create(Prims.CAPSULE, "bad_capsule", radius=1.0, height=-2.0, precision=8)
 
 
-def test_create_cylinder_basic():
+def test_create_cylinder_basic(opengl_context):
     Primitives.create(Prims.CYLINDER, "test_cylinder", radius=1.0, height=2.0, slices=8, stacks=2)
     prim = Primitives._primitives["test_cylinder"]
     assert prim.vao is not None
 
 
-def test_create_cylinder_invalid_radius():
+def test_create_cylinder_invalid_radius(opengl_context):
     with pytest.raises(ValueError):
         Primitives.create(Prims.CYLINDER, "bad_cylinder", radius=0.0, height=2.0, slices=8, stacks=2)
 
 
-def test_create_cylinder_invalid_height():
+def test_create_cylinder_invalid_height(opengl_context):
     with pytest.raises(ValueError):
         Primitives.create(Prims.CYLINDER, "bad_cylinder", radius=1.0, height=-2.0, slices=8, stacks=2)
 
 
-def test_create_disk_basic():
+def test_create_disk_basic(opengl_context):
     Primitives.create(Prims.DISK, "test_disk", radius=1.0, slices=8)
     prim = Primitives._primitives["test_disk"]
     assert prim.vao is not None
 
 
-def test_create_disk_invalid_radius():
+def test_create_disk_invalid_radius(opengl_context):
     with pytest.raises(ValueError):
         Primitives.create(Prims.DISK, "bad_disk", radius=0.0, slices=8)
 
 
-def test_create_torus_basic():
+def test_create_torus_basic(opengl_context):
     Primitives.create(Prims.TORUS, "test_torus", major_radius=2.0, minor_radius=1.0, sides=8, rings=8)
     prim = Primitives._primitives["test_torus"]
     assert prim.vao is not None
 
 
-def test_create_torus_invalid_radii():
+def test_create_torus_invalid_radii(opengl_context):
     with pytest.raises(ValueError):
         Primitives.create(Prims.TORUS, "bad_torus", major_radius=0.0, minor_radius=1.0, sides=8, rings=8)
     with pytest.raises(ValueError):
         Primitives.create(Prims.TORUS, "bad_torus", major_radius=2.0, minor_radius=0.0, sides=8, rings=8)
 
 
-def test_create_torus_invalid_sides_rings():
+def test_create_torus_invalid_sides_rings(opengl_context):
     with pytest.raises(ValueError):
         Primitives.create(Prims.TORUS, "bad_torus", major_radius=2.0, minor_radius=1.0, sides=2, rings=8)
     with pytest.raises(ValueError):
         Primitives.create_torus("bad_torus", major_radius=2.0, minor_radius=1.0, sides=8, rings=2)
 
 
-def test_create_torus_invalid_sides_rings():
+def test_create_torus_invalid_sides_rings(opengl_context):
     with pytest.raises(ValueError):
         Primitives.create(Prims.TORUS, "bad_torus", major_radius=2.0, minor_radius=1.0, sides=2, rings=8)
     with pytest.raises(ValueError):
         Primitives.create_torus("bad_torus", major_radius=2.0, minor_radius=1.0, sides=8, rings=2)
 
 
-def test_create_torus_invalid_sides_rings():
+def test_create_torus_invalid_sides_rings(opengl_context):
     with pytest.raises(ValueError):
         Primitives.create(Prims.TORUS, "bad_torus", major_radius=2.0, minor_radius=1.0, sides=2, rings=8)
     with pytest.raises(ValueError):
         Primitives.create("bad_torus", "bad", major_radius=2.0, minor_radius=1.0, sides=8, rings=2)
 
 
-def test_all_primitives_load():
+def test_all_primitives_load(opengl_context):
     built_in_prims = [
         Prims.BUDDHA,
         Prims.BUNNY,
