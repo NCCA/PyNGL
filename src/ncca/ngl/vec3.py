@@ -84,11 +84,9 @@ class Vec3(VectorBase["Vec3"]):
         Returns:
             Vec3: A new vector that is the result of multiplying this vector by the matrix.
         """
-        return Vec3(
-            self._data[0] * rhs.m[0, 0] + self._data[1] * rhs.m[1, 0] + self._data[2] * rhs.m[2, 0],
-            self._data[0] * rhs.m[0, 1] + self._data[1] * rhs.m[1, 1] + self._data[2] * rhs.m[2, 1],
-            self._data[0] * rhs.m[0, 2] + self._data[1] * rhs.m[1, 2] + self._data[2] * rhs.m[2, 2],
-        )
+        result = Vec3()
+        result._data = rhs.m.T @ self._data  # More efficient
+        return result
 
     def set(self, *args: float) -> None:
         """
