@@ -5,7 +5,7 @@ Tests cover mouse-based camera control, keyboard shortcuts, wheel zooming,
 and camera state management functionality.
 """
 
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock
 
 import pytest
 from PySide6.QtCore import QPointF, Qt
@@ -30,7 +30,7 @@ class MockEventHandlingWindow(PySideEventHandlingMixin):
 
 
 @pytest.fixture
-def event_window():
+def event_window(qt_app):
     """Create a test window with event handling"""
     window = MockEventHandlingWindow()
     window.setup_event_handling()
@@ -53,7 +53,7 @@ def test_setup_event_handling_default_values(event_window):
     assert event_window.zoom_sensitivity == PySideEventHandlingMixin.DEFAULT_ZOOM_SENSITIVITY
 
 
-def test_setup_event_handling_custom_values():
+def test_setup_event_handling_custom_values(qt_app):
     """Test setup_event_handling with custom parameters"""
     window = MockEventHandlingWindow()
     initial_pos = Vec3(1, 2, 3)
@@ -104,11 +104,14 @@ def test_key_press_event_escape(event_window):
     assert event_window.update_called is True
 
 
-@patch("OpenGL.GL.glPolygonMode")
-def test_key_press_event_wireframe_mode(mock_gl_polygon_mode, event_window):
+def test_key_press_event_wireframe_mode(event_window, monkeypatch):
     """Test W key switches to wireframe mode"""
     event = Mock()
     event.key.return_value = Qt.Key_W
+
+    mock_gl_polygon_mode = MagicMock()
+    # Use fixture-provided monkeypatch to set attribute (non-raising to avoid import issues)
+    monkeypatch.setattr("OpenGL.GL.glPolygonMode", mock_gl_polygon_mode, raising=False)
 
     event_window.keyPressEvent(event)
 
@@ -116,11 +119,13 @@ def test_key_press_event_wireframe_mode(mock_gl_polygon_mode, event_window):
     assert event_window.update_called is True
 
 
-@patch("OpenGL.GL.glPolygonMode")
-def test_key_press_event_solid_mode(mock_gl_polygon_mode, event_window):
+def test_key_press_event_solid_mode(event_window, monkeypatch):
     """Test S key switches to solid fill mode"""
     event = Mock()
     event.key.return_value = Qt.Key_S
+
+    mock_gl_polygon_mode = MagicMock()
+    monkeypatch.setattr("OpenGL.GL.glPolygonMode", mock_gl_polygon_mode, raising=False)
 
     event_window.keyPressEvent(event)
 
@@ -146,19 +151,18 @@ def test_key_press_event_space_reset(event_window):
     assert event_window.update_called is True
 
 
-def test_key_press_event_other_key(event_window):
+def test_key_press_event_other_key(event_window, monkeypatch):
     """Test other keys call parent keyPressEvent"""
     event = Mock()
     event.key.return_value = Qt.Key_A
 
-    # Mock super() call
-    with patch("builtins.super") as mock_super:
-        mock_parent = Mock()
-        mock_super.return_value = mock_parent
+    # Mock super() call by temporarily replacing builtins.super via monkeypatch
+    mock_parent = Mock()
+    monkeypatch.setattr("builtins.super", lambda *args, **kwargs: mock_parent, raising=False)
 
-        event_window.keyPressEvent(event)
+    event_window.keyPressEvent(event)
 
-        mock_parent.keyPressEvent.assert_called_once_with(event)
+    mock_parent.keyPressEvent.assert_called_once_with(event)
 
 
 def test_mouse_press_event_left_button(event_window):
@@ -337,14 +341,14 @@ def test_wheel_event_zero_delta(event_window):
     assert event_window.update_called is True
 
 
-def test_constants():
+def test_constants(qt_app):
     """Test default sensitivity constants"""
     assert PySideEventHandlingMixin.DEFAULT_ROTATION_SENSITIVITY == pytest.approx(0.5)
     assert PySideEventHandlingMixin.DEFAULT_TRANSLATION_SENSITIVITY == pytest.approx(0.01)
     assert PySideEventHandlingMixin.DEFAULT_ZOOM_SENSITIVITY == pytest.approx(0.1)
 
 
-def test_mouse_movement_rotation_with_different_sensitivity():
+def test_mouse_movement_rotation_with_different_sensitivity(qt_app):
     """Test mouse rotation with different sensitivity values"""
     window = MockEventHandlingWindow()
     window.setup_event_handling(rotation_sensitivity=2.0)
@@ -366,7 +370,7 @@ def test_mouse_movement_rotation_with_different_sensitivity():
     assert window.spin_y_face == 20
 
 
-def test_mouse_movement_translation_with_different_sensitivity():
+def test_mouse_movement_translation_with_different_sensitivity(qt_app):
     """Test mouse translation with different sensitivity values"""
     window = MockEventHandlingWindow()
     window.setup_event_handling(translation_sensitivity=0.5)
@@ -388,7 +392,7 @@ def test_mouse_movement_translation_with_different_sensitivity():
     assert window.model_position.y == pytest.approx(10.0)
 
 
-def test_event_handling_target_protocol():
+def test_event_handling_target_protocol(qt_app):
     """Test that the protocol is properly defined"""
 
     # This should not raise any errors

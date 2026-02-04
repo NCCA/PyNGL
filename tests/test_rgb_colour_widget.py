@@ -7,7 +7,7 @@ from ncca.ngl import Vec3
 from ncca.ngl.widgets import RGBColourWidget
 
 
-def test_rgb_widget_initial_value(qtbot):
+def test_rgb_widget_initial_value(qt_app, qtbot):
     w = RGBColourWidget()
     qtbot.addWidget(w)
 
@@ -19,7 +19,7 @@ def test_rgb_widget_initial_value(qtbot):
     assert "#ffffff" in w._color_button.styleSheet()
 
 
-def test_rgb_widget_constructor_initial_value_and_name(qtbot):
+def test_rgb_widget_constructor_initial_value_and_name(qt_app,qtbot):
     start_val = Vec3(0.5, 0.6, 0.7)
     w = RGBColourWidget(name="InitName", r=start_val.x, g=start_val.y, b=start_val.z)
     qtbot.addWidget(w)
@@ -33,7 +33,7 @@ def test_rgb_widget_constructor_initial_value_and_name(qtbot):
     assert w.b_spinbox.value() == pytest.approx(start_val.z)
 
 
-def test_property_accessors(qtbot):
+def test_property_accessors(qt_app,qtbot):
     w = RGBColourWidget()
     qtbot.addWidget(w)
 
@@ -47,7 +47,7 @@ def test_property_accessors(qtbot):
     assert w._label.text() == "PropName"
 
 
-def test_value_signals_for_each_component(qtbot):
+def test_value_signals_for_each_component(qt_app,qtbot):
     w = RGBColourWidget()
     qtbot.addWidget(w)
 
@@ -64,7 +64,7 @@ def test_value_signals_for_each_component(qtbot):
     assert sig_b.args == [pytest.approx(0.75)]
 
 
-def test_set_colour_blocks_channel_signals_but_emits_colour_changed(qtbot):
+def test_set_colour_blocks_channel_signals_but_emits_colour_changed(qt_app,qtbot):
     w = RGBColourWidget()
     qtbot.addWidget(w)
 
@@ -92,7 +92,7 @@ def test_set_colour_blocks_channel_signals_but_emits_colour_changed(qtbot):
     assert emitted.z == pytest.approx(new_val.z)
 
 
-def test_spinbox_ranges_and_single_step_defaults(qtbot):
+def test_spinbox_ranges_and_single_step_defaults(qt_app,qtbot):
     w = RGBColourWidget()
     qtbot.addWidget(w)
 
@@ -109,7 +109,7 @@ def test_spinbox_ranges_and_single_step_defaults(qtbot):
     assert w.b_spinbox.singleStep() == pytest.approx(0.01)
 
 
-def test_update_button_color_updates_stylesheet(qtbot):
+def test_update_button_color_updates_stylesheet(qt_app,qtbot):
     w = RGBColourWidget()
     qtbot.addWidget(w)
 
@@ -121,7 +121,7 @@ def test_update_button_color_updates_stylesheet(qtbot):
     assert "#000000" in w._color_button.styleSheet()
 
 
-def test_show_color_dialog_applies_selection_and_emits(monkeypatch, qtbot):
+def test_show_color_dialog_applies_selection_and_emits(qt_app,monkeypatch, qtbot):
     w = RGBColourWidget()
     qtbot.addWidget(w)
 

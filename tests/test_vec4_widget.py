@@ -6,7 +6,7 @@ from ncca.ngl import Vec4
 from ncca.ngl.widgets import Vec4Widget
 
 
-def test_vec4_widget_initial_value(qtbot):
+def test_vec4_widget_initial_value(qt_app, qtbot):
     # Create the window
     v4 = Vec4Widget()
     qtbot.addWidget(v4)
@@ -15,7 +15,7 @@ def test_vec4_widget_initial_value(qtbot):
     assert v4.get_name() == ""
 
 
-def test_vec4_widget_constructor_initial_value_and_name(qtbot):
+def test_vec4_widget_constructor_initial_value_and_name(qt_app, qtbot):
     # Pass name and value via keywords (constructor signature is parent, name, value)
     start_value = Vec4(0.5, -0.5, 1.0, 0.5)
     v4 = Vec4Widget(name="InitName", value=start_value)
@@ -28,7 +28,7 @@ def test_vec4_widget_constructor_initial_value_and_name(qtbot):
     assert v4.get_value() == start_value
 
 
-def test_vec4_widget_set_value(qtbot):
+def test_vec4_widget_set_value(qt_app, qtbot):
     # Create the window
     v4 = Vec4Widget()
     qtbot.addWidget(v4)
@@ -49,7 +49,7 @@ def test_property_accessors(qtbot):
     assert v4._label.text() == "PropName"
 
 
-def test_value_signals_for_each_component(qtbot):
+def test_value_signals_for_each_component(qt_app, qtbot):
     # Verify per-axis signals emit when spinboxes change (already in your tests,
     # but keep a concise check here)
     v4 = Vec4Widget()
@@ -71,7 +71,7 @@ def test_value_signals_for_each_component(qtbot):
     assert sig_w.args == [pytest.approx(4.56)]
 
 
-def test_set_value_blocks_axis_signals_but_emits_value_changed(qtbot):
+def test_set_value_blocks_axis_signals_but_emits_value_changed(qt_app, qtbot):
     v4 = Vec4Widget()
     qtbot.addWidget(v4)
 
@@ -101,7 +101,7 @@ def test_set_value_blocks_axis_signals_but_emits_value_changed(qtbot):
     assert sig.args == [new_val]
 
 
-def test_set_range_and_individual_ranges(qtbot):
+def test_set_range_and_individual_ranges(qt_app, qtbot):
     v4 = Vec4Widget()
     qtbot.addWidget(v4)
 
@@ -134,7 +134,7 @@ def test_set_range_and_individual_ranges(qtbot):
     assert v4.w_spinbox.maximum() == pytest.approx(5.0)
 
 
-def test_set_single_step_applies_to_all(qtbot):
+def test_set_single_step_applies_to_all(qt_app, qtbot):
     v4 = Vec4Widget()
     qtbot.addWidget(v4)
 

@@ -1,10 +1,11 @@
-import pytest
 from abc import ABCMeta
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
+
 import numpy as np
+import pytest
 import wgpu
 
-from ncca.ngl.webgpu.webgpu_widget import WebGPUWidget, QWidgetABCMeta
+from ncca.ngl.webgpu.webgpu_widget import QWidgetABCMeta, WebGPUWidget
 
 
 class TestWebGPUWidget:
@@ -172,7 +173,7 @@ class TestWebGPUWidget:
         # Check fallback behavior - frame buffer should be filled with gray (128)
         assert np.all(widget.frame_buffer == 128)
 
-    def test_present_image(self):
+    def test_present_image(self, monkeypatch):
         """Test image presentation."""
         widget = MagicMock(spec=WebGPUWidget)
 
@@ -182,17 +183,18 @@ class TestWebGPUWidget:
         # Mock painter
         mock_painter = MagicMock()
 
-        with patch("ncca.ngl.webgpu.webgpu_widget.QImage") as mock_qimage:
-            mock_image = MagicMock()
-            mock_qimage.return_value = mock_image
+        mock_qimage = MagicMock()
+        mock_image = MagicMock()
+        mock_qimage.return_value = mock_image
+        monkeypatch.setattr("ncca.ngl.webgpu.webgpu_widget.QImage", mock_qimage, raising=False)
 
-            WebGPUWidget._present_image(widget, mock_painter, image_data)
+        WebGPUWidget._present_image(widget, mock_painter, image_data)
 
-            # Check that QImage was created with correct parameters
-            mock_qimage.assert_called_once()
+        # Check that QImage was created with correct parameters
+        mock_qimage.assert_called_once()
 
-            # Check that painter.drawImage was called
-            mock_painter.drawImage.assert_called_once()
+        # Check that painter.drawImage was called
+        mock_painter.drawImage.assert_called_once()
 
     def test_paint_event_no_device(self):
         """Test paint event when device is not available."""
@@ -331,35 +333,32 @@ class TestWebGPUWidget:
         # Check that frame_buffer was resized
         assert widget.frame_buffer.shape == (600, 800, 4)
 
-    def test_init_default_background_color(self):
+    def test_init_default_background_color(self, monkeypatch):
         """Test WebGPUWidget initialization with default background color."""
         # Test that the widget initializes with default background color
         # We can't easily test the actual Qt initialization, but we can verify
         # the default parameter is handled correctly
 
         # Create a minimal mock to test initialization parameters
-        with patch.object(
+        monkeypatch.setattr(
             WebGPUWidget,
             "__init__",
             lambda self, background_colour=(0.4, 0.4, 0.4, 1.0): None,
-        ):
-            widget = WebGPUWidget()
-            # This test verifies the signature accepts the parameter correctly
+        )
+        widget = WebGPUWidget()
 
-    def test_init_custom_background_color(self):
+    def test_init_custom_background_color(self, monkeypatch):
         """Test WebGPUWidget initialization with custom background color."""
         # Test custom background color parameter
         custom_color = (0.1, 0.2, 0.3, 1.0)
 
-        with patch.object(
+        monkeypatch.setattr(
             WebGPUWidget,
             "__init__",
-            lambda self, background_colour=(0.4, 0.4, 0.4, 1.0): setattr(
-                self, "background_colour", background_colour
-            ),
-        ):
-            widget = WebGPUWidget(background_colour=custom_color)
-            assert widget.background_colour == custom_color
+            lambda self, background_colour=(0.4, 0.4, 0.4, 1.0): setattr(self, "background_colour", background_colour),
+        )
+        widget = WebGPUWidget(background_colour=custom_color)
+        assert widget.background_colour == custom_color
 
     def test_create_render_pass_with_background_color(self):
         """Test render pass creation uses configured background color."""
@@ -389,8 +388,6 @@ class TestWebGPUWidget:
 
         # Verify other render pass parameters
         assert color_attachments[0]["view"] == widget.multisample_texture_view
-        assert (
-            color_attachments[0]["resolve_target"] == widget.colour_buffer_texture_view
-        )
+        assert color_attachments[0]["resolve_target"] == widget.colour_buffer_texture_view
         assert color_attachments[0]["load_op"] == wgpu.LoadOp.clear
         assert color_attachments[0]["store_op"] == wgpu.StoreOp.store

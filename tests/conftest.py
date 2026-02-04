@@ -9,6 +9,7 @@ def pytest_configure(config):
     """Configure pytest with custom markers."""
     config.addinivalue_line("markers", "opengl: mark test as using an OpenGL context")
     config.addinivalue_line("markers", "webgpu: mark test as using a WebGPU device")
+    config.addinivalue_line("markers", "qt: mark test as using qt for ")
 
 
 def pytest_collection_modifyitems(config, items):
@@ -27,6 +28,8 @@ def pytest_collection_modifyitems(config, items):
                 item.add_marker(pytest.mark.opengl)
             elif "webgpu_device" in fixtures:
                 item.add_marker(pytest.mark.webgpu)
+            elif "qt_app" in fixtures:
+                item.add_marker(pytest.mark.qt)
         return
 
     # If no marker is specified, manually partition the tests.
@@ -34,7 +37,9 @@ def pytest_collection_modifyitems(config, items):
     deselected_items = []
     for item in items:
         fixtures = getattr(item, "fixturenames", [])
-        is_graphics = "opengl_context" in fixtures or "webgpu_device" in fixtures
+
+        is_graphics = "opengl_context" in fixtures or "webgpu_device" in fixtures or "qt_app" in fixtures
+
         if is_graphics:
             deselected_items.append(item)
         else:
@@ -44,6 +49,10 @@ def pytest_collection_modifyitems(config, items):
     if deselected_items:
         items[:] = remaining_items
         config.hook.pytest_deselected(items=deselected_items)
+
+
+@pytest.fixture(scope="session")
+def qt_app(): ...
 
 
 @pytest.fixture(scope="session")

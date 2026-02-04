@@ -6,7 +6,7 @@ from ncca.ngl import Mat4, Transform, Vec3
 from ncca.ngl.widgets import TransformWidget
 
 
-def test_transformwidget_initial_value(qtbot):
+def test_transformwidget_initial_value(qt_app, qtbot):
     """Test default initialization values."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -18,7 +18,7 @@ def test_transformwidget_initial_value(qtbot):
     assert widget.name == ""
 
 
-def test_transformwidget_constructor_with_name(qtbot):
+def test_transformwidget_constructor_with_name(qt_app, qtbot):
     """Test initialization with custom name parameter."""
     name = "TestTransform"
 
@@ -29,7 +29,7 @@ def test_transformwidget_constructor_with_name(qtbot):
     assert widget._toggle_button.text() == name
 
 
-def test_set_name(qtbot):
+def test_set_name(qt_app, qtbot):
     """Test setting the widget name."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -41,7 +41,7 @@ def test_set_name(qtbot):
     assert widget._toggle_button.text() == new_name
 
 
-def test_property_accessor_name(qtbot):
+def test_property_accessor_name(qt_app, qtbot):
     """Test Qt Property wrapper for name."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -51,7 +51,7 @@ def test_property_accessor_name(qtbot):
     assert widget.name == "PropertyTransform"
 
 
-def test_position_range(qtbot):
+def test_position_range(qt_app, qtbot):
     """Test that position has correct range set."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -64,7 +64,7 @@ def test_position_range(qtbot):
     assert widget._position.z_spinbox.maximum() == pytest.approx(20)
 
 
-def test_rotation_range(qtbot):
+def test_rotation_range(qt_app, qtbot):
     """Test that rotation has correct range set."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -77,7 +77,7 @@ def test_rotation_range(qtbot):
     assert widget._rotation.z_spinbox.maximum() == pytest.approx(360)
 
 
-def test_scale_range(qtbot):
+def test_scale_range(qt_app, qtbot):
     """Test that scale has correct range set."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -90,7 +90,7 @@ def test_scale_range(qtbot):
     assert widget._scale.z_spinbox.maximum() == pytest.approx(20)
 
 
-def test_value_changed_signal_on_position_change(qtbot):
+def test_value_changed_signal_on_position_change(qt_app, qtbot):
     """Test that valueChanged signal emits when position changes."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -102,7 +102,7 @@ def test_value_changed_signal_on_position_change(qtbot):
     assert isinstance(signal.args[0], Mat4)
 
 
-def test_value_changed_signal_on_rotation_change(qtbot):
+def test_value_changed_signal_on_rotation_change(qt_app, qtbot):
     """Test that valueChanged signal emits when rotation changes."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -114,7 +114,7 @@ def test_value_changed_signal_on_rotation_change(qtbot):
     assert isinstance(signal.args[0], Mat4)
 
 
-def test_value_changed_signal_on_scale_change(qtbot):
+def test_value_changed_signal_on_scale_change(qt_app, qtbot):
     """Test that valueChanged signal emits when scale changes."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -126,7 +126,7 @@ def test_value_changed_signal_on_scale_change(qtbot):
     assert isinstance(signal.args[0], Mat4)
 
 
-def test_value_changed_signal_on_rotation_order_change(qtbot):
+def test_value_changed_signal_on_rotation_order_change(qt_app, qtbot):
     """Test that valueChanged signal emits when rotation order changes."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -138,7 +138,7 @@ def test_value_changed_signal_on_rotation_order_change(qtbot):
     assert isinstance(signal.args[0], Mat4)
 
 
-def test_rotation_order_combobox_items(qtbot):
+def test_rotation_order_combobox_items(qt_app, qtbot):
     """Test that the rotation order combobox has correct items."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -150,13 +150,13 @@ def test_rotation_order_combobox_items(qtbot):
         assert widget._rot_order.itemText(i) == order
 
 
-def test_rotation_order_class_variable(qtbot):
+def test_rotation_order_class_variable(qt_app, qtbot):
     """Test that _rotation_order class variable contains correct values."""
     expected_orders = ["xyz", "yzx", "zxy", "xzy", "yxz", "zyx"]
     assert TransformWidget._rotation_order == expected_orders
 
 
-def test_toggle_collapsed_expand(qtbot):
+def test_toggle_collapsed_expand(qt_app, qtbot):
     """Test expanding the collapsible section."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -169,7 +169,7 @@ def test_toggle_collapsed_expand(qtbot):
     assert widget._toggle_button.arrowType() == Qt.ArrowType.DownArrow
 
 
-def test_toggle_collapsed_collapse(qtbot):
+def test_toggle_collapsed_collapse(qt_app, qtbot):
     """Test collapsing the collapsible section."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -184,7 +184,7 @@ def test_toggle_collapsed_collapse(qtbot):
     assert widget._toggle_button.arrowType() == Qt.ArrowType.RightArrow
 
 
-def test_toggle_collapsed_toggle_sequence(qtbot):
+def test_toggle_collapsed_toggle_sequence(qt_app, qtbot):
     """Test toggling between collapsed and expanded states."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -203,7 +203,7 @@ def test_toggle_collapsed_toggle_sequence(qtbot):
     assert widget._content_widget.isVisible()
 
 
-def test_transform_matrix_calculation_identity(qtbot):
+def test_transform_matrix_calculation_identity(qt_app, qtbot):
     """Test that default transform produces identity-like matrix."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -228,7 +228,7 @@ def test_transform_matrix_calculation_identity(qtbot):
             assert result_matrix[i][j] == pytest.approx(expected_matrix[i][j])
 
 
-def test_transform_matrix_with_translation(qtbot):
+def test_transform_matrix_with_translation(qt_app, qtbot):
     """Test transformation matrix with translation."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -254,7 +254,7 @@ def test_transform_matrix_with_translation(qtbot):
             assert result_matrix[i][j] == pytest.approx(expected_matrix[i][j])
 
 
-def test_transform_matrix_with_rotation(qtbot):
+def test_transform_matrix_with_rotation(qt_app, qtbot):
     """Test transformation matrix with rotation."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -280,7 +280,7 @@ def test_transform_matrix_with_rotation(qtbot):
             assert result_matrix[i][j] == pytest.approx(expected_matrix[i][j])
 
 
-def test_transform_matrix_with_scale(qtbot):
+def test_transform_matrix_with_scale(qt_app, qtbot):
     """Test transformation matrix with scale."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -306,7 +306,7 @@ def test_transform_matrix_with_scale(qtbot):
             assert result_matrix[i][j] == pytest.approx(expected_matrix[i][j])
 
 
-def test_transform_matrix_with_different_rotation_order(qtbot):
+def test_transform_matrix_with_different_rotation_order(qt_app, qtbot):
     """Test that different rotation orders produce different matrices."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -338,7 +338,7 @@ def test_transform_matrix_with_different_rotation_order(qtbot):
     assert matrices_different, "Matrices should differ for different rotation orders"
 
 
-def test_transform_matrix_full_transform(qtbot):
+def test_transform_matrix_full_transform(qt_app, qtbot):
     """Test transformation matrix with position, rotation, and scale."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -369,7 +369,7 @@ def test_transform_matrix_full_transform(qtbot):
             assert result_matrix[i][j] == pytest.approx(expected_matrix[i][j])
 
 
-def test_multiple_value_changed_emissions(qtbot):
+def test_multiple_value_changed_emissions(qt_app, qtbot):
     """Test that multiple changes emit multiple signals."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -386,7 +386,7 @@ def test_multiple_value_changed_emissions(qtbot):
     assert len(emission_count) == 4
 
 
-def test_widget_contains_vec3_widgets(qtbot):
+def test_widget_contains_vec3_widgets(qt_app, qtbot):
     """Test that the widget contains the expected Vec3Widget children."""
     widget = TransformWidget()
     qtbot.addWidget(widget)
@@ -397,7 +397,7 @@ def test_widget_contains_vec3_widgets(qtbot):
     assert widget._scale.get_name() == "Scale"
 
 
-def test_initial_rotation_order_is_xyz(qtbot):
+def test_initial_rotation_order_is_xyz(qt_app, qtbot):
     """Test that the initial rotation order is xyz (index 0)."""
     widget = TransformWidget()
     qtbot.addWidget(widget)

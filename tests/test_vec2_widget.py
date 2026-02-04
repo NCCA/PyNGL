@@ -6,7 +6,7 @@ from ncca.ngl import Vec2
 from ncca.ngl.widgets import Vec2Widget
 
 
-def test_vec2_widget_initial_value(qtbot):
+def test_vec2_widget_initial_value(qt_app, qtbot):
     # Create the window
     v2 = Vec2Widget()
     qtbot.addWidget(v2)
@@ -15,7 +15,7 @@ def test_vec2_widget_initial_value(qtbot):
     assert v2.get_name() == ""
 
 
-def test_vec2_widget_constructor_initial_value_and_name(qtbot):
+def test_vec2_widget_constructor_initial_value_and_name(qt_app, qtbot):
     # Pass name and value via keywords (constructor signature is parent, name, value)
     start_value = Vec2(0.5, -0.5)
     v2 = Vec2Widget(name="InitName", value=start_value)
@@ -28,7 +28,7 @@ def test_vec2_widget_constructor_initial_value_and_name(qtbot):
     assert v2.get_value() == start_value
 
 
-def test_vec2_widget_set_value(qtbot):
+def test_vec2_widget_set_value(qt_app, qtbot):
     # Create the window
     v2 = Vec2Widget()
     qtbot.addWidget(v2)
@@ -36,7 +36,7 @@ def test_vec2_widget_set_value(qtbot):
     assert v2.get_value() == Vec2(1, 2)
 
 
-def test_property_accessors(qtbot):
+def test_property_accessors(qt_app, qtbot):
     v2 = Vec2Widget()
     qtbot.addWidget(v2)
 
@@ -49,7 +49,7 @@ def test_property_accessors(qtbot):
     assert v2._label.text() == "PropName"
 
 
-def test_value_signals_for_each_component(qtbot):
+def test_value_signals_for_each_component(qt_app, qtbot):
     # Verify per-axis signals emit when spinboxes change (already in your tests,
     # but keep a concise check here)
     v2 = Vec2Widget()
@@ -64,7 +64,7 @@ def test_value_signals_for_each_component(qtbot):
     assert sig_y.args == [pytest.approx(-2.34)]
 
 
-def test_set_value_blocks_axis_signals_but_emits_valuechanged(qtbot):
+def test_set_value_blocks_axis_signals_but_emits_valuechanged(qt_app, qtbot):
     v2 = Vec2Widget()
     qtbot.addWidget(v2)
 
@@ -88,7 +88,7 @@ def test_set_value_blocks_axis_signals_but_emits_valuechanged(qtbot):
     assert sig.args == [new_val]
 
 
-def test_set_range_and_individual_ranges(qtbot):
+def test_set_range_and_individual_ranges(qt_app, qtbot):
     v2 = Vec2Widget()
     qtbot.addWidget(v2)
 
@@ -109,7 +109,7 @@ def test_set_range_and_individual_ranges(qtbot):
     assert v2.y_spinbox.maximum() == pytest.approx(5.0)
 
 
-def test_set_single_step_applies_to_all(qtbot):
+def test_set_single_step_applies_to_all(qt_app, qtbot):
     v2 = Vec2Widget()
     qtbot.addWidget(v2)
 

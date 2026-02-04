@@ -2,11 +2,12 @@ import pytest
 from PySide6.QtCore import Qt
 from PySide6.QtTest import QTest
 from PySide6.QtWidgets import QFrame, QVBoxLayout
+
 from ncca.ngl import Mat4, Vec3, look_at
 from ncca.ngl.widgets import LookAtWidget
 
 
-def test_lookatwidget_initial_value(qtbot):
+def test_lookatwidget_initial_value(qt_app, qtbot):
     """Test default initialization values."""
     widget = LookAtWidget()
     qtbot.addWidget(widget)
@@ -18,7 +19,7 @@ def test_lookatwidget_initial_value(qtbot):
     assert widget.get_name() == ""
 
 
-def test_lookatwidget_constructor_with_parameters(qtbot):
+def test_lookatwidget_constructor_with_parameters(qt_app, qtbot):
     """Test initialization with custom parameters."""
     eye = Vec3(5, 5, 5)
     look = Vec3(1, 1, 1)
@@ -33,7 +34,7 @@ def test_lookatwidget_constructor_with_parameters(qtbot):
     assert widget._toggle_button.text() == name
 
 
-def test_set_eye(qtbot):
+def test_set_eye(qt_app, qtbot):
     """Test setting the eye position."""
     widget = LookAtWidget()
     qtbot.addWidget(widget)
@@ -44,7 +45,7 @@ def test_set_eye(qtbot):
     assert widget.get_eye() == new_eye
 
 
-def test_set_look(qtbot):
+def test_set_look(qt_app, qtbot):
     """Test setting the look-at position."""
     widget = LookAtWidget()
     qtbot.addWidget(widget)
@@ -55,7 +56,7 @@ def test_set_look(qtbot):
     assert widget.get_look() == new_look
 
 
-def test_set_up(qtbot):
+def test_set_up(qt_app, qtbot):
     """Test setting the up vector via index."""
     widget = LookAtWidget()
     qtbot.addWidget(widget)
@@ -73,7 +74,7 @@ def test_set_up(qtbot):
     assert widget.get_up() == Vec3(0, 0, 1)
 
 
-def test_set_name(qtbot):
+def test_set_name(qt_app, qtbot):
     """Test setting the widget name."""
     widget = LookAtWidget()
     qtbot.addWidget(widget)
@@ -85,7 +86,7 @@ def test_set_name(qtbot):
     assert widget._toggle_button.text() == new_name
 
 
-def test_property_accessors(qtbot):
+def test_property_accessors(qt_app, qtbot):
     """Test Qt Property wrappers."""
     widget = LookAtWidget()
     qtbot.addWidget(widget)
@@ -103,7 +104,7 @@ def test_property_accessors(qtbot):
     assert widget.get_name() == "PropertyCamera"
 
 
-def test_value_changed_signal_on_eye_change(qtbot):
+def test_value_changed_signal_on_eye_change(qt_app, qtbot):
     """Test that valueChanged signal emits when eye position changes."""
     widget = LookAtWidget()
     qtbot.addWidget(widget)
@@ -115,7 +116,7 @@ def test_value_changed_signal_on_eye_change(qtbot):
     assert isinstance(signal.args[0], Mat4)
 
 
-def test_value_changed_signal_on_look_change(qtbot):
+def test_value_changed_signal_on_look_change(qt_app, qtbot):
     """Test that valueChanged signal emits when look position changes."""
     widget = LookAtWidget()
     qtbot.addWidget(widget)
@@ -127,7 +128,7 @@ def test_value_changed_signal_on_look_change(qtbot):
     assert isinstance(signal.args[0], Mat4)
 
 
-def test_value_changed_signal_on_up_change(qtbot):
+def test_value_changed_signal_on_up_change(qt_app, qtbot):
     """Test that valueChanged signal emits when up vector changes."""
     widget = LookAtWidget()
     qtbot.addWidget(widget)
@@ -139,7 +140,7 @@ def test_value_changed_signal_on_up_change(qtbot):
     assert isinstance(signal.args[0], Mat4)
 
 
-def test_view_matrix_calculation(qtbot):
+def test_view_matrix_calculation(qt_app, qtbot):
     """Test that the view matrix is calculated correctly."""
     eye = Vec3(0, 0, 5)
     look = Vec3(0, 0, 0)
@@ -160,7 +161,7 @@ def test_view_matrix_calculation(qtbot):
             assert view_matrix[i][j] == pytest.approx(expected_matrix[i][j])
 
 
-def test_view_matrix_updates_on_parameter_change(qtbot):
+def test_view_matrix_updates_on_parameter_change(qt_app, qtbot):
     """Test that view matrix updates when parameters change."""
     widget = LookAtWidget()
     qtbot.addWidget(widget)
@@ -176,7 +177,7 @@ def test_view_matrix_updates_on_parameter_change(qtbot):
     assert initial_view != updated_view
 
 
-def test_toggle_collapsed_expand(qtbot):
+def test_toggle_collapsed_expand(qt_app, qtbot):
     """Test expanding the collapsible section."""
     widget = LookAtWidget()
     qtbot.addWidget(widget)
@@ -189,7 +190,7 @@ def test_toggle_collapsed_expand(qtbot):
     assert widget._toggle_button.arrowType() == Qt.ArrowType.DownArrow
 
 
-def test_toggle_collapsed_collapse(qtbot):
+def test_toggle_collapsed_collapse(qt_app, qtbot):
     """Test collapsing the collapsible section."""
     widget = LookAtWidget()
     qtbot.addWidget(widget)
@@ -202,7 +203,7 @@ def test_toggle_collapsed_collapse(qtbot):
     assert widget._toggle_button.arrowType() == Qt.ArrowType.RightArrow
 
 
-def test_toggle_collapsed_toggle_sequence(qtbot):
+def test_toggle_collapsed_toggle_sequence(qt_app, qtbot):
     """Test toggling between collapsed and expanded states."""
     widget = LookAtWidget()
     qtbot.addWidget(widget)
@@ -221,7 +222,7 @@ def test_toggle_collapsed_toggle_sequence(qtbot):
     assert widget._content_widget.isVisible()
 
 
-def test_world_up_vectors(qtbot):
+def test_world_up_vectors(qt_app, qtbot):
     """Test that world_up class variable contains correct vectors."""
     widget = LookAtWidget()
     qtbot.addWidget(widget)
@@ -231,7 +232,7 @@ def test_world_up_vectors(qtbot):
     assert LookAtWidget.world_up[2] == Vec3(0, 0, 1)  # z-up
 
 
-def test_combobox_items(qtbot):
+def test_combobox_items(qt_app, qtbot):
     """Test that the up vector combobox has correct items."""
     widget = LookAtWidget()
     qtbot.addWidget(widget)
@@ -242,7 +243,7 @@ def test_combobox_items(qtbot):
     assert widget._up.itemText(2) == "z-up"
 
 
-def test_matrix_recalculation_with_different_up_vectors(qtbot):
+def test_matrix_recalculation_with_different_up_vectors(qt_app, qtbot):
     """Test that changing up vector produces different view matrices."""
     widget = LookAtWidget(eye=Vec3(5, 5, 5), look=Vec3(0, 0, 0))
     qtbot.addWidget(widget)
@@ -265,7 +266,7 @@ def test_matrix_recalculation_with_different_up_vectors(qtbot):
     assert matrix_x_up != matrix_z_up
 
 
-def test_multiple_value_changed_emissions(qtbot):
+def test_multiple_value_changed_emissions(qt_app, qtbot):
     """Test that multiple changes emit multiple signals."""
     widget = LookAtWidget()
     qtbot.addWidget(widget)
