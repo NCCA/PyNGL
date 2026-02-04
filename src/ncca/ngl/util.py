@@ -6,6 +6,8 @@ Most of these functions are based on functions found in other libraries such as 
 import enum
 import math
 
+import numpy as np
+
 from .mat4 import Mat4
 
 
@@ -214,3 +216,53 @@ def renderman_look_at(eye, look, up):
     result.m[3][2] = -eye.dot(n)
 
     return result
+
+
+def prim_data_to_ri_points_polygons(triangles: np.ndarray):
+    """
+    Convert a packed numpy array of triangles to RenderMan PointsPolygons format.
+    This is designed to work with the PrimData class outputs.
+    Parameters
+    ----------
+    triangles : np.ndarray
+        Array of shape (n_vertices, 8) where each row is: x, y, z, nx, ny, nz, u, v
+        n_vertices must be divisible by 3 (since we have triangles)
+
+    Returns
+    -------
+    tuple
+        (nvertices, vertices, parameterlist)
+        - nvertices: list of vertex counts per polygon (all 3 for triangles)
+        - vertices: flat list of vertex indices
+        - parameterlist: dict with 'P', 'N', 'st' arrays for RenderMan
+    """
+    # Ensure it's a 2D array
+    if triangles.ndim == 1:
+        # If completely flat, reshape to (n_verts, 8)
+        if len(triangles) % 8 != 0:
+            raise ValueError("1D array length must be divisible by 8")
+        triangles = triangles.reshape(-1, 8)
+
+    n_verts = triangles.shape[0]
+    if n_verts % 3 != 0:
+        raise ValueError("Number of vertices must be divisible by 3")
+
+    n_triangles = n_verts // 3
+
+    # Extract components from each row
+    positions = triangles[:, 0:3]  # (n_verts, 3) - x, y, z
+    normals = triangles[:, 3:6]  # (n_verts, 3) - nx, ny, nz
+    uvs = triangles[:, 6:8]  # (n_verts, 2) - u, v
+
+    # RenderMan PointsPolygons format
+    nvertices = [3] * n_triangles  # Each polygon has 3 vertices
+    vertices = list(range(n_verts))  # Sequential vertex indices
+
+    # Parameter list - flatten to 1D arrays as RenderMan expects
+    parameterlist = {
+        "P": positions.flatten().tolist(),  # Position
+        "N": normals.flatten().tolist(),  # Normals
+        "st": uvs.flatten().tolist(),  # Texture coordinates
+    }
+
+    return nvertices, vertices, parameterlist

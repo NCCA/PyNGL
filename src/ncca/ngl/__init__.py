@@ -40,7 +40,18 @@ from .simple_vao import SimpleVAO
 from .text import Text
 from .texture import Texture
 from .transform import Transform, TransformRotationOrder
-from .util import PerspMode, calc_normal, clamp, frustum, lerp, look_at, ortho, perspective, renderman_look_at
+from .util import (
+    PerspMode,
+    calc_normal,
+    clamp,
+    frustum,
+    lerp,
+    look_at,
+    ortho,
+    perspective,
+    prim_data_to_ri_points_polygons,
+    renderman_look_at,
+)
 from .vao_factory import VAOFactory, VAOType
 from .vec2 import Vec2
 from .vec2_array import Vec2Array
@@ -111,4 +122,5 @@ all = [
     PySideEventHandlingMixin,
     PerspMode,
     renderman_look_at,
+    prim_data_to_ri_points_polygons,
 ]

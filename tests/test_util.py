@@ -1,6 +1,19 @@
+import numpy as np
 import pytest
 
-from ncca.ngl import Mat4, PerspMode, Vec3, calc_normal, clamp, frustum, lerp, look_at, ortho, perspective
+from ncca.ngl import (
+    Mat4,
+    PerspMode,
+    Vec3,
+    calc_normal,
+    clamp,
+    frustum,
+    lerp,
+    look_at,
+    ortho,
+    perspective,
+    prim_data_to_ri_points_polygons,
+)
 
 
 def test_clamp():
@@ -101,3 +114,23 @@ def test_frustum():
         ],
         abs=1e-3,
     )
+
+
+def test_prim_data_to_ri_points_polygons():
+    # Create example triangle data
+    triangles = np.array(
+        [
+            # Triangle 1: 3 vertices, each with x,y,z,nx,ny,nz,u,v
+            [[0, 0, 0, 0, 0, 1, 0, 0], [1, 0, 0, 0, 0, 1, 1, 0], [0, 1, 0, 0, 0, 1, 0, 1]],
+            # Triangle 2
+            [[1, 0, 0, 0, 0, 1, 1, 0], [1, 1, 0, 0, 0, 1, 1, 1], [0, 1, 0, 0, 0, 1, 0, 1]],
+        ],
+        dtype=np.float32,
+    ).flatten()
+
+    nvertices, vertices, parameterlist = prim_data_to_ri_points_polygons(triangles)
+    assert nvertices == [3, 3]
+    assert vertices == [0, 1, 2, 3, 4, 5]
+    assert parameterlist.get("P")
+    assert parameterlist.get("N")
+    assert parameterlist.get("st")
