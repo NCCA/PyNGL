@@ -8,14 +8,20 @@ while allowing dimension-specific behavior through abstract methods.
 import ctypes
 import math
 from abc import ABC, abstractmethod
-from typing import Any, ClassVar, Self, Tuple
+from typing import Any, ClassVar, Generic, Self, Tuple, TypeVar
 
 import numpy as np
 
 from .util import clamp, hash_combine
 
+# Note this has been changed so I can use python 3.11
+# as renderman want this. Once >3.11 is used we can get rid and just use
+# class VectorBase[T](ABC):
 
-class VectorBase[T](ABC):
+T = TypeVar("T", bound="VectorBase")
+
+
+class VectorBase(ABC, Generic[T]):
     """
     Base class for all vector types providing common functionality.
 

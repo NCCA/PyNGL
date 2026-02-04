@@ -161,3 +161,55 @@ def hash_combine(seed, h):
     seed = (seed + 0x9E3779B9 + ((seed << 6) & 0xFFFFFFFFFFFFFFFF) + (seed >> 2)) & 0xFFFFFFFFFFFFFFFF
     seed ^= h
     return seed
+
+
+def renderman_look_at(eye, look, up):
+    """
+    Calculate 4x4 matrix for RenderMan camera lookAt
+    Accounts for RenderMan's right-handed Y-down, Z-forward coordinate system
+
+    Args:
+        eye: Vec3 - camera position
+        look: Vec3 - point to look at
+        up: Vec3 - up vector (typically (0, 1, 0) in world space)
+
+    Returns:
+        Mat4 - 4x4 transformation matrix
+    """
+    # Calculate view direction (from eye to look point)
+    n = look - eye
+    n.normalize()
+
+    # Calculate right vector
+    v = n.cross(up)
+    v.normalize()
+
+    # Recalculate orthogonal up vector
+    u = v.cross(n)
+    u.normalize()
+
+    # Build the matrix for RenderMan's coordinate system
+    # RenderMan uses Y-down, Z-forward
+    result = Mat4.identity()
+
+    # Right vector (X-axis)
+    result.m[0][0] = v.x
+    result.m[1][0] = v.y
+    result.m[2][0] = v.z
+
+    # Up vector (Y-axis) - negated for Y-down convention
+    result.m[0][1] = -u.x
+    result.m[1][1] = -u.y
+    result.m[2][1] = -u.z
+
+    # Forward vector (Z-axis) - camera looks down +Z
+    result.m[0][2] = n.x
+    result.m[1][2] = n.y
+    result.m[2][2] = n.z
+
+    # Translation (camera position)
+    result.m[3][0] = -eye.dot(v)
+    result.m[3][1] = eye.dot(u)  # Negated Y component
+    result.m[3][2] = -eye.dot(n)
+
+    return result
