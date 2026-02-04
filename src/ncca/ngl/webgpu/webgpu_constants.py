@@ -2,6 +2,8 @@ from enum import IntEnum
 
 import numpy as np
 
+import numpy as np
+
 from ncca.ngl import Mat2, Mat3, Mat4, Vec2, Vec3, Vec4
 
 FLOAT_SIZE = np.dtype(np.float32).itemsize

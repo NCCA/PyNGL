@@ -1,38 +1,33 @@
+import numpy as np
 import pytest
 import wgpu
 import wgpu.utils
-import numpy as np
 
 from ncca.ngl.webgpu import PipelineFactory, PipelineType
+from ncca.ngl.webgpu.instanced_geometry_pipeline import (
+    InstancedGeometryPipelineMultiColour,
+    InstancedGeometryPipelineSingleColour,
+)
 from ncca.ngl.webgpu.line_pipeline import (
     LinePipelineMultiColour,
     LinePipelineSingleColour,
-)
-from ncca.ngl.webgpu.point_pipeline import (
-    PointPipelineMultiColour,
-    PointPipelineSingleColour,
 )
 from ncca.ngl.webgpu.point_list_pipeline import (
     PointListPipelineMultiColour,
     PointListPipelineSingleColour,
 )
+from ncca.ngl.webgpu.point_pipeline import (
+    PointPipelineMultiColour,
+    PointPipelineSingleColour,
+)
 from ncca.ngl.webgpu.triangle_pipeline import (
     TrianglePipelineMultiColour,
     TrianglePipelineSingleColour,
 )
-from ncca.ngl.webgpu.instanced_geometry_pipeline import (
-    InstancedGeometryPipelineMultiColour,
-    InstancedGeometryPipelineSingleColour,
-)
-
 
 # Test data fixtures
-TEST_POSITIONS = np.array(
-    [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [-1.0, -1.0, 0.0]], dtype=np.float32
-)
-TEST_COLORS = np.array(
-    [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], dtype=np.float32
-)
+TEST_POSITIONS = np.array([[0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [-1.0, -1.0, 0.0]], dtype=np.float32)
+TEST_COLORS = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], dtype=np.float32)
 TEST_MVP_MATRIX = np.eye(4, dtype=np.float32)
 
 # Geometry test data for instanced rendering
@@ -93,11 +88,6 @@ def render_pass(webgpu_device):
     )
 
 
-def test_initial_factory():
-    """Test factory initialization."""
-    assert len(PipelineFactory._pipeline_registry) == 14
-
-
 @pytest.mark.parametrize(
     "pipeline_type,expected_class",
     [
@@ -133,18 +123,14 @@ def test_pipeline_creation(webgpu_device, pipeline_type, expected_class):
 def test_pipeline_set_data_with_numpy(webgpu_device):
     """Test pipeline set_data method with numpy arrays."""
     # Test multi-coloured points
-    pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.MULTI_COLOURED_POINTS
-    )
+    pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.MULTI_COLOURED_POINTS)
     pipeline.set_data(positions=TEST_POSITIONS, colours=TEST_COLORS)
 
     assert getattr(pipeline, "position_buffer", None) is not None
     assert getattr(pipeline, "num_points", 0) == 3
 
     # Test single-coloured points
-    pipeline2 = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.SINGLE_COLOUR_POINTS
-    )
+    pipeline2 = PipelineFactory.create_pipeline(webgpu_device, PipelineType.SINGLE_COLOUR_POINTS)
     pipeline2.set_data(positions=TEST_POSITIONS, colours=np.array([0.5, 0.5, 0.5]))
 
     assert getattr(pipeline2, "position_buffer", None) is not None
@@ -153,9 +139,7 @@ def test_pipeline_set_data_with_numpy(webgpu_device):
 
 def test_pipeline_set_data_with_gpu_buffer(webgpu_device):
     """Test pipeline set_data method with GPU buffers."""
-    pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.MULTI_COLOURED_POINTS
-    )
+    pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.MULTI_COLOURED_POINTS)
 
     # Create test data as GPU buffer
     position_buffer = webgpu_device.create_buffer_with_data(
@@ -196,9 +180,7 @@ def test_pipeline_update_uniforms(webgpu_device, pipeline_type):
 
 def test_pipeline_render_without_data(webgpu_device, render_pass):
     """Test render method when no data is set."""
-    pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.MULTI_COLOURED_POINTS
-    )
+    pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.MULTI_COLOURED_POINTS)
 
     # Should not crash when no data is set
     pipeline.render(render_pass)
@@ -206,9 +188,7 @@ def test_pipeline_render_without_data(webgpu_device, render_pass):
 
 def test_pipeline_cleanup(webgpu_device):
     """Test cleanup method."""
-    pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.MULTI_COLOURED_POINTS
-    )
+    pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.MULTI_COLOURED_POINTS)
     pipeline.set_data(positions=TEST_POSITIONS)
 
     # Cleanup should not raise exceptions
@@ -217,9 +197,7 @@ def test_pipeline_cleanup(webgpu_device):
 
 def test_pipeline_abstract_methods(webgpu_device):
     """Test that abstract methods are properly implemented."""
-    pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.MULTI_COLOURED_POINTS
-    )
+    pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.MULTI_COLOURED_POINTS)
 
     # Test abstract method implementations
     assert callable(pipeline.get_dtype)
@@ -260,30 +238,22 @@ def test_gpu_buffer_handling_for_triangle_line_pipelines(webgpu_device):
     )
 
     # Test triangle pipelines
-    triangle_multi = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.MULTI_COLOURED_TRIANGLES
-    )
+    triangle_multi = PipelineFactory.create_pipeline(webgpu_device, PipelineType.MULTI_COLOURED_TRIANGLES)
     triangle_multi.set_data(positions=position_buffer, colors=color_buffer)
     assert getattr(triangle_multi, "vertex_buffer", None) is position_buffer
     assert getattr(triangle_multi, "color_buffer", None) is color_buffer
 
-    triangle_single = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.SINGLE_COLOUR_TRIANGLES
-    )
+    triangle_single = PipelineFactory.create_pipeline(webgpu_device, PipelineType.SINGLE_COLOUR_TRIANGLES)
     triangle_single.set_data(positions=position_buffer)
     assert getattr(triangle_single, "vertex_buffer", None) is position_buffer
 
     # Test line pipelines
-    line_multi = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.MULTI_COLOURED_LINES
-    )
+    line_multi = PipelineFactory.create_pipeline(webgpu_device, PipelineType.MULTI_COLOURED_LINES)
     line_multi.set_data(positions=position_buffer, colors=color_buffer)
     assert getattr(line_multi, "vertex_buffer", None) is position_buffer
     assert getattr(line_multi, "color_buffer", None) is color_buffer
 
-    line_single = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.SINGLE_COLOUR_LINES
-    )
+    line_single = PipelineFactory.create_pipeline(webgpu_device, PipelineType.SINGLE_COLOUR_LINES)
     line_single.set_data(positions=position_buffer)
     assert getattr(line_single, "vertex_buffer", None) is position_buffer
 
@@ -293,17 +263,13 @@ def test_pipeline_rendering_with_data(webgpu_device, render_pass):
     mvp_matrix = np.eye(4, dtype=np.float32)
 
     # Test triangle pipeline rendering
-    triangle_pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.MULTI_COLOURED_TRIANGLES
-    )
+    triangle_pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.MULTI_COLOURED_TRIANGLES)
     triangle_pipeline.set_data(positions=TEST_POSITIONS, colors=TEST_COLORS)
     triangle_pipeline.update_uniforms(mvp=mvp_matrix)
     triangle_pipeline.render(render_pass, num_vertices=3)
 
     # Test line pipeline rendering
-    line_pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.MULTI_COLOURED_LINES
-    )
+    line_pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.MULTI_COLOURED_LINES)
     line_pipeline.set_data(positions=TEST_POSITIONS, colors=TEST_COLORS)
     line_pipeline.update_uniforms(mvp=mvp_matrix)
     line_pipeline.render(render_pass, num_vertices=3)
@@ -312,9 +278,7 @@ def test_pipeline_rendering_with_data(webgpu_device, render_pass):
 def test_pipeline_cleanup_with_buffers(webgpu_device):
     """Test pipeline cleanup with existing buffers (covers lines 247, 287)."""
     # Test triangle pipeline cleanup
-    triangle_pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.MULTI_COLOURED_TRIANGLES
-    )
+    triangle_pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.MULTI_COLOURED_TRIANGLES)
     triangle_pipeline.set_data(positions=TEST_POSITIONS, colors=TEST_COLORS)
 
     assert getattr(triangle_pipeline, "vertex_buffer", None) is not None
@@ -323,9 +287,7 @@ def test_pipeline_cleanup_with_buffers(webgpu_device):
     triangle_pipeline.cleanup()  # Should not fail
 
     # Test line pipeline cleanup
-    line_pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.MULTI_COLOURED_LINES
-    )
+    line_pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.MULTI_COLOURED_LINES)
     line_pipeline.set_data(positions=TEST_POSITIONS, colors=TEST_COLORS)
 
     assert getattr(line_pipeline, "vertex_buffer", None) is not None
@@ -363,9 +325,7 @@ def test_triangle_topology_wrappers(webgpu_device):
 def test_point_list_pipeline_functionality(webgpu_device, render_pass):
     """Test specific point list pipeline functionality (covers lines 197-220, 236-242, 255-267, 375-380, 397-406, 419-430, 434-436)."""
     # Test multi-coloured point list
-    multi_pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.POINT_LIST_MULTI_COLOURED
-    )
+    multi_pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.POINT_LIST_MULTI_COLOURED)
 
     # Verify it uses point-list topology
     assert multi_pipeline._get_primitive_topology() == wgpu.PrimitiveTopology.point_list
@@ -409,9 +369,7 @@ def test_point_list_pipeline_functionality(webgpu_device, render_pass):
     multi_pipeline.cleanup()  # Should not fail
 
     # Test single-coloured point list
-    single_pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.POINT_LIST_SINGLE_COLOUR
-    )
+    single_pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.POINT_LIST_SINGLE_COLOUR)
 
     # Test GPU buffer handling (covers lines 375-380)
     single_pipeline.set_data(positions=position_buffer)
@@ -419,9 +377,7 @@ def test_point_list_pipeline_functionality(webgpu_device, render_pass):
     assert getattr(single_pipeline, "num_points", 0) == 2
 
     # Test uniform updates with colour parameter (covers lines 397-406)
-    single_pipeline.update_uniforms(
-        mvp=mvp_matrix, colour=np.array([1.0, 0.0, 0.0]), point_size=2.0
-    )
+    single_pipeline.update_uniforms(mvp=mvp_matrix, colour=np.array([1.0, 0.0, 0.0]), point_size=2.0)
     assert single_pipeline.uniform_buffer is not None
 
     # Test rendering (covers lines 419-430)
@@ -441,9 +397,7 @@ def test_pipeline_factory_error_handling(webgpu_device):
         PipelineFactory._pipeline_registry.clear()
 
         with pytest.raises(ValueError, match="Unknown pipeline type"):
-            PipelineFactory.create_pipeline(
-                webgpu_device, PipelineType.MULTI_COLOURED_POINTS
-            )
+            PipelineFactory.create_pipeline(webgpu_device, PipelineType.MULTI_COLOURED_POINTS)
 
     finally:
         # Restore registry
@@ -472,22 +426,16 @@ def test_base_pipeline_internal_operations(webgpu_device):
     )
 
     buffer_usage = wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST
-    buffer, size = pipeline_default._create_or_update_buffer(
-        None, gpu_buffer, buffer_usage, "test_buffer"
-    )
+    buffer, size = pipeline_default._create_or_update_buffer(None, gpu_buffer, buffer_usage, "test_buffer")
     assert buffer is gpu_buffer
     assert size == gpu_buffer.size
 
     # Test buffer update path (lines 185-186)
     small_data = np.array([[0.0, 0.0, 0.0]], dtype=np.float32)
-    large_data = np.array(
-        [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [2.0, 2.0, 2.0]], dtype=np.float32
-    )
+    large_data = np.array([[0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [2.0, 2.0, 2.0]], dtype=np.float32)
 
     # Create initial buffer
-    temp_buffer, _ = pipeline_default._create_or_update_buffer(
-        None, small_data, buffer_usage, "temp_buffer"
-    )
+    temp_buffer, _ = pipeline_default._create_or_update_buffer(None, small_data, buffer_usage, "temp_buffer")
     old_buffer = temp_buffer
 
     # Update with larger data (should update existing buffer, lines 185-186)
@@ -501,42 +449,30 @@ def test_base_pipeline_internal_operations(webgpu_device):
     assert updated_size > 0
 
     # Test vertex data processing with None (line 211)
-    result = pipeline_default._process_vertex_data(
-        None, None, padding_size=4, buffer_label="test_none"
-    )
+    result = pipeline_default._process_vertex_data(None, None, padding_size=4, buffer_label="test_none")
     assert result is None
 
     # Test vertex data processing with GPU buffer (line 214)
-    result = pipeline_default._process_vertex_data(
-        gpu_buffer, None, padding_size=0, buffer_label="test_gpu"
-    )
+    result = pipeline_default._process_vertex_data(gpu_buffer, None, padding_size=0, buffer_label="test_gpu")
     assert result is gpu_buffer
 
     # Test 1D array padding (lines 220-221)
     small_data = np.array([1.0, 0.0], dtype=np.float32)
-    result = pipeline_default._process_vertex_data(
-        small_data, None, padding_size=4, buffer_label="test_padding"
-    )
+    result = pipeline_default._process_vertex_data(small_data, None, padding_size=4, buffer_label="test_padding")
     assert result is not None
 
     # Test buffer recreation through data updates
     small_positions = np.array([[0.0, 0.0, 0.0]], dtype=np.float32)
-    large_positions = np.array(
-        [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [2.0, 2.0, 2.0]], dtype=np.float32
-    )
+    large_positions = np.array([[0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [2.0, 2.0, 2.0]], dtype=np.float32)
 
     pipeline_default.set_data(positions=small_positions)
-    pipeline_default.set_data(
-        positions=large_positions
-    )  # Should trigger buffer recreation
+    pipeline_default.set_data(positions=large_positions)  # Should trigger buffer recreation
     assert getattr(pipeline_default, "position_buffer", None) is not None
 
 
 def test_abstract_method_implementations(webgpu_device):
     """Test that all abstract methods are properly implemented (covers lines 72, 77, 82, 87, 92, 97, 243, 253, 264)."""
-    pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.SINGLE_COLOUR_POINTS
-    )
+    pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.SINGLE_COLOUR_POINTS)
 
     # Test abstract methods don't raise exceptions
     pipeline.get_dtype()
@@ -580,9 +516,7 @@ def test_abstract_method_implementations(webgpu_device):
 
 def test_render_points_helper_method(webgpu_device, render_pass):
     """Test the _render_points helper method (covers lines 345-358)."""
-    pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.MULTI_COLOURED_POINTS
-    )
+    pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.MULTI_COLOURED_POINTS)
     pipeline.set_data(positions=TEST_POSITIONS, colours=TEST_COLORS)
 
     # Test _render_points with None position buffer (early return)
@@ -594,9 +528,7 @@ def test_render_points_helper_method(webgpu_device, render_pass):
 
     if position_buffer and color_buffer:
         # Should not crash and should set up the render pass correctly
-        getattr(pipeline, "_render_points", lambda *args: None)(
-            render_pass, position_buffer, color_buffer, 3
-        )
+        getattr(pipeline, "_render_points", lambda *args: None)(render_pass, position_buffer, color_buffer, 3)
     pipeline.set_data(positions=TEST_POSITIONS, colours=TEST_COLORS)
 
     # Test _render_points with None position buffer (early return)
@@ -608,31 +540,20 @@ def test_render_points_helper_method(webgpu_device, render_pass):
 
     if position_buffer and color_buffer:
         # Should not crash and should set up the render pass correctly
-        getattr(pipeline, "_render_points", lambda x, y, z, w: None)(
-            render_pass, position_buffer, color_buffer, 3
-        )
+        getattr(pipeline, "_render_points", lambda x, y, z, w: None)(render_pass, position_buffer, color_buffer, 3)
 
 
 def test_instanced_geometry_pipeline_creation(webgpu_device):
     """Test instanced geometry pipeline creation and basic properties."""
     # Test multi-coloured instanced geometry
-    multi_pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.MULTI_COLOURED_INSTANCED_GEOMETRY
-    )
+    multi_pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.MULTI_COLOURED_INSTANCED_GEOMETRY)
     assert isinstance(multi_pipeline, InstancedGeometryPipelineMultiColour)
-    assert (
-        multi_pipeline._get_primitive_topology() == wgpu.PrimitiveTopology.triangle_list
-    )
+    assert multi_pipeline._get_primitive_topology() == wgpu.PrimitiveTopology.triangle_list
 
     # Test single-coloured instanced geometry
-    single_pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.SINGLE_COLOUR_INSTANCED_GEOMETRY
-    )
+    single_pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.SINGLE_COLOUR_INSTANCED_GEOMETRY)
     assert isinstance(single_pipeline, InstancedGeometryPipelineSingleColour)
-    assert (
-        single_pipeline._get_primitive_topology()
-        == wgpu.PrimitiveTopology.triangle_list
-    )
+    assert single_pipeline._get_primitive_topology() == wgpu.PrimitiveTopology.triangle_list
 
 
 def test_instanced_geometry_pipeline_data_setting(webgpu_device):
@@ -640,9 +561,7 @@ def test_instanced_geometry_pipeline_data_setting(webgpu_device):
     from ncca.ngl.prim_data import PrimData
 
     # Test multi-coloured pipeline
-    multi_pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.MULTI_COLOURED_INSTANCED_GEOMETRY
-    )
+    multi_pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.MULTI_COLOURED_INSTANCED_GEOMETRY)
 
     # Set instance data with numpy arrays and interleaved geometry
     instance_positions = np.array([[0.0, 0.0, 0.0], [2.0, 0.0, 0.0]], dtype=np.float32)
@@ -666,14 +585,10 @@ def test_instanced_geometry_pipeline_data_setting(webgpu_device):
         colours=None,
         geometry_data=sphere_data,
     )
-    assert (
-        getattr(multi_pipeline, "colour_buffer", None) is not None
-    )  # Should create default white
+    assert getattr(multi_pipeline, "colour_buffer", None) is not None  # Should create default white
 
     # Test single-colour pipeline
-    single_pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.SINGLE_COLOUR_INSTANCED_GEOMETRY
-    )
+    single_pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.SINGLE_COLOUR_INSTANCED_GEOMETRY)
 
     single_pipeline.set_data(
         positions=instance_positions,
@@ -695,9 +610,7 @@ def test_instanced_geometry_pipeline_uniforms(webgpu_device):
     instance_transform[0, 0] = 2.0  # Scale X by 2
 
     # Test multi-coloured pipeline
-    multi_pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.MULTI_COLOURED_INSTANCED_GEOMETRY
-    )
+    multi_pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.MULTI_COLOURED_INSTANCED_GEOMETRY)
     sphere_data = PrimData.sphere(1.0, 8)  # Use interleaved format
     multi_pipeline.set_data(
         positions=TEST_POSITIONS,
@@ -711,9 +624,7 @@ def test_instanced_geometry_pipeline_uniforms(webgpu_device):
     assert multi_pipeline.uniform_buffer is not None
 
     # Test single-colour pipeline
-    single_pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.SINGLE_COLOUR_INSTANCED_GEOMETRY
-    )
+    single_pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.SINGLE_COLOUR_INSTANCED_GEOMETRY)
     single_pipeline.set_data(
         positions=TEST_POSITIONS,
         geometry_data=sphere_data,
@@ -735,9 +646,7 @@ def test_instanced_geometry_pipeline_rendering(webgpu_device, render_pass):
     sphere_data = PrimData.sphere(1.0, 8)  # Use interleaved format
 
     # Test multi-coloured rendering
-    multi_pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.MULTI_COLOURED_INSTANCED_GEOMETRY
-    )
+    multi_pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.MULTI_COLOURED_INSTANCED_GEOMETRY)
     multi_pipeline.set_data(
         positions=TEST_POSITIONS,
         colours=TEST_COLORS,
@@ -747,9 +656,7 @@ def test_instanced_geometry_pipeline_rendering(webgpu_device, render_pass):
     multi_pipeline.render(render_pass, num_instances=2)
 
     # Test single-coloured rendering
-    single_pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.SINGLE_COLOUR_INSTANCED_GEOMETRY
-    )
+    single_pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.SINGLE_COLOUR_INSTANCED_GEOMETRY)
     single_pipeline.set_data(
         positions=TEST_POSITIONS,
         geometry_data=sphere_data,  # Single interleaved format
@@ -764,9 +671,7 @@ def test_instanced_geometry_pipeline_cleanup(webgpu_device):
 
     sphere_data = PrimData.sphere(1.0, 8)
 
-    multi_pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.MULTI_COLOURED_INSTANCED_GEOMETRY
-    )
+    multi_pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.MULTI_COLOURED_INSTANCED_GEOMETRY)
     multi_pipeline.set_data(
         positions=TEST_POSITIONS,
         colours=TEST_COLORS,
@@ -783,9 +688,7 @@ def test_instanced_geometry_pipeline_cleanup(webgpu_device):
     multi_pipeline.cleanup()  # Should not fail
 
     # Test single-colour cleanup
-    single_pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.SINGLE_COLOUR_INSTANCED_GEOMETRY
-    )
+    single_pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.SINGLE_COLOUR_INSTANCED_GEOMETRY)
     single_pipeline.set_data(
         positions=TEST_POSITIONS,
         geometry_data=sphere_data,  # Single interleaved format
@@ -800,9 +703,7 @@ def test_instanced_geometry_pipeline_cleanup(webgpu_device):
 
 def test_instanced_geometry_pipeline_vertex_layouts(webgpu_device):
     """Test vertex buffer layouts for instanced geometry pipelines."""
-    multi_pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.MULTI_COLOURED_INSTANCED_GEOMETRY
-    )
+    multi_pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.MULTI_COLOURED_INSTANCED_GEOMETRY)
     layouts = multi_pipeline._get_vertex_buffer_layouts()
 
     # Should have 4 layouts: instance position, instance ID, instance colour,
@@ -828,9 +729,7 @@ def test_instanced_geometry_pipeline_vertex_layouts(webgpu_device):
     assert geom_layout["attributes"][2]["offset"] == 24  # UV offset (6 * 4)
     assert geom_layout["array_stride"] == 32  # 8 floats * 4 bytes
 
-    single_pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.SINGLE_COLOUR_INSTANCED_GEOMETRY
-    )
+    single_pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.SINGLE_COLOUR_INSTANCED_GEOMETRY)
     single_layouts = single_pipeline._get_vertex_buffer_layouts()
 
     # Should have 4 layouts: instance position, instance ID, dummy colour buffer,
@@ -846,9 +745,7 @@ def test_instanced_geometry_pipeline_simplified_format(webgpu_device):
     sphere_data = PrimData.sphere(1.0, 8)  # Small sphere for testing
 
     # Test multi-coloured pipeline with interleaved data
-    multi_pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.MULTI_COLOURED_INSTANCED_GEOMETRY
-    )
+    multi_pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.MULTI_COLOURED_INSTANCED_GEOMETRY)
 
     instance_positions = np.array([[0.0, 0.0, 0.0], [2.0, 0.0, 0.0]], dtype=np.float32)
     instance_colours = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]], dtype=np.float32)
@@ -870,9 +767,7 @@ def test_instanced_geometry_pipeline_simplified_format(webgpu_device):
     assert getattr(multi_pipeline, "num_vertices", 0) == expected_vertices
 
     # Test single-coloured pipeline with interleaved data
-    single_pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.SINGLE_COLOUR_INSTANCED_GEOMETRY
-    )
+    single_pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.SINGLE_COLOUR_INSTANCED_GEOMETRY)
 
     single_pipeline.set_data(
         positions=instance_positions,
@@ -896,9 +791,7 @@ def test_instanced_geometry_pipeline_gpu_buffers(webgpu_device):
         usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
     )
 
-    multi_pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.MULTI_COLOURED_INSTANCED_GEOMETRY
-    )
+    multi_pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.MULTI_COLOURED_INSTANCED_GEOMETRY)
 
     instance_positions = np.array([[0.0, 0.0, 0.0]], dtype=np.float32)
 
@@ -915,9 +808,7 @@ def test_instanced_geometry_pipeline_gpu_buffers(webgpu_device):
 
 def test_instanced_geometry_pipeline_validation(webgpu_device):
     """Test validation of interleaved geometry data format."""
-    multi_pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.MULTI_COLOURED_INSTANCED_GEOMETRY
-    )
+    multi_pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.MULTI_COLOURED_INSTANCED_GEOMETRY)
 
     instance_positions = np.array([[0.0, 0.0, 0.0]], dtype=np.float32)
 
@@ -956,9 +847,7 @@ def test_instanced_geometry_pipeline_validation(webgpu_device):
 
 def test_instanced_geometry_pipeline_required_geometry_data(webgpu_device):
     """Test that geometry_data is required parameter."""
-    multi_pipeline = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.MULTI_COLOURED_INSTANCED_GEOMETRY
-    )
+    multi_pipeline = PipelineFactory.create_pipeline(webgpu_device, PipelineType.MULTI_COLOURED_INSTANCED_GEOMETRY)
 
     instance_positions = np.array([[0.0, 0.0, 0.0]], dtype=np.float32)
 

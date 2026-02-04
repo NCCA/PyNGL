@@ -5,7 +5,7 @@ Tests cover mouse-based camera control, keyboard shortcuts, wheel zooming,
 and camera state management functionality.
 """
 
-from unittest.mock import MagicMock, Mock
+from unittest.mock import Mock
 
 import pytest
 from PySide6.QtCore import QPointF, Qt
@@ -37,7 +37,7 @@ def event_window(qt_app):
     return window
 
 
-def test_setup_event_handling_default_values(event_window):
+def test_setup_event_handling_default_values(qt_app, event_window):
     """Test setup_event_handling with default parameters"""
     assert event_window.rotate is False
     assert event_window.translate is False
@@ -74,7 +74,7 @@ def test_setup_event_handling_custom_values(qt_app):
     assert window.ZOOM == pytest.approx(0.2)
 
 
-def test_reset_camera(event_window):
+def test_reset_camera(qt_app, event_window):
     """Test camera reset functionality"""
     # Set some non-zero values
     event_window.spin_x_face = 45
@@ -92,7 +92,7 @@ def test_reset_camera(event_window):
     assert event_window.model_position.z == pytest.approx(0)
 
 
-def test_key_press_event_escape(event_window):
+def test_key_press_event_escape(qt_app, event_window):
     """Test escape key closes the application"""
     # Create mock key event
     event = Mock()
@@ -104,12 +104,12 @@ def test_key_press_event_escape(event_window):
     assert event_window.update_called is True
 
 
-def test_key_press_event_wireframe_mode(event_window, monkeypatch):
+def test_key_press_event_wireframe_mode(qt_app, event_window, monkeypatch):
     """Test W key switches to wireframe mode"""
     event = Mock()
     event.key.return_value = Qt.Key_W
 
-    mock_gl_polygon_mode = MagicMock()
+    mock_gl_polygon_mode = Mock()
     # Use fixture-provided monkeypatch to set attribute (non-raising to avoid import issues)
     monkeypatch.setattr("OpenGL.GL.glPolygonMode", mock_gl_polygon_mode, raising=False)
 
@@ -119,12 +119,12 @@ def test_key_press_event_wireframe_mode(event_window, monkeypatch):
     assert event_window.update_called is True
 
 
-def test_key_press_event_solid_mode(event_window, monkeypatch):
+def test_key_press_event_solid_mode(qt_app, event_window, monkeypatch):
     """Test S key switches to solid fill mode"""
     event = Mock()
     event.key.return_value = Qt.Key_S
 
-    mock_gl_polygon_mode = MagicMock()
+    mock_gl_polygon_mode = Mock()
     monkeypatch.setattr("OpenGL.GL.glPolygonMode", mock_gl_polygon_mode, raising=False)
 
     event_window.keyPressEvent(event)
@@ -133,7 +133,7 @@ def test_key_press_event_solid_mode(event_window, monkeypatch):
     assert event_window.update_called is True
 
 
-def test_key_press_event_space_reset(event_window):
+def test_key_press_event_space_reset(qt_app, event_window):
     """Test space key resets camera"""
     # Set some values first
     event_window.spin_x_face = 45
@@ -151,7 +151,7 @@ def test_key_press_event_space_reset(event_window):
     assert event_window.update_called is True
 
 
-def test_key_press_event_other_key(event_window, monkeypatch):
+def test_key_press_event_other_key(qt_app, event_window, monkeypatch):
     """Test other keys call parent keyPressEvent"""
     event = Mock()
     event.key.return_value = Qt.Key_A
@@ -165,7 +165,7 @@ def test_key_press_event_other_key(event_window, monkeypatch):
     mock_parent.keyPressEvent.assert_called_once_with(event)
 
 
-def test_mouse_press_event_left_button(event_window):
+def test_mouse_press_event_left_button(qt_app, event_window):
     """Test left mouse button press starts rotation"""
     event = Mock()
     event.button.return_value = Qt.LeftButton
@@ -178,7 +178,7 @@ def test_mouse_press_event_left_button(event_window):
     assert event_window.original_y_rotation == 200
 
 
-def test_mouse_press_event_right_button(event_window):
+def test_mouse_press_event_right_button(qt_app, event_window):
     """Test right mouse button press starts translation"""
     event = Mock()
     event.button.return_value = Qt.RightButton
@@ -191,7 +191,7 @@ def test_mouse_press_event_right_button(event_window):
     assert event_window.original_y_pos == 250
 
 
-def test_mouse_release_event_left_button(event_window):
+def test_mouse_release_event_left_button(qt_app, event_window):
     """Test left mouse button release stops rotation"""
     event_window.rotate = True
 
@@ -203,7 +203,7 @@ def test_mouse_release_event_left_button(event_window):
     assert event_window.rotate is False
 
 
-def test_mouse_release_event_right_button(event_window):
+def test_mouse_release_event_right_button(qt_app, event_window):
     """Test right mouse button release stops translation"""
     event_window.translate = True
 
@@ -215,7 +215,7 @@ def test_mouse_release_event_right_button(event_window):
     assert event_window.translate is False
 
 
-def test_mouse_move_event_rotation(event_window):
+def test_mouse_move_event_rotation(qt_app, event_window):
     """Test mouse movement during rotation"""
     # Setup rotation state
     event_window.rotate = True
@@ -237,7 +237,7 @@ def test_mouse_move_event_rotation(event_window):
     assert event_window.update_called is True
 
 
-def test_mouse_move_event_translation(event_window):
+def test_mouse_move_event_translation(qt_app, event_window):
     """Test mouse movement during translation"""
     # Setup translation state
     event_window.translate = True
@@ -259,7 +259,7 @@ def test_mouse_move_event_translation(event_window):
     assert event_window.update_called is True
 
 
-def test_mouse_move_event_no_action(event_window):
+def test_mouse_move_event_no_action(qt_app, event_window):
     """Test mouse movement when no buttons active"""
     event_window.rotate = False
     event_window.translate = False
@@ -273,7 +273,7 @@ def test_mouse_move_event_no_action(event_window):
     assert event_window.update_called is False
 
 
-def test_wheel_event_positive_delta(event_window):
+def test_wheel_event_positive_delta(qt_app, event_window):
     """Test mouse wheel scroll up (zoom in)"""
     event_window.zoom_sensitivity = 0.5
     initial_z = event_window.model_position.z
@@ -290,7 +290,7 @@ def test_wheel_event_positive_delta(event_window):
     assert event_window.update_called is True
 
 
-def test_wheel_event_negative_delta(event_window):
+def test_wheel_event_negative_delta(qt_app, event_window):
     """Test mouse wheel scroll down (zoom out)"""
     event_window.zoom_sensitivity = 0.5
     initial_z = event_window.model_position.z
@@ -307,7 +307,7 @@ def test_wheel_event_negative_delta(event_window):
     assert event_window.update_called is True
 
 
-def test_wheel_event_x_axis_delta(event_window):
+def test_wheel_event_x_axis_delta(qt_app, event_window):
     """Test mouse wheel using x-axis delta (horizontal scroll)"""
     event_window.zoom_sensitivity = 0.3
     initial_z = event_window.model_position.z
@@ -324,7 +324,7 @@ def test_wheel_event_x_axis_delta(event_window):
     assert event_window.update_called is True
 
 
-def test_wheel_event_zero_delta(event_window):
+def test_wheel_event_zero_delta(qt_app, event_window):
     """Test mouse wheel with zero delta"""
     initial_z = event_window.model_position.z
 
@@ -405,7 +405,7 @@ def test_event_handling_target_protocol(qt_app):
     assert callable(window.close)
 
 
-def test_mouse_move_event_rotation_without_left_button(event_window):
+def test_mouse_move_event_rotation_without_left_button(qt_app, event_window):
     """Test mouse movement during rotation mode but without left button pressed"""
     # Setup rotation state
     event_window.rotate = True
@@ -424,7 +424,7 @@ def test_mouse_move_event_rotation_without_left_button(event_window):
     assert event_window.update_called is False
 
 
-def test_mouse_move_event_translation_without_right_button(event_window):
+def test_mouse_move_event_translation_without_right_button(qt_app, event_window):
     """Test mouse movement during translation mode but without right button pressed"""
     # Setup translation state
     event_window.translate = True
@@ -443,7 +443,7 @@ def test_mouse_move_event_translation_without_right_button(event_window):
     assert event_window.update_called is False
 
 
-def test_mouse_press_event_middle_button(event_window):
+def test_mouse_press_event_middle_button(qt_app, event_window):
     """Test middle mouse button press (should be ignored)"""
     event = Mock()
     event.button.return_value = Qt.MiddleButton
@@ -456,7 +456,7 @@ def test_mouse_press_event_middle_button(event_window):
     assert event_window.translate is False
 
 
-def test_mouse_release_event_middle_button(event_window):
+def test_mouse_release_event_middle_button(qt_app, event_window):
     """Test middle mouse button release (should be ignored)"""
     event_window.rotate = True
     event_window.translate = True
@@ -471,7 +471,7 @@ def test_mouse_release_event_middle_button(event_window):
     assert event_window.translate is True
 
 
-def test_setup_event_handling_with_none_position():
+def test_setup_event_handling_with_none_position(qt_app):
     """Test setup_event_handling with None initial position"""
     window = MockEventHandlingWindow()
     window.setup_event_handling(initial_position=None)
@@ -481,7 +481,7 @@ def test_setup_event_handling_with_none_position():
     assert window.model_position.z == 0
 
 
-def test_wheel_event_priority_y_over_x(event_window):
+def test_wheel_event_priority_y_over_x(qt_app, event_window):
     """Test that y delta takes priority over x delta when both are non-zero"""
     event_window.zoom_sensitivity = 0.5
     initial_z = event_window.model_position.z
