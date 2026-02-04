@@ -181,6 +181,7 @@ def renderman_look_at(eye, look, up):
     n.normalize()
 
     # Calculate right vector
+    up.y = -up.y
     v = n.cross(up)
     v.normalize()
 
@@ -209,7 +210,7 @@ def renderman_look_at(eye, look, up):
 
     # Translation (camera position)
     result.m[3][0] = -eye.dot(v)
-    result.m[3][1] = eye.dot(u)  # Negated Y component
+    result.m[3][1] = -eye.dot(u)  # Negated Y component
     result.m[3][2] = -eye.dot(n)
 
     return result
