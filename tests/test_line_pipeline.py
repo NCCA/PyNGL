@@ -7,15 +7,18 @@ import numpy as np
 import pytest
 import wgpu
 
-from ncca.ngl.webgpu import PipelineFactory, PipelineType
 from ncca.ngl.webgpu.line_pipeline import (
     LinePipelineMultiColour,
     LinePipelineSingleColour,
 )
 
 # Test data fixtures
-TEST_POSITIONS = np.array([[0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [-1.0, -1.0, 0.0]], dtype=np.float32)
-TEST_COLORS = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], dtype=np.float32)
+TEST_POSITIONS = np.array(
+    [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [-1.0, -1.0, 0.0]], dtype=np.float32
+)
+TEST_COLORS = np.array(
+    [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], dtype=np.float32
+)
 TEST_MVP_MATRIX = np.eye(4, dtype=np.float32)
 
 
@@ -85,7 +88,9 @@ def test_line_pipeline_single_colour_gpu_buffer_position(webgpu_device):
     assert pipeline.num_vertices == position_buffer.size // pipeline._stride
 
 
-def test_line_pipeline_single_colour_render_without_position(webgpu_device, render_pass):
+def test_line_pipeline_single_colour_render_without_position(
+    webgpu_device, render_pass
+):
     """Test single-colour pipeline render without position buffer (covers line 405)."""
     pipeline = LinePipelineSingleColour(webgpu_device)
     pipeline.update_uniforms(mvp=TEST_MVP_MATRIX)
@@ -114,11 +119,18 @@ def test_line_pipeline_different_topologies(webgpu_device):
     """Test line pipelines with different topologies."""
     # Test line_list topology (default)
     line_list_pipeline = LinePipelineMultiColour(webgpu_device)
-    assert line_list_pipeline._get_primitive_topology() == wgpu.PrimitiveTopology.line_list
+    assert (
+        line_list_pipeline._get_primitive_topology() == wgpu.PrimitiveTopology.line_list
+    )
 
     # Test line_strip topology
-    line_strip_pipeline = LinePipelineMultiColour(webgpu_device, topology=wgpu.PrimitiveTopology.line_strip)
-    assert line_strip_pipeline._get_primitive_topology() == wgpu.PrimitiveTopology.line_strip
+    line_strip_pipeline = LinePipelineMultiColour(
+        webgpu_device, topology=wgpu.PrimitiveTopology.line_strip
+    )
+    assert (
+        line_strip_pipeline._get_primitive_topology()
+        == wgpu.PrimitiveTopology.line_strip
+    )
 
 
 def test_line_pipeline_custom_strides(webgpu_device):

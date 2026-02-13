@@ -12,7 +12,12 @@ class Vec3Widget(QFrame):
     yValueChanged = Signal(float)
     zValueChanged = Signal(float)
 
-    def __init__(self, parent: QWidget | None = None, name: str = "", value: Vec3 = Vec3(0.0, 0.0, 0.0)) -> None:
+    def __init__(
+        self,
+        parent: QWidget | None = None,
+        name: str = "",
+        value: Vec3 = Vec3(0.0, 0.0, 0.0),
+    ) -> None:
         """
         Args:
             name: The name of the widget.
@@ -85,7 +90,11 @@ class Vec3Widget(QFrame):
         Args:
             value: The new value of the widget.
         """
-        with QSignalBlocker(self.x_spinbox), QSignalBlocker(self.y_spinbox), QSignalBlocker(self.z_spinbox):
+        with (
+            QSignalBlocker(self.x_spinbox),
+            QSignalBlocker(self.y_spinbox),
+            QSignalBlocker(self.z_spinbox),
+        ):
             self.x_spinbox.setValue(value.x)
             self.y_spinbox.setValue(value.y)
             self.z_spinbox.setValue(value.z)

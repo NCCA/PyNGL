@@ -32,7 +32,11 @@ class Mat2:
     def from_list(cls, lst):
         "class method to create mat2 from list"
         v = Mat2()
-        if isinstance(lst, list) and len(lst) == 2 and all(isinstance(row, list) for row in lst):
+        if (
+            isinstance(lst, list)
+            and len(lst) == 2
+            and all(isinstance(row, list) for row in lst)
+        ):
             # 2D list
             if all(len(row) == 2 for row in lst):
                 v.m = np.array(lst, dtype=np.float64)

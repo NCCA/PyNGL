@@ -314,7 +314,9 @@ def test_outer():
     a = Vec4(1, 2, 3, 4)
     b = Vec4(5, 6, 7, 8)
     m = a.outer(b)
-    expected = np.array([[5, 6, 7, 8], [10, 12, 14, 16], [15, 18, 21, 24], [20, 24, 28, 32]])
+    expected = np.array(
+        [[5, 6, 7, 8], [10, 12, 14, 16], [15, 18, 21, 24], [20, 24, 28, 32]]
+    )
     assert np.array_equal(m.m, expected)
 
 

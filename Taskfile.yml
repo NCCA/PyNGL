@@ -1,0 +1,38 @@
+version: "3"
+
+# Tasks for PyNGL to find what task there are run task --list-test_all
+# most tasks will run from the Task root directory, but the lint is run from the current directory
+
+tasks:
+  test-all:
+    cmds:
+      - set -euo pipefail
+      - uv run pytest || exit 1
+      - uv run pytest -m opengl || exit 1
+      - uv run pytest -m webgpu || exit 1
+      - uv run pytest -m qt || exit 1
+
+  lint:
+    dir: "{{.USER_WORKING_DIR}}" # lint only in the current directory and below
+    cmds:
+      - uv run ruff format
+      - uv run ruff check --fix
+
+  coverage:
+    cmds:
+      - uv run coverage run --source=src/ncca/ngl -m pytest -v
+      - uv run coverage report -m
+      - uv run coverage xml
+      - uv run coverage html
+
+  sync:
+    cmds:
+      - uv sync
+
+  uv-upgrade:
+    cmds:
+      - uv sync --upgrade
+
+  clean-all:
+    cmds: rm -rf __pycache__
+      rm -rf .venv

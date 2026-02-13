@@ -1,7 +1,14 @@
-from PySide6.QtCore import Property, QSignalBlocker, Qt, Signal
-from PySide6.QtWidgets import QComboBox, QFrame, QLabel, QToolButton, QVBoxLayout, QWidget
+from PySide6.QtCore import Property, Qt, Signal
+from PySide6.QtWidgets import (
+    QComboBox,
+    QFrame,
+    QLabel,
+    QToolButton,
+    QVBoxLayout,
+    QWidget,
+)
 
-from ncca.ngl import Mat4, Transform, TransformRotationOrder, Vec3
+from ncca.ngl import Mat4, Transform, Vec3
 
 from .vec3widget import Vec3Widget
 
@@ -31,7 +38,9 @@ class TransformWidget(QFrame):
         self._toggle_button.setCheckable(True)
         self._toggle_button.setChecked(True)
         self._toggle_button.setStyleSheet("QToolButton { border: none; }")
-        self._toggle_button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
+        self._toggle_button.setToolButtonStyle(
+            Qt.ToolButtonStyle.ToolButtonTextBesideIcon
+        )
         self._toggle_button.setArrowType(Qt.ArrowType.DownArrow)
         self._toggle_button.clicked.connect(self.toggle_collapsed)
 

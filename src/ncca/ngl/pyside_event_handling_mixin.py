@@ -14,8 +14,6 @@ Usage:
             # ... rest of your initialization
 """
 
-from typing import Protocol
-
 import OpenGL.GL as gl
 from PySide6.QtCore import Qt
 

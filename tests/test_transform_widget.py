@@ -1,6 +1,5 @@
 import pytest
 from PySide6.QtCore import Qt
-from PySide6.QtTest import QTest
 
 from ncca.ngl import Mat4, Transform, Vec3
 from ncca.ngl.widgets import TransformWidget

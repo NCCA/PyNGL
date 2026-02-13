@@ -38,7 +38,11 @@ def pytest_collection_modifyitems(config, items):
     for item in items:
         fixtures = getattr(item, "fixturenames", [])
 
-        is_graphics = "opengl_context" in fixtures or "webgpu_device" in fixtures or "qt_app" in fixtures
+        is_graphics = (
+            "opengl_context" in fixtures
+            or "webgpu_device" in fixtures
+            or "qt_app" in fixtures
+        )
 
         if is_graphics:
             deselected_items.append(item)

@@ -283,7 +283,9 @@ class BasePointPipeline(BaseWebGPUPipeline):
         """Points are rendered as triangle strips for quad generation."""
         return wgpu.PrimitiveTopology.triangle_strip
 
-    def _get_default_vertex_layouts(self, has_colour_buffer: bool = False) -> List[Dict[str, Any]]:
+    def _get_default_vertex_layouts(
+        self, has_colour_buffer: bool = False
+    ) -> List[Dict[str, Any]]:
         """
         Get default vertex buffer layouts for point rendering.
 
@@ -308,17 +310,19 @@ class BasePointPipeline(BaseWebGPUPipeline):
         ]
 
         if has_colour_buffer:
-            layouts.append({
-                "array_stride": NGLToWebGPU.stride_from_type("Vec3"),
-                "step_mode": "instance",
-                "attributes": [
-                    {
-                        "format": NGLToWebGPU.vertex_format("Vec3"),
-                        "offset": 0,
-                        "shader_location": 1,
-                    },
-                ],
-            })
+            layouts.append(
+                {
+                    "array_stride": NGLToWebGPU.stride_from_type("Vec3"),
+                    "step_mode": "instance",
+                    "attributes": [
+                        {
+                            "format": NGLToWebGPU.vertex_format("Vec3"),
+                            "offset": 0,
+                            "shader_location": 1,
+                        },
+                    ],
+                }
+            )
 
         return layouts
 

@@ -1,6 +1,4 @@
 import pytest
-from PySide6.QtCore import Qt
-from PySide6.QtTest import QTest
 
 from ncca.ngl import Vec3
 from ncca.ngl.widgets import Vec3Widget

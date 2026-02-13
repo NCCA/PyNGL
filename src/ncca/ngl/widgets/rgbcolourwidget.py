@@ -22,7 +22,12 @@ class RGBColourWidget(QFrame):
     bValueChanged = Signal(float)
 
     def __init__(
-        self, parent: QWidget | None = None, name: str = "", r: float = 1.0, g: float = 1.0, b: float = 1.0
+        self,
+        parent: QWidget | None = None,
+        name: str = "",
+        r: float = 1.0,
+        g: float = 1.0,
+        b: float = 1.0,
     ) -> None:
         """
         Args:
@@ -104,7 +109,11 @@ class RGBColourWidget(QFrame):
         Args:
             value: The new value of the widget.
         """
-        with QSignalBlocker(self.r_spinbox), QSignalBlocker(self.g_spinbox), QSignalBlocker(self.b_spinbox):
+        with (
+            QSignalBlocker(self.r_spinbox),
+            QSignalBlocker(self.g_spinbox),
+            QSignalBlocker(self.b_spinbox),
+        ):
             self.r_spinbox.setValue(value.x)
             self.g_spinbox.setValue(value.y)
             self.b_spinbox.setValue(value.z)

@@ -1,5 +1,12 @@
-from PySide6.QtCore import Property, QSignalBlocker, Qt, Signal, Slot
-from PySide6.QtWidgets import QComboBox, QFrame, QLabel, QToolButton, QVBoxLayout, QWidget
+from PySide6.QtCore import Property, Qt, Signal
+from PySide6.QtWidgets import (
+    QComboBox,
+    QFrame,
+    QLabel,
+    QToolButton,
+    QVBoxLayout,
+    QWidget,
+)
 
 from ncca.ngl import Mat4, Vec3, look_at
 
@@ -12,7 +19,13 @@ class LookAtWidget(QFrame):
     valueChanged = Signal(Mat4)
     world_up = [Vec3(0, 1, 0), Vec3(1, 0, 0), Vec3(0, 0, 1)]
 
-    def __init__(self, parent: QWidget | None = None, name: str = "", eye=Vec3(2, 2, 2), look=Vec3(0, 0, 0)) -> None:
+    def __init__(
+        self,
+        parent: QWidget | None = None,
+        name: str = "",
+        eye=Vec3(2, 2, 2),
+        look=Vec3(0, 0, 0),
+    ) -> None:
         """
         Args:
             name: The name of the widget.
@@ -31,7 +44,9 @@ class LookAtWidget(QFrame):
         self._toggle_button.setCheckable(True)
         self._toggle_button.setChecked(True)
         self._toggle_button.setStyleSheet("QToolButton { border: none; }")
-        self._toggle_button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
+        self._toggle_button.setToolButtonStyle(
+            Qt.ToolButtonStyle.ToolButtonTextBesideIcon
+        )
         self._toggle_button.setArrowType(Qt.ArrowType.DownArrow)
         self._toggle_button.clicked.connect(self.toggle_collapsed)
 

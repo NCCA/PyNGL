@@ -122,34 +122,42 @@ def _build_uniforms(config: ShaderConfig) -> str:
         if config.colour_mode == "single":
             additional_fields.append("    ColourSize: vec4<f32>,")
         else:
-            additional_fields.extend([
-                "    size: f32,",
-                "    padding: u32,",
-                "    padding2: u32,",
-                "    padding3: u32,",
-            ])
+            additional_fields.extend(
+                [
+                    "    size: f32,",
+                    "    padding: u32,",
+                    "    padding2: u32,",
+                    "    padding3: u32,",
+                ]
+            )
     elif config.geometry_type in ["line", "triangle", "point_list"]:
         if config.colour_mode == "single":
             additional_fields.extend(["    Colour: vec3<f32>,", "    padding: f32,"])
     elif config.geometry_type == "instanced":
         if config.colour_mode == "single":
-            additional_fields.extend([
-                "    colour: vec3<f32>,",
-                "    padding: f32,",
-                "    instance_transform: mat4x4<f32>,",
-            ])
+            additional_fields.extend(
+                [
+                    "    colour: vec3<f32>,",
+                    "    padding: f32,",
+                    "    instance_transform: mat4x4<f32>,",
+                ]
+            )
         else:
             additional_fields.append("    instance_transform: mat4x4<f32>,")
 
     base_template = UNIFORMS_MVP_VIEW if config.has_view_matrix else UNIFORMS_MVP
-    return base_template.format(additional_fields="\n".join(additional_fields) if additional_fields else "")
+    return base_template.format(
+        additional_fields="\n".join(additional_fields) if additional_fields else ""
+    )
 
 
 def _build_vertex_input(config: ShaderConfig) -> str:
     """Build vertex input structure based on configuration"""
     if config.geometry_type == "instanced":
         if config.colour_mode == "single":
-            colour_input = "    @location(1) colour: vec3<f32>,  // Provided but ignored"
+            colour_input = (
+                "    @location(1) colour: vec3<f32>,  // Provided but ignored"
+            )
         else:
             colour_input = "    @location(1) colour: vec3<f32>,"
 
@@ -158,13 +166,25 @@ def _build_vertex_input(config: ShaderConfig) -> str:
         # For lines, use 'pos' instead of 'position' to match original shaders
         if config.geometry_type == "line":
             position_input = "    @location(0) pos: vec3<f32>,"
-            colour_input = "    @location(1) color: vec3<f32>," if config.colour_mode == "multi" else ""
+            colour_input = (
+                "    @location(1) color: vec3<f32>,"
+                if config.colour_mode == "multi"
+                else ""
+            )
         elif config.geometry_type == "triangle":
             position_input = "    @location(0) pos: vec3<f32>,"
-            colour_input = "    @location(1) color: vec3<f32>," if config.colour_mode == "multi" else ""
+            colour_input = (
+                "    @location(1) color: vec3<f32>,"
+                if config.colour_mode == "multi"
+                else ""
+            )
         else:
             position_input = "    @location(0) position: vec3<f32>,"
-            colour_input = "    @location(1) colour: vec3<f32>," if config.colour_mode == "multi" else ""
+            colour_input = (
+                "    @location(1) colour: vec3<f32>,"
+                if config.colour_mode == "multi"
+                else ""
+            )
 
         return f"""
 struct VertexIn {{
@@ -240,7 +260,9 @@ def _build_vertex_main(config: ShaderConfig) -> str:
 
 def _build_point_vertex(config: ShaderConfig) -> str:
     """Build point sprite vertex shader"""
-    size_source = "uniforms.size" if config.colour_mode == "multi" else "uniforms.ColourSize.w"
+    size_source = (
+        "uniforms.size" if config.colour_mode == "multi" else "uniforms.ColourSize.w"
+    )
 
     return f"""
 @vertex
@@ -273,7 +295,9 @@ def _build_simple_vertex(config: ShaderConfig) -> str:
         colour_source = "input.color"
     else:
         position_source = "input.position"
-        colour_source = "input.colour" if config.geometry_type == "point_list" else "input.color"
+        colour_source = (
+            "input.colour" if config.geometry_type == "point_list" else "input.color"
+        )
 
     colour_output = ""
     if config.colour_mode == "multi" and config.geometry_type == "point_list":
@@ -334,7 +358,11 @@ def _build_fragment_main(config: ShaderConfig) -> str:
 
 def _build_point_fragment(config: ShaderConfig) -> str:
     """Build point sprite fragment shader"""
-    colour_source = "fragData.fragColour" if config.colour_mode == "multi" else "uniforms.ColourSize.xyz"
+    colour_source = (
+        "fragData.fragColour"
+        if config.colour_mode == "multi"
+        else "uniforms.ColourSize.xyz"
+    )
 
     return f"""
 @fragment
@@ -373,7 +401,9 @@ fn fragment_main(fragData: VertexOut) -> @location(0) vec4<f32>
 
 def _build_instanced_fragment(config: ShaderConfig) -> str:
     """Build instanced fragment shader with lighting"""
-    colour_source = "uniforms.colour" if config.colour_mode == "single" else "fragData.fragColour"
+    colour_source = (
+        "uniforms.colour" if config.colour_mode == "single" else "fragData.fragColour"
+    )
 
     return f"""
 @fragment
@@ -457,11 +487,15 @@ INSTANCED_SHADER_SINGLE_COLOUR = generate_shader(
 )
 
 LINE_SHADER_SINGLE_COLOUR = generate_shader(
-    ShaderConfig(name="LINE_SHADER_SINGLE_COLOUR", geometry_type="line", colour_mode="single")
+    ShaderConfig(
+        name="LINE_SHADER_SINGLE_COLOUR", geometry_type="line", colour_mode="single"
+    )
 )
 
 LINE_SHADER_MULTI_COLOURED = generate_shader(
-    ShaderConfig(name="LINE_SHADER_MULTI_COLOURED", geometry_type="line", colour_mode="multi")
+    ShaderConfig(
+        name="LINE_SHADER_MULTI_COLOURED", geometry_type="line", colour_mode="multi"
+    )
 )
 
 POINT_LIST_SHADER_MULTI_COLOURED = generate_shader(

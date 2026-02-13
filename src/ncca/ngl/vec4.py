@@ -3,12 +3,8 @@ Simple Float only Vec4 class for 3D graphics, very similar to the pyngl ones
 NumPy-based implementation with VectorBase inheritance for code reuse.
 """
 
-import math
-from typing import Union
-
 import numpy as np
 
-from .util import clamp
 from .vector_base import VectorBase, _create_properties
 
 

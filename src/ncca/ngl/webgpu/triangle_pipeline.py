@@ -3,7 +3,7 @@ Generic triangle rendering pipeline for WebGPU.
 Handles triangle rendering with customizable colors, projection, and topology.
 """
 
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple
 
 import numpy as np
 import wgpu

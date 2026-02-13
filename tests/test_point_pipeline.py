@@ -7,7 +7,6 @@ import pytest
 import wgpu
 import numpy as np
 
-from ncca.ngl.webgpu import PipelineFactory, PipelineType
 from ncca.ngl.webgpu.point_pipeline import (
     PointPipelineMultiColour,
     PointPipelineSingleColour,

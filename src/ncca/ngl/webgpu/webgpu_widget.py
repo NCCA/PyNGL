@@ -110,7 +110,11 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
             event (QPaintEvent): The paint event.
         """
         self.paintWebGPU()
-        if hasattr(self, "device") and self.device is not None and hasattr(self, "colour_buffer_texture"):
+        if (
+            hasattr(self, "device")
+            and self.device is not None
+            and hasattr(self, "colour_buffer_texture")
+        ):
             self._update_colour_buffer()
         painter = QPainter(self)
 
@@ -238,7 +242,9 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
                 {
                     "buffer": self.readback_buffer,
                     "bytes_per_row": bytes_per_row,  # Aligned row stride
-                    "rows_per_image": self.texture_size[1],  # Number of rows in the texture
+                    "rows_per_image": self.texture_size[
+                        1
+                    ],  # Number of rows in the texture
                 },
                 (
                     self.texture_size[0],
@@ -293,7 +299,9 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
         rect2 = self.rect()
         painter.drawImage(rect2, image, rect1)
 
-    def _create_render_pass(self, command_encoder: wgpu.GPUCommandEncoder) -> wgpu.GPURenderPassEncoder:
+    def _create_render_pass(
+        self, command_encoder: wgpu.GPUCommandEncoder
+    ) -> wgpu.GPURenderPassEncoder:
         """
         Create a render pass with the configured background color.
 

@@ -34,8 +34,12 @@ class _primitive:
             self.vao.set_data(data)
             vert_data_size = 8 * 4  # 4 is sizeof float and 8 is x,y,z,nx,ny,nz,uv
             self.vao.set_vertex_attribute_pointer(0, 3, gl.GL_FLOAT, vert_data_size, 0)
-            self.vao.set_vertex_attribute_pointer(1, 3, gl.GL_FLOAT, vert_data_size, Vec3.sizeof())
-            self.vao.set_vertex_attribute_pointer(2, 2, gl.GL_FLOAT, vert_data_size, 2 * Vec3.sizeof())
+            self.vao.set_vertex_attribute_pointer(
+                1, 3, gl.GL_FLOAT, vert_data_size, Vec3.sizeof()
+            )
+            self.vao.set_vertex_attribute_pointer(
+                2, 2, gl.GL_FLOAT, vert_data_size, 2 * Vec3.sizeof()
+            )
             self.vao.set_num_indices(prim_data.size // 8)
 
 

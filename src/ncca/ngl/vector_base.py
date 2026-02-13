@@ -46,7 +46,9 @@ class VectorBase(ABC, Generic[T]):
         else:
             self._init_from_args(args)
 
-    def _init_from_kwargs(self, args: tuple[float, ...], kwargs: dict[str, float]) -> None:
+    def _init_from_kwargs(
+        self, args: tuple[float, ...], kwargs: dict[str, float]
+    ) -> None:
         """Initialize vector from keyword arguments."""
         self._validate_component_count(len(args) + len(kwargs))
 
@@ -72,9 +74,13 @@ class VectorBase(ABC, Generic[T]):
     def _validate_component_count(self, count: int) -> None:
         """Validate the number of components doesn't exceed dimension."""
         if count > self.DIMENSION:
-            raise ValueError(f"{self.__class__.__name__} requires at most {self.DIMENSION} components")
+            raise ValueError(
+                f"{self.__class__.__name__} requires at most {self.DIMENSION} components"
+            )
 
-    def _set_positional_args(self, values: list[float], args: tuple[float, ...]) -> None:
+    def _set_positional_args(
+        self, values: list[float], args: tuple[float, ...]
+    ) -> None:
         """Set positional argument values."""
         for i, arg in enumerate(args):
             values[i] = float(arg)
@@ -156,7 +162,9 @@ class VectorBase(ABC, Generic[T]):
             VectorBase: A new vector that is the result of adding this vector and the rhs vector.
         """
         if not isinstance(rhs, self.__class__):
-            raise ValueError(f"Can only add {self.__class__.__name__} to {self.__class__.__name__}")
+            raise ValueError(
+                f"Can only add {self.__class__.__name__} to {self.__class__.__name__}"
+            )
         result = self.__class__()
         result._data = self._data + rhs._data
         return result
@@ -172,7 +180,9 @@ class VectorBase(ABC, Generic[T]):
             VectorBase: Returns this vector after adding the rhs vector.
         """
         if not isinstance(rhs, self.__class__):
-            raise ValueError(f"Can only add {self.__class__.__name__} to {self.__class__.__name__}")
+            raise ValueError(
+                f"Can only add {self.__class__.__name__} to {self.__class__.__name__}"
+            )
         self._data += rhs._data
         return self
 
@@ -187,7 +197,9 @@ class VectorBase(ABC, Generic[T]):
             VectorBase: A new vector that is the result of subtracting this vector and the rhs vector.
         """
         if not isinstance(rhs, self.__class__):
-            raise ValueError(f"Can only subtract {self.__class__.__name__} from {self.__class__.__name__}")
+            raise ValueError(
+                f"Can only subtract {self.__class__.__name__} from {self.__class__.__name__}"
+            )
         result = self.__class__()
         result._data = self._data - rhs._data
         return result
@@ -203,7 +215,9 @@ class VectorBase(ABC, Generic[T]):
             VectorBase: Returns this vector after subtracting the rhs vector.
         """
         if not isinstance(rhs, self.__class__):
-            raise ValueError(f"Can only subtract {self.__class__.__name__} from {self.__class__.__name__}")
+            raise ValueError(
+                f"Can only subtract {self.__class__.__name__} from {self.__class__.__name__}"
+            )
         self._data -= rhs._data
         return self
 
@@ -266,7 +280,9 @@ class VectorBase(ABC, Generic[T]):
             result._data = self._data * rhs
             return result
         else:
-            raise ValueError(f"Can only do piecewise multiplication with a scalar, got {type(rhs)}")
+            raise ValueError(
+                f"Can only do piecewise multiplication with a scalar, got {type(rhs)}"
+            )
 
     def __rmul__(self, rhs: float | int) -> Self:
         """
@@ -322,7 +338,9 @@ class VectorBase(ABC, Generic[T]):
             float: The dot product of the two vectors.
         """
         if not isinstance(rhs, self.__class__):
-            raise ValueError(f"Can only compute dot product with {self.__class__.__name__}")
+            raise ValueError(
+                f"Can only compute dot product with {self.__class__.__name__}"
+            )
         return np.dot(self._data, rhs._data)
 
     def length(self) -> float:
@@ -501,7 +519,9 @@ class VectorBase(ABC, Generic[T]):
         Raises:
             AttributeError: If the attribute does not exist.
         """
-        raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
+        raise AttributeError(
+            f"'{self.__class__.__name__}' object has no attribute '{name}'"
+        )
 
     def __setattr__(self, name: str, value: Any) -> None:
         """
@@ -521,7 +541,9 @@ class VectorBase(ABC, Generic[T]):
         elif name in self.COMPONENT_NAMES:
             super().__setattr__(name, value)
         else:
-            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
+            raise AttributeError(
+                f"'{self.__class__.__name__}' object has no attribute '{name}'"
+            )
 
 
 def _create_properties(cls: type) -> None:

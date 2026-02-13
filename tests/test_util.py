@@ -86,7 +86,9 @@ def test_ortho():
 
 
 def test_calc_normal():
-    result = calc_normal(Vec3(-1.0, -1.0, 0.0), Vec3(0.0, 0.0, 0.0), Vec3(1.0, -1.0, 0.0))
+    result = calc_normal(
+        Vec3(-1.0, -1.0, 0.0), Vec3(0.0, 0.0, 0.0), Vec3(1.0, -1.0, 0.0)
+    )
     assert result == pytest.approx(Vec3(0.0, 0.0, 1.0), abs=1e-3)
 
 
@@ -121,9 +123,17 @@ def test_prim_data_to_ri_points_polygons():
     triangles = np.array(
         [
             # Triangle 1: 3 vertices, each with x,y,z,nx,ny,nz,u,v
-            [[0, 0, 0, 0, 0, 1, 0, 0], [1, 0, 0, 0, 0, 1, 1, 0], [0, 1, 0, 0, 0, 1, 0, 1]],
+            [
+                [0, 0, 0, 0, 0, 1, 0, 0],
+                [1, 0, 0, 0, 0, 1, 1, 0],
+                [0, 1, 0, 0, 0, 1, 0, 1],
+            ],
             # Triangle 2
-            [[1, 0, 0, 0, 0, 1, 1, 0], [1, 1, 0, 0, 0, 1, 1, 1], [0, 1, 0, 0, 0, 1, 0, 1]],
+            [
+                [1, 0, 0, 0, 0, 1, 1, 0],
+                [1, 1, 0, 0, 0, 1, 1, 1],
+                [0, 1, 0, 0, 0, 1, 0, 1],
+            ],
         ],
         dtype=np.float32,
     ).flatten()

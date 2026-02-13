@@ -106,7 +106,9 @@ class PrimData:
         return np.array(data, dtype=np.float32)
 
     @staticmethod
-    def triangle_plane(width: float, depth: float, w_p: int, d_p: int, v_n: Vec3) -> np.ndarray:
+    def triangle_plane(
+        width: float, depth: float, w_p: int, d_p: int, v_n: Vec3
+    ) -> np.ndarray:
         """
         Creates a triangle plane primitive.
 
@@ -136,13 +138,17 @@ class PrimData:
                 # vert 1
                 data.extend([w, 0.0, d + d_step, v_n.x, v_n.y, v_n.z, u, v + dv])
                 # vert 2
-                data.extend([w + w_step, 0.0, d + d_step, v_n.x, v_n.y, v_n.z, u + du, v + dv])
+                data.extend(
+                    [w + w_step, 0.0, d + d_step, v_n.x, v_n.y, v_n.z, u + du, v + dv]
+                )
                 # vert 3
                 data.extend([w, 0.0, d, v_n.x, v_n.y, v_n.z, u, v])
 
                 # tri 2
                 # vert 1
-                data.extend([w + w_step, 0.0, d + d_step, v_n.x, v_n.y, v_n.z, u + du, v + dv])
+                data.extend(
+                    [w + w_step, 0.0, d + d_step, v_n.x, v_n.y, v_n.z, u + du, v + dv]
+                )
                 # vert 2
                 data.extend([w + w_step, 0.0, d, v_n.x, v_n.y, v_n.z, u + du, v])
                 # vert 3
@@ -348,7 +354,9 @@ class PrimData:
         return np.array(data, dtype=np.float32)
 
     @staticmethod
-    def _add_cylinder_sides(data: list, radius: float, h: float, ang: float, precision: int):
+    def _add_cylinder_sides(
+        data: list, radius: float, h: float, ang: float, precision: int
+    ):
         """Generates cylinder side geometry."""
         for i in range(2 * precision):
             c = radius * np.cos(ang * i)
@@ -370,7 +378,9 @@ class PrimData:
             data.extend([c1, h, s1, nc1, 0.0, ns1, 0.0, 0.0])
 
     @staticmethod
-    def _add_hemispherical_caps(data: list, radius: float, h: float, ang: float, precision: int):
+    def _add_hemispherical_caps(
+        data: list, radius: float, h: float, ang: float, precision: int
+    ):
         """Generates hemispherical cap geometry."""
         for i in range(2 * precision):
             # longitude

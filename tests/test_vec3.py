@@ -1,11 +1,10 @@
-import copy
 import ctypes
 from typing import cast
 
 import numpy as np
 import pytest
 
-from ncca.ngl import Mat3, Vec2, Vec3, Vec4
+from ncca.ngl import Mat3, Vec2, Vec3
 
 
 def test_properties():

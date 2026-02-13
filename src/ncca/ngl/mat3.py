@@ -4,9 +4,7 @@ NumPy-based implementation
 """
 
 import copy
-import functools
 import math
-import operator
 
 import numpy as np
 
@@ -81,7 +79,11 @@ class Mat3:
     def from_list(cls, lst):
         "class method to create mat3 from list"
         v = Mat3()
-        if isinstance(lst, list) and len(lst) == 3 and all(isinstance(row, list) for row in lst):
+        if (
+            isinstance(lst, list)
+            and len(lst) == 3
+            and all(isinstance(row, list) for row in lst)
+        ):
             # 2D list
             if all(len(row) == 3 for row in lst):
                 v.m = np.array(lst, dtype=np.float64)

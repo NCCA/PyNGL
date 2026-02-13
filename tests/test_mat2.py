@@ -19,7 +19,9 @@ def test_to_numpy():
     arr = m.to_numpy()
     assert isinstance(arr, np.ndarray)
     assert arr.shape == (2, 2)
-    np.testing.assert_array_equal(arr, np.array([[1.0, 2.0], [3.0, 4.0]], dtype=np.float32))
+    np.testing.assert_array_equal(
+        arr, np.array([[1.0, 2.0], [3.0, 4.0]], dtype=np.float32)
+    )
 
 
 def test_identity_classmethod():

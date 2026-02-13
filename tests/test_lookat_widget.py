@@ -1,7 +1,5 @@
 import pytest
 from PySide6.QtCore import Qt
-from PySide6.QtTest import QTest
-from PySide6.QtWidgets import QFrame, QVBoxLayout
 
 from ncca.ngl import Mat4, Vec3, look_at
 from ncca.ngl.widgets import LookAtWidget

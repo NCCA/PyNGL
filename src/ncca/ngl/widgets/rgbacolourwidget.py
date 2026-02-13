@@ -132,17 +132,28 @@ class RGBAColourWidget(QFrame):
 
     def _update_button_color(self) -> None:
         """Updates the background color of the color button."""
-        color = QColor.fromRgbF(self._colour.x, self._colour.y, self._colour.z, self._colour.w)
-        self._color_button.setStyleSheet(f"background-color: {color.name(QColor.NameFormat.HexArgb)}")
+        color = QColor.fromRgbF(
+            self._colour.x, self._colour.y, self._colour.z, self._colour.w
+        )
+        self._color_button.setStyleSheet(
+            f"background-color: {color.name(QColor.NameFormat.HexArgb)}"
+        )
 
     def _show_color_dialog(self) -> None:
         """Shows a QColorDialog to select a new color."""
-        current_color = QColor.fromRgbF(self._colour.x, self._colour.y, self._colour.z, self._colour.w)
+        current_color = QColor.fromRgbF(
+            self._colour.x, self._colour.y, self._colour.z, self._colour.w
+        )
         color = QColorDialog.getColor(
-            current_color, self, "Select Color", options=QColorDialog.ColorDialogOption.ShowAlphaChannel
+            current_color,
+            self,
+            "Select Color",
+            options=QColorDialog.ColorDialogOption.ShowAlphaChannel,
         )
         if color.isValid():
-            new_colour = Vec4(color.redF(), color.greenF(), color.blueF(), color.alphaF())
+            new_colour = Vec4(
+                color.redF(), color.greenF(), color.blueF(), color.alphaF()
+            )
             self.set_colour(new_colour)
 
     def name(self) -> str:

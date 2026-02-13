@@ -52,9 +52,13 @@ class SimpleDialog(QDialog):
         self.lookat = LookAtWidget(self, "Look At")
         layout.addWidget(self.lookat, 4, 0)
 
-        self.rgb_colour_widget = RGBColourWidget(self, "RGB Colour Widget", 1.0, 0.0, 0.0)
+        self.rgb_colour_widget = RGBColourWidget(
+            self, "RGB Colour Widget", 1.0, 0.0, 0.0
+        )
         layout.addWidget(self.rgb_colour_widget, 5, 0)
-        self.rgba_colour_widget = RGBAColourWidget(self, "RGB Colour Widget", 1.0, 0.0, 0.0, 1.0)
+        self.rgba_colour_widget = RGBAColourWidget(
+            self, "RGB Colour Widget", 1.0, 0.0, 0.0, 1.0
+        )
         layout.addWidget(self.rgba_colour_widget, 6, 0)
 
         self.setLayout(layout)
@@ -66,7 +70,9 @@ class SimpleDialog(QDialog):
         self.vec2_label.setText(f"[{value.x:0.2f}, {value.y:0.2f}]")
 
     def _update_vec4(self, value):
-        self.vec4_label.setText(f"[{value.x:0.2f}, {value.y:0.2f}, {value.z:0.2f}, {value.w:0.2f}]")
+        self.vec4_label.setText(
+            f"[{value.x:0.2f}, {value.y:0.2f}, {value.z:0.2f}, {value.w:0.2f}]"
+        )
 
 
 if __name__ == "__main__":

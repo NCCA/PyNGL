@@ -29,7 +29,9 @@ class Quaternion:
             y (float): The y-coordinate of the vector part of the quaternion.
             z (float): The z-coordinate of the vector part of the quaternion.
         """
-        self._data = np.array([float(s), float(x), float(y), float(z)], dtype=np.float64)
+        self._data = np.array(
+            [float(s), float(x), float(y), float(z)], dtype=np.float64
+        )
 
     @staticmethod
     def from_mat4(mat: "Mat4") -> "Quaternion":

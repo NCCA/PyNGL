@@ -3,7 +3,6 @@ Simple Mat4 class which can be used with the Vec4 class
 NumPy-based implementation
 """
 
-import copy
 import math
 
 import numpy as np
@@ -54,7 +53,11 @@ class Mat4:
     def from_list(cls, lst):
         "class method to create mat4 from list"
         v = Mat4()
-        if isinstance(lst, list) and len(lst) == 4 and all(isinstance(row, list) for row in lst):
+        if (
+            isinstance(lst, list)
+            and len(lst) == 4
+            and all(isinstance(row, list) for row in lst)
+        ):
             # 2D list
             if all(len(row) == 4 for row in lst):
                 v.m = np.array(lst, dtype=np.float64)

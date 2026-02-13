@@ -10,7 +10,6 @@ import wgpu
 
 from .base_webgpu_pipeline import BasePointPipeline
 from .pipeline_shaders import POINT_SHADER_MULTI_COLOURED, POINT_SHADER_SINGLE_COLOUR
-from .webgpu_constants import NGLToWebGPU
 
 
 class PointPipelineMultiColour(BasePointPipeline):
@@ -60,12 +59,14 @@ class PointPipelineMultiColour(BasePointPipeline):
 
     def get_dtype(self) -> np.dtype:
         """Get the data type of the pipeline."""
-        return np.dtype([
-            ("MVP", "float32", (4, 4)),
-            ("ViewMatrix", "float32", (4, 4)),
-            ("size", "float32"),
-            ("padding", np.uint32, 3),
-        ])
+        return np.dtype(
+            [
+                ("MVP", "float32", (4, 4)),
+                ("ViewMatrix", "float32", (4, 4)),
+                ("size", "float32"),
+                ("padding", np.uint32, 3),
+            ]
+        )
 
     def _get_shader_code(self) -> str:
         """Get the WGSL shader code for this pipeline."""
@@ -156,7 +157,9 @@ class PointPipelineMultiColour(BasePointPipeline):
         if "point_size" in kwargs and kwargs["point_size"] is not None:
             self.uniform_data["size"] = kwargs["point_size"]
 
-        self.device.queue.write_buffer(self.uniform_buffer, 0, self.uniform_data.tobytes())
+        self.device.queue.write_buffer(
+            self.uniform_buffer, 0, self.uniform_data.tobytes()
+        )
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
         """
@@ -236,11 +239,13 @@ class PointPipelineSingleColour(BasePointPipeline):
 
     def get_dtype(self) -> np.dtype:
         """Get the data type of the pipeline."""
-        return np.dtype([
-            ("MVP", "float32", (4, 4)),
-            ("ViewMatrix", "float32", (4, 4)),
-            ("ColourSize", "float32", 4),
-        ])
+        return np.dtype(
+            [
+                ("MVP", "float32", (4, 4)),
+                ("ViewMatrix", "float32", (4, 4)),
+                ("ColourSize", "float32", 4),
+            ]
+        )
 
     def _get_shader_code(self) -> str:
         """Get the WGSL shader code for this pipeline."""
@@ -305,7 +310,9 @@ class PointPipelineSingleColour(BasePointPipeline):
         if "point_size" in kwargs and kwargs["point_size"] is not None:
             self.uniform_data["ColourSize"][3] = kwargs["point_size"]
 
-        self.device.queue.write_buffer(self.uniform_buffer, 0, self.uniform_data.tobytes())
+        self.device.queue.write_buffer(
+            self.uniform_buffer, 0, self.uniform_data.tobytes()
+        )
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
         """

@@ -32,7 +32,14 @@ class FirstPersonCamera:
         view (Mat4): The view matrix.
     """
 
-    def __init__(self, eye: Vec3, look: Vec3, up: Vec3, fov: float, persp_mode: PerspMode = PerspMode.OpenGL) -> None:
+    def __init__(
+        self,
+        eye: Vec3,
+        look: Vec3,
+        up: Vec3,
+        fov: float,
+        persp_mode: PerspMode = PerspMode.OpenGL,
+    ) -> None:
         """
         Initialize the FirstPersonCamera.
 
@@ -58,7 +65,9 @@ class FirstPersonCamera:
         self.aspect: float = 1.2
         self.fov: float = fov
         self._update_camera_vectors()
-        self._projection: Mat4 = self.set_projection(self.fov, self.aspect, self.near, self.far, persp_mode)
+        self._projection: Mat4 = self.set_projection(
+            self.fov, self.aspect, self.near, self.far, persp_mode
+        )
 
         self._view: Mat4 = look_at(self.eye, self.eye + self.front, self.up)
 
@@ -76,7 +85,9 @@ class FirstPersonCamera:
     def view(self) -> Mat4:
         return self._view
 
-    def process_mouse_movement(self, diffx: float, diffy: float, _constrain_pitch: bool = True) -> None:
+    def process_mouse_movement(
+        self, diffx: float, diffy: float, _constrain_pitch: bool = True
+    ) -> None:
         """
         Process mouse movement to update the camera's direction vectors.
 
@@ -121,7 +132,12 @@ class FirstPersonCamera:
         self._view = look_at(self.eye, self.eye + self.front, self.up)
 
     def set_projection(
-        self, fov: float, aspect: float, near: float, far: float, persp_mode: PerspMode = PerspMode.OpenGL
+        self,
+        fov: float,
+        aspect: float,
+        near: float,
+        far: float,
+        persp_mode: PerspMode = PerspMode.OpenGL,
     ) -> Mat4:
         """
         Set the projection matrix for the camera.

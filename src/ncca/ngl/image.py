@@ -34,7 +34,9 @@ class Image:
                 if mode == ImageModes.GRAY:
                     self._data = np.zeros((height, width), dtype=np.uint8)
                 else:
-                    self._data = np.zeros((height, width, len(mode.value)), dtype=np.uint8)
+                    self._data = np.zeros(
+                        (height, width, len(mode.value)), dtype=np.uint8
+                    )
             else:
                 self._data = None
 

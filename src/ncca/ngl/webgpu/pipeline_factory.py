@@ -5,17 +5,12 @@ Provides abstract base class and factory for creating various pipeline types.
 """
 
 from enum import Enum
-from typing import Any, Dict, Optional, Type
+from typing import Dict, Type
 
-import numpy as np
 import wgpu
 
 from .base_webgpu_pipeline import BaseWebGPUPipeline
 from .point_pipeline import PointPipelineMultiColour, PointPipelineSingleColour
-from .point_list_pipeline import (
-    PointListPipelineMultiColour,
-    PointListPipelineSingleColour,
-)
 from .point_list_pipeline import (
     PointListPipelineMultiColour,
     PointListPipelineSingleColour,

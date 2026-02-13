@@ -3,19 +3,16 @@ Additional tests for instanced geometry pipeline to improve coverage.
 Tests specific edge cases and error conditions not covered in main test suite.
 """
 
+import numpy as np
 import pytest
 import wgpu
-import numpy as np
 
+from ncca.ngl.prim_data import PrimData
 from ncca.ngl.webgpu import PipelineFactory, PipelineType
 from ncca.ngl.webgpu.instanced_geometry_pipeline import (
-    InstancedGeometryPipelineMultiColour,
-    InstancedGeometryPipelineSingleColour,
-    BaseInstancedGeometryPipeline,
     GEOM_ERROR,
+    InstancedGeometryPipelineMultiColour,
 )
-from ncca.ngl.prim_data import PrimData
-
 
 # Test data fixtures
 TEST_POSITIONS = np.array(
@@ -430,12 +427,6 @@ def test_instanced_geometry_pipeline_buffer_reuse(webgpu_device):
     pipeline.set_data(
         positions=TEST_POSITIONS, colours=TEST_COLORS, geometry_data=geometry_data
     )
-
-    # Get initial buffers
-    initial_pos_buffer = pipeline.position_buffer
-    initial_colour_buffer = pipeline.colour_buffer
-    initial_geom_buffer = pipeline.geometry_buffer
-    initial_id_buffer = pipeline.instance_id_buffer
 
     # Update with same size data - should reuse buffers
     new_positions = TEST_POSITIONS * 2.0  # Different values, same size

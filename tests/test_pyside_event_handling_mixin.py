@@ -48,9 +48,18 @@ def test_setup_event_handling_default_values(qt_app, event_window):
     assert event_window.original_x_pos == pytest.approx(0.0)
     assert event_window.original_y_pos == pytest.approx(0.0)
     assert event_window.model_position == Vec3(0, 0, 0)
-    assert event_window.rotation_sensitivity == PySideEventHandlingMixin.DEFAULT_ROTATION_SENSITIVITY
-    assert event_window.translation_sensitivity == PySideEventHandlingMixin.DEFAULT_TRANSLATION_SENSITIVITY
-    assert event_window.zoom_sensitivity == PySideEventHandlingMixin.DEFAULT_ZOOM_SENSITIVITY
+    assert (
+        event_window.rotation_sensitivity
+        == PySideEventHandlingMixin.DEFAULT_ROTATION_SENSITIVITY
+    )
+    assert (
+        event_window.translation_sensitivity
+        == PySideEventHandlingMixin.DEFAULT_TRANSLATION_SENSITIVITY
+    )
+    assert (
+        event_window.zoom_sensitivity
+        == PySideEventHandlingMixin.DEFAULT_ZOOM_SENSITIVITY
+    )
 
 
 def test_setup_event_handling_custom_values(qt_app):
@@ -158,7 +167,9 @@ def test_key_press_event_other_key(qt_app, event_window, monkeypatch):
 
     # Mock super() call by temporarily replacing builtins.super via monkeypatch
     mock_parent = Mock()
-    monkeypatch.setattr("builtins.super", lambda *args, **kwargs: mock_parent, raising=False)
+    monkeypatch.setattr(
+        "builtins.super", lambda *args, **kwargs: mock_parent, raising=False
+    )
 
     event_window.keyPressEvent(event)
 
@@ -344,7 +355,9 @@ def test_wheel_event_zero_delta(qt_app, event_window):
 def test_constants(qt_app):
     """Test default sensitivity constants"""
     assert PySideEventHandlingMixin.DEFAULT_ROTATION_SENSITIVITY == pytest.approx(0.5)
-    assert PySideEventHandlingMixin.DEFAULT_TRANSLATION_SENSITIVITY == pytest.approx(0.01)
+    assert PySideEventHandlingMixin.DEFAULT_TRANSLATION_SENSITIVITY == pytest.approx(
+        0.01
+    )
     assert PySideEventHandlingMixin.DEFAULT_ZOOM_SENSITIVITY == pytest.approx(0.1)
 
 
