@@ -12,6 +12,7 @@ class Vec4Array:
     """
     A class to hold Vec4 data in contiguous memory for efficient GPU transfer.
     Internally uses a numpy array of shape (N, 4) for optimal performance.
+    Mutable container — intentionally not hashable.
     """
 
     def __init__(self, values=None):
@@ -26,10 +27,10 @@ class Vec4Array:
         """
         if values is None:
             # Empty array - start with shape (0, 4)
-            self._data = np.zeros((0, 4), dtype=np.float64)
+            self._data = np.zeros((0, 4), dtype=np.float32)
         elif isinstance(values, int):
             # Initialize N default Vec4s (0, 0, 0, 1)
-            self._data = np.zeros((values, 4), dtype=np.float64)
+            self._data = np.zeros((values, 4), dtype=np.float32)
             self._data[:, 3] = 1.0  # Set w component to 1.0
         else:
             # Initialize from iterable of Vec4 objects
@@ -38,7 +39,7 @@ class Vec4Array:
                 if not isinstance(v, Vec4):
                     raise TypeError("All elements must be of type Vec4")
                 vec_list.append([v.x, v.y, v.z, v.w])
-            self._data = np.array(vec_list, dtype=np.float64)
+            self._data = np.array(vec_list, dtype=np.float32)
 
     def __getitem__(self, index):
         """
@@ -109,7 +110,7 @@ class Vec4Array:
         """
         if not isinstance(value, Vec4):
             raise TypeError("Only Vec4 objects can be appended")
-        new_row = np.array([[value.x, value.y, value.z, value.w]], dtype=np.float64)
+        new_row = np.array([[value.x, value.y, value.z, value.w]], dtype=np.float32)
         self._data = np.vstack([self._data, new_row])
 
     def extend(self, values):
@@ -122,7 +123,7 @@ class Vec4Array:
         if not all(isinstance(v, Vec4) for v in values):
             raise TypeError("All elements must be of type Vec4")
 
-        new_rows = np.array([[v.x, v.y, v.z, v.w] for v in values], dtype=np.float64)
+        new_rows = np.array([[v.x, v.y, v.z, v.w] for v in values], dtype=np.float32)
         if len(self._data) == 0:
             self._data = new_rows
         else:
@@ -145,17 +146,11 @@ class Vec4Array:
         Returns:
             numpy.ndarray: A float32 numpy array of shape (N*4,) for GPU transfer.
         """
-        return self._data.astype(np.float32).flatten()
+        return self._data.flatten().copy()
 
-    def get_array(self):
-        """
-        Get the underlying numpy array in shape (N, 4).
-        Useful for vectorized operations.
-
-        Returns:
-            numpy.ndarray: The internal float64 array of shape (N, 4).
-        """
-        return self._data
+    def to_tuple(self) -> tuple[float, ...]:
+        """Return all components as one flat tuple of floats."""
+        return tuple(float(v) for v in self._data.flatten())
 
     def __repr__(self):
         vec_list = [Vec4(row[0], row[1], row[2], row[3]) for row in self._data]

@@ -33,13 +33,14 @@ def test_append():
         a.append("not a vec2")
 
 
-def test_get_array():
-    """Test the get_array method"""
-    a = Vec2Array([Vec2(1, 2), Vec2(4, 5)])
-    arr = a.get_array()
-    assert len(arr) == 2
-    assert np.equal(arr[0], np.array([1.0, 2.0])).all()
-    assert np.equal(arr[1], np.array([4.0, 5.0])).all()
+def test_to_tuple():
+    a = Vec2Array([Vec2(1.0, 2.0), Vec2(4.0, 5.0)])
+    assert a.to_tuple() == (1.0, 2.0, 4.0, 5.0)
+
+
+def test_dtype_float32():
+    a = Vec2Array(2)
+    assert a._data.dtype == np.float32
 
 
 def test_setitem():
