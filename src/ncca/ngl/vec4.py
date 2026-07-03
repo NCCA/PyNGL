@@ -41,9 +41,9 @@ class Vec4(VectorBase["Vec4"]):
         result._data[3] = 0.0
         return result
 
-    def reflect(self, n: "Vec4") -> "Vec4":
+    def reflected(self, n: "Vec4") -> "Vec4":
         """
-        Reflect a vector about a normal.
+        Return a new vector reflected about a normal.
 
         Args:
             n (Vec4): The normal to reflect about.
@@ -106,19 +106,6 @@ class Vec4(VectorBase["Vec4"]):
                 self._data[i] = float(args[i])
         except ValueError:
             raise ValueError(f"Vec4.set {args=} all need to be float")
-
-    def __repr__(self) -> str:
-        """Object representation for debugging."""
-        return f"Vec4 [{self._data[0]},{self._data[1]},{self._data[2]},{self._data[3]}]"
-
-    def __str__(self) -> str:
-        """String representation of the vector."""
-
-        # Format numbers without decimal point if they're whole numbers
-        def fmt(val):
-            return str(int(val)) if val == int(val) else str(val)
-
-        return f"[{fmt(self._data[0])},{fmt(self._data[1])},{fmt(self._data[2])},{fmt(self._data[3])}]"
 
 
 # Add properties for x, y, z, w components

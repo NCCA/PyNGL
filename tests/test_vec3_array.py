@@ -129,12 +129,12 @@ def test_extend_existing():
 
 def test_repr():
     a = Vec3Array([Vec3(1, 2, 3)])
-    assert repr(a) == "Vec3Array([Vec3 [1.0,2.0,3.0]])"
+    assert repr(a) == "Vec3Array([Vec3(1.0, 2.0, 3.0)])"
 
 
 def test_str():
     a = Vec3Array([Vec3(1, 2, 3)])
-    assert str(a) == "[Vec3 [1.0,2.0,3.0]]"
+    assert str(a) == "[Vec3(1.0, 2.0, 3.0)]"
 
 
 def test_sizeof():

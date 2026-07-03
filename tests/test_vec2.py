@@ -146,7 +146,7 @@ def test_inner():
 
 def test_null():
     v = Vec2(1.0, 2.0)
-    v.null()
+    v.set(0.0, 0.0)
     assert v.x == pytest.approx(0.0)
     assert v.y == pytest.approx(0.0)
 
@@ -159,31 +159,31 @@ def test_cross():
 
 def test_normalize():
     v = Vec2(3.0, 4.0)
-    v.normalize()
+    v = v.normalized()
     assert math.isclose(v.length(), 1.0)
     v = Vec2(0.0, 0.0)
     with pytest.raises(ZeroDivisionError):
-        v.normalize()
+        v.normalized()
 
 
 def test_reflect():
     v = Vec2(1.0, -1.0)
     n = Vec2(0.0, 1.0)
-    r = v.reflect(n)
+    r = v.reflected(n)
     assert r.x == pytest.approx(1.0)
     assert r.y == pytest.approx(1.0)
 
 
 def test_clamp():
     v = Vec2(1.5, -1.5)
-    v.clamp(0.0, 1.0)
+    v = v.clamped(0.0, 1.0)
     assert v.x == pytest.approx(1.0)
     assert v.y == pytest.approx(0.0)
 
 
 def test_repr():
     v = Vec2(1.0, 2.0)
-    assert repr(v) == "Vec2 [1.0,2.0]"
+    assert repr(v) == "Vec2(1.0, 2.0)"
 
 
 def test_truediv():
@@ -214,7 +214,7 @@ def test_div():
 
 def test_str():
     v = Vec2(1.0, 2.0)
-    assert str(v) == "[1.0,2.0]"
+    assert str(v) == "[1.0, 2.0]"
 
 
 def test_mul():
@@ -286,3 +286,38 @@ def test_outer():
     assert result.m[0, 1] == pytest.approx(4.0)
     assert result.m[1, 0] == pytest.approx(6.0)
     assert result.m[1, 1] == pytest.approx(8.0)
+
+
+def test_normalized_returns_new():
+    v = Vec2(3.0, 0.0)
+    n = v.normalized()
+    assert n == Vec2(1.0, 0.0)
+    assert v == Vec2(3.0, 0.0)  # original untouched
+
+
+def test_clamped_returns_new():
+    v = Vec2(-2.0, 9.0)
+    c = v.clamped(0.0, 1.0)
+    assert c == Vec2(0.0, 1.0)
+    assert v == Vec2(-2.0, 9.0)
+
+
+def test_lerp():
+    a = Vec2(0.0, 0.0)
+    b = Vec2(2.0, 4.0)
+    assert a.lerp(b, 0.5) == Vec2(1.0, 2.0)
+
+
+def test_from_numpy_round_trip():
+    v = Vec2.from_numpy(np.array([1.0, 2.0]))
+    assert v == Vec2(1.0, 2.0)
+    assert v.to_numpy().dtype == np.float32
+
+
+def test_eval_repr_round_trip():
+    v = Vec2(1.5, 2.5)
+    assert eval(repr(v)) == v
+
+
+def test_dtype_is_float32():
+    assert Vec2(1.0, 2.0)._data.dtype == np.float32

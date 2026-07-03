@@ -27,9 +27,9 @@ def look_at(eye, look, up):
     u = up
     v = n.cross(u)
     u = v.cross(n)
-    n.normalize()
-    v.normalize()
-    u.normalize()
+    n = n.normalized()
+    v = v.normalized()
+    u = u.normalized()
 
     result = Mat4.identity()
     result.m[0][0] = v.x
@@ -153,7 +153,7 @@ def calc_normal(p1, p2, p3):
     normal = v1.cross(v2)
 
     # Normalize the result to get a unit length normal
-    normal.normalize()
+    normal = normal.normalized()
 
     return normal
 
@@ -182,16 +182,16 @@ def renderman_look_at(eye, look, up):
     """
     # Calculate view direction (from eye to look point)
     n = look - eye
-    n.normalize()
+    n = n.normalized()
 
     # Calculate right vector
     up.y = -up.y
     v = n.cross(up)
-    v.normalize()
+    v = v.normalized()
 
     # Recalculate orthogonal up vector
     u = v.cross(n)
-    u.normalize()
+    u = u.normalized()
 
     # Build the matrix for RenderMan's coordinate system
     # RenderMan uses Y-down, Z-forward

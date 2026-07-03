@@ -117,7 +117,7 @@ def test_set_rotation_order():
 
 def test_str():
     tx = Transform()
-    assert str(tx) == "pos [0.0,0.0,0.0]\nrot [0.0,0.0,0.0]\nscale [1.0,1.0,1.0]"
+    assert str(tx) == "pos [0.0, 0.0, 0.0]\nrot [0.0, 0.0, 0.0]\nscale [1.0, 1.0, 1.0]"
 
 
 def test_rotation_orders():

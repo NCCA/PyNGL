@@ -96,7 +96,7 @@ class Random:
         """get a random vector with componets ranged from +/- 1 and Normalized"""
         gen = Random._float_generators["RandomFloat"]
         v = Vec4(gen(), gen(), gen(), 0.0)
-        v.normalize()
+        v = v.normalized()
         return v
 
     @staticmethod
@@ -110,7 +110,7 @@ class Random:
         """get a random vector with componets ranged from +/- 1 and Normalized"""
         gen = Random._float_generators["RandomFloat"]
         v = Vec3(gen(), gen(), gen())
-        v.normalize()
+        v = v.normalized()
         return v
 
     @staticmethod
@@ -124,7 +124,7 @@ class Random:
         """get a random vector with componets ranged from +/- 1 and Normalized"""
         gen = Random._float_generators["RandomFloat"]
         v = Vec2(gen(), gen())
-        v.normalize()
+        v = v.normalized()
         return v
 
     @staticmethod

@@ -152,12 +152,12 @@ def test_to_numpy():
 
 def test_repr():
     a = Vec4Array([Vec4(1, 2, 3, 4)])
-    assert repr(a) == "Vec4Array([Vec4 [1.0,2.0,3.0,4.0]])"
+    assert repr(a) == "Vec4Array([Vec4(1.0, 2.0, 3.0, 4.0)])"
 
 
 def test_str():
     a = Vec4Array([Vec4(1, 2, 3, 4)])
-    assert str(a) == "[Vec4 [1.0,2.0,3.0,4.0]]"
+    assert str(a) == "[Vec4(1.0, 2.0, 3.0, 4.0)]"
 
 
 def test_sizeof():

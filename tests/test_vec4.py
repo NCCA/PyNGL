@@ -149,14 +149,14 @@ def test_length_squared():
 
 def test_normalize():
     a = Vec4(25.0, 12.2, 0.5, -2.0)
-    a.normalize()
+    a = a.normalized()
     assert a.x == pytest.approx(0.8962, rel=1e-2)
     assert a.y == pytest.approx(0.4373, rel=1e-2)
     assert a.z == pytest.approx(0.0179, rel=1e-2)
     assert a.w == pytest.approx(-0.0716, rel=1e-2)
     with pytest.raises(ZeroDivisionError):
         a = Vec4(0, 0, 0, 0)
-        a.normalize()
+        a.normalized()
 
 
 def test_equal():
@@ -230,8 +230,8 @@ def test_matmul():
 
 def test_string():
     a = Vec4(1, 2, 3, 4)
-    assert str(a) == "[1,2,3,4]"
-    assert repr(a) == "Vec4 [1.0,2.0,3.0,4.0]"
+    assert str(a) == "[1.0, 2.0, 3.0, 4.0]"
+    assert repr(a) == "Vec4(1.0, 2.0, 3.0, 4.0)"
 
 
 def test_iterable():
@@ -328,7 +328,7 @@ def test_inner():
 
 def test_null():
     a = Vec4(1, 2, 3, 4)
-    a.null()
+    a.set(0.0, 0.0, 0.0, 0.0)
     assert a == Vec4(0, 0, 0, 0)
 
 
@@ -346,7 +346,7 @@ def test_cross():
 def test_reflect():
     a = Vec4(1, 0, -1, 0)
     n = Vec4(0, 0, 1, 0)  # Normal pointing up
-    r = a.reflect(n)
+    r = a.reflected(n)
     assert r.x == pytest.approx(1.0)
     assert r.y == pytest.approx(0.0)
     assert r.z == pytest.approx(1.0)
@@ -354,8 +354,43 @@ def test_reflect():
 
 def test_clamp():
     a = Vec4(-2.0, 0.5, 2.5, 1.5)
-    a.clamp(0.0, 1.0)
+    a = a.clamped(0.0, 1.0)
     assert a.x == pytest.approx(0.0)
     assert a.y == pytest.approx(0.5)
     assert a.z == pytest.approx(1.0)
     assert a.w == pytest.approx(1.0)
+
+
+def test_normalized_returns_new():
+    v = Vec4(3.0, 0.0, 0.0, 0.0)
+    n = v.normalized()
+    assert n == Vec4(1.0, 0.0, 0.0, 0.0)
+    assert v == Vec4(3.0, 0.0, 0.0, 0.0)  # original untouched
+
+
+def test_clamped_returns_new():
+    v = Vec4(-2.0, 0.5, 9.0, 0.5)
+    c = v.clamped(0.0, 1.0)
+    assert c == Vec4(0.0, 0.5, 1.0, 0.5)
+    assert v == Vec4(-2.0, 0.5, 9.0, 0.5)
+
+
+def test_lerp():
+    a = Vec4(0.0, 0.0, 0.0, 0.0)
+    b = Vec4(2.0, 4.0, 6.0, 8.0)
+    assert a.lerp(b, 0.5) == Vec4(1.0, 2.0, 3.0, 4.0)
+
+
+def test_from_numpy_round_trip():
+    v = Vec4.from_numpy(np.array([1.0, 2.0, 3.0, 4.0]))
+    assert v == Vec4(1.0, 2.0, 3.0, 4.0)
+    assert v.to_numpy().dtype == np.float32
+
+
+def test_eval_repr_round_trip():
+    v = Vec4(1.5, 2.5, 3.5, 4.5)
+    assert eval(repr(v)) == v
+
+
+def test_dtype_is_float32():
+    assert Vec4(1.0, 2.0, 3.0, 4.0)._data.dtype == np.float32

@@ -12,7 +12,7 @@ from typing import Any, ClassVar, Generic, Self, Tuple, TypeVar
 
 import numpy as np
 
-from .util import clamp, hash_combine
+from .util import hash_combine
 
 # Note this has been changed so I can use python 3.11
 # as renderman want this. Once >3.11 is used we can get rid and just use
@@ -33,6 +33,8 @@ class VectorBase(ABC, Generic[T]):
         COMPONENT_NAMES: Tuple of component names ('x', 'y', 'z', 'w')
         DEFAULT_VALUES: Tuple of default values for each component
     """
+
+    __slots__ = ("_data",)
 
     # Class attributes to be defined by subclasses
     DIMENSION: ClassVar[int]
@@ -56,12 +58,12 @@ class VectorBase(ABC, Generic[T]):
         self._set_positional_args(values, args)
         self._set_keyword_args(values, kwargs)
 
-        self._data = np.array(values, dtype=np.float64)
+        self._data = np.array(values, dtype=np.float32)
 
     def _init_from_args(self, args: tuple[float, ...]) -> None:
         """Initialize vector from positional arguments only."""
         if not args:
-            self._data = np.array(self.DEFAULT_VALUES, dtype=np.float64)
+            self._data = np.array(self.DEFAULT_VALUES, dtype=np.float32)
             return
 
         self._validate_component_count(len(args))
@@ -69,7 +71,7 @@ class VectorBase(ABC, Generic[T]):
         values = list(self.DEFAULT_VALUES)
         self._set_positional_args(values, args)
 
-        self._data = np.array(values, dtype=np.float64)
+        self._data = np.array(values, dtype=np.float32)
 
     def _validate_component_count(self, count: int) -> None:
         """Validate the number of components doesn't exceed dimension."""
@@ -125,7 +127,7 @@ class VectorBase(ABC, Generic[T]):
         if index < 0 or index >= self.DIMENSION:
             valid_indices = ", ".join(str(i) for i in range(self.DIMENSION))
             raise IndexError(f"Index out of range. Valid indices are {valid_indices}.")
-        return self._data[index]
+        return float(self._data[index])
 
     def __hash__(self) -> int:
         """
@@ -169,23 +171,6 @@ class VectorBase(ABC, Generic[T]):
         result._data = self._data + rhs._data
         return result
 
-    def __iadd__(self, rhs: Self) -> Self:
-        """
-        Vector addition a+=b.
-
-        Args:
-            rhs (VectorBase): The right-hand side vector to add.
-
-        Returns:
-            VectorBase: Returns this vector after adding the rhs vector.
-        """
-        if not isinstance(rhs, self.__class__):
-            raise ValueError(
-                f"Can only add {self.__class__.__name__} to {self.__class__.__name__}"
-            )
-        self._data += rhs._data
-        return self
-
     def __sub__(self, rhs: Self) -> Self:
         """
         Vector subtraction a-b.
@@ -203,23 +188,6 @@ class VectorBase(ABC, Generic[T]):
         result = self.__class__()
         result._data = self._data - rhs._data
         return result
-
-    def __isub__(self, rhs: Self) -> Self:
-        """
-        Vector subtraction a-=b.
-
-        Args:
-            rhs (VectorBase): The right-hand side vector to subtract.
-
-        Returns:
-            VectorBase: Returns this vector after subtracting the rhs vector.
-        """
-        if not isinstance(rhs, self.__class__):
-            raise ValueError(
-                f"Can only subtract {self.__class__.__name__} from {self.__class__.__name__}"
-            )
-        self._data -= rhs._data
-        return self
 
     def __eq__(self, rhs: Any) -> bool:
         """
@@ -373,12 +341,15 @@ class VectorBase(ABC, Generic[T]):
         """
         return self.dot(rhs)
 
-    def normalize(self) -> Self:
-        """
-        Normalize the vector to unit length.
+    def __len__(self) -> int:
+        """Return the number of components."""
+        return self.DIMENSION
+
+    def normalized(self) -> Self:
+        """Return a new vector normalized to unit length.
 
         Returns:
-            VectorBase: This vector after normalization.
+            A new unit-length vector.
 
         Raises:
             ZeroDivisionError: If the length of the vector is zero.
@@ -386,25 +357,91 @@ class VectorBase(ABC, Generic[T]):
         vector_length = self.length()
         if math.isclose(vector_length, 0.0):
             raise ZeroDivisionError(
-                f"{self.__class__.__name__}.normalize: length is zero, most likely calling normalize on a zero vector"
+                f"{self.__class__.__name__}.normalized: length is zero"
             )
-        self._data /= vector_length
-        return self
+        result = self.__class__()
+        result._data = self._data / np.float32(vector_length)
+        return result
 
-    def null(self) -> None:
-        """Set the vector to zero."""
-        self._data[:] = 0.0
-
-    def clamp(self, low: float, high: float) -> None:
-        """
-        Clamp the vector to a range.
+    def clamped(self, low: float, high: float) -> Self:
+        """Return a new vector with each component clamped to [low, high].
 
         Args:
-            low (float): The low end of the range.
-            high (float): The high end of the range.
+            low: The low end of the range.
+            high: The high end of the range.
+
+        Returns:
+            A new clamped vector.
         """
-        for i in range(self.DIMENSION):
-            self._data[i] = clamp(self._data[i], low, high)
+        result = self.__class__()
+        result._data = np.clip(self._data, low, high).astype(np.float32)
+        return result
+
+    def lerp(self, rhs: Self, t: float) -> Self:
+        """Return the linear interpolation between this vector and rhs at t.
+
+        Args:
+            rhs: The target vector.
+            t: Interpolation parameter (0.0 returns self, 1.0 returns rhs).
+
+        Returns:
+            A new interpolated vector.
+        """
+        if not isinstance(rhs, self.__class__):
+            raise ValueError(f"Can only lerp with {self.__class__.__name__}")
+        result = self.__class__()
+        result._data = self._data + (rhs._data - self._data) * np.float32(t)
+        return result
+
+    @classmethod
+    def from_list(cls, lst: list[float]) -> Self:
+        """Create a vector from a list of components.
+
+        Args:
+            lst: A list of exactly DIMENSION floats.
+
+        Returns:
+            A new vector.
+
+        Raises:
+            ValueError: If the list has the wrong length.
+        """
+        if len(lst) != cls.DIMENSION:
+            raise ValueError(
+                f"{cls.__name__}.from_list requires {cls.DIMENSION} values"
+            )
+        return cls(*lst)
+
+    @classmethod
+    def from_numpy(cls, arr: np.ndarray) -> Self:
+        """Create a vector from a numpy array.
+
+        Args:
+            arr: An array of shape (DIMENSION,).
+
+        Returns:
+            A new vector.
+
+        Raises:
+            ValueError: If the array has the wrong shape.
+        """
+        arr = np.asarray(arr, dtype=np.float32)
+        if arr.shape != (cls.DIMENSION,):
+            raise ValueError(
+                f"{cls.__name__}.from_numpy requires shape ({cls.DIMENSION},)"
+            )
+        result = cls()
+        result._data = arr.copy()
+        return result
+
+    def __repr__(self) -> str:
+        """Eval-able representation, e.g. Vec3(1.0, 2.0, 3.0)."""
+        args = ", ".join(repr(float(v)) for v in self._data)
+        return f"{self.__class__.__name__}({args})"
+
+    def __str__(self) -> str:
+        """Pretty representation, e.g. [1.0, 2.0, 3.0]."""
+        return "[" + ", ".join(str(float(v)) for v in self._data) + "]"
 
     def to_list(self) -> list:
         """
@@ -431,7 +468,7 @@ class VectorBase(ABC, Generic[T]):
         Returns:
             tuple: Tuple of vector components.
         """
-        return tuple(self._data)
+        return tuple(float(v) for v in self._data)
 
     # Abstract methods that must be implemented by subclasses
     @abstractmethod
@@ -448,9 +485,9 @@ class VectorBase(ABC, Generic[T]):
         pass  # pragma: no cover
 
     @abstractmethod
-    def reflect(self, n: Self) -> Self:
+    def reflected(self, n: Self) -> Self:
         """
-        Reflect a vector about a normal.
+        Return a new vector reflected about the normal.
 
         Args:
             n (VectorBase): The normal to reflect about.
@@ -497,16 +534,6 @@ class VectorBase(ABC, Generic[T]):
         Raises:
             ValueError: If wrong number of arguments is provided or they are not floats.
         """
-        pass  # pragma: no cover
-
-    @abstractmethod
-    def __repr__(self) -> str:
-        """Object representation for debugging."""
-        pass  # pragma: no cover
-
-    @abstractmethod
-    def __str__(self) -> str:
-        """String representation of the vector."""
         pass  # pragma: no cover
 
     def __getattr__(self, name: str):
