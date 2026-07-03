@@ -125,17 +125,16 @@ def test_from_axis_angle():
     assert quat.z == pytest.approx(0.0, rel=1e-3)
 
 
-# def test_mult_vec3():
-#     axis = Vec3(1.0, 0.0, 0.0)
-#     angle = np.pi / 2.0
-#     # from_axis angle works in degrees
-#     quat = Quaternion.from_axis_angle(axis, np.degrees(angle))
-#     vec = Vec3(1.0, 2.0, 3.0)
-#     result = quat * vec
-#     print(result)
-#     assert result.x == pytest.approx(1.0, rel=1e-3)
-#     assert result.y == pytest.approx(2.0, rel=1e-3)
-#     assert result.z == pytest.approx(3.0, rel=1e-3)
+def test_mult_vec3():
+    # Rotating (0, 0, 1) by 90 degrees about the Y axis should give (1, 0, 0).
+    axis = Vec3(0.0, 1.0, 0.0)
+    angle = 90.0
+    quat = Quaternion.from_axis_angle(axis, angle)
+    vec = Vec3(0.0, 0.0, 1.0)
+    result = quat * vec
+    assert result.x == pytest.approx(1.0, abs=1e-6)
+    assert result.y == pytest.approx(0.0, abs=1e-6)
+    assert result.z == pytest.approx(0.0, abs=1e-6)
 
 
 def test_matmul_product():

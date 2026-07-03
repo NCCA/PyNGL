@@ -73,10 +73,11 @@ PySide6 (Qt) widgets for editing/displaying NGL types in GUIs: `vec2widget.py`/`
   `set()` and element assignment mutate); constructors take components with a
   sensible default; `from_list`/`from_numpy` classmethods;
   `copy()`/`to_numpy()`/`to_list()`/`to_tuple()`; `__eq__`/`__hash__`; eval-able
-  `__repr__`. `@` is the linear-algebra product; `*` is scalar only.
+  `__repr__`. `@` is the linear-algebra product; `*` is scalar only, except
+  `Quaternion * Vec3`, which rotates the vector (kept per spec).
   `tests/test_api_consistency.py` enforces this — run it when touching math code.
 - Prefer numpy arrays (`np.float32`) over Python lists for numeric data; use `__slots__` on data-heavy classes.
-- Module-specific errors are plain `Exception` subclasses named `<Module>Error` (e.g. `Mat3Error`, `ObjParseVertexError`), raised rather than returning sentinel values.
+- Module-specific errors are plain `Exception` subclasses named `<Module>Error` (e.g. `MatrixError`, `ObjParseVertexError`), raised rather than returning sentinel values.
 - **"Colour"** (not "color") is the correct spelling in this codebase's identifiers, docs, and variables.
 - Docstrings are Google-style with Args/Returns/Raises; type hints are required on all function signatures and class attributes.
 - Executable scripts use the shebang `#!/usr/bin/env -S uv run --script`.

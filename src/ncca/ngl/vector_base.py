@@ -109,7 +109,7 @@ class VectorBase(ABC, Generic[T]):
             float: The components of the vector.
         """
         for i in range(self.DIMENSION):
-            yield self._data[i]
+            yield float(self._data[i])
 
     def __getitem__(self, index: int) -> float:
         """

@@ -109,7 +109,7 @@ def test_eval_repr_round_trip(cls):
 def test_len_and_iter(cls):
     a = make(cls)
     assert len(a) > 0
-    assert all(isinstance(float(v), float) for v in a)
+    assert all(isinstance(v, float) for v in a)
 
 
 @pytest.mark.parametrize("cls", [Vec2, Vec3, Vec4])
@@ -136,3 +136,33 @@ def test_quaternion_normalized_is_pure():
     q.conjugate()
     q.inverse()
     assert q == before
+
+
+@pytest.mark.parametrize("cls", ALL_CLASSES)
+def test_neg_returns_new(cls):
+    a = make(cls)
+    n = -a
+    assert n is not a
+    assert -n == a
+    assert a == make(cls)
+
+
+@pytest.mark.parametrize("cls", ALL_CLASSES)
+def test_scalar_truediv(cls):
+    a = make(cls)
+    half = a / 2.0
+    assert half * 2.0 == a
+    with pytest.raises(ZeroDivisionError):
+        a / 0.0
+
+
+@pytest.mark.parametrize("cls", [Vec2, Vec3, Vec4, Quaternion])
+def test_getitem_returns_float(cls):
+    a = make(cls)
+    assert isinstance(a[0], float)
+
+
+@pytest.mark.parametrize("cls", [Mat2, Mat3, Mat4])
+def test_matrix_getitem_row_then_element_returns_float(cls):
+    a = make(cls)
+    assert isinstance(float(a[0][0]), float)

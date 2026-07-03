@@ -187,6 +187,27 @@ class MatrixBase:
         """Scalar * matrix."""
         return self * rhs
 
+    def __neg__(self) -> Self:
+        """Return a new matrix with every element negated."""
+        result = self.__class__()
+        result._data = -self._data
+        return result
+
+    def __truediv__(self, rhs: float | int) -> Self:
+        """Divide every element by a scalar, returning a new matrix.
+
+        Raises:
+            ZeroDivisionError: If rhs is zero.
+            MatrixError: If rhs is not a scalar.
+        """
+        if isinstance(rhs, (int, float)):
+            if rhs == 0:
+                raise ZeroDivisionError("division by zero")
+            result = self.__class__()
+            result._data = self._data / np.float32(rhs)
+            return result
+        raise MatrixError("matrices only scale by scalars; use @ for products")
+
     def __add__(self, rhs: Self) -> Self:
         """Piecewise addition, returning a new matrix."""
         if not isinstance(rhs, self.__class__):

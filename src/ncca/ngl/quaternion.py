@@ -157,6 +157,37 @@ class Quaternion:
             return self * rhs
         raise TypeError(f"cannot multiply {type(rhs)} by Quaternion")
 
+    def __neg__(self) -> "Quaternion":
+        """Return a new quaternion with every component negated."""
+        result = Quaternion()
+        result._data = -self._data
+        return result
+
+    def __truediv__(self, rhs: float | int) -> "Quaternion":
+        """Scalar division, returning a new quaternion.
+
+        Raises:
+            ZeroDivisionError: If rhs is zero.
+            TypeError: If rhs is not a scalar.
+        """
+        if isinstance(rhs, (int, float)):
+            if rhs == 0:
+                raise ZeroDivisionError("division by zero")
+            result = Quaternion()
+            result._data = self._data / np.float32(rhs)
+            return result
+        raise TypeError(f"cannot divide Quaternion by {type(rhs)}")
+
+    def __getitem__(self, index: int) -> float:
+        """Return the component at index (0=s, 1=x, 2=y, 3=z).
+
+        Raises:
+            IndexError: If the index is out of range.
+        """
+        if index < 0 or index >= 4:
+            raise IndexError("Index out of range. Valid indices are 0, 1, 2, 3.")
+        return float(self._data[index])
+
     def normalized(self) -> "Quaternion":
         """Return a new unit-length quaternion.
 
@@ -196,7 +227,7 @@ class Quaternion:
 
     def dot(self, rhs: "Quaternion") -> float:
         """Dot product of two quaternions"""
-        return np.dot(self._data, rhs._data)
+        return float(np.dot(self._data, rhs._data))
 
     def slerp(self, rhs: "Quaternion", t: float) -> "Quaternion":
         """Spherical linear interpolation from self to rhs at t in [0, 1]."""
