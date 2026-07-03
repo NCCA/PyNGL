@@ -38,9 +38,9 @@ class Vec3(VectorBase["Vec3"]):
         result._data = np.cross(self._data, rhs._data)
         return result
 
-    def reflect(self, n: "Vec3") -> "Vec3":
+    def reflected(self, n: "Vec3") -> "Vec3":
         """
-        Reflect a vector about a normal.
+        Return a new vector reflected about a normal.
 
         Args:
             n (Vec3): The normal to reflect about.
@@ -67,7 +67,7 @@ class Vec3(VectorBase["Vec3"]):
         from .mat3 import Mat3
 
         result = Mat3()
-        result.m = np.outer(self._data, rhs._data).astype(np.float64)
+        result._data = np.outer(self._data, rhs._data).astype(np.float32)
         return result
 
     def __matmul__(self, rhs):
@@ -81,7 +81,7 @@ class Vec3(VectorBase["Vec3"]):
             Vec3: A new vector that is the result of multiplying this vector by the matrix.
         """
         result = Vec3()
-        result._data = rhs.m.T @ self._data  # More efficient
+        result._data = rhs._data.T @ self._data  # More efficient
         return result
 
     def set(self, *args: float) -> None:
@@ -102,14 +102,6 @@ class Vec3(VectorBase["Vec3"]):
             self._data[2] = float(args[2])
         except ValueError:
             raise ValueError(f"Vec3.set {args=} all need to be float")
-
-    def __repr__(self) -> str:
-        """Object representation for debugging."""
-        return f"Vec3 [{self._data[0]},{self._data[1]},{self._data[2]}]"
-
-    def __str__(self) -> str:
-        """String representation of the vector."""
-        return f"[{self._data[0]},{self._data[1]},{self._data[2]}]"
 
 
 # Add properties for x, y, z components

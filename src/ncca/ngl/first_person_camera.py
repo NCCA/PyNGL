@@ -120,13 +120,13 @@ class FirstPersonCamera:
         self.front.x = math.cos(yaw) * math.cos(pitch)
         self.front.y = math.sin(pitch)
         self.front.z = math.sin(yaw) * math.cos(pitch)
-        self.front.normalize()
+        self.front = self.front.normalized()
         # Also re-calculate the Right and Up vector
         self.right = self.front.cross(self.world_up)
         self.up = self.right.cross(self.front)
         # normalize as fast movement can cause issues
-        self.right.normalize()
-        self.front.normalize()
+        self.right = self.right.normalized()
+        self.front = self.front.normalized()
         from .util import look_at
 
         self._view = look_at(self.eye, self.eye + self.front, self.up)

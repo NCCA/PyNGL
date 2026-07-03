@@ -27,20 +27,20 @@ class Plane:
         aux1 = p1 - p2
         aux2 = p3 - p2
         self._normal = aux2.cross(aux1)
-        self._normal.normalize()
+        self._normal = self._normal.normalized()
         self._point = p2
         self._d = -(self._normal.inner(self._point))
 
     def set_normal_point(self, normal: Vec3, point: Vec3) -> None:
         self._normal = normal
-        self._normal.normalize()
+        self._normal = self._normal.normalized()
         self._point = point
         self._d = -(self._normal.inner(self._point))
 
     def set_floats(self, a: float, b: float, c: float, d: float) -> None:
         self._normal.set(a, b, c)
         length = self._normal.length()
-        self._normal.normalize()
+        self._normal = self._normal.normalized()
         self._d = d / length
 
     def distance(self, p: Vec3) -> float:

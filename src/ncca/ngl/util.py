@@ -5,10 +5,14 @@ Most of these functions are based on functions found in other libraries such as 
 
 import enum
 import math
+from typing import TYPE_CHECKING, TypeVar
 
 import numpy as np
 
 from .mat4 import Mat4
+
+if TYPE_CHECKING:
+    from .vec3 import Vec3
 
 
 def clamp(num, low, high):
@@ -18,7 +22,7 @@ def clamp(num, low, high):
     return max(min(num, high), low)
 
 
-def look_at(eye, look, up):
+def look_at(eye: "Vec3", look: "Vec3", up: "Vec3") -> Mat4:
     """
     Calculate 4x4 matrix for camera lookAt
     """
@@ -27,23 +31,23 @@ def look_at(eye, look, up):
     u = up
     v = n.cross(u)
     u = v.cross(n)
-    n.normalize()
-    v.normalize()
-    u.normalize()
+    n = n.normalized()
+    v = v.normalized()
+    u = u.normalized()
 
     result = Mat4.identity()
-    result.m[0][0] = v.x
-    result.m[1][0] = v.y
-    result.m[2][0] = v.z
-    result.m[0][1] = u.x
-    result.m[1][1] = u.y
-    result.m[2][1] = u.z
-    result.m[0][2] = -n.x
-    result.m[1][2] = -n.y
-    result.m[2][2] = -n.z
-    result.m[3][0] = -eye.dot(v)
-    result.m[3][1] = -eye.dot(u)
-    result.m[3][2] = eye.dot(n)
+    result[0][0] = v.x
+    result[1][0] = v.y
+    result[2][0] = v.z
+    result[0][1] = u.x
+    result[1][1] = u.y
+    result[2][1] = u.z
+    result[0][2] = -n.x
+    result[1][2] = -n.y
+    result[2][2] = -n.z
+    result[3][0] = -eye.dot(v)
+    result[3][1] = -eye.dot(u)
+    result[3][2] = eye.dot(n)
     return result
 
 
@@ -79,56 +83,109 @@ def perspective(
     right = _range * aspect
     bottom = -_range
     top = _range
-    m.m[0][0] = (2.0 * near) / (right - left)
-    m.m[1][1] = (2.0 * near) / (top - bottom)
+    m[0][0] = (2.0 * near) / (right - left)
+    m[1][1] = (2.0 * near) / (top - bottom)
     match mode:
         case PerspMode.OpenGL:
-            m.m[2][2] = -(far + near) / (far - near)
-            m.m[2][3] = -1.0
-            m.m[3][2] = -(2.0 * far * near) / (far - near)
+            m[2][2] = -(far + near) / (far - near)
+            m[2][3] = -1.0
+            m[3][2] = -(2.0 * far * near) / (far - near)
 
         # This ensures the clip space Z range is [0, 1] as required by Vulkan and WebGPU.
         case PerspMode.WebGPU | PerspMode.Vulkan:
-            m.m[2][2] = -far / (far - near)
-            m.m[2][3] = -1.0
-            m.m[3][2] = -(far * near) / (far - near)
+            m[2][2] = -far / (far - near)
+            m[2][3] = -1.0
+            m[3][2] = -(far * near) / (far - near)
     return m
 
 
-def ortho(left, right, bottom, top, near, far, mode=PerspMode.OpenGL):
+def ortho(
+    left: float,
+    right: float,
+    bottom: float,
+    top: float,
+    near: float,
+    far: float,
+    mode: PerspMode = PerspMode.OpenGL,
+) -> Mat4:
+    """
+    Calculate an orthographic projection matrix.
+
+    Args:
+        left: Left clipping plane.
+        right: Right clipping plane.
+        bottom: Bottom clipping plane.
+        top: Top clipping plane.
+        near: Near clipping plane distance.
+        far: Far clipping plane distance.
+        mode: Target graphics API clip-space convention.
+
+    Returns:
+        Mat4: The orthographic projection matrix.
+    """
     m = Mat4.identity()
-    m.m[0][0] = 2.0 / (right - left)
-    m.m[1][1] = 2.0 / (top - bottom)
+    m[0][0] = 2.0 / (right - left)
+    m[1][1] = 2.0 / (top - bottom)
     match mode:
         case PerspMode.OpenGL:
-            m.m[2][2] = -2.0 / (far - near)
-            m.m[3][2] = -(far + near) / (far - near)
+            m[2][2] = -2.0 / (far - near)
+            m[3][2] = -(far + near) / (far - near)
         case PerspMode.WebGPU | PerspMode.Vulkan:
-            m.m[2][2] = -1.0 / (far - near)
-            m.m[3][2] = -near / (far - near)
-    m.m[3][0] = -(right + left) / (right - left)
-    m.m[3][1] = -(top + bottom) / (top - bottom)
+            m[2][2] = -1.0 / (far - near)
+            m[3][2] = -near / (far - near)
+    m[3][0] = -(right + left) / (right - left)
+    m[3][1] = -(top + bottom) / (top - bottom)
     return m
 
 
-def frustum(left, right, bottom, top, near, far):
-    """Create a frustum projection matrix."""
+def frustum(
+    left: float, right: float, bottom: float, top: float, near: float, far: float
+) -> Mat4:
+    """Create a frustum projection matrix.
+
+    Args:
+        left: Left clipping plane.
+        right: Right clipping plane.
+        bottom: Bottom clipping plane.
+        top: Top clipping plane.
+        near: Near clipping plane distance.
+        far: Far clipping plane distance.
+
+    Returns:
+        Mat4: The frustum projection matrix.
+    """
     m = Mat4.zero()
-    m.m[0][0] = (2.0 * near) / (right - left)
-    m.m[1][1] = (2.0 * near) / (top - bottom)
-    m.m[2][0] = (right + left) / (right - left)
-    m.m[2][1] = (top + bottom) / (top - bottom)
-    m.m[2][2] = -(far + near) / (far - near)
-    m.m[2][3] = -1.0
-    m.m[3][2] = -(2.0 * far * near) / (far - near)
+    m[0][0] = (2.0 * near) / (right - left)
+    m[1][1] = (2.0 * near) / (top - bottom)
+    m[2][0] = (right + left) / (right - left)
+    m[2][1] = (top + bottom) / (top - bottom)
+    m[2][2] = -(far + near) / (far - near)
+    m[2][3] = -1.0
+    m[3][2] = -(2.0 * far * near) / (far - near)
     return m
 
 
-def lerp(a, b, t):
+T = TypeVar("T")
+
+
+def lerp(a: T, b: T, t: float) -> T:
+    """Linearly interpolate between a and b at parameter t.
+
+    Works for floats and any type supporting + and scalar * (Vec2/3/4,
+    Quaternion, matrices).
+
+    Args:
+        a: Start value.
+        b: End value.
+        t: Interpolation parameter, typically in [0, 1].
+
+    Returns:
+        The interpolated value, of the same type as a and b.
+    """
     return a + (b - a) * t
 
 
-def calc_normal(p1, p2, p3):
+def calc_normal(p1: "Vec3", p2: "Vec3", p3: "Vec3") -> "Vec3":
     """
     Calculates the normal of a triangle defined by three points.
 
@@ -153,7 +210,7 @@ def calc_normal(p1, p2, p3):
     normal = v1.cross(v2)
 
     # Normalize the result to get a unit length normal
-    normal.normalize()
+    normal = normal.normalized()
 
     return normal
 
@@ -182,40 +239,40 @@ def renderman_look_at(eye, look, up):
     """
     # Calculate view direction (from eye to look point)
     n = look - eye
-    n.normalize()
+    n = n.normalized()
 
     # Calculate right vector
     up.y = -up.y
     v = n.cross(up)
-    v.normalize()
+    v = v.normalized()
 
     # Recalculate orthogonal up vector
     u = v.cross(n)
-    u.normalize()
+    u = u.normalized()
 
     # Build the matrix for RenderMan's coordinate system
     # RenderMan uses Y-down, Z-forward
     result = Mat4.identity()
 
     # Right vector (X-axis)
-    result.m[0][0] = v.x
-    result.m[1][0] = v.y
-    result.m[2][0] = v.z
+    result[0][0] = v.x
+    result[1][0] = v.y
+    result[2][0] = v.z
 
     # Up vector (Y-axis) - negated for Y-down convention
-    result.m[0][1] = -u.x
-    result.m[1][1] = -u.y
-    result.m[2][1] = -u.z
+    result[0][1] = -u.x
+    result[1][1] = -u.y
+    result[2][1] = -u.z
 
     # Forward vector (Z-axis) - camera looks down +Z
-    result.m[0][2] = n.x
-    result.m[1][2] = n.y
-    result.m[2][2] = n.z
+    result[0][2] = n.x
+    result[1][2] = n.y
+    result[2][2] = n.z
 
     # Translation (camera position)
-    result.m[3][0] = -eye.dot(v)
-    result.m[3][1] = -eye.dot(u)  # Negated Y component
-    result.m[3][2] = -eye.dot(n)
+    result[3][0] = -eye.dot(v)
+    result[3][1] = -eye.dot(u)  # Negated Y component
+    result[3][2] = -eye.dot(n)
 
     return result
 

@@ -35,9 +35,9 @@ class Vec2(VectorBase["Vec2"]):
         """
         return self._data[0] * rhs._data[1] - self._data[1] * rhs._data[0]
 
-    def reflect(self, n: "Vec2") -> "Vec2":
+    def reflected(self, n: "Vec2") -> "Vec2":
         """
-        Reflect a vector about a normal.
+        Return a new vector reflected about a normal.
 
         Args:
             n (Vec2): The normal to reflect about.
@@ -64,7 +64,7 @@ class Vec2(VectorBase["Vec2"]):
         from .mat2 import Mat2
 
         result = Mat2()
-        result.m = np.outer(self._data, rhs._data).astype(np.float64)
+        result._data = np.outer(self._data, rhs._data).astype(np.float32)
         return result
 
     def __matmul__(self, rhs):
@@ -78,8 +78,8 @@ class Vec2(VectorBase["Vec2"]):
             Vec2: A new vector that is the result of multiplying this vector by the matrix.
         """
         return Vec2(
-            self._data[0] * rhs.m[0, 0] + self._data[1] * rhs.m[1, 0],
-            self._data[0] * rhs.m[0, 1] + self._data[1] * rhs.m[1, 1],
+            self._data[0] * rhs._data[0, 0] + self._data[1] * rhs._data[1, 0],
+            self._data[0] * rhs._data[0, 1] + self._data[1] * rhs._data[1, 1],
         )
 
     def set(self, *args: float) -> None:
@@ -99,14 +99,6 @@ class Vec2(VectorBase["Vec2"]):
             self._data[1] = float(args[1])
         except ValueError:
             raise ValueError(f"Vec2.set {args=} all need to be float")
-
-    def __repr__(self) -> str:
-        """Object representation for debugging."""
-        return f"Vec2 [{self._data[0]},{self._data[1]}]"
-
-    def __str__(self) -> str:
-        """String representation of the vector."""
-        return f"[{self._data[0]},{self._data[1]}]"
 
 
 # Add properties for x, y components

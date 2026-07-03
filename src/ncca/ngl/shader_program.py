@@ -325,7 +325,7 @@ class ShaderProgram:
         }
 
         size, func = matrix_configs[type(matrix)]
-        data = (ctypes.c_float * size)(*matrix.get_matrix())
+        data = (ctypes.c_float * size)(*matrix.to_list())
         func(loc, 1, gl.GL_FALSE, data)
 
     def _set_vector_uniform(self, loc: int, vector: Any) -> None:
@@ -464,8 +464,8 @@ class ShaderProgram:
         if loc != -1:
             flat_values = []
             for matrix in matrices:
-                if hasattr(matrix, "get_matrix"):
-                    flat_values.extend(matrix.get_matrix())
+                if hasattr(matrix, "to_list"):
+                    flat_values.extend(matrix.to_list())
                 else:
                     flat_values.extend(matrix)
             gl.glUniformMatrix2fv(
@@ -494,8 +494,8 @@ class ShaderProgram:
         if loc != -1:
             flat_values = []
             for matrix in matrices:
-                if hasattr(matrix, "get_matrix"):
-                    flat_values.extend(matrix.get_matrix())
+                if hasattr(matrix, "to_list"):
+                    flat_values.extend(matrix.to_list())
                 else:
                     flat_values.extend(matrix)
             gl.glUniformMatrix3fv(
@@ -524,8 +524,8 @@ class ShaderProgram:
         if loc != -1:
             flat_values = []
             for matrix in matrices:
-                if hasattr(matrix, "get_matrix"):
-                    flat_values.extend(matrix.get_matrix())
+                if hasattr(matrix, "to_list"):
+                    flat_values.extend(matrix.to_list())
                 else:
                     flat_values.extend(matrix)
             gl.glUniformMatrix4fv(

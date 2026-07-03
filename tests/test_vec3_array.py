@@ -33,25 +33,14 @@ def test_append():
         a.append("not a vec3")
 
 
-def test_get_array():
-    """Test the get_array method"""
-    a = Vec3Array([Vec3(1, 2, 3), Vec3(4, 5, 6)])
-    arr = a.get_array()
-    assert len(arr) == 2
-    assert np.equal(arr[0], np.array([1.0, 2.0, 3.0])).all()
-    assert np.equal(arr[1], np.array([4.0, 5.0, 6.0])).all()
+def test_to_tuple():
+    a = Vec3Array([Vec3(1.0, 2.0, 3.0), Vec3(4.0, 5.0, 6.0)])
+    assert a.to_tuple() == (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)
 
 
-def test_setitem():
-    """Test the __setitem__ method"""
-    a = Vec3Array([Vec3(1, 2, 3), Vec3(4, 5, 6)])
-    v = Vec3(7, 8, 9)
-    a[1] = v
-    assert len(a) == 2
-    assert a[0] == Vec3(1, 2, 3)
-    assert a[1] == v
-    with pytest.raises(TypeError):
-        a[1] = "not a vec3"
+def test_dtype_float32():
+    a = Vec3Array(2)
+    assert a._data.dtype == np.float32
 
 
 def test_getitem():
@@ -129,12 +118,12 @@ def test_extend_existing():
 
 def test_repr():
     a = Vec3Array([Vec3(1, 2, 3)])
-    assert repr(a) == "Vec3Array([Vec3 [1.0,2.0,3.0]])"
+    assert repr(a) == "Vec3Array([Vec3(1.0, 2.0, 3.0)])"
 
 
 def test_str():
     a = Vec3Array([Vec3(1, 2, 3)])
-    assert str(a) == "[Vec3 [1.0,2.0,3.0]]"
+    assert str(a) == "[Vec3(1.0, 2.0, 3.0)]"
 
 
 def test_sizeof():

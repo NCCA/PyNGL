@@ -213,7 +213,7 @@ def test_transform_matrix_calculation_identity(qt_app, qtbot):
     tx.set_position(0, 0, 0)
     tx.set_rotation(0, 0, 0)
     tx.set_scale(1, 1, 1)
-    expected_matrix = tx.get_matrix()
+    expected_matrix = tx.matrix()
 
     # Trigger matrix update by changing a value back to itself
     with qtbot.waitSignal(widget.valueChanged, timeout=1000) as signal:
@@ -245,7 +245,7 @@ def test_transform_matrix_with_translation(qt_app, qtbot):
     tx.set_position(position.x, position.y, position.z)
     tx.set_rotation(0, 0, 0)
     tx.set_scale(1, 1, 1)
-    expected_matrix = tx.get_matrix()
+    expected_matrix = tx.matrix()
 
     # Compare matrices element by element
     for i in range(4):
@@ -271,7 +271,7 @@ def test_transform_matrix_with_rotation(qt_app, qtbot):
     tx.set_position(0, 0, 0)
     tx.set_rotation(rotation.x, rotation.y, rotation.z)
     tx.set_scale(1, 1, 1)
-    expected_matrix = tx.get_matrix()
+    expected_matrix = tx.matrix()
 
     # Compare matrices element by element
     for i in range(4):
@@ -297,7 +297,7 @@ def test_transform_matrix_with_scale(qt_app, qtbot):
     tx.set_position(0, 0, 0)
     tx.set_rotation(0, 0, 0)
     tx.set_scale(scale.x, scale.y, scale.z)
-    expected_matrix = tx.get_matrix()
+    expected_matrix = tx.matrix()
 
     # Compare matrices element by element
     for i in range(4):
@@ -360,7 +360,7 @@ def test_transform_matrix_full_transform(qt_app, qtbot):
     tx.set_position(position.x, position.y, position.z)
     tx.set_rotation(rotation.x, rotation.y, rotation.z)
     tx.set_scale(scale.x, scale.y, scale.z)
-    expected_matrix = tx.get_matrix()
+    expected_matrix = tx.matrix()
 
     # Compare matrices element by element
     for i in range(4):

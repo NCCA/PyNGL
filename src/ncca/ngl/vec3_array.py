@@ -12,6 +12,7 @@ class Vec3Array:
     """
     A class to hold Vec3 data in contiguous memory for efficient GPU transfer.
     Internally uses a numpy array of shape (N, 3) for optimal performance.
+    Mutable container — intentionally not hashable.
     """
 
     def __init__(self, values=None):
@@ -26,10 +27,10 @@ class Vec3Array:
         """
         if values is None:
             # Empty array - start with shape (0, 3)
-            self._data = np.zeros((0, 3), dtype=np.float64)
+            self._data = np.zeros((0, 3), dtype=np.float32)
         elif isinstance(values, int):
             # Initialize N default Vec3s (0, 0, 0)
-            self._data = np.zeros((values, 3), dtype=np.float64)
+            self._data = np.zeros((values, 3), dtype=np.float32)
         else:
             # Initialize from iterable of Vec3 objects
             vec_list = []
@@ -37,7 +38,7 @@ class Vec3Array:
                 if not isinstance(v, Vec3):
                     raise TypeError("All elements must be of type Vec3")
                 vec_list.append([v.x, v.y, v.z])
-            self._data = np.array(vec_list, dtype=np.float64)
+            self._data = np.array(vec_list, dtype=np.float32)
 
     def __getitem__(self, index):
         """
@@ -109,7 +110,7 @@ class Vec3Array:
         """
         if not isinstance(value, Vec3):
             raise TypeError("Only Vec3 objects can be appended")
-        new_row = np.array([[value.x, value.y, value.z]], dtype=np.float64)
+        new_row = np.array([[value.x, value.y, value.z]], dtype=np.float32)
         self._data = np.vstack([self._data, new_row])
 
     def extend(self, values):
@@ -128,7 +129,7 @@ class Vec3Array:
                 raise TypeError("All elements must be of type Vec3")
             vec_list.append([v.x, v.y, v.z])
 
-        new_rows = np.array(vec_list, dtype=np.float64)
+        new_rows = np.array(vec_list, dtype=np.float32)
         if len(self._data) == 0:
             self._data = new_rows
         else:
@@ -151,17 +152,11 @@ class Vec3Array:
         Returns:
             numpy.ndarray: A float32 numpy array of shape (N*3,) for GPU transfer.
         """
-        return self._data.astype(np.float32).flatten()
+        return self._data.flatten().copy()
 
-    def get_array(self):
-        """
-        Get the underlying numpy array in shape (N, 3).
-        Useful for vectorized operations.
-
-        Returns:
-            numpy.ndarray: The internal float64 array of shape (N, 3).
-        """
-        return self._data
+    def to_tuple(self) -> tuple[float, ...]:
+        """Return all components as one flat tuple of floats."""
+        return tuple(float(v) for v in self._data.flatten())
 
     def __repr__(self):
         vec_list = [Vec3(row[0], row[1], row[2]) for row in self._data]

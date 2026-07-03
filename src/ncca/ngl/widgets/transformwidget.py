@@ -90,8 +90,8 @@ class TransformWidget(QFrame):
         tx.set_position(position.x, position.y, position.z)
         tx.set_rotation(rotation.x, rotation.y, rotation.z)
         tx.set_scale(scale.x, scale.y, scale.z)
-        print(tx.get_matrix())
-        self.valueChanged.emit(tx.get_matrix())
+        print(tx.matrix())
+        self.valueChanged.emit(tx.matrix())
 
     def name(self) -> str:
         """
