@@ -64,7 +64,7 @@ class Vec2(VectorBase["Vec2"]):
         from .mat2 import Mat2
 
         result = Mat2()
-        result.m = np.outer(self._data, rhs._data).astype(np.float64)
+        result._data = np.outer(self._data, rhs._data).astype(np.float32)
         return result
 
     def __matmul__(self, rhs):
@@ -78,8 +78,8 @@ class Vec2(VectorBase["Vec2"]):
             Vec2: A new vector that is the result of multiplying this vector by the matrix.
         """
         return Vec2(
-            self._data[0] * rhs.m[0, 0] + self._data[1] * rhs.m[1, 0],
-            self._data[0] * rhs.m[0, 1] + self._data[1] * rhs.m[1, 1],
+            self._data[0] * rhs._data[0, 0] + self._data[1] * rhs._data[1, 0],
+            self._data[0] * rhs._data[0, 1] + self._data[1] * rhs._data[1, 1],
         )
 
     def set(self, *args: float) -> None:

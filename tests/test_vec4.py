@@ -317,7 +317,7 @@ def test_outer():
     expected = np.array(
         [[5, 6, 7, 8], [10, 12, 14, 16], [15, 18, 21, 24], [20, 24, 28, 32]]
     )
-    assert np.array_equal(m.m, expected)
+    assert np.array_equal(m.to_numpy(), expected)
 
 
 def test_inner():

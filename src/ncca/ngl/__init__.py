@@ -15,9 +15,10 @@ from .bezier_curve import BezierCurve
 from .first_person_camera import FirstPersonCamera
 from .image import Image, ImageModes
 from .log import logger
-from .mat2 import Mat2, Mat2Error, Mat2NotSquare
-from .mat3 import Mat3, Mat3Error, Mat3NotSquare
-from .mat4 import Mat4, Mat4Error, Mat4NotSquare
+from .mat2 import Mat2
+from .mat3 import Mat3
+from .mat4 import Mat4
+from .mat_base import MatrixError
 from .multi_buffer_vao import MultiBufferVAO
 from .obj import (
     Obj,
@@ -72,14 +73,9 @@ __all__ = [
     "ImageModes",
     "logger",
     "Mat2",
-    "Mat2Error",
-    "Mat2NotSquare",
     "Mat3",
-    "Mat3Error",
-    "Mat3NotSquare",
     "Mat4",
-    "Mat4Error",
-    "Mat4NotSquare",
+    "MatrixError",
     "MultiBufferVAO",
     "Obj",
     "ObjParseFaceError",

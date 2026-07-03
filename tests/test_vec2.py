@@ -282,10 +282,11 @@ def test_outer():
     v1 = Vec2(1.0, 2.0)
     v2 = Vec2(3.0, 4.0)
     result = v1.outer(v2)
-    assert result.m[0, 0] == pytest.approx(3.0)
-    assert result.m[0, 1] == pytest.approx(4.0)
-    assert result.m[1, 0] == pytest.approx(6.0)
-    assert result.m[1, 1] == pytest.approx(8.0)
+    n = result.to_numpy()
+    assert n[0, 0] == pytest.approx(3.0)
+    assert n[0, 1] == pytest.approx(4.0)
+    assert n[1, 0] == pytest.approx(6.0)
+    assert n[1, 1] == pytest.approx(8.0)
 
 
 def test_normalized_returns_new():

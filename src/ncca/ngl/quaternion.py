@@ -44,7 +44,7 @@ class Quaternion:
         Returns:
             Quaternion: A new Quaternion representing the rotation matrix.
         """
-        matrix = mat.get_matrix()
+        matrix = mat.to_list()
         T = 1.0 + matrix[0] + matrix[5] + matrix[10]
         if T > 0.00000001:  # to avoid large distortions!
             scale = math.sqrt(T) * 2.0

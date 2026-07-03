@@ -70,7 +70,7 @@ class Vec4(VectorBase["Vec4"]):
         from .mat4 import Mat4
 
         result = Mat4()
-        result.m = np.outer(self._data, rhs._data).astype(np.float64)
+        result._data = np.outer(self._data, rhs._data).astype(np.float32)
         return result
 
     def __matmul__(self, rhs):
@@ -83,7 +83,7 @@ class Vec4(VectorBase["Vec4"]):
         Returns:
             Vec4: A new vector that is the result of multiplying this vector by the matrix.
         """
-        return Vec4(*self._data @ rhs.m)
+        return Vec4(*(self._data @ rhs._data))
 
     def set(self, *args: float) -> None:
         """

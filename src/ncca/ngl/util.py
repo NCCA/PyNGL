@@ -32,18 +32,18 @@ def look_at(eye, look, up):
     u = u.normalized()
 
     result = Mat4.identity()
-    result.m[0][0] = v.x
-    result.m[1][0] = v.y
-    result.m[2][0] = v.z
-    result.m[0][1] = u.x
-    result.m[1][1] = u.y
-    result.m[2][1] = u.z
-    result.m[0][2] = -n.x
-    result.m[1][2] = -n.y
-    result.m[2][2] = -n.z
-    result.m[3][0] = -eye.dot(v)
-    result.m[3][1] = -eye.dot(u)
-    result.m[3][2] = eye.dot(n)
+    result[0][0] = v.x
+    result[1][0] = v.y
+    result[2][0] = v.z
+    result[0][1] = u.x
+    result[1][1] = u.y
+    result[2][1] = u.z
+    result[0][2] = -n.x
+    result[1][2] = -n.y
+    result[2][2] = -n.z
+    result[3][0] = -eye.dot(v)
+    result[3][1] = -eye.dot(u)
+    result[3][2] = eye.dot(n)
     return result
 
 
@@ -79,48 +79,48 @@ def perspective(
     right = _range * aspect
     bottom = -_range
     top = _range
-    m.m[0][0] = (2.0 * near) / (right - left)
-    m.m[1][1] = (2.0 * near) / (top - bottom)
+    m[0][0] = (2.0 * near) / (right - left)
+    m[1][1] = (2.0 * near) / (top - bottom)
     match mode:
         case PerspMode.OpenGL:
-            m.m[2][2] = -(far + near) / (far - near)
-            m.m[2][3] = -1.0
-            m.m[3][2] = -(2.0 * far * near) / (far - near)
+            m[2][2] = -(far + near) / (far - near)
+            m[2][3] = -1.0
+            m[3][2] = -(2.0 * far * near) / (far - near)
 
         # This ensures the clip space Z range is [0, 1] as required by Vulkan and WebGPU.
         case PerspMode.WebGPU | PerspMode.Vulkan:
-            m.m[2][2] = -far / (far - near)
-            m.m[2][3] = -1.0
-            m.m[3][2] = -(far * near) / (far - near)
+            m[2][2] = -far / (far - near)
+            m[2][3] = -1.0
+            m[3][2] = -(far * near) / (far - near)
     return m
 
 
 def ortho(left, right, bottom, top, near, far, mode=PerspMode.OpenGL):
     m = Mat4.identity()
-    m.m[0][0] = 2.0 / (right - left)
-    m.m[1][1] = 2.0 / (top - bottom)
+    m[0][0] = 2.0 / (right - left)
+    m[1][1] = 2.0 / (top - bottom)
     match mode:
         case PerspMode.OpenGL:
-            m.m[2][2] = -2.0 / (far - near)
-            m.m[3][2] = -(far + near) / (far - near)
+            m[2][2] = -2.0 / (far - near)
+            m[3][2] = -(far + near) / (far - near)
         case PerspMode.WebGPU | PerspMode.Vulkan:
-            m.m[2][2] = -1.0 / (far - near)
-            m.m[3][2] = -near / (far - near)
-    m.m[3][0] = -(right + left) / (right - left)
-    m.m[3][1] = -(top + bottom) / (top - bottom)
+            m[2][2] = -1.0 / (far - near)
+            m[3][2] = -near / (far - near)
+    m[3][0] = -(right + left) / (right - left)
+    m[3][1] = -(top + bottom) / (top - bottom)
     return m
 
 
 def frustum(left, right, bottom, top, near, far):
     """Create a frustum projection matrix."""
     m = Mat4.zero()
-    m.m[0][0] = (2.0 * near) / (right - left)
-    m.m[1][1] = (2.0 * near) / (top - bottom)
-    m.m[2][0] = (right + left) / (right - left)
-    m.m[2][1] = (top + bottom) / (top - bottom)
-    m.m[2][2] = -(far + near) / (far - near)
-    m.m[2][3] = -1.0
-    m.m[3][2] = -(2.0 * far * near) / (far - near)
+    m[0][0] = (2.0 * near) / (right - left)
+    m[1][1] = (2.0 * near) / (top - bottom)
+    m[2][0] = (right + left) / (right - left)
+    m[2][1] = (top + bottom) / (top - bottom)
+    m[2][2] = -(far + near) / (far - near)
+    m[2][3] = -1.0
+    m[3][2] = -(2.0 * far * near) / (far - near)
     return m
 
 
@@ -198,24 +198,24 @@ def renderman_look_at(eye, look, up):
     result = Mat4.identity()
 
     # Right vector (X-axis)
-    result.m[0][0] = v.x
-    result.m[1][0] = v.y
-    result.m[2][0] = v.z
+    result[0][0] = v.x
+    result[1][0] = v.y
+    result[2][0] = v.z
 
     # Up vector (Y-axis) - negated for Y-down convention
-    result.m[0][1] = -u.x
-    result.m[1][1] = -u.y
-    result.m[2][1] = -u.z
+    result[0][1] = -u.x
+    result[1][1] = -u.y
+    result[2][1] = -u.z
 
     # Forward vector (Z-axis) - camera looks down +Z
-    result.m[0][2] = n.x
-    result.m[1][2] = n.y
-    result.m[2][2] = n.z
+    result[0][2] = n.x
+    result[1][2] = n.y
+    result[2][2] = n.z
 
     # Translation (camera position)
-    result.m[3][0] = -eye.dot(v)
-    result.m[3][1] = -eye.dot(u)  # Negated Y component
-    result.m[3][2] = -eye.dot(n)
+    result[3][0] = -eye.dot(v)
+    result[3][1] = -eye.dot(u)  # Negated Y component
+    result[3][2] = -eye.dot(n)
 
     return result
 

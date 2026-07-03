@@ -84,10 +84,10 @@ class Transform:
             rz = Mat4.rotate_z(self.rotation.z)  # noqa: F841
             rotation_scale = eval(self.rot_order.get(self.order)) @ scale
             self.matrix = rotation_scale
-            self.matrix.m[3][0] = self.position.x
-            self.matrix.m[3][1] = self.position.y
-            self.matrix.m[3][2] = self.position.z
-            self.matrix.m[3][3] = 1.0
+            self.matrix[3][0] = self.position.x
+            self.matrix[3][1] = self.position.y
+            self.matrix[3][2] = self.position.z
+            self.matrix[3][3] = 1.0
             self.need_recalc = False
         return self.matrix
 

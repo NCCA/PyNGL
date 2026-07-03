@@ -67,7 +67,7 @@ class Vec3(VectorBase["Vec3"]):
         from .mat3 import Mat3
 
         result = Mat3()
-        result.m = np.outer(self._data, rhs._data).astype(np.float64)
+        result._data = np.outer(self._data, rhs._data).astype(np.float32)
         return result
 
     def __matmul__(self, rhs):
@@ -81,7 +81,7 @@ class Vec3(VectorBase["Vec3"]):
             Vec3: A new vector that is the result of multiplying this vector by the matrix.
         """
         result = Vec3()
-        result._data = rhs.m.T @ self._data  # More efficient
+        result._data = rhs._data.T @ self._data  # More efficient
         return result
 
     def set(self, *args: float) -> None:

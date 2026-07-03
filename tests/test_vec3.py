@@ -210,7 +210,7 @@ def test_outer():
     b = Vec3(3.0, 4.0, 5.0)
     outer = a.outer(b)
     result = [3, 4, 5, 6, 8, 10, 9, 12, 15]
-    value = outer.get_matrix()
+    value = outer.to_list()
     assert result == pytest.approx(value)
 
 
