@@ -288,6 +288,9 @@ class Quaternion:
     def __len__(self) -> int:
         return 4
 
+    def __iter__(self):
+        return iter(self._data.tolist())
+
     def __repr__(self) -> str:
         args = ", ".join(repr(float(v)) for v in self._data)
         return f"Quaternion({args})"

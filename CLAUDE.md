@@ -67,7 +67,14 @@ PySide6 (Qt) widgets for editing/displaying NGL types in GUIs: `vec2widget.py`/`
 
 ### API consistency conventions
 
-- Vector/matrix classes implement `copy()`, `to_numpy()`, `to_list()`, `to_tuple()`, and `__hash__`.
+- All math classes (`Vec2/3/4`, `Mat2/3/4`, `Quaternion`) follow one contract:
+  numpy `np.float32` storage in `_data`; immutable-style operations returning
+  new objects (`normalized()`, `transposed()`, `inverse()`, `clamped()` — only
+  `set()` and element assignment mutate); constructors take components with a
+  sensible default; `from_list`/`from_numpy` classmethods;
+  `copy()`/`to_numpy()`/`to_list()`/`to_tuple()`; `__eq__`/`__hash__`; eval-able
+  `__repr__`. `@` is the linear-algebra product; `*` is scalar only.
+  `tests/test_api_consistency.py` enforces this — run it when touching math code.
 - Prefer numpy arrays (`np.float32`) over Python lists for numeric data; use `__slots__` on data-heavy classes.
 - Module-specific errors are plain `Exception` subclasses named `<Module>Error` (e.g. `Mat3Error`, `ObjParseVertexError`), raised rather than returning sentinel values.
 - **"Colour"** (not "color") is the correct spelling in this codebase's identifiers, docs, and variables.

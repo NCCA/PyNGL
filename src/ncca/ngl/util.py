@@ -5,10 +5,14 @@ Most of these functions are based on functions found in other libraries such as 
 
 import enum
 import math
+from typing import TYPE_CHECKING, TypeVar
 
 import numpy as np
 
 from .mat4 import Mat4
+
+if TYPE_CHECKING:
+    from .vec3 import Vec3
 
 
 def clamp(num, low, high):
@@ -18,7 +22,7 @@ def clamp(num, low, high):
     return max(min(num, high), low)
 
 
-def look_at(eye, look, up):
+def look_at(eye: "Vec3", look: "Vec3", up: "Vec3") -> Mat4:
     """
     Calculate 4x4 matrix for camera lookAt
     """
@@ -95,7 +99,30 @@ def perspective(
     return m
 
 
-def ortho(left, right, bottom, top, near, far, mode=PerspMode.OpenGL):
+def ortho(
+    left: float,
+    right: float,
+    bottom: float,
+    top: float,
+    near: float,
+    far: float,
+    mode: PerspMode = PerspMode.OpenGL,
+) -> Mat4:
+    """
+    Calculate an orthographic projection matrix.
+
+    Args:
+        left: Left clipping plane.
+        right: Right clipping plane.
+        bottom: Bottom clipping plane.
+        top: Top clipping plane.
+        near: Near clipping plane distance.
+        far: Far clipping plane distance.
+        mode: Target graphics API clip-space convention.
+
+    Returns:
+        Mat4: The orthographic projection matrix.
+    """
     m = Mat4.identity()
     m[0][0] = 2.0 / (right - left)
     m[1][1] = 2.0 / (top - bottom)
@@ -111,8 +138,22 @@ def ortho(left, right, bottom, top, near, far, mode=PerspMode.OpenGL):
     return m
 
 
-def frustum(left, right, bottom, top, near, far):
-    """Create a frustum projection matrix."""
+def frustum(
+    left: float, right: float, bottom: float, top: float, near: float, far: float
+) -> Mat4:
+    """Create a frustum projection matrix.
+
+    Args:
+        left: Left clipping plane.
+        right: Right clipping plane.
+        bottom: Bottom clipping plane.
+        top: Top clipping plane.
+        near: Near clipping plane distance.
+        far: Far clipping plane distance.
+
+    Returns:
+        Mat4: The frustum projection matrix.
+    """
     m = Mat4.zero()
     m[0][0] = (2.0 * near) / (right - left)
     m[1][1] = (2.0 * near) / (top - bottom)
@@ -124,11 +165,27 @@ def frustum(left, right, bottom, top, near, far):
     return m
 
 
-def lerp(a, b, t):
+T = TypeVar("T")
+
+
+def lerp(a: T, b: T, t: float) -> T:
+    """Linearly interpolate between a and b at parameter t.
+
+    Works for floats and any type supporting + and scalar * (Vec2/3/4,
+    Quaternion, matrices).
+
+    Args:
+        a: Start value.
+        b: End value.
+        t: Interpolation parameter, typically in [0, 1].
+
+    Returns:
+        The interpolated value, of the same type as a and b.
+    """
     return a + (b - a) * t
 
 
-def calc_normal(p1, p2, p3):
+def calc_normal(p1: "Vec3", p2: "Vec3", p3: "Vec3") -> "Vec3":
     """
     Calculates the normal of a triangle defined by three points.
 
