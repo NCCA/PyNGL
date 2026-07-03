@@ -34,5 +34,6 @@ tasks:
       - uv sync --upgrade
 
   clean-all:
-    cmds: rm -rf __pycache__
-      rm -rf .venv
+    cmds:
+      - rm -rf __pycache__
+      - rm -rf .venv
