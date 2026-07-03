@@ -2,7 +2,7 @@
 
 This is a Python library for teaching 3D graphics using OpenGL, WebGPU and Vulkan. It is written in Python and designed to be easy to use, understand, and efficient for real-time applications.
 
-## Build / Lint / Test Commands
+### Build / Lint / Test Commands
 
 ### Essential Commands
 ```bash
