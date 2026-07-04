@@ -70,3 +70,10 @@ venv.bak/
 
 # Cython debug symbols
 cython_debug/
+
+NGLDebug.log
+*.backup
+.DS_Store
+.serena
+err*
+doc/site*
