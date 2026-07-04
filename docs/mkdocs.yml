@@ -1,15 +1,28 @@
 site_name: PyNGL - NCCA Python Graphics Library
 nav:
   - Home: index.md
+  - Getting Started: getting_started.md
+  - Tutorials:
+      - Overview: tutorials/index.md
+      - Understanding the Method Names: tutorials/method_names.md
+      - Vectors: tutorials/vectors.md
+      - Matrices: tutorials/matrices.md
+      - Quaternions: tutorials/quaternions.md
+      - The Transform Class: tutorials/transforms.md
+      - Cameras and Projection: tutorials/cameras_and_projection.md
+      - Vector Arrays: tutorials/vector_arrays.md
+      - Geometry Maths: tutorials/geometry_maths.md
+      - Utility Functions: tutorials/utility_functions.md
+  - API Reference:
+      - Math: Math.md
+      - Geometry: Geometry.md
+      - VAO: VAO.md
+      - Shaders: Shaders.md
+      - Camera: Camera.md
+      - Image and Texture: ImageAndTexture.md
+      - Text: Text.md
+      - Miscellaneous: Misc.md
   - About: about.md
-  - Math: Math.md
-  - VAO: VAO.md
-  - Shaders: Shaders.md
-  - Geometry: Geometry.md
-  - Camera: Camera.md
-  - Image and Texture: ImageAndTexture.md
-  - Text: Text.md
-  - Miscellaneous: Misc.md
 theme: readthedocs
 
 plugins:

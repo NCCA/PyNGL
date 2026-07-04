@@ -1,6 +1,7 @@
 # Miscellaneous Classes
 
-
+Auto-generated API reference. For a guided introduction to the vector
+array classes see the [Vector Arrays tutorial](tutorials/vector_arrays.md).
 
 ## Random
 
