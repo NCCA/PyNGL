@@ -1,8 +1,8 @@
-# Utility Functions — `clamp`, `lerp`, `calc_normal`
+# Utility Functions `clamp`, `lerp`, `calc_normal`
 
-Three small free functions from `ncca.ngl` that turn up in almost every
+Three small free functions from `ncca.ngl` that turn up in many
 graphics program. (The camera-related functions `look_at`, `perspective`,
-`ortho`, and `frustum` live in the same module — they have
+`ortho`, and `frustum` live in the same module and they have
 [their own tutorial](cameras_and_projection.md).)
 
 ## `clamp(value, low, high)` — keep a number in range
@@ -12,9 +12,9 @@ Returns `value`, limited to the range `[low, high]`:
 ```python
 from ncca.ngl import clamp
 
-clamp(5, 0, 1)      # 1  — too big, clamped down
-clamp(-3, 0, 1)     # 0  — too small, clamped up
-clamp(0.5, 0, 1)    # 0.5 — already in range, unchanged
+clamp(5, 0, 1)      # 1   too big, clamped down
+clamp(-3, 0, 1)     # 0   too small, clamped up
+clamp(0.5, 0, 1)    # 0.5  already in range, unchanged
 ```
 
 Typical uses: keeping colour components in `[0, 1]`, limiting a camera's
@@ -25,11 +25,11 @@ pitch so it cannot flip over, keeping array indices valid.
 pitch = clamp(pitch + mouse_dy, -89.0, 89.0)
 ```
 
-> Vectors have their own component-wise version:
-> [`v.clamped(low, high)`](vectors.md) — note the `-ed`, because it
+> Vectors have their own component wise version:
+> [`v.clamped(low, high)`](vectors.md)  note the `-ed`, because it
 > returns a new vector.
 
-## `lerp(a, b, t)` — blend between two values
+## `lerp(a, b, t)`  blend between two values
 
 **L**inear int**erp**olation: returns the value a fraction `t` of the way
 from `a` to `b`. `t = 0` gives `a`, `t = 1` gives `b`:
@@ -69,7 +69,7 @@ print(n)     # [0.0, 0.0, -1.0]
 ```
 
 The order of the points (the *winding*) decides which way the normal
-points — swap two points and the normal flips. Use it whenever you build
+points. Swap two points and the normal flips. Use it whenever you build
 your own geometry and need normals for lighting:
 
 ```python
@@ -85,4 +85,4 @@ That completes the math tutorials. From here:
 - Explore the **API Reference** section for the full documentation of
   every class and method.
 - Revisit the [grammar guide](method_names.md) whenever a method name
-  surprises you — the name always tells you what it does.
+  surprises you the name always tells you what it does.

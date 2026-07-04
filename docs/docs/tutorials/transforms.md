@@ -1,7 +1,7 @@
 # The Transform Class — position, rotation, and scale in one object
 
 In the [matrices tutorial](matrices.md) you learned to place an object with
-*scale → rotate → translate*, written as:
+*scale -> rotate -> translate*, written as:
 
 ```python
 model = Mat4.translate(...) @ rotation @ Mat4.scale(...)
@@ -9,7 +9,7 @@ model = Mat4.translate(...) @ rotation @ Mat4.scale(...)
 
 Every object in a scene needs exactly this, so PyNGL bundles it into one
 class: **`Transform`**. You give it a position, a rotation, and a scale,
-and it builds the model matrix for you — in the right order, every time.
+and it builds the model matrix for you, in the right order, every time.
 
 ## Basic use
 
@@ -21,7 +21,7 @@ tx.set_position(0.0, 5.0, 0.0)     # where the object is
 tx.set_rotation(0.0, 45.0, 0.0)    # Euler angles in DEGREES (x, y, z)
 tx.set_scale(2.0, 2.0, 2.0)        # how big it is
 
-model = tx.matrix()                # the combined Mat4 — send this to your shader
+model = tx.matrix()                # the combined Mat4  send this to your shader
 ```
 
 Each setter also accepts a `Vec3` (or a list/tuple) instead of three
@@ -89,16 +89,16 @@ tx.scale       # Vec3
 
 ## Common mistakes
 
-**Mistake 1 — rebuilding the ordering by hand.** If you already use
+**Mistake 1 :- rebuilding the ordering by hand.** If you already use
 `Transform`, don't multiply extra scale/rotate matrices around
 `tx.matrix()` unless you really mean to add a second transform (e.g. a
 parent, as in the planet-and-moon example in the
 [matrices tutorial](matrices.md)).
 
-**Mistake 2 — radians.** `set_rotation` takes **degrees**, like everything
+**Mistake 2 :- radians.** `set_rotation` takes **degrees**, like everything
 in PyNGL.
 
-**Mistake 3 — forgetting `matrix()` is a method.** Write `tx.matrix()`,
+**Mistake 3 :- forgetting `matrix()` is a method.** Write `tx.matrix()`,
 with parentheses.
 
 **Next:** [Cameras and Projection](cameras_and_projection.md) — the view

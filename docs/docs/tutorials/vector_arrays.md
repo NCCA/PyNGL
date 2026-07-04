@@ -1,6 +1,6 @@
-# Vector Arrays — `Vec2Array`, `Vec3Array`, `Vec4Array`
+# Vector Arrays :- `Vec2Array`, `Vec3Array`, `Vec4Array`
 
-Graphics APIs don't want one vector — they want *thousands*, packed
+Graphics APIs don't want one vector they want *thousands*, packed
 tightly together in memory. A Python `list` of `Vec3` objects is scattered
 all over memory and must be converted before the GPU can use it.
 
@@ -98,22 +98,22 @@ add_triangle(Vec3(1.0, 0.0, 0.0), Vec3(1.0, 1.0, 0.0), Vec3(0.0, 1.0, 0.0))
 
 ## Common mistakes
 
-**Mistake 1 — `append` with a list.**
+**Mistake 1  `append` with a list.**
 
 ```python
 points.append([Vec3(1, 2, 3), Vec3(4, 5, 6)])   # ❌ a list is not one Vec3
-points.extend([Vec3(1, 2, 3), Vec3(4, 5, 6)])   # ✅ many -> extend
+points.extend([Vec3(1, 2, 3), Vec3(4, 5, 6)])   #  many -> extend
 ```
 
-**Mistake 2 — expecting `points[0].x = 5` to change the array.**
+**Mistake 2  expecting `points[0].x = 5` to change the array.**
 
 ```python
 p = points[0]
-p.x = 5.0            # ❌ changes the copy only
-points[0] = p        # ✅ write it back
+p.x = 5.0            #  changes the copy only
+points[0] = p        #  write it back
 ```
 
-**Mistake 3 — growing a huge array one `append` at a time.** Each `append`
+**Mistake 3  growing a huge array one `append` at a time.** Each `append`
 reallocates. If you know the size, create it up front (`Vec3Array(n)`) and
 assign by index, or collect into a list and `extend` once.
 

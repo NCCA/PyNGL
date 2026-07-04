@@ -20,9 +20,9 @@ plain functions in `ncca.ngl`.
 that the camera sits at the origin looking down −z. You describe the
 camera in plain terms:
 
-- **`eye`** — where the camera *is*;
-- **`look`** — the point the camera looks *at*;
-- **`up`** — which way is "up" for the camera (almost always the world y
+- **`eye`**  :- where the camera *is*;
+- **`look`**  :- the point the camera looks *at*;
+- **`up`** :- which way is "up" for the camera (almost always the world y
   axis).
 
 ```python
@@ -72,17 +72,17 @@ projection = perspective(
 )
 ```
 
-- **`fov`** — a small angle is a telephoto lens (zoomed in); a large angle
+- **`fov`** :- a small angle is a telephoto lens (zoomed in); a large angle
   is a wide-angle lens (more scene, more distortion). 45° is a sensible
   default.
-- **`aspect`** — must match your window, or the image stretches.
+- **`aspect`** :- must match your window, or the image stretches.
   Recalculate it in your resize handler.
-- **`near` / `far`** — the visible depth range. Keep `near` as *large* as
-  you can get away with: depth-buffer precision is concentrated near the
+- **`near` / `far`** :- the visible depth range. Keep `near` as *large* as
+  you can get away with: depth buffer precision is concentrated near the
   near plane, and `near=0.001, far=10000` is a recipe for z-fighting.
   `near` must be greater than 0.
 
-### One projection, three APIs
+### Projection Modes
 
 OpenGL clips z to `[-1, 1]`, but WebGPU and Vulkan clip to `[0, 1]`.
 `perspective` (and `ortho`) take a `mode` argument so the same call works
@@ -97,9 +97,9 @@ proj_web = perspective(45.0, aspect, 0.1, 100.0, PerspMode.WebGPU)     # WebGPU 
 
 ---
 
-## `ortho` — projection without perspective
+## `ortho` projection.
 
-An **orthographic** projection has no foreshortening — objects are the
+An **orthographic** projection has no foreshortening, so objects are the
 same size at any distance. It is what you want for 2D/UI rendering,
 CAD-style views, and shadow maps for directional lights.
 
@@ -118,7 +118,7 @@ edges yourself instead of a field-of-view angle.
 
 ---
 
-## Putting it all together — the MVP
+## The MVP Matrix
 
 Remember PyNGL's [row-vector convention](matrices.md): points go on the
 left, and combined matrices read **right to left**. A vertex must be
@@ -149,24 +149,23 @@ equivalent for your shading language conventions) for every vertex.
 
 ## `FirstPersonCamera`
 
-For interactive apps, PyNGL also provides a ready-made
-`FirstPersonCamera` class (WASD movement + mouse look) that maintains its
-own view and projection matrices — see the *Camera* page in the API
-Reference.
+For interactive apps, PyNGL also provides a ready made
+`FirstPersonCamera` class (movement + mouse look) that maintains its
+own view and projection matrices, see the *Camera* page in the API Reference. There are a number of PyNGL Demos that use this class. 
 
 ## Common mistakes
 
-**Mistake 1 — `eye` and `look` the same point.** The camera cannot look at
+**Mistake 1** :- `eye` and `look` the same point. The camera cannot look at
 itself; you get a degenerate matrix. Keep them apart.
 
-**Mistake 2 — `up` parallel to the view direction.** Looking straight down
+**Mistake 2** :- `up` parallel to the view direction. Looking straight down
 with `up = (0, 1, 0)` makes the cross products collapse. Use a different
 `up` (e.g. `(0, 0, -1)`) when looking along y.
 
-**Mistake 3 — a `near` plane of 0.** Division by zero inside the
+**Mistake 3** :- a `near` plane of 0. Division by zero inside the
 projection. Use a small positive value like `0.1`.
 
-**Mistake 4 — multiplying MVP in the wrong order.** It is
+**Mistake 4** :- multiplying MVP in the wrong order. It is
 `projection @ view @ model` — if your scene is visible but transforms
 behave strangely, check this first.
 

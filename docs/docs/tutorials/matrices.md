@@ -1,4 +1,4 @@
-# Matrices — `Mat2`, `Mat3`, `Mat4`
+# Matrices :- `Mat2`, `Mat3`, `Mat4`
 
 A **matrix** is a grid of numbers that *transforms* vectors — it can rotate,
 scale, and (for `Mat4`) translate them. Matrices are how everything in a 3D
@@ -10,7 +10,7 @@ scene gets positioned, oriented, and finally projected onto your screen.
 | `Mat3` | 3×3 | 3D rotation/scale, normal matrices |
 | `Mat4` | 4×4 | full 3D transforms **including translation**, cameras, projection |
 
-All three share the same core API; `Mat4` is the one you will use most.
+All three share the same core API `Mat4` is the one you will use most.
 
 > **Before you start:** read [Vectors](vectors.md) first, and remember the
 > [naming rule](method_names.md): `transposed()` returns a **new** matrix,
@@ -27,7 +27,7 @@ numbers:
 ```python
 from ncca.ngl import Mat3, Mat4
 
-i = Mat4()                      # identity — the "do nothing" transform
+i = Mat4()                      # identity 
 i = Mat4.identity()             # the same, spelled explicitly
 z = Mat4.zero()                 # all zeros (rarely what you want!)
 
@@ -48,7 +48,7 @@ m = Mat4.from_list([1.0, 0.0, 0.0, 0.0,
                     0.0, 1.0, 0.0, 0.0,
                     0.0, 0.0, 1.0, 0.0,
                     0.0, 0.0, 0.0, 1.0])
-m.to_numpy()     # np.float32 4×4 array — ready for glUniformMatrix4fv
+m.to_numpy()     # np.float32 4×4 array ready for glUniformMatrix4fv 
 ```
 
 You can also convert between sizes: `Mat3.from_mat4(m)` keeps the top-left
@@ -101,8 +101,8 @@ m = Mat4.translate(5.0, 0.0, 0.0)
 point     = Vec4(1.0, 0.0, 0.0, 1.0)   # w = 1 -> a position
 direction = Vec4(1.0, 0.0, 0.0, 0.0)   # w = 0 -> a direction
 
-point @ m       # [6.0, 0.0, 0.0, 1.0]  — moved
-direction @ m   # [1.0, 0.0, 0.0, 0.0]  — NOT moved (directions can't move)
+point @ m       # [6.0, 0.0, 0.0, 1.0]   moved
+direction @ m   # [1.0, 0.0, 0.0, 0.0]   NOT moved (directions can't move)
 ```
 
 `Vec3 @ Mat3` works the same way for pure rotation/scale:
@@ -111,7 +111,7 @@ direction @ m   # [1.0, 0.0, 0.0, 0.0]  — NOT moved (directions can't move)
 from ncca.ngl import Mat3, Vec3
 
 up      = Vec3(0.0, 1.0, 0.0)
-rotated = up @ Mat3.rotate_x(90.0)   # [0.0, 0.0, 1.0] — y axis rotated onto z
+rotated = up @ Mat3.rotate_x(90.0)   # [0.0, 0.0, 1.0]  y axis rotated onto z
 ```
 
 ---
@@ -173,14 +173,14 @@ flip = m.transposed()    # rows and columns swapped (a new Mat4)
 det  = m.determinant()   # a single float
 ```
 
-- **`inverse()`** — if `m` moves an object into place, `m.inverse()` moves
+- **`inverse()`** :- if `m` moves an object into place, `m.inverse()` moves
   it back: `(p @ m) @ m.inverse() == p`. Cameras are the classic use: the
   *view matrix* is the inverse of the camera's own transform.
-- **`transposed()`** — swaps rows and columns. For a **pure rotation**
+- **`transposed()`** :- swaps rows and columns. For a **pure rotation**
   matrix the transpose *is* the inverse, which is much cheaper to compute.
-- **`determinant()`** — a single number describing how the matrix changes
+- **`determinant()`** :- a single number describing how the matrix changes
   volume. `1.0` means volume is preserved (pure rotation); `0.0` means the
-  matrix is *singular* — it flattens space and **has no inverse**.
+  matrix is *singular* :- it flattens space and **has no inverse**.
 
 ```python
 Mat4.rotate_z(90.0).determinant()    # 1.0 — rotations preserve volume
@@ -192,8 +192,8 @@ Calling `inverse()` on a singular matrix raises `MatrixError`.
 
 ### The normal matrix
 
-A classic subtlety: if a model matrix contains **non-uniform scale**, you
-cannot transform surface *normals* with it — they come out skewed. The fix
+If a model matrix contains **non-uniform scale**, you
+cannot transform surface *normals* with it as they come out skewed. The fix
 is to use the *inverse transpose* of the 3×3 part:
 
 ```python
@@ -219,12 +219,11 @@ m[3][0]     # 1.0 — the x translation
 m[3][0] = 5.0   # element assignment mutates the matrix (like set)
 ```
 
-As with vectors, element assignment is the only mutation — every named
-method returns a new matrix.
+As with vectors, element assignment is the only mutation. As every named method returns a new matrix.
 
 ---
 
-## Worked example — a planet with a moon
+## Worked example :- a planet with a moon
 
 Hierarchical transforms: the moon's position depends on the planet's.
 
@@ -250,35 +249,35 @@ on the **left** of the child's own transform.
 
 ## Common mistakes
 
-**Mistake 1 — writing the point on the wrong side.**
+**Mistake 1 writing the point on the wrong side.**
 
 ```python
-m @ p       # ❌ wrong side — this is column-vector convention
-p @ m       # ✅ PyNGL is row-vector: point first
+m @ p       #  wrong side — this is column-vector convention
+p @ m       # Correct PyNGL is row-vector: point first
 ```
 
-**Mistake 2 — expecting `transposed()` to change the matrix.**
+**Mistake 2  expecting `transposed()` to change the matrix.**
 
 ```python
-m.transposed()          # ❌ result thrown away
-m = m.transposed()      # ✅
+m.transposed()          #  result thrown away
+m = m.transposed()      # Correct
 ```
 
-**Mistake 3 — combining transforms in the wrong order.**
+**Mistake 3  combining transforms in the wrong order.**
 
 If your object orbits the origin when you wanted it to spin in place, your
 rotation and translation are swapped. Remember: **right to left**, and
 *scale → rotate → translate* reads `translate @ rotate @ scale`.
 
-**Mistake 4 — using `*` for matrix multiplication.**
+**Mistake 4  using `*` for matrix multiplication.**
 
 ```python
-a * b        # ❌ MatrixError — * is scalar-only
-a @ b        # ✅ matrix product
-a * 2.0      # ✅ scale every element by 2
+a * b        # wrong :- MatrixError  * is scalar-only
+a @ b        # matrix product
+a * 2.0      # scale every element by 2
 ```
 
-**Mistake 5 — translating a `Vec3`.**
+**Mistake 5  translating a `Vec3`.**
 
 Translation needs the fourth (`w`) component, so it needs `Vec4` and
 `Mat4`. `Vec3 @ Mat3` can only rotate and scale.

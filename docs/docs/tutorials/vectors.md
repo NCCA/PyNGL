@@ -1,4 +1,4 @@
-# Vectors — `Vec2`, `Vec3`, `Vec4`
+# Vectors :- `Vec2`, `Vec3`, `Vec4`
 
 A **vector** is the most important object in 3D graphics. In PyNGL a vector
 is a small, fixed-size collection of `float` values:
@@ -46,7 +46,7 @@ w = Vec3.from_numpy(np.array([4.0, 5.0, 6.0]))
 
 v.to_list()    # [1.0, 2.0, 3.0]
 v.to_tuple()   # (1.0, 2.0, 3.0)
-v.to_numpy()   # np.float32 array — ready to send to OpenGL / WebGPU
+v.to_numpy()   # np.float32 array ready to send to OpenGL / WebGPU
 ```
 
 ### Reading and writing components
@@ -67,8 +67,7 @@ an existing vector. Everything else returns a new one.
 
 ---
 
-## Arithmetic — vectors behave like numbers
-
+## Arithmetic  
 Vectors support the arithmetic you would expect, and every operation
 returns a **new** vector:
 
@@ -80,10 +79,10 @@ a + b          # [5.0, 7.0, 9.0]   component-wise add
 a - b          # [-3.0, -3.0, -3.0]
 -a             # [-1.0, -2.0, -3.0] negation (the opposite direction)
 a * 2.0        # [2.0, 4.0, 6.0]   scale by a number
-2.0 * a        # same — order does not matter for scalars
+2.0 * a        # same order does not matter for scalars
 a / 2.0        # [0.5, 1.0, 1.5]
 
-a == Vec3(1.0, 2.0, 3.0)   # True — compares component values
+a == Vec3(1.0, 2.0, 3.0)   # True  compares component values
 ```
 
 > **Note:** `*` only works with a *number* (a scalar). You cannot write
@@ -142,7 +141,7 @@ target = Vec3(4.0, 0.0, 5.0)
 
 offset    = target - start        # the arrow from start to target
 distance  = offset.length()       # 5.0
-direction = offset.normalized()   # [0.6, 0.0, 0.8] — unit direction
+direction = offset.normalized()   # [0.6, 0.0, 0.8]  unit direction
 
 # walk 2 units towards the target:
 new_position = start + direction * 2.0
@@ -153,7 +152,7 @@ and games — learn it well.
 
 ---
 
-## The dot product — "how much do two vectors agree?"
+## The dot product 
 
 `a.dot(b)` returns a single number that measures the alignment of two
 vectors. For **unit** vectors it is the cosine of the angle between them:
@@ -168,12 +167,12 @@ vectors. For **unit** vectors it is the cosine of the angle between them:
 a = Vec3(1.0, 0.0, 0.0)
 b = Vec3(0.0, 1.0, 0.0)
 
-a.dot(b)    # 0.0  — perpendicular
-a.dot(a)    # 1.0  — a vector always fully agrees with itself
-a.dot(-a)   # -1.0 — opposite
+a.dot(b)    # 0.0   perpendicular
+a.dot(a)    # 1.0   a vector always fully agrees with itself
+a.dot(-a)   # -1.0  opposite
 ```
 
-### A worked example — simple diffuse lighting
+### A worked example :- simple diffuse lighting
 
 The heart of the classic *Lambert* lighting model is one dot product: a
 surface is bright when its normal points at the light.
@@ -183,13 +182,13 @@ normal          = Vec3(0.0, 1.0, 0.0)                # surface faces up
 to_light        = Vec3(1.0, 1.0, 0.0).normalized()   # direction to the light
 
 brightness = max(0.0, normal.dot(to_light))
-print(brightness)    # 0.707... — light at 45 degrees gives ~71% brightness
+print(brightness)    # 0.707...  light at 45 degrees gives ~71% brightness
 ```
 
-The `max(0.0, ...)` clamps away negative values — a surface facing *away*
+The `max(0.0, ...)` clamps away negative values  a surface facing *away*
 from the light is dark, not "negatively lit".
 
-### A worked example — is it in front of me?
+### A worked example :- is it in front of me?
 
 ```python
 forward   = Vec3(0.0, 0.0, -1.0)      # camera looks down -z
@@ -201,7 +200,7 @@ if forward.dot(to_object) > 0.0:
 
 ---
 
-## The cross product — "give me a perpendicular vector"
+## The cross product :- "give me a perpendicular vector"
 
 `a.cross(b)` returns a **new vector perpendicular to both** `a` and `b`.
 Its direction follows the right-hand rule, and its length equals the area
@@ -211,18 +210,17 @@ of the parallelogram the two vectors span.
 x = Vec3(1.0, 0.0, 0.0)
 y = Vec3(0.0, 1.0, 0.0)
 
-x.cross(y)   # [0.0, 0.0, 1.0]  — the z axis
-y.cross(x)   # [0.0, 0.0, -1.0] — order matters! (anti-commutative)
+x.cross(y)   # [0.0, 0.0, 1.0]   the z axis
+y.cross(x)   # [0.0, 0.0, -1.0]  order matters! (anti-commutative)
 ```
 
 > **`Vec2` is special:** in 2D there is no third axis to point along, so
 > `Vec2.cross()` returns a single *number* (the signed area) instead of a
 > vector. Positive means `b` is anticlockwise from `a`.
 
-### A worked example — the normal of a triangle
+### A worked example :- the normal of a triangle
 
-Given three corners of a triangle, the cross product of two edges gives the
-surface normal — exactly what lighting needs:
+Given three corners of a triangle, the cross product of two edges gives the surface normal (used in lighting calculations).
 
 ```python
 p1 = Vec3(0.0, 0.0, 0.0)
@@ -240,7 +238,7 @@ understand what it does inside.
 
 ---
 
-## Reflection — bouncing off a surface
+## Reflection :- bouncing off a surface
 
 `v.reflected(n)` returns the vector `v` bounced off a surface whose unit
 normal is `n`. Think of a ball hitting the floor, or light hitting a mirror:
@@ -296,7 +294,7 @@ end   = Vec3(10.0, 0.0, 0.0)
 start.lerp(end, 0.25)   # [2.5, 0.0, 0.0] — a quarter of the way there
 ```
 
-### A worked example — fading between two colours
+### A worked example — mixing between two colours
 
 ```python
 red  = Vec3(1.0, 0.0, 0.0)
@@ -321,52 +319,49 @@ point     = Vec4(2.0, 3.0, 4.0)        # w defaults to 1.0 -> a POSITION
 direction = Vec4(0.0, 1.0, 0.0, 0.0)   # w = 0.0           -> a DIRECTION
 ```
 
-When multiplied by a `Mat4`, the position is affected by translation but
-the direction is not — which is exactly right: you can move a *point*, but
-"up" is still "up" no matter where you stand.
+When multiplied by a `Mat4`, the position is affected by translation but the direction is not — which is exactly right: you can move a *point*, but "up" is still "up" no matter where you stand.
 
-**2. RGBA colours.** `Vec4(r, g, b, a)` — and here the default `w = 1.0`
-also makes sense: fully opaque.
+**2. RGBA colours.** `Vec4(r, g, b, a)` and here the default `w = 1.0` also makes sense: fully opaque.
 
 ---
 
 ## Common mistakes
 
-**Mistake 1 — forgetting to keep the result of an `-ed` method.**
+**Mistake 1 :- forgetting to keep the result of an `-ed` method.**
 
 ```python
-v.normalized()          # ❌ result thrown away, v unchanged
-v = v.normalized()      # ✅
+v.normalized()          #  result thrown away, v unchanged
+v = v.normalized()      # 
 ```
 
-**Mistake 2 — normalizing the zero vector.**
+**Mistake 2 :- normalizing the zero vector.**
 
 ```python
-Vec3(0.0, 0.0, 0.0).normalized()   # ❌ length is 0 — you cannot divide by it
+Vec3(0.0, 0.0, 0.0).normalized()   # ❌ length is 0  you cannot divide by it
 ```
 
 Guard with `if v.length_squared() > 0.0:` when the input might be zero.
 
-**Mistake 3 — using `*` between two vectors.**
+**Mistake 3 :- using `*` between two vectors.**
 
 ```python
-a * b        # ❌ ValueError — * is scalar-only
-a.dot(b)     # ✅ if you wanted the dot product
-a.cross(b)   # ✅ if you wanted the cross product
+a * b        #  ValueError — * is scalar-only
+a.dot(b)     #  if you wanted the dot product
+a.cross(b)   #  if you wanted the cross product
 ```
 
-**Mistake 4 — comparing distances with `length()` in a loop.**
+**Mistake 4 :- comparing distances with `length()` in a loop.**
 
 ```python
 if (a - b).length() < (a - c).length():          # works, but slow (2 sqrts)
-if (a - b).length_squared() < (a - c).length_squared():   # ✅ same answer, faster
+if (a - b).length_squared() < (a - c).length_squared():   #  same answer, faster
 ```
 
-**Mistake 5 — reflecting off an unnormalized normal.**
+**Mistake 5 :- reflecting off an unnormalized normal.**
 
 ```python
-v.reflected(Vec3(0.0, 2.0, 0.0))                 # ❌ normal has length 2 — wrong answer
-v.reflected(Vec3(0.0, 2.0, 0.0).normalized())    # ✅
+v.reflected(Vec3(0.0, 2.0, 0.0))                 #  normal has length 2 wrong answer
+v.reflected(Vec3(0.0, 2.0, 0.0).normalized())    # 
 ```
 
 ---

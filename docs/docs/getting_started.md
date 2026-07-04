@@ -17,6 +17,8 @@ environment yourself:
 ```bash
 uv run python          # a Python shell with ncca.ngl available
 uv run pytest          # run the (non-GPU) test suite
+uv run src/ncca/ngl/webgpu # run webgpu pipline demos
+uv run src/ncca/ngl/widgets # run Qt widgets demos
 ```
 
 ## Your first PyNGL code
@@ -40,10 +42,10 @@ m = Mat4.rotate_y(45.0)          # angles are in degrees
 q = Quaternion.from_axis_angle(Vec3(0.0, 1.0, 0.0), 45.0)
 ```
 
-## Three things to know before you write more code
+## Core Principles of PyNGL
 
 **1. Methods ending in `-ed` return a new object.** `v.normalized()` does
-*not* change `v` — it hands you a new vector. You must keep the result:
+*not* change `v` it returns you a new vector. You must assign the result to a variable :
 
 ```python
 v = Vec3(2.0, 0.0, 0.0)
@@ -51,20 +53,18 @@ v = v.normalized()     # assign the result back if you want v to change
 ```
 
 This is the most important convention in the library. Read
-[Understanding the Method Names](tutorials/method_names.md) for the full
-story.
+[Understanding the Method Names](tutorials/method_names.md) for more details. 
 
-**2. `@` multiplies, `*` scales.** Matrix–matrix and matrix–vector products
-use Python's `@` operator. `*` is only for scaling by a number:
+**2. `@` multiplies, `*` scales.** Matrix -> matrix and matrix -> vector products
+use Python's `@` operator `*` is only for scaling by a number.
 
 ```python
 m = Mat4.rotate_x(45.0) @ Mat4.rotate_y(90.0)   # combine two rotations
 v2 = v * 3.0                                    # scale a vector
 ```
 
-**3. Angles are in degrees.** Everywhere in PyNGL — `Mat4.rotate_x(90.0)`,
-`Quaternion.from_axis_angle(axis, 90.0)`, `Transform.set_rotation(...)` —
-angles are degrees, not radians.
+**3. Angles are in degrees.**  in PyNGL so all rotation type methods such as  `Mat4.rotate_x(90.0)`,
+`Quaternion.from_axis_angle(axis, 90.0)`, `Transform.set_rotation(...)` pass the values in degrees.
 
 ## Where next?
 

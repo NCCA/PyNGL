@@ -1,14 +1,14 @@
-# Quaternions — smooth rotation without gimbal lock
+# Quaternions 
 
 A **quaternion** is a four-number object `(s, x, y, z)` that represents a
 3D rotation. Compared to rotation matrices and Euler angles, quaternions:
 
-- **interpolate beautifully** — `slerp` gives perfectly smooth rotation
+- **interpolate beautifully**  `slerp` gives perfectly smooth rotation
   between two orientations, which is why animation systems store rotations
-  as quaternions;
-- **never suffer gimbal lock** — the "stuck axis" problem that Euler angles
-  (separate x/y/z rotations) run into;
-- are **compact** — 4 floats instead of a matrix's 9 or 16.
+  as quaternions.
+- **never suffer gimbal lock**  the "stuck axis" problem that Euler angles
+  (separate x/y/z rotations) run into.
+- are **compact**  4 floats instead of a matrix's 9 or 16.
 
 You don't need to understand the four numbers themselves (they come from
 the mathematics of complex numbers extended to 4D). You only need the
@@ -22,7 +22,7 @@ recipes on this page.
 
 ## Creating quaternions
 
-Never type the four numbers by hand — build quaternions **from** something
+It is best to never type the four numbers by hand, rather build quaternions **from** something
 meaningful:
 
 ```python
@@ -63,7 +63,7 @@ q = Quaternion.from_axis_angle(Vec3(0.0, 1.0, 0.0), 90.0)
 
 v = Vec3(1.0, 0.0, 0.0)
 rotated = q * v
-print(rotated)       # [0.0, 0.0, -1.0] — x axis swung 90° about y onto -z
+print(rotated)       # [0.0, 0.0, -1.0]  x axis swung 90° about y onto -z
 ```
 
 (Right-hand rule: point your right thumb along +y; your fingers curl from
@@ -85,7 +85,7 @@ look = yaw @ pitch     # pitch first, then yaw
 
 > **Why `@` and not `*`?** The quaternion product *is* a linear-algebra
 > product, so it uses the same operator as matrix multiplication. Writing
-> `q1 * q2` raises a `TypeError` telling you to use `@` — the library keeps
+> `q1 * q2` raises a `TypeError` telling you to use `@`  the library keeps
 > `*` for "scale by a number" and the one special `Quaternion * Vec3` case.
 
 After combining many rotations, floating-point error slowly makes the
@@ -142,7 +142,7 @@ conj = q.conjugate()     # flips the axis: (s, -x, -y, -z)
 ```
 
 For a **unit** quaternion (which every rotation should be), the conjugate
-*is* the inverse — same idea as "for a pure rotation matrix, the transpose
+*is* the inverse, same idea as "for a pure rotation matrix, the transpose
 is the inverse", and just as cheap.
 
 ```python
@@ -168,29 +168,29 @@ q1.dot(q2)    # close to 1.0 (or -1.0) -> the two orientations are similar
 
 ## Common mistakes
 
-**Mistake 1 — using `*` for the quaternion product.**
+**Mistake 1 :- using `*` for the quaternion product.**
 
 ```python
-q1 * q2      # ❌ TypeError — the message tells you what to do
-q1 @ q2      # ✅
+q1 * q2      # wrong :- TypeError — the message tells you what to do
+q1 @ q2      # Correct
 ```
 
-**Mistake 2 — forgetting angles are degrees.**
+**Mistake 2 :- forgetting angles are degrees.**
 
 ```python
-Quaternion.from_axis_angle(axis, math.pi / 2)   # ❌ that's 1.57 DEGREES
-Quaternion.from_axis_angle(axis, 90.0)          # ✅
+Quaternion.from_axis_angle(axis, math.pi / 2)   # wrong that's 1.57 DEGREES
+Quaternion.from_axis_angle(axis, 90.0)          # 
 ```
 
-**Mistake 3 — a non-unit axis.** `from_axis_angle` expects a direction —
+**Mistake 3 :- a non-unit axis.** `from_axis_angle` expects a direction —
 keep the axis normalized:
 
 ```python
-Quaternion.from_axis_angle(Vec3(0.0, 1.0, 0.0), 90.0)          # ✅ unit axis
-Quaternion.from_axis_angle(Vec3(1.0, 1.0, 0.0).normalized(), 90.0)  # ✅
+Quaternion.from_axis_angle(Vec3(0.0, 1.0, 0.0), 90.0)          #  unit axis
+Quaternion.from_axis_angle(Vec3(1.0, 1.0, 0.0).normalized(), 90.0)  # 
 ```
 
-**Mistake 4 — expecting `normalized()` to mutate.** As everywhere in
+**Mistake 4 :- expecting `normalized()` to mutate.** As everywhere in
 PyNGL: assign the result — `q = q.normalized()`.
 
 ---
