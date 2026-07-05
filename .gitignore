@@ -77,3 +77,6 @@ NGLDebug.log
 .serena
 err*
 doc/site*
+
+# Agent worktrees
+.worktrees/
