@@ -6,8 +6,8 @@
 
 ## Primitives
 
-::: ncca.ngl.Primitives
+::: ncca.ngl.opengl.Primitives
 
 ## BaseMesh
 
-::: ncca.ngl.BaseMesh
+::: ncca.ngl.opengl.BaseMesh

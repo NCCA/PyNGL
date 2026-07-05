@@ -6,4 +6,4 @@
 
 ## Texture
 
-::: ncca.ngl.Texture
+::: ncca.ngl.opengl.Texture

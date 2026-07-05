@@ -6,8 +6,8 @@ University). It gives you:
 
 - **Math classes** for 3D graphics — `Vec2/3/4`, `Mat2/3/4`, `Quaternion`,
   `Transform`, and helpers such as `look_at` and `perspective`.
-- **OpenGL support** — VAO abstractions, shader management (`ShaderLib`),
-  primitives, textures, and text rendering.
+- **OpenGL support** (`ncca.ngl.opengl`) — VAO abstractions, shader
+  management (`ShaderLib`), primitives, textures, and text rendering.
 - **WebGPU support** — a parallel rendering stack built on `wgpu`.
 - **Qt widgets** — PySide6 widgets for editing NGL types in GUIs.
 

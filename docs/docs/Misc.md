@@ -9,7 +9,7 @@ array classes see the [Vector Arrays tutorial](tutorials/vector_arrays.md).
 
 ## PySideEventHandlingMixin
 
-::: ncca.ngl.PySideEventHandlingMixin
+::: ncca.ngl.opengl.PySideEventHandlingMixin
 
 ## Vec2Array
 

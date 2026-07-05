@@ -48,14 +48,22 @@ A `Taskfile.yml` (go-task) wraps some of these: `task test-all`, `task lint`, `t
 
 ### Core math/graphics library — `src/ncca/ngl/`
 
-Flat module layout, one class family per file, all re-exported from `src/ncca/ngl/__init__.py`. Key groups:
+Flat module layout, one class family per file, all re-exported from `src/ncca/ngl/__init__.py`. This top-level package holds only API-agnostic modules (no direct `OpenGL.GL` imports); OpenGL-coupled modules live in the `src/ncca/ngl/opengl/` sub-package (see below) and are **not** re-exported from `ncca.ngl` — import them from `ncca.ngl.opengl` directly. Key groups:
 
 - **Math primitives**: `vec2.py`/`vec3.py`/`vec4.py` (+ `vec*_array.py` list-like containers), `mat2.py`/`mat3.py`/`mat4.py`, `quaternion.py`, `plane.py`, `bbox.py`, `transform.py`, `util.py` (lookAt/perspective/ortho/frustum/clamp/lerp).
-- **Mesh/geometry**: `base_mesh.py` (`BaseMesh`, `Face`) is the base for loadable/generatable geometry; `obj.py` (`Obj`) parses Wavefront OBJ on top of it; `prim_data.py` generates raw vertex data for primitive shapes (`Prims` enum + `PrimData`); `primitives.py` wraps that data into drawable VAOs via `VAOFactory`.
-- **VAO abstraction**: `abstract_vao.py` defines the `AbstractVAO` interface + `VertexData`; `simple_vao.py`, `simple_index_vao.py`, `multi_buffer_vao.py` are concrete OpenGL implementations; `vao_factory.py` (`VAOFactory`) is a registry/factory so new VAO types can be added without touching call sites.
-- **Shaders (OpenGL)**: `shader.py` (single compiled shader) → `shader_program.py` (linked program, uniform setters) → `shader_lib.py` (`ShaderLib`, a singleton registry of named shader programs — this is the conventional entry point application code uses, not `ShaderProgram` directly).
-- **Cameras/input**: `first_person_camera.py`, `pyside_event_handling_mixin.py` (mouse/keyboard camera control mixin for PySide6 apps).
-- **Other**: `image.py` (Pillow-backed), `texture.py`, `text.py` (freetype-py glyph atlas + geometry-shader quads), `random.py`, `log.py` (colored logger, `setup_logger`).
+- **Mesh/geometry data**: `bezier_curve.py`, `prim_data.py` generates raw vertex data for primitive shapes (`Prims` enum + `PrimData`); `obj.py` (`Obj`) parses Wavefront OBJ files, importing `BaseMesh`/`Face` and `Texture` from `ncca.ngl.opengl`.
+- **Cameras**: `first_person_camera.py`.
+- **Other**: `image.py` (Pillow-backed), `random.py`, `log.py` (colored logger, `setup_logger`).
+
+### `src/ncca/ngl/opengl/`
+
+OpenGL-coupled modules (anything that directly `import OpenGL.GL`), mirroring the `webgpu/` sub-package structure. Re-exported from `src/ncca/ngl/opengl/__init__.py`; import as `from ncca.ngl.opengl import X`, not from `ncca.ngl`.
+
+- **Mesh/geometry**: `base_mesh.py` (`BaseMesh`, `Face`) is the base for loadable/generatable geometry; `primitives.py` (`Primitives`) wraps `PrimData` (from top-level `ncca.ngl`) into drawable VAOs via `VAOFactory`.
+- **VAO abstraction**: `abstract_vao.py` defines the `AbstractVAO` interface + `VertexData`; `simple_vao.py`, `simple_index_vao.py`, `multi_buffer_vao.py` are concrete implementations; `vao_factory.py` (`VAOFactory`) is a registry/factory so new VAO types can be added without touching call sites.
+- **Shaders**: `shader.py` (single compiled shader) → `shader_program.py` (linked program, uniform setters) → `shader_lib.py` (`ShaderLib`, a singleton registry of named shader programs — this is the conventional entry point application code uses, not `ShaderProgram` directly).
+- **Input**: `pyside_event_handling_mixin.py` (mouse/keyboard camera control mixin for PySide6 apps).
+- **Other**: `texture.py`, `text.py` (freetype-py glyph atlas + geometry-shader quads), `shaders/` (glsl assets used by `shader_lib.py`).
 
 ### `src/ncca/ngl/webgpu/`
 

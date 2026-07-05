@@ -23,8 +23,8 @@ uv run src/ncca/ngl/widgets # run Qt widgets demos
 
 ## Your first PyNGL code
 
-The whole library lives in one module, `ncca.ngl`. Every class is imported
-from the same place:
+The math and geometry-data classes all live in one module, `ncca.ngl`, and
+are imported from the same place:
 
 ```python
 from ncca.ngl import Vec3, Mat4, Quaternion
@@ -65,6 +65,19 @@ v2 = v * 3.0                                    # scale a vector
 
 **3. Angles are in degrees.**  in PyNGL so all rotation type methods such as  `Mat4.rotate_x(90.0)`,
 `Quaternion.from_axis_angle(axis, 90.0)`, `Transform.set_rotation(...)` pass the values in degrees.
+
+## OpenGL and WebGPU classes live in their own sub-modules
+
+Anything that talks directly to OpenGL — `ShaderLib`, the VAO classes,
+`Primitives`, `BaseMesh`, `Texture`, `Text`, `PySideEventHandlingMixin` — is
+imported from `ncca.ngl.opengl`, not `ncca.ngl`:
+
+```python
+from ncca.ngl.opengl import ShaderLib, Primitives
+```
+
+The WebGPU stack is similarly namespaced under `ncca.ngl.webgpu`. See the
+*API Reference* section for the full class-by-class breakdown.
 
 ## Where next?
 
