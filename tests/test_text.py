@@ -2,7 +2,7 @@
 Note opengl_context created once in conftest.py
 """
 
-from ncca.ngl import Text
+from ncca.ngl.opengl import Text
 
 
 def test_text_constructor(opengl_context):

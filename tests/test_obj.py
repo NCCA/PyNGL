@@ -3,7 +3,6 @@ import io
 import pytest
 
 from ncca.ngl import (
-    Face,
     Obj,
     ObjParseFaceError,
     ObjParseNormalError,
@@ -11,6 +10,7 @@ from ncca.ngl import (
     ObjParseVertexError,
     Vec3,
 )
+from ncca.ngl.opengl import Face
 
 validfiles = [
     "tests/files/Triangle1.obj",

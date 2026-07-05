@@ -1,7 +1,8 @@
 import OpenGL.GL as gl
 import pytest
 
-from ncca.ngl import BaseMesh, Face, Image, ImageModes, ShaderLib, Texture, Vec2, Vec3
+from ncca.ngl import Image, ImageModes, Vec2, Vec3
+from ncca.ngl.opengl import BaseMesh, Face, ShaderLib, Texture
 
 
 def test_is_triangular():
@@ -87,8 +88,8 @@ def test_create_vao_non_triangular(opengl_context):
 def test_create_vao(opengl_context):
     ShaderLib.load_shader(
         "nglColourShader",
-        "src/ncca/ngl/shaders/colour_vertex.glsl",
-        "src/ncca/ngl/shaders/colour_fragment.glsl",
+        "src/ncca/ngl/opengl/shaders/colour_vertex.glsl",
+        "src/ncca/ngl/opengl/shaders/colour_fragment.glsl",
     )
     ShaderLib.use("nglColourShader")
     mesh = BaseMesh()
@@ -121,8 +122,8 @@ def test_create_vao(opengl_context):
 def test_create_vao_no_normal_no_uv(opengl_context):
     ShaderLib.load_shader(
         "nglColourShader",
-        "src/ncca/ngl/shaders/colour_vertex.glsl",
-        "src/ncca/ngl/shaders/colour_fragment.glsl",
+        "src/ncca/ngl/opengl/shaders/colour_vertex.glsl",
+        "src/ncca/ngl/opengl/shaders/colour_fragment.glsl",
     )
     ShaderLib.use("nglColourShader")
     mesh = BaseMesh()
@@ -144,8 +145,8 @@ def test_create_vao_no_normal_no_uv(opengl_context):
 def test_create_vao_no_uv(opengl_context):
     ShaderLib.load_shader(
         "nglColourShader",
-        "src/ncca/ngl/shaders/colour_vertex.glsl",
-        "src/ncca/ngl/shaders/colour_fragment.glsl",
+        "src/ncca/ngl/opengl/shaders/colour_vertex.glsl",
+        "src/ncca/ngl/opengl/shaders/colour_fragment.glsl",
     )
     ShaderLib.use("nglColourShader")
     mesh = BaseMesh()
@@ -173,8 +174,8 @@ def test_create_vao_no_uv(opengl_context):
 def test_create_vao_no_normal(opengl_context):
     ShaderLib.load_shader(
         "nglColourShader",
-        "src/ncca/ngl/shaders/colour_vertex.glsl",
-        "src/ncca/ngl/shaders/colour_fragment.glsl",
+        "src/ncca/ngl/opengl/shaders/colour_vertex.glsl",
+        "src/ncca/ngl/opengl/shaders/colour_fragment.glsl",
     )
     ShaderLib.use("nglColourShader")
     mesh = BaseMesh()
@@ -225,8 +226,8 @@ def test_create_vao_reset_vao(opengl_context):
 def test_draw_with_texture(opengl_context, tmp_path):
     ShaderLib.load_shader(
         "nglColourShader",
-        "src/ncca/ngl/shaders/colour_vertex.glsl",
-        "src/ncca/ngl/shaders/colour_fragment.glsl",
+        "src/ncca/ngl/opengl/shaders/colour_vertex.glsl",
+        "src/ncca/ngl/opengl/shaders/colour_fragment.glsl",
     )
     ShaderLib.use("nglColourShader")
     mesh = BaseMesh()

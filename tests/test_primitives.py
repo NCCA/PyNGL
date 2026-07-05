@@ -1,6 +1,7 @@
 import pytest
 
-from ncca.ngl import PrimData, Primitives, Prims, Vec3
+from ncca.ngl import PrimData, Prims, Vec3
+from ncca.ngl.opengl import Primitives
 
 
 # Helper to clear primitives between tests

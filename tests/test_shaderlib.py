@@ -10,14 +10,11 @@ from ncca.ngl import (
     Mat2,
     Mat3,
     Mat4,
-    Shader,
-    ShaderLib,
-    ShaderProgram,
-    ShaderType,
     Vec2,
     Vec3,
     Vec4,
 )
+from ncca.ngl.opengl import Shader, ShaderLib, ShaderProgram, ShaderType
 
 sourcedir = "tests/files/"
 
