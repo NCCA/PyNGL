@@ -4,7 +4,7 @@ import ctypes
 import numpy as np
 import OpenGL.GL as gl
 
-from .log import logger
+from ..log import logger
 
 
 class VertexData:

@@ -1,7 +1,7 @@
 import OpenGL.GL as gl
 
 from .abstract_vao import AbstractVAO, VertexData
-from .log import logger
+from ..log import logger
 
 
 class SimpleVAO(AbstractVAO):

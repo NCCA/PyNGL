@@ -4,7 +4,7 @@ from enum import Enum
 
 import OpenGL.GL as gl
 
-from .log import logger
+from ..log import logger
 
 
 class ShaderType(Enum):

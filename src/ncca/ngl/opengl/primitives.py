@@ -11,11 +11,11 @@ from typing import Dict
 import numpy as np
 import OpenGL.GL as gl
 
-from .log import logger
-from .prim_data import PrimData, Prims
+from ..log import logger
+from ..prim_data import PrimData, Prims
 from .simple_vao import VertexData
 from .vao_factory import VAOFactory, VAOType  # noqa
-from .vec3 import Vec3
+from ..vec3 import Vec3
 
 
 class _primitive:

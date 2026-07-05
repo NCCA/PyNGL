@@ -40,11 +40,11 @@ import freetype
 import numpy as np
 import OpenGL.GL as gl
 
-from .log import logger
+from ..log import logger
 from .shader_lib import DefaultShader, ShaderLib
 from .simple_vao import VertexData
 from .vao_factory import VAOFactory, VAOType
-from .vec3 import Vec3
+from ..vec3 import Vec3
 
 
 class FontAtlas:

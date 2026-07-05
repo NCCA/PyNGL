@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import OpenGL.GL as gl
 
-from .image import Image
+from ..image import Image
 
 
 class Texture:

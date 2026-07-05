@@ -17,7 +17,7 @@ Usage:
 import OpenGL.GL as gl
 from PySide6.QtCore import Qt
 
-from .vec3 import Vec3
+from ..vec3 import Vec3
 
 
 class PySideEventHandlingMixin:

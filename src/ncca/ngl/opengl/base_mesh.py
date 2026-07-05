@@ -5,8 +5,8 @@ import OpenGL.GL as gl
 
 from . import vao_factory
 from .abstract_vao import VertexData
-from .bbox import BBox
-from .log import logger
+from ..bbox import BBox
+from ..log import logger
 
 
 class Face:

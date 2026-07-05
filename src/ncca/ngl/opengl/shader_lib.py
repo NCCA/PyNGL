@@ -5,7 +5,7 @@ from pathlib import Path
 
 import OpenGL.GL as gl
 
-from .log import logger
+from ..log import logger
 from .shader import Shader, ShaderType
 from .shader_program import ShaderProgram
 

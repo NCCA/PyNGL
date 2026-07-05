@@ -4,14 +4,14 @@ from typing import Any, Dict, List, Optional, Union
 import numpy as np
 import OpenGL.GL as gl
 
-from .log import logger
-from .mat2 import Mat2
-from .mat3 import Mat3
-from .mat4 import Mat4
+from ..log import logger
+from ..mat2 import Mat2
+from ..mat3 import Mat3
+from ..mat4 import Mat4
 from .shader import Shader
-from .vec2 import Vec2
-from .vec3 import Vec3
-from .vec4 import Vec4
+from ..vec2 import Vec2
+from ..vec3 import Vec3
+from ..vec4 import Vec4
 
 
 class ShaderProgram:
