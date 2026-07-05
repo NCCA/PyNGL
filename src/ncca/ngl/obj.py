@@ -1,5 +1,5 @@
-from .base_mesh import BaseMesh, Face
-from .texture import Texture
+from .opengl.base_mesh import BaseMesh, Face
+from .opengl.texture import Texture
 from .vec3 import Vec3
 
 
