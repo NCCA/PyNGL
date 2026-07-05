@@ -77,6 +77,8 @@ NGLDebug.log
 .serena
 err*
 doc/site*
+docs/site/
+.superpowers/
 
 # Agent worktrees
 .worktrees/
