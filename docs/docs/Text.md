@@ -2,4 +2,4 @@
 
 ## Text
 
-::: ncca.ngl.Text
+::: ncca.ngl.opengl.Text

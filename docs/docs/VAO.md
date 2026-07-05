@@ -2,20 +2,20 @@
 
 ## AbstractVAO
 
-::: ncca.ngl.AbstractVAO
+::: ncca.ngl.opengl.AbstractVAO
 
 ## SimpleVAO
 
-::: ncca.ngl.SimpleVAO
+::: ncca.ngl.opengl.SimpleVAO
 
 ## SimpleIndexVAO
 
-::: ncca.ngl.SimpleIndexVAO
+::: ncca.ngl.opengl.SimpleIndexVAO
 
 ## MultiBufferVAO
 
-::: ncca.ngl.MultiBufferVAO
+::: ncca.ngl.opengl.MultiBufferVAO
 
 ## VAOFactory
 
-::: ncca.ngl.VAOFactory
+::: ncca.ngl.opengl.VAOFactory
