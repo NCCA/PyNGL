@@ -28,6 +28,7 @@ class FirstPersonCamera:
         far (float): The far clipping plane.
         aspect (float): The aspect ratio.
         fov (float): The field of view.
+        persp_mode (PerspMode): The target graphics API clip-space convention.
         projection (Mat4): The projection matrix.
         view (Mat4): The view matrix.
     """
@@ -64,6 +65,7 @@ class FirstPersonCamera:
         self.far: float = 100.0
         self.aspect: float = 1.2
         self.fov: float = fov
+        self.persp_mode: PerspMode = persp_mode
         self._update_camera_vectors()
         self._projection: Mat4 = self.set_projection(
             self.fov, self.aspect, self.near, self.far, persp_mode
@@ -127,7 +129,6 @@ class FirstPersonCamera:
         # normalize as fast movement can cause issues
         self.right = self.right.normalized()
         self.front = self.front.normalized()
-        from .util import look_at
 
         self._view = look_at(self.eye, self.eye + self.front, self.up)
 
@@ -190,4 +191,6 @@ class FirstPersonCamera:
             self.zoom = 1.0
         if self.zoom >= 45.0:
             self.zoom = 45.0
-        self._projection = perspective(self.zoom, self.aspect, self.near, self.far)
+        self._projection = perspective(
+            self.zoom, self.aspect, self.near, self.far, self.persp_mode
+        )
