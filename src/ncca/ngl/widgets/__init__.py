@@ -1,3 +1,5 @@
+"""PySide6 widgets for editing and displaying NGL math types."""
+
 from importlib.metadata import PackageNotFoundError, version
 
 try:

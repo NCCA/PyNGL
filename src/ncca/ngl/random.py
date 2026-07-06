@@ -67,7 +67,7 @@ class Random:
 
         Args:
             name (str): the name of the generator to use for the number
-            generator : the generator to add should be a callable function
+            generator: the generator to add, should be a callable function
         """
         Random._int_generators[name] = generator
 
@@ -77,7 +77,7 @@ class Random:
 
         Args:
             name (str): the name of the generator to use for the number
-            generator : the generator to add should be a callable function
+            generator: the generator to add, should be a callable function
         """
         Random._float_generators[name] = generator
 

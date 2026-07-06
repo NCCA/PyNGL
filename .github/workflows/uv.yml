@@ -7,12 +7,9 @@ on:
     branches: [main]
 
 jobs:
-  # Reports missing/incorrect type hints (ANN) and docstrings (D). Non-blocking
-  # for now — there is a backlog (see CLAUDE.md Documentation sync section).
-  # Remove continue-on-error once the backlog is cleared.
+  # Enforces type hints (ANN) and docstrings (D) on src/ — see CLAUDE.md.
   lint-annotations-docstrings:
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
 

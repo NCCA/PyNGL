@@ -1,3 +1,5 @@
+"""Widget for editing an RGB colour as a Vec3."""
+
 from PySide6.QtCore import Property, QSignalBlocker, Signal
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import (
@@ -29,7 +31,9 @@ class RGBColourWidget(QFrame):
         g: float = 1.0,
         b: float = 1.0,
     ) -> None:
-        """Args:
+        """Initialize the widget.
+
+        Args:
         name: The name of the widget.
         r: The initial red component of the colour.
         g: The initial green component of the colour.
@@ -76,7 +80,9 @@ class RGBColourWidget(QFrame):
         return spinbox
 
     def colour(self) -> Vec3:
-        """Returns:
+        """Get the value described below.
+
+        Returns:
         The current value of the widget.
         """
         return self._colour
@@ -133,7 +139,9 @@ class RGBColourWidget(QFrame):
             self.set_colour(new_colour)
 
     def name(self) -> str:
-        """Returns:
+        """Get the value described below.
+
+        Returns:
         The name of the widget.
         """
         return self._name

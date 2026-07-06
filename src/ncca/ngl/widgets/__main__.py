@@ -1,3 +1,5 @@
+"""Demo dialog showcasing all of the NGL PySide6 widgets."""
+
 import sys
 
 from PySide6.QtWidgets import QApplication, QDialog, QGridLayout, QLabel
@@ -16,7 +18,10 @@ from ncca.ngl.widgets import (
 
 
 class SimpleDialog(QDialog):
-    def __init__(self, parent=None):
+    """Dialog laying out one of each NGL widget with live value labels."""
+
+    def __init__(self, parent: QDialog | None = None) -> None:
+        """Build the dialog and wire widget signals to labels."""
         super(SimpleDialog, self).__init__(parent)
         self.setWindowTitle(f"PyNGL ncca.widgets library {__version__}")
         self.setMinimumWidth(200)
@@ -63,13 +68,13 @@ class SimpleDialog(QDialog):
 
         self.setLayout(layout)
 
-    def _update_vec3(self, value):
+    def _update_vec3(self, value: Vec3) -> None:
         self.vec3_label.setText(f"[{value.x:0.2f}, {value.y:0.2f}, {value.z:0.2f}]")
 
-    def _update_vec2(self, value):
+    def _update_vec2(self, value: Vec2) -> None:
         self.vec2_label.setText(f"[{value.x:0.2f}, {value.y:0.2f}]")
 
-    def _update_vec4(self, value):
+    def _update_vec4(self, value: Vec4) -> None:
         self.vec4_label.setText(
             f"[{value.x:0.2f}, {value.y:0.2f}, {value.z:0.2f}, {value.w:0.2f}]"
         )

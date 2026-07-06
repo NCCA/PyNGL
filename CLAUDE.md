@@ -53,7 +53,7 @@ Verify before committing (this is the drift check `gh-deploy` skips):
 uv run --with mkdocs --with "mkdocstrings[python]" mkdocs build --strict -f docs/mkdocs.yml
 ```
 
-`--strict` fails on broken references, bad `:::` targets, missing/orphaned nav entries, and docstring/signature mismatches (griffe warnings). **Note:** there is a backlog of ~37 pre-existing docstring warnings (missing type annotations, `bbox.py` documenting params not in the signature, etc.), so a strict build currently aborts. Fix warnings you touch; the goal is to drive this to zero and make the CI strict job blocking (see the `docs-strict` job in `docs.yml`).
+`--strict` fails on broken references, bad `:::` targets, missing/orphaned nav entries, and docstring/signature mismatches (griffe warnings). The strict build passes clean and runs as a **blocking** `docs-strict` job in `docs.yml` — keep it at zero warnings.
 
 ### Type hints and docstring linting
 
@@ -65,7 +65,7 @@ uv run ruff check src/
 
 **Do not** run `ruff check --select ANN,D src/` — an explicit CLI `--select` overrides the config's `ignore` list, which wrongly re-flags the allowed `ANN401` cases.
 
-This currently reports a backlog (missing type hints and missing docstrings, being fixed module-by-module) inherited from before these rules were enabled — it runs in CI as a **non-blocking** `lint-annotations-docstrings` job (see `uv.yml`). Don't add to the backlog: any new or touched function/class must have complete type hints and a Google-style docstring. When the backlog reaches zero, remove `continue-on-error` from that job to make it blocking.
+`src/` passes clean and the check runs as a **blocking** `lint-annotations-docstrings` CI job (see `uv.yml`). Any new or touched function/class must have complete type hints and a Google-style docstring.
 
 **Always run the whole test suite after making changes, not just the tests for the touched file.**
 

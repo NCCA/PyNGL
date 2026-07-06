@@ -19,12 +19,8 @@ concurrency:
 jobs:
   # Strict build to catch docs drift: broken references, bad ::: targets,
   # missing/orphaned nav entries, and docstring/signature mismatches.
-  # Currently non-blocking (continue-on-error) because of a backlog of
-  # pre-existing griffe docstring warnings. Once those are driven to zero,
-  # remove `continue-on-error` so drift blocks the deploy.
   docs-strict:
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
 

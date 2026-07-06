@@ -1,3 +1,5 @@
+"""Widget for editing a Transform's position, rotation, and scale."""
+
 from PySide6.QtCore import Property, Qt, Signal
 from PySide6.QtWidgets import (
     QComboBox,
@@ -20,7 +22,9 @@ class TransformWidget(QFrame):
     _rotation_order = ["xyz", "yzx", "zxy", "xzy", "yxz", "zyx"]
 
     def __init__(self, parent: QWidget | None = None, name: str = "") -> None:
-        """Args:
+        """Initialize the widget.
+
+        Args:
         name: The name of the widget.
         parent: The parent widget.
         """
@@ -93,7 +97,9 @@ class TransformWidget(QFrame):
         self.valueChanged.emit(tx.matrix())
 
     def name(self) -> str:
-        """Returns:
+        """Get the value described below.
+
+        Returns:
         The name of the widget.
         """
         return self._name

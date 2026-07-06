@@ -1,3 +1,5 @@
+"""Widget for editing eye/look/up vectors and producing a lookAt matrix."""
+
 from PySide6.QtCore import Property, Qt, Signal
 from PySide6.QtWidgets import (
     QComboBox,
@@ -23,12 +25,16 @@ class LookAtWidget(QFrame):
         self,
         parent: QWidget | None = None,
         name: str = "",
-        eye=Vec3(2, 2, 2),
-        look=Vec3(0, 0, 0),
+        eye: Vec3 = Vec3(2, 2, 2),
+        look: Vec3 = Vec3(0, 0, 0),
     ) -> None:
-        """Args:
+        """Initialize the widget.
+
+        Args:
         name: The name of the widget.
         parent: The parent widget.
+        eye: Initial eye position.
+        look: Initial look-at position.
         """
         super().__init__(parent)
         self.setFrameShape(QFrame.Shape.StyledPanel)
@@ -69,29 +75,37 @@ class LookAtWidget(QFrame):
         main_layout.addWidget(self._content_widget)
         self._update_matrix()
 
-    def set_eye(self, eye):
+    def set_eye(self, eye: Vec3) -> None:
+        """Set the eye position."""
         self._eye.set_value(eye)
 
-    def set_look(self, look):
+    def set_look(self, look: Vec3) -> None:
+        """Set the look-at position."""
         self._look.set_value(look)
 
-    def set_up(self, up):
+    def set_up(self, up: int) -> None:
+        """Set the up vector by world_up index."""
         self._up.setCurrentIndex(up)
 
-    def set_name(self, name):
+    def set_name(self, name: str) -> None:
+        """Set the widget name shown on the toggle button."""
         self._name = name
         self._toggle_button.setText(name)
 
-    def get_name(self):
+    def get_name(self) -> str:
+        """Return the widget name."""
         return self._name
 
-    def get_eye(self):
+    def get_eye(self) -> Vec3:
+        """Return the eye position."""
         return self._eye.value
 
-    def get_look(self):
+    def get_look(self) -> Vec3:
+        """Return the look-at position."""
         return self._look.value
 
-    def get_up(self):
+    def get_up(self) -> Vec3:
+        """Return the currently selected up vector."""
         return self.world_up[self._up.currentIndex()]
 
     def toggle_collapsed(self, checked: bool) -> None:
