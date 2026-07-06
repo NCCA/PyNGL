@@ -1,3 +1,5 @@
+"""First-person camera with mouse/keyboard control and projection handling."""
+
 import math
 
 from .mat4 import Mat4
@@ -47,6 +49,7 @@ class FirstPersonCamera:
             look (Vec3): The point the camera is looking at.
             up (Vec3): The world's up vector.
             fov (float): The field of view.
+            persp_mode (PerspMode): The target graphics API clip-space convention.
         """
         self.eye: Vec3 = eye
         self.look: Vec3 = look
@@ -72,17 +75,21 @@ class FirstPersonCamera:
         self._view: Mat4 = look_at(self.eye, self.eye + self.front, self.up)
 
     def __str__(self) -> str:
+        """Pretty representation showing eye, look, up, and fov."""
         return f"Camera {self.eye} {self.look} {self.world_up} {self.fov}"
 
     def __repr__(self) -> str:
+        """Representation showing eye, look, up, and fov."""
         return f"Camera {self.eye} {self.look} {self.world_up} {self.fov}"
 
     @property
     def projection(self) -> Mat4:
+        """The camera's projection matrix."""
         return self._projection
 
     @property
     def view(self) -> Mat4:
+        """The camera's view matrix."""
         return self._view
 
     def process_mouse_movement(
@@ -142,6 +149,7 @@ class FirstPersonCamera:
             aspect (float): The aspect ratio.
             near (float): The near clipping plane.
             far (float): The far clipping plane.
+            persp_mode (PerspMode): The target graphics API clip-space convention.
 
         Returns:
             Mat4: The projection matrix.
@@ -173,7 +181,7 @@ class FirstPersonCamera:
         """Process mouse scroll events.
 
         Args:
-            _yoffset (float): The scroll offset.
+            y_offset (float): The scroll offset.
         """
         if self.zoom >= 1.0 and self.zoom <= 45.0:
             self.zoom -= y_offset

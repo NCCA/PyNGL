@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Pack individual .npy primitive files into a single Primitives.npz archive."""
 
 import pathlib
 

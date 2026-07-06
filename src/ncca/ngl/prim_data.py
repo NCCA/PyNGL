@@ -1,3 +1,5 @@
+"""Procedural vertex data generation for primitive shapes."""
+
 from enum import Enum
 from pathlib import Path
 
@@ -64,6 +66,8 @@ def _circle_table(n: int) -> np.ndarray:
 
 
 class PrimData:
+    """Static methods generating packed vertex data for primitive shapes."""
+
     @staticmethod
     def line_grid(width: float, depth: float, steps: int) -> np.ndarray:
         """Creates a line grid primitive.
@@ -351,7 +355,7 @@ class PrimData:
     @staticmethod
     def _add_cylinder_sides(
         data: list, radius: float, h: float, ang: float, precision: int
-    ):
+    ) -> None:
         """Generates cylinder side geometry."""
         for i in range(2 * precision):
             c = radius * np.cos(ang * i)
@@ -375,7 +379,7 @@ class PrimData:
     @staticmethod
     def _add_hemispherical_caps(
         data: list, radius: float, h: float, ang: float, precision: int
-    ):
+    ) -> None:
         """Generates hemispherical cap geometry."""
         for i in range(2 * precision):
             # longitude
@@ -408,10 +412,11 @@ class PrimData:
     @staticmethod
     def capsule(radius: float, height: float, precision: int) -> np.ndarray:
         """Creates a capsule primitive.
-        The capsule is aligned along the y-axis.
-        It is composed of a cylinder and two hemispherical caps.
-        based on code from here https://code.google.com/p/rgine/source/browse/trunk/RGine/opengl/src/RGLShapes.cpp
-        and adapted
+
+        The capsule is aligned along the y-axis and is composed of a cylinder
+        and two hemispherical caps. Based on code from
+        https://code.google.com/p/rgine/source/browse/trunk/RGine/opengl/src/RGLShapes.cpp
+        and adapted.
         """
         if radius <= 0.0:
             raise ValueError(RAD_POS)
@@ -435,6 +440,7 @@ class PrimData:
     @staticmethod
     def cylinder(radius: float, height: float, slices: int, stacks: int) -> np.ndarray:
         """Creates a cylinder primitive.
+
         The cylinder is aligned along the y-axis.
         This method generates the cylinder walls, but not the top and bottom caps.
         """
@@ -610,6 +616,7 @@ class PrimData:
 
     @staticmethod
     def primitive(name: str | Enum) -> np.ndarray:
+        """Load pre-generated vertex data for the named primitive."""
         prim_folder = Path(__file__).parent / "PrimData"
         prims = np.load(prim_folder / "Primitives.npz")
         if isinstance(name, Prims):

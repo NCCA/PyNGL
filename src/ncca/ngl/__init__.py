@@ -1,3 +1,5 @@
+"""PyNGL: the NCCA graphics library — math, geometry, and rendering back-ends."""
+
 # generate auto __version__
 from importlib.metadata import PackageNotFoundError, version
 

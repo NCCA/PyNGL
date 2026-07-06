@@ -1,22 +1,26 @@
+"""Wavefront OBJ file loading and saving."""
+
+from typing import TextIO
+
 from .opengl.base_mesh import BaseMesh, Face
 from .opengl.texture import Texture
 from .vec3 import Vec3
 
 
 class ObjParseVertexError(Exception):
-    pass
+    """Raised when a vertex line in an OBJ file cannot be parsed."""
 
 
 class ObjParseNormalError(Exception):
-    pass
+    """Raised when a normal line in an OBJ file cannot be parsed."""
 
 
 class ObjParseUVError(Exception):
-    pass
+    """Raised when a UV line in an OBJ file cannot be parsed."""
 
 
 class ObjParseFaceError(Exception):
-    pass
+    """Raised when a face line in an OBJ file cannot be parsed."""
 
 
 class Obj(BaseMesh):
@@ -26,8 +30,9 @@ class Obj(BaseMesh):
     including support for vertices, normals, UVs, faces, and optional vertex colors.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize an empty OBJ mesh.
+
         Tracks current offsets for vertices, normals, and UVs to handle negative indices.
         """
         super().__init__()
@@ -327,7 +332,7 @@ class Obj(BaseMesh):
             self._write_normals(obj_file)
             self._write_faces(obj_file)
 
-    def _write_vertices(self, obj_file) -> None:
+    def _write_vertices(self, obj_file: TextIO) -> None:
         """Write vertices (and optional colors) to the OBJ file.
 
         Args:
@@ -341,7 +346,7 @@ class Obj(BaseMesh):
                 )
             obj_file.write("\n")
 
-    def _write_uvs(self, obj_file) -> None:
+    def _write_uvs(self, obj_file: TextIO) -> None:
         """Write UV coordinates to the OBJ file.
 
         Args:
@@ -350,7 +355,7 @@ class Obj(BaseMesh):
         for v in self.uv:
             obj_file.write(f"vt {v.x} {v.y} \n")
 
-    def _write_normals(self, obj_file) -> None:
+    def _write_normals(self, obj_file: TextIO) -> None:
         """Write normals to the OBJ file.
 
         Args:
@@ -359,7 +364,7 @@ class Obj(BaseMesh):
         for v in self.normals:
             obj_file.write(f"vn {v.x} {v.y} {v.z} \n")
 
-    def _write_faces(self, obj_file) -> None:
+    def _write_faces(self, obj_file: TextIO) -> None:
         """Write faces to the OBJ file.
 
         Args:
