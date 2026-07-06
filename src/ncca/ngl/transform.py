@@ -1,6 +1,4 @@
-"""
-Class to represent a transform using translate, rotate and scale,
-"""
+"""Class to represent a transform using translate, rotate and scale,"""
 
 from .mat4 import Mat4
 from .vec3 import Vec3
@@ -57,26 +55,26 @@ class Transform:
         self.need_recalc = True
 
     def set_position(self, *args):
-        "set position attrib using either x,y,z or vec types"
+        """Set position attrib using either x,y,z or vec types"""
         self.position = self._set_value(args)
 
     def set_rotation(self, *args):
-        "set rotation attrib using either x,y,z or vec types"
+        """Set rotation attrib using either x,y,z or vec types"""
         self.rotation = self._set_value(args)
 
     def set_scale(self, *args):
-        "set scale attrib using either x,y,z or vec types"
+        """Set scale attrib using either x,y,z or vec types"""
         self.scale = self._set_value(args)
 
     def set_order(self, order):
-        "set rotation order from string e.g xyz or zyx"
+        """Set rotation order from string e.g xyz or zyx"""
         if order not in self.rot_order:
             raise TransformRotationOrder
         self.order = order
         self.need_recalc = True
 
     def matrix(self) -> Mat4:
-        "return a transform matrix based on rotation order"
+        """Return a transform matrix based on rotation order"""
         if self.need_recalc is True:
             scale = Mat4.scale(self.scale.x, self.scale.y, self.scale.z)
             rx = Mat4.rotate_x(self.rotation.x)  # noqa: F841

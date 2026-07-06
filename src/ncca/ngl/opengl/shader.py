@@ -8,9 +8,7 @@ from ..log import logger
 
 
 class ShaderType(Enum):
-    """
-    Enum representing the different types of OpenGL shaders.
-    """
+    """Enum representing the different types of OpenGL shaders."""
 
     VERTEX = gl.GL_VERTEX_SHADER
     FRAGMENT = gl.GL_FRAGMENT_SHADER
@@ -22,23 +20,19 @@ class ShaderType(Enum):
 
 
 class MatrixTranspose(Enum):
-    """
-    Enum for matrix transpose options (currently both set to GL_TRUE).
-    """
+    """Enum for matrix transpose options (currently both set to GL_TRUE)."""
 
     TransposeOn = gl.GL_TRUE
     TransposeOff = gl.GL_TRUE
 
 
 class Shader:
-    """
-    Class representing an OpenGL shader object.
+    """Class representing an OpenGL shader object.
     Handles loading, compiling, and editing shader source code.
     """
 
     def __init__(self, name: str, type: int, exit_on_error: bool = True):
-        """
-        Initialize a Shader object.
+        """Initialize a Shader object.
 
         Args:
             name: Name of the shader (for logging/debugging).
@@ -52,8 +46,7 @@ class Shader:
         self._source: str = ""
 
     def load(self, source_file: str) -> None:
-        """
-        Load shader source code from a file and set it for this shader.
+        """Load shader source code from a file and set it for this shader.
 
         Args:
             source_file: Path to the shader source file.
@@ -63,8 +56,7 @@ class Shader:
         gl.glShaderSource(self._id, self._source)
 
     def compile(self) -> bool:
-        """
-        Compile the shader source code.
+        """Compile the shader source code.
 
         Returns:
             bool: True if compilation succeeded, False otherwise.
@@ -79,8 +71,7 @@ class Shader:
         return True
 
     def edit_shader(self, to_find: str, replace_with: str) -> bool:
-        """
-        Edit the shader source code by replacing a substring and update the shader.
+        """Edit the shader source code by replacing a substring and update the shader.
 
         Args:
             to_find: Substring to find in the shader source.
@@ -96,15 +87,12 @@ class Shader:
         return False
 
     def reset_edits(self) -> None:
-        """
-        Reset the shader source code to the current stored source.
-        """
+        """Reset the shader source code to the current stored source."""
         if self._source:
             gl.glShaderSource(self._id, self._source)
 
     def load_shader_source_from_string(self, shader_source: str) -> None:
-        """
-        Load shader source code from a string and set it for this shader.
+        """Load shader source code from a string and set it for this shader.
 
         Args:
             shader_source: Shader source code as a string.

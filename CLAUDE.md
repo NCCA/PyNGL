@@ -38,6 +38,33 @@ uv run pre-commit run --all-files
 
 A `Taskfile.yml` (go-task) wraps some of these: `task test-all`, `task lint`, `task coverage`, `task sync`.
 
+## Documentation sync — do this whenever you touch the public API
+
+The docs site (https://ncca.github.io/PyNGL/) is built with MkDocs + mkdocstrings from `docs/` and deployed by `.github/workflows/docs.yml`. mkdocstrings renders each class/function's docstring **live from `src/` at build time**, so editing a docstring updates the site automatically — but it does **not** discover new symbols. When you add, rename, or remove a public class or function you MUST also:
+
+1. Update the matching `::: ncca.ngl...` directive in the relevant `docs/docs/*.md` page (Math, Geometry, VAO, Shaders, Camera, ImageAndTexture, Text, Misc). A new symbol that isn't listed there never appears in the docs.
+2. Add any new page to `nav:` in `docs/mkdocs.yml`.
+3. Ensure the symbol has a complete Google-style docstring — it *is* the rendered API reference — and update any tutorial examples in `docs/docs/tutorials/` that use it.
+4. Update the README feature list and this file's **Architecture** section if the module layout changed.
+
+Verify before committing (this is the drift check `gh-deploy` skips):
+
+```bash
+uv run --with mkdocs --with "mkdocstrings[python]" mkdocs build --strict -f docs/mkdocs.yml
+```
+
+`--strict` fails on broken references, bad `:::` targets, missing/orphaned nav entries, and docstring/signature mismatches (griffe warnings). **Note:** there is a backlog of ~37 pre-existing docstring warnings (missing type annotations, `bbox.py` documenting params not in the signature, etc.), so a strict build currently aborts. Fix warnings you touch; the goal is to drive this to zero and make the CI strict job blocking (see the `docs-strict` job in `docs.yml`).
+
+### Type hints and docstring linting
+
+Ruff enforces type-hint presence (`ANN` rules) and docstring presence/format (`D` rules, Google convention) on `src/` — see `[tool.ruff.lint]` in `pyproject.toml`. Check before committing:
+
+```bash
+uv run ruff check --select ANN,D src/
+```
+
+This currently reports a backlog (~750 issues: missing type hints and missing docstrings) inherited from before these rules were enabled — it runs in CI as a **non-blocking** `lint-annotations-docstrings` job (see `uv.yml`). Don't add to the backlog: any new or touched function/class must have complete type hints and a Google-style docstring. When the backlog reaches zero, remove `continue-on-error` from that job to make it blocking.
+
 **Always run the whole test suite after making changes, not just the tests for the touched file.**
 
 ## Test architecture — read this before writing/running tests

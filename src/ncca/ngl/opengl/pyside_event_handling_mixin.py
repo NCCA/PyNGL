@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Event Handling Mixin for PyNGL Applications
+"""Event Handling Mixin for PyNGL Applications
 
 This module provides a reusable mixin class that implements common event handling
 patterns used across PyNGL applications, including mouse-based camera control,
@@ -21,8 +20,7 @@ from ..vec3 import Vec3
 
 
 class PySideEventHandlingMixin:
-    """
-    Mixin class providing standard event handling for PyNGL applications.
+    """Mixin class providing standard event handling for PyNGL applications.
 
     This mixin provides common functionality for:
     - Mouse-based camera control (rotation with left button, translation with right button)
@@ -44,8 +42,7 @@ class PySideEventHandlingMixin:
         zoom_sensitivity: float = DEFAULT_ZOOM_SENSITIVITY,
         initial_position: Vec3 = None,
     ) -> None:
-        """
-        Initialize event handling attributes.
+        """Initialize event handling attributes.
 
         Args:
             rotation_sensitivity: Mouse sensitivity for rotation (default: 0.5)
@@ -85,8 +82,7 @@ class PySideEventHandlingMixin:
         self.model_position.set(0, 0, 0)
 
     def keyPressEvent(self, event) -> None:
-        """
-        Handle keyboard press events with common shortcuts.
+        """Handle keyboard press events with common shortcuts.
 
         Shortcuts:
         - Escape: Close application
@@ -115,8 +111,7 @@ class PySideEventHandlingMixin:
         self.update()
 
     def mouseMoveEvent(self, event) -> None:
-        """
-        Handle mouse movement for camera control.
+        """Handle mouse movement for camera control.
 
         - Left button: Rotate the scene
         - Right button: Translate (pan) the scene
@@ -153,8 +148,7 @@ class PySideEventHandlingMixin:
             self.update()
 
     def mousePressEvent(self, event) -> None:
-        """
-        Handle mouse button press events to initiate rotation or translation.
+        """Handle mouse button press events to initiate rotation or translation.
 
         - Left button: Start rotation mode
         - Right button: Start translation mode
@@ -175,8 +169,7 @@ class PySideEventHandlingMixin:
             self.translate = True
 
     def mouseReleaseEvent(self, event) -> None:
-        """
-        Handle mouse button release events to stop rotation or translation.
+        """Handle mouse button release events to stop rotation or translation.
 
         Args:
             event: The QMouseEvent object
@@ -187,8 +180,7 @@ class PySideEventHandlingMixin:
             self.translate = False
 
     def wheelEvent(self, event) -> None:
-        """
-        Handle mouse wheel events for zooming.
+        """Handle mouse wheel events for zooming.
 
         Zooming is performed by adjusting the Z coordinate of the model position.
 

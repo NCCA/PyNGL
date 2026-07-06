@@ -1,5 +1,4 @@
-"""
-A simple Quaternion class for use in NCCA Python
+"""A simple Quaternion class for use in NCCA Python
 NumPy-based implementation for efficient operations
 Attributes:
     s (float): The scalar part of the quaternion.
@@ -22,8 +21,7 @@ class Quaternion:
     def __init__(
         self, s: float = 1.0, x: float = 0.0, y: float = 0.0, z: float = 0.0
     ) -> None:
-        """
-        Initializes a new instance of the Quaternion class.
+        """Initializes a new instance of the Quaternion class.
 
         Args:
             s (float): The scalar part of the quaternion.
@@ -37,8 +35,7 @@ class Quaternion:
 
     @classmethod
     def from_mat4(cls, mat: "Mat4") -> "Quaternion":
-        """
-        Creates a new Quaternion from a Mat4 rotation matrix.
+        """Creates a new Quaternion from a Mat4 rotation matrix.
 
         Args:
             mat (Mat4): The rotation matrix to convert.
@@ -77,8 +74,7 @@ class Quaternion:
 
     @classmethod
     def from_axis_angle(cls, axis: "Vec3", angle: float) -> "Quaternion":
-        """
-        Creates a new Quaternion from an axis and angle.
+        """Creates a new Quaternion from an axis and angle.
 
         Args:
             axis (Vec3): The axis of rotation.

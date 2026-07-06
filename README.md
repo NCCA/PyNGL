@@ -1,6 +1,6 @@
 # PyNGL
 
-PyNGL is the full Python version of [NGL](https://github.com/NCCA/NGL), the NCCA graphics library used for teaching 3D computer graphics at [Bournemouth University](https://www.bournemouth.ac.uk/). It provides a consistent set of 3D math primitives, geometry loaders, and rendering back-ends for **OpenGL**, **WebGPU**, and **Qt (PySide6)**.
+PyNGL is the full Python version of [NGL](https://github.com/NCCA/NGL), the NCCA graphics library used for teaching 3D computer graphics at the [NCCA Bournemouth University](https://nccastaff.bournemouth.ac.uk/jmacey/). It provides a consistent set of 3D math primitives, geometry loaders, and rendering back-ends for **OpenGL**, **WebGPU**, and **Qt (PySide6)**.
 
 📖 **Full documentation, tutorials and API reference:** <https://ncca.github.io/PyNGL/>
 
@@ -67,6 +67,7 @@ Tests that need a real graphics context are deselected by default and only run w
 uv run pytest -m opengl
 uv run pytest -m webgpu
 uv run pytest -m qt
+./test_all.sh
 ```
 
 ### Linting & formatting
@@ -78,13 +79,13 @@ uv run ruff check src/
 
 ## Documentation
 
-The class listing that previously lived here is now generated automatically and kept in sync with the source. See the **API Reference** on the documentation site for full details:
+A full class listing and documentations can be found here :- 
 
 - **Docs site:** <https://ncca.github.io/PyNGL/>
-- **Getting started / tutorials:** <https://ncca.github.io/PyNGL/> (Getting Started and Tutorials sections)
+- **Getting started / tutorials:** <https://ncca.github.io/PyNGL/tutorials/> (Getting Started and Tutorials sections)
 
 The site covers the math API design rules, vectors/matrices/quaternions, transforms, cameras and projections, geometry, and the full module-by-module API reference.
 
 ## License
 
-See [LICENSE.txt](LICENSE.txt).
+See [LICENSE.txt](LICENSE.txt) or just use the [Beerware License](https://scancode-licensedb.aboutcode.org/beerware.html)

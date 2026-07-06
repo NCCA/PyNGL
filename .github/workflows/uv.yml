@@ -7,6 +7,26 @@ on:
     branches: [main]
 
 jobs:
+  # Reports missing/incorrect type hints (ANN) and docstrings (D). Non-blocking
+  # for now — there is a backlog (see CLAUDE.md Documentation sync section).
+  # Remove continue-on-error once the backlog is cleared.
+  lint-annotations-docstrings:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install the project
+        run: uv sync --locked --all-extras --dev
+
+      - name: Check type annotations and docstrings
+        run: uv run ruff check --select ANN,D src/
+
   build:
     name: UV tests
     runs-on: ${{ matrix.os }}

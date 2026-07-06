@@ -1,5 +1,4 @@
-"""
-A module for rendering text in OpenGL using pre-rendered font atlases.
+"""A module for rendering text in OpenGL using pre-rendered font atlases.
 
 This implementation uses the 'freetype-py' library to rasterize characters
 from a given font file into a single texture atlas. This atlas is then
@@ -48,16 +47,14 @@ from ..vec3 import Vec3
 
 
 class FontAtlas:
-    """
-    Manages the creation of a font texture atlas for efficient text rendering.
+    """Manages the creation of a font texture atlas for efficient text rendering.
 
     This class uses FreeType to render glyphs for a specified font and packs them
     into a single texture. It also stores metadata for each glyph.
     """
 
     def __init__(self, font_path: str, font_size: int = 48, debug: bool = False):
-        """
-        Initializes the FontAtlas.
+        """Initializes the FontAtlas.
 
         Args:
             font_path: The file path to the font (e.g., a .ttf file).
@@ -83,8 +80,7 @@ class FontAtlas:
         return f"TextureID: {self.texture}, FontSize: {self.font_size}"
 
     def build_atlas(self, debug: bool = False) -> None:
-        """
-        Renders characters and packs them into a texture atlas.
+        """Renders characters and packs them into a texture atlas.
 
         This method iterates through ASCII characters 32-126, renders each one
         using FreeType, and arranges them in a single large numpy array which
@@ -182,8 +178,7 @@ class FontAtlas:
 
 
 class _Text:
-    """
-    Main class for managing and rendering text.
+    """Main class for managing and rendering text.
 
     This class acts as a controller, loading fonts and providing methods
     to render text strings to the screen. It is designed to be used as a
@@ -196,8 +191,7 @@ class _Text:
         self._static_text: List[Any] = []  # Reserved for future use
 
     def add_font(self, name: str, font_file: str, size: int) -> None:
-        """
-        Loads a font and makes it available for rendering.
+        """Loads a font and makes it available for rendering.
 
         Args:
             name: A unique name to identify this font (e.g., "main_font").
@@ -212,8 +206,7 @@ class _Text:
         self._fonts[name] = font
 
     def set_screen_size(self, w: int, h: int) -> None:
-        """
-        Sets the screen dimensions for the text shader.
+        """Sets the screen dimensions for the text shader.
 
         This should be called whenever the window is resized.
 
@@ -230,8 +223,7 @@ class _Text:
     def render_text(
         self, font: str, x: int, y: int, text: str, colour: Vec3 = Vec3(1.0, 1.0, 1.0)
     ) -> None:
-        """
-        Renders a string of text to the screen.
+        """Renders a string of text to the screen.
 
         Args:
             font: The name of the font to use (previously added with add_font).
@@ -293,8 +285,7 @@ class _Text:
     def _build_instances(
         self, font: str, text: str, start_x: int, start_y: int
     ) -> List[float]:
-        """
-        Generates vertex attribute data for each character in a string.
+        """Generates vertex attribute data for each character in a string.
 
         This data is sent to the GPU as a single buffer. The geometry shader
         then uses this data to construct a quad for each character.

@@ -1,6 +1,4 @@
-"""
-A module to replicate the functionality of the NGL C++ Random class.
-"""
+"""A module to replicate the functionality of the NGL C++ Random class."""
 
 import random
 import time
@@ -20,12 +18,12 @@ class Random:
 
     @staticmethod
     def set_seed():
-        """set the seed using std::time(NULL)"""
+        """Set the seed using std::time(NULL)"""
         random.seed(int(time.time()))
 
     @staticmethod
     def set_seed_value(value: int):
-        """set the seed using a param value
+        """Set the seed using a param value
         Args:
             value (int): the seed value
         """
@@ -33,7 +31,7 @@ class Random:
 
     @staticmethod
     def get_float_from_generator_name(name: str) -> float:
-        """gets a pre-generated float value for a genetator
+        """Gets a pre-generated float value for a genetator
         Args:
             name (str): the name of the generator to use for the number
         Returns:
@@ -45,7 +43,7 @@ class Random:
 
     @staticmethod
     def get_int_from_generator_name(name: str) -> int:
-        """gets a pre-generated int value for a genetator
+        """Gets a pre-generated int value for a genetator
         Args:
             name (str): the name of the generator to use for the number
         Returns:
@@ -57,7 +55,7 @@ class Random:
 
     @staticmethod
     def add_int_generator(name: str, generator):
-        """add a generator to the int generators
+        """Add a generator to the int generators
         Args:
             name (str): the name of the generator to use for the number
             generator : the generator to add should be a callable function
@@ -66,7 +64,7 @@ class Random:
 
     @staticmethod
     def add_float_generator(name: str, generator):
-        """add a generator to the float generators
+        """Add a generator to the float generators
         Args:
             name (str): the name of the generator to use for the number
             generator : the generator to add should be a callable function
@@ -75,25 +73,25 @@ class Random:
 
     @staticmethod
     def get_random_vec4() -> Vec4:
-        """get a random vector with componets ranged from +/- 1"""
+        """Get a random vector with componets ranged from +/- 1"""
         gen = Random._float_generators["RandomFloat"]
         return Vec4(gen(), gen(), gen(), 0.0)
 
     @staticmethod
     def get_random_colour4() -> Vec4:
-        """get a random colour with components ranged from 0-1"""
+        """Get a random colour with components ranged from 0-1"""
         gen = Random._float_generators["RandomPositiveFloat"]
         return Vec4(gen(), gen(), gen(), 1.0)
 
     @staticmethod
     def get_random_colour3() -> Vec3:
-        """get a random colour with components ranged from 0-1"""
+        """Get a random colour with components ranged from 0-1"""
         gen = Random._float_generators["RandomPositiveFloat"]
         return Vec3(gen(), gen(), gen())
 
     @staticmethod
     def get_random_normalized_vec4() -> Vec4:
-        """get a random vector with componets ranged from +/- 1 and Normalized"""
+        """Get a random vector with componets ranged from +/- 1 and Normalized"""
         gen = Random._float_generators["RandomFloat"]
         v = Vec4(gen(), gen(), gen(), 0.0)
         v = v.normalized()
@@ -101,13 +99,13 @@ class Random:
 
     @staticmethod
     def get_random_vec3() -> Vec3:
-        """get a random vector with componets ranged from +/- 1"""
+        """Get a random vector with componets ranged from +/- 1"""
         gen = Random._float_generators["RandomFloat"]
         return Vec3(gen(), gen(), gen())
 
     @staticmethod
     def get_random_normalized_vec3() -> Vec3:
-        """get a random vector with componets ranged from +/- 1 and Normalized"""
+        """Get a random vector with componets ranged from +/- 1 and Normalized"""
         gen = Random._float_generators["RandomFloat"]
         v = Vec3(gen(), gen(), gen())
         v = v.normalized()
@@ -115,13 +113,13 @@ class Random:
 
     @staticmethod
     def get_random_vec2() -> Vec2:
-        """get a random vector with componets ranged from +/- 1"""
+        """Get a random vector with componets ranged from +/- 1"""
         gen = Random._float_generators["RandomFloat"]
         return Vec2(gen(), gen())
 
     @staticmethod
     def get_random_normalized_vec2() -> Vec2:
-        """get a random vector with componets ranged from +/- 1 and Normalized"""
+        """Get a random vector with componets ranged from +/- 1 and Normalized"""
         gen = Random._float_generators["RandomFloat"]
         v = Vec2(gen(), gen())
         v = v.normalized()
@@ -131,7 +129,7 @@ class Random:
     def get_random_point(
         x_range: float = 1.0, y_range: float = 1.0, z_range: float = 1.0
     ) -> Vec3:
-        """get a random point in 3D space defaults to +/- 1 else user defined range
+        """Get a random point in 3D space defaults to +/- 1 else user defined range
         Args:
             x_range (float): the +/-x range
             y_range (float): the +/-y range
@@ -144,7 +142,7 @@ class Random:
 
     @staticmethod
     def random_number(mult: float = 1.0) -> float:
-        """a replacement for the old RandomNumber func
+        """A replacement for the old RandomNumber func
         this is basically a convinience function
         Args:
             mult (float): an optional multiplyer for the output
@@ -156,7 +154,7 @@ class Random:
 
     @staticmethod
     def random_positive_number(mult: float = 1.0) -> float:
-        """a replacement for the old ReandomPosNum
+        """A replacement for the old ReandomPosNum
         this is basically a convinience function
         Args:
             mult (float): an optional multiplyer for the output

@@ -1,5 +1,4 @@
-"""
-Extensible factory for WebGPU pipelines It will create several default pipelines used in demos
+"""Extensible factory for WebGPU pipelines It will create several default pipelines used in demos
 and allow the user to create custom pipelines.
 Provides abstract base class and factory for creating various pipeline types.
 """
@@ -47,9 +46,7 @@ BasePipeline = BaseWebGPUPipeline
 
 
 class _PipelineFactory:
-    """
-    Factory for creating pipeline instances with various configurations.
-    """
+    """Factory for creating pipeline instances with various configurations."""
 
     def __init__(self):
         """Initialize the pipeline factory with default pipeline types."""
@@ -147,8 +144,7 @@ class _PipelineFactory:
     def register_pipeline(
         self, pipeline_type: PipelineType, pipeline_class: Type[BaseWebGPUPipeline]
     ) -> None:
-        """
-        Register a custom pipeline type.
+        """Register a custom pipeline type.
 
         Args:
             pipeline_type: Enum identifier for the pipeline
@@ -159,8 +155,7 @@ class _PipelineFactory:
     def create_pipeline(
         self, device: wgpu.GPUDevice, pipeline_type: PipelineType, **kwargs
     ) -> BaseWebGPUPipeline:
-        """
-        Create a pipeline instance.
+        """Create a pipeline instance.
 
         Args:
             device: WebGPU device

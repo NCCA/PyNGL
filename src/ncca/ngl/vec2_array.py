@@ -1,5 +1,4 @@
-"""
-A container for ngl.Vec2 objects that mimics some of the behavior of a std::vector
+"""A container for ngl.Vec2 objects that mimics some of the behavior of a std::vector
 Optimized for graphics APIs with contiguous numpy storage
 """
 
@@ -9,15 +8,13 @@ from .vec2 import Vec2
 
 
 class Vec2Array:
-    """
-    A class to hold Vec2 data in contiguous memory for efficient GPU transfer.
+    """A class to hold Vec2 data in contiguous memory for efficient GPU transfer.
     Internally uses a numpy array of shape (N, 2) for optimal performance.
     Mutable container — intentionally not hashable.
     """
 
     def __init__(self, values=None):
-        """
-        Initializes the Vec2Array.
+        """Initializes the Vec2Array.
 
         Args:
             values (iterable | int, optional): An iterable of Vec2 objects or an integer.
@@ -41,8 +38,7 @@ class Vec2Array:
             self._data = np.array(vec_list, dtype=np.float32)
 
     def __getitem__(self, index):
-        """
-        Get the Vec2 at the specified index.
+        """Get the Vec2 at the specified index.
 
         Args:
             index (int | slice): The index or slice of the element(s).
@@ -62,8 +58,7 @@ class Vec2Array:
             return Vec2(row[0], row[1])
 
     def __setitem__(self, index, value):
-        """
-        Set the Vec2 at the specified index.
+        """Set the Vec2 at the specified index.
 
         Args:
             index (int): The index of the element to set.
@@ -74,22 +69,17 @@ class Vec2Array:
         self._data[index] = [value.x, value.y]
 
     def __len__(self):
-        """
-        Return the number of elements in the array.
-        """
+        """Return the number of elements in the array."""
         return len(self._data)
 
     def __iter__(self):
-        """
-        Return an iterator that yields Vec2 objects.
-        """
+        """Return an iterator that yields Vec2 objects."""
         for i in range(len(self._data)):
             row = self._data[i]
             yield Vec2(row[0], row[1])
 
     def __eq__(self, other):
-        """
-        Compare two Vec2Array instances for equality.
+        """Compare two Vec2Array instances for equality.
 
         Args:
             other: Another Vec2Array instance to compare with.
@@ -102,8 +92,7 @@ class Vec2Array:
         return np.array_equal(self._data, other._data)
 
     def append(self, value):
-        """
-        Append a Vec2 object to the array.
+        """Append a Vec2 object to the array.
 
         Args:
             value (Vec2): The Vec2 object to append.
@@ -114,8 +103,7 @@ class Vec2Array:
         self._data = np.vstack([self._data, new_row])
 
     def extend(self, values):
-        """
-        Extend the array with a list of Vec2 objects.
+        """Extend the array with a list of Vec2 objects.
 
         Args:
             values (list): A list of Vec2 objects to extend.
@@ -130,8 +118,7 @@ class Vec2Array:
             self._data = np.vstack([self._data, new_rows])
 
     def to_list(self):
-        """
-        Convert the array of Vec2 objects to a single flat list of floats.
+        """Convert the array of Vec2 objects to a single flat list of floats.
 
         Returns:
             list: A list of x, y components concatenated.
@@ -139,8 +126,7 @@ class Vec2Array:
         return self._data.flatten().tolist()
 
     def to_numpy(self):
-        """
-        Convert the array of Vec2 objects to a numpy array.
+        """Convert the array of Vec2 objects to a numpy array.
         This is the primary method for GPU data transfer.
 
         Returns:
@@ -161,8 +147,7 @@ class Vec2Array:
         return str(vec_list)
 
     def sizeof(self):
-        """
-        Return the size of the array in bytes.
+        """Return the size of the array in bytes.
 
         Returns:
             int: The size of the array in bytes.

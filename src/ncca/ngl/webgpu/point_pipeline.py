@@ -1,5 +1,4 @@
-"""
-Generic point rendering pipeline for WebGPU.
+"""Generic point rendering pipeline for WebGPU.
 Handles point rendering with customizable size, colour, and projection.
 """
 
@@ -13,8 +12,7 @@ from .pipeline_shaders import POINT_SHADER_MULTI_COLOURED, POINT_SHADER_SINGLE_C
 
 
 class PointPipelineMultiColour(BasePointPipeline):
-    """
-    A reusable pipeline for rendering points in WebGPU.
+    """A reusable pipeline for rendering points in WebGPU.
 
     Features:
     - Instanced rendering of points as quads
@@ -33,8 +31,7 @@ class PointPipelineMultiColour(BasePointPipeline):
         msaa_sample_count: int = 4,
         stride: int = 0,
     ):
-        """
-        Initialize the point rendering pipeline.
+        """Initialize the point rendering pipeline.
 
         Args:
             device: WebGPU device
@@ -86,8 +83,7 @@ class PointPipelineMultiColour(BasePointPipeline):
         return "point_pipeline_multi_coloured"
 
     def set_data(self, positions, colours=None) -> None:
-        """
-        Set the point data for rendering.
+        """Set the point data for rendering.
 
         Args:
             positions: Nx2 array of point positions or a pre-existing GPUBuffer.
@@ -138,8 +134,7 @@ class PointPipelineMultiColour(BasePointPipeline):
                 self.colour_buffer = None
 
     def update_uniforms(self, **kwargs) -> None:
-        """
-        Update uniform buffer values.
+        """Update uniform buffer values.
 
         Args:
             **kwargs: Pipeline-specific uniform parameters
@@ -147,7 +142,6 @@ class PointPipelineMultiColour(BasePointPipeline):
                 - view_matrix: 4x4 view matrix for billboarding calculations
                 - point_size: Size of points in world units
         """
-
         if "mvp" in kwargs and kwargs["mvp"] is not None:
             self.uniform_data["MVP"] = kwargs["mvp"]
 
@@ -162,8 +156,7 @@ class PointPipelineMultiColour(BasePointPipeline):
         )
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
-        """
-        Render the points.
+        """Render the points.
 
         Args:
             render_pass: Active render pass encoder
@@ -194,8 +187,7 @@ class PointPipelineMultiColour(BasePointPipeline):
 
 
 class PointPipelineSingleColour(BasePointPipeline):
-    """
-    A reusable pipeline for rendering points in WebGPU.
+    """A reusable pipeline for rendering points in WebGPU.
 
     Features:
     - Instanced rendering of points as quads
@@ -214,8 +206,7 @@ class PointPipelineSingleColour(BasePointPipeline):
         msaa_sample_count: int = 4,
         stride: int = 0,
     ):
-        """
-        Initialize the point rendering pipeline.
+        """Initialize the point rendering pipeline.
 
         Args:
             device: WebGPU device
@@ -267,8 +258,7 @@ class PointPipelineSingleColour(BasePointPipeline):
         return "point_pipeline_single_colour"
 
     def set_data(self, positions, colours=None) -> None:
-        """
-        Set the point data for rendering.
+        """Set the point data for rendering.
 
         Args:
             positions: Nx2 array of point positions or a pre-existing GPUBuffer.
@@ -288,8 +278,7 @@ class PointPipelineSingleColour(BasePointPipeline):
             )
 
     def update_uniforms(self, **kwargs) -> None:
-        """
-        Update uniform buffer values.
+        """Update uniform buffer values.
 
         Args:
             **kwargs: Pipeline-specific uniform parameters
@@ -315,8 +304,7 @@ class PointPipelineSingleColour(BasePointPipeline):
         )
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
-        """
-        Render the points.
+        """Render the points.
 
         Args:
             render_pass: Active render pass encoder

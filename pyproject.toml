@@ -24,6 +24,22 @@ Issues = "https://github.com/NCCA/PyNGL/issues"
 [tool.pytest.ini_options]
 pythonpath = ["src","tests"]
 
+[tool.ruff.lint]
+extend-select = [
+    "ANN", # flake8-annotations: require type hints on signatures
+    "D",   # pydocstyle: require/validate docstrings
+]
+ignore = [
+    "D203", # incompatible with D211 (no-blank-line-before-class)
+    "D213", # incompatible with D212 (multi-line-summary-first-line)
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["ANN", "D"]
+
 [build-system]
 requires = ["uv_build>=0.8.13,<0.9.0"]
 build-backend = "uv_build"

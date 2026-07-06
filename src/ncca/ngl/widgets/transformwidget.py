@@ -20,10 +20,9 @@ class TransformWidget(QFrame):
     _rotation_order = ["xyz", "yzx", "zxy", "xzy", "yxz", "zyx"]
 
     def __init__(self, parent: QWidget | None = None, name: str = "") -> None:
-        """
-        Args:
-            name: The name of the widget.
-            parent: The parent widget.
+        """Args:
+        name: The name of the widget.
+        parent: The parent widget.
         """
         super().__init__(parent)
         self.setFrameShape(QFrame.Shape.StyledPanel)
@@ -94,9 +93,8 @@ class TransformWidget(QFrame):
         self.valueChanged.emit(tx.matrix())
 
     def name(self) -> str:
-        """
-        Returns:
-            The name of the widget.
+        """Returns:
+        The name of the widget.
         """
         return self._name
 

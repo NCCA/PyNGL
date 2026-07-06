@@ -1,5 +1,4 @@
-"""
-Base class for all vector types providing common functionality and eliminating code duplication.
+"""Base class for all vector types providing common functionality and eliminating code duplication.
 
 This module implements a generic base class that provides all common vector operations
 while allowing dimension-specific behavior through abstract methods.
@@ -22,8 +21,7 @@ T = TypeVar("T", bound="VectorBase")
 
 
 class VectorBase(ABC, Generic[T]):
-    """
-    Base class for all vector types providing common functionality.
+    """Base class for all vector types providing common functionality.
 
     This class implements all common vector operations using numpy for efficiency
     while maintaining the same API as the original vector classes.
@@ -102,8 +100,7 @@ class VectorBase(ABC, Generic[T]):
         return cls.DIMENSION * ctypes.sizeof(ctypes.c_float)
 
     def __iter__(self):
-        """
-        Make the vector class iterable.
+        """Make the vector class iterable.
 
         Yields:
             float: The components of the vector.
@@ -112,8 +109,7 @@ class VectorBase(ABC, Generic[T]):
             yield float(self._data[i])
 
     def __getitem__(self, index: int) -> float:
-        """
-        Get the component of the vector at the given index.
+        """Get the component of the vector at the given index.
 
         Args:
             index (int): The index of the component.
@@ -130,8 +126,7 @@ class VectorBase(ABC, Generic[T]):
         return float(self._data[index])
 
     def __hash__(self) -> int:
-        """
-        Compute hash for use in sets and dictionaries.
+        """Compute hash for use in sets and dictionaries.
 
         Returns:
             int: Hash value for the vector.
@@ -145,8 +140,7 @@ class VectorBase(ABC, Generic[T]):
         return seed
 
     def copy(self) -> Self:
-        """
-        Create a copy of the vector.
+        """Create a copy of the vector.
 
         Returns:
             VectorBase: A new vector instance with the same values.
@@ -154,8 +148,7 @@ class VectorBase(ABC, Generic[T]):
         return self.__class__(*self._data)
 
     def __add__(self, rhs: Self) -> Self:
-        """
-        Vector addition a+b.
+        """Vector addition a+b.
 
         Args:
             rhs (VectorBase): The right-hand side vector to add.
@@ -172,8 +165,7 @@ class VectorBase(ABC, Generic[T]):
         return result
 
     def __sub__(self, rhs: Self) -> Self:
-        """
-        Vector subtraction a-b.
+        """Vector subtraction a-b.
 
         Args:
             rhs (VectorBase): The right-hand side vector to subtract.
@@ -190,8 +182,7 @@ class VectorBase(ABC, Generic[T]):
         return result
 
     def __eq__(self, rhs: Any) -> bool:
-        """
-        Vector comparison a==b using numpy.allclose.
+        """Vector comparison a==b using numpy.allclose.
 
         Args:
             rhs (VectorBase): The right-hand side vector to compare.
@@ -205,8 +196,7 @@ class VectorBase(ABC, Generic[T]):
         return np.allclose(self._data, rhs._data)
 
     def __ne__(self, rhs: Any) -> bool:
-        """
-        Vector comparison a!=b using numpy.allclose.
+        """Vector comparison a!=b using numpy.allclose.
 
         Args:
             rhs (VectorBase): The right-hand side vector to compare.
@@ -220,8 +210,7 @@ class VectorBase(ABC, Generic[T]):
         return not np.allclose(self._data, rhs._data)
 
     def __neg__(self) -> Self:
-        """
-        Negate a vector -a.
+        """Negate a vector -a.
 
         Returns:
             VectorBase: The negated vector.
@@ -231,8 +220,7 @@ class VectorBase(ABC, Generic[T]):
         return result
 
     def __mul__(self, rhs: float | int) -> Self:
-        """
-        Piecewise scalar multiplication.
+        """Piecewise scalar multiplication.
 
         Args:
             rhs (float): The scalar to multiply by.
@@ -253,8 +241,7 @@ class VectorBase(ABC, Generic[T]):
             )
 
     def __rmul__(self, rhs: float | int) -> Self:
-        """
-        Piecewise scalar multiplication (right operand).
+        """Piecewise scalar multiplication (right operand).
 
         Args:
             rhs (float): The scalar to multiply by.
@@ -265,8 +252,7 @@ class VectorBase(ABC, Generic[T]):
         return self * rhs
 
     def __truediv__(self, rhs: float | int | Self) -> Self:
-        """
-        Piecewise scalar or vector division.
+        """Piecewise scalar or vector division.
 
         Args:
             rhs (Union[float, int, VectorBase]): The scalar or vector to divide by.
@@ -296,8 +282,7 @@ class VectorBase(ABC, Generic[T]):
             )
 
     def dot(self, rhs: Self) -> float:
-        """
-        Dot product of two vectors a.b.
+        """Dot product of two vectors a.b.
 
         Args:
             rhs (VectorBase): The right-hand side vector to dot product with.
@@ -312,8 +297,7 @@ class VectorBase(ABC, Generic[T]):
         return np.dot(self._data, rhs._data)
 
     def length(self) -> float:
-        """
-        Length of vector.
+        """Length of vector.
 
         Returns:
             float: The length of the vector.
@@ -321,8 +305,7 @@ class VectorBase(ABC, Generic[T]):
         return np.linalg.norm(self._data)
 
     def length_squared(self) -> float:
-        """
-        Length of vector squared (sometimes used to avoid the sqrt for performance).
+        """Length of vector squared (sometimes used to avoid the sqrt for performance).
 
         Returns:
             float: The length of the vector squared.
@@ -330,8 +313,7 @@ class VectorBase(ABC, Generic[T]):
         return np.dot(self._data, self._data)
 
     def inner(self, rhs: Self) -> float:
-        """
-        Inner product of two vectors a.b (alias for dot product).
+        """Inner product of two vectors a.b (alias for dot product).
 
         Args:
             rhs (VectorBase): The right-hand side vector to inner product with.
@@ -444,8 +426,7 @@ class VectorBase(ABC, Generic[T]):
         return "[" + ", ".join(str(float(v)) for v in self._data) + "]"
 
     def to_list(self) -> list:
-        """
-        Convert vector to list.
+        """Convert vector to list.
 
         Returns:
             list: List of vector components.
@@ -453,8 +434,7 @@ class VectorBase(ABC, Generic[T]):
         return self._data.tolist()
 
     def to_numpy(self) -> np.ndarray:
-        """
-        Convert vector to numpy array.
+        """Convert vector to numpy array.
 
         Returns:
             np.ndarray: Copy of the vector as numpy array.
@@ -462,8 +442,7 @@ class VectorBase(ABC, Generic[T]):
         return self._data.copy()
 
     def to_tuple(self) -> tuple:
-        """
-        Convert vector to tuple.
+        """Convert vector to tuple.
 
         Returns:
             tuple: Tuple of vector components.
@@ -473,8 +452,7 @@ class VectorBase(ABC, Generic[T]):
     # Abstract methods that must be implemented by subclasses
     @abstractmethod
     def cross(self, rhs: Self) -> Self | float:
-        """
-        Cross product of two vectors a x b.
+        """Cross product of two vectors a x b.
 
         Args:
             rhs (VectorBase): The right-hand side vector to cross product with.
@@ -486,8 +464,7 @@ class VectorBase(ABC, Generic[T]):
 
     @abstractmethod
     def reflected(self, n: Self) -> Self:
-        """
-        Return a new vector reflected about the normal.
+        """Return a new vector reflected about the normal.
 
         Args:
             n (VectorBase): The normal to reflect about.
@@ -499,8 +476,7 @@ class VectorBase(ABC, Generic[T]):
 
     @abstractmethod
     def outer(self, rhs: Self) -> Any:
-        """
-        Outer product of two vectors a x b.
+        """Outer product of two vectors a x b.
 
         Args:
             rhs (VectorBase): The right-hand side vector to outer product with.
@@ -512,8 +488,7 @@ class VectorBase(ABC, Generic[T]):
 
     @abstractmethod
     def __matmul__(self, rhs: Any) -> Self:
-        """
-        Matrix multiplication Vector @ Matrix.
+        """Matrix multiplication Vector @ Matrix.
 
         Args:
             rhs (Any): The matrix to multiply by.
@@ -525,8 +500,7 @@ class VectorBase(ABC, Generic[T]):
 
     @abstractmethod
     def set(self, *args: float) -> None:
-        """
-        Set the components of the vector.
+        """Set the components of the vector.
 
         Args:
             *args: Component values to set.
@@ -537,8 +511,7 @@ class VectorBase(ABC, Generic[T]):
         pass  # pragma: no cover
 
     def __getattr__(self, name: str):
-        """
-        Handle access to non-existent attributes.
+        """Handle access to non-existent attributes.
 
         Args:
             name (str): The name of the attribute.
@@ -551,8 +524,7 @@ class VectorBase(ABC, Generic[T]):
         )
 
     def __setattr__(self, name: str, value: Any) -> None:
-        """
-        Control attribute setting to prevent non-component attributes.
+        """Control attribute setting to prevent non-component attributes.
 
         Args:
             name: The attribute name to set
@@ -574,8 +546,7 @@ class VectorBase(ABC, Generic[T]):
 
 
 def _create_properties(cls: type) -> None:
-    """
-    Dynamically add properties for vector components.
+    """Dynamically add properties for vector components.
 
     Args:
         cls: The vector class to add properties to.

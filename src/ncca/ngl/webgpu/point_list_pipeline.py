@@ -1,5 +1,4 @@
-"""
-Native point-list rendering pipeline for WebGPU.
+"""Native point-list rendering pipeline for WebGPU.
 Handles point rendering using WebGPU's native point-list topology instead of billboarding.
 """
 
@@ -17,8 +16,7 @@ from .webgpu_constants import NGLToWebGPU
 
 
 class PointListPipelineMultiColour(BaseWebGPUPipeline):
-    """
-    A pipeline for rendering points using WebGPU's native point-list topology.
+    """A pipeline for rendering points using WebGPU's native point-list topology.
 
     Features:
     - Native WebGPU point-list rendering (no billboarding)
@@ -35,8 +33,7 @@ class PointListPipelineMultiColour(BaseWebGPUPipeline):
         msaa_sample_count: int = 4,
         stride: int = 0,
     ):
-        """
-        Initialize the point list rendering pipeline.
+        """Initialize the point list rendering pipeline.
 
         Args:
             device: WebGPU device
@@ -117,8 +114,7 @@ class PointListPipelineMultiColour(BaseWebGPUPipeline):
         positions,
         colours=None,
     ) -> None:
-        """
-        Set the point data for rendering.
+        """Set the point data for rendering.
 
         Args:
             positions: Nx3 array of point positions or a pre-existing GPUBuffer.
@@ -157,8 +153,7 @@ class PointListPipelineMultiColour(BaseWebGPUPipeline):
             )
 
     def update_uniforms(self, **kwargs) -> None:
-        """
-        Update uniform buffer values.
+        """Update uniform buffer values.
 
         Args:
             **kwargs: Pipeline-specific uniform parameters
@@ -172,8 +167,7 @@ class PointListPipelineMultiColour(BaseWebGPUPipeline):
         )
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
-        """
-        Render the points.
+        """Render the points.
 
         Args:
             render_pass: Active render pass encoder
@@ -204,8 +198,7 @@ class PointListPipelineMultiColour(BaseWebGPUPipeline):
 
 
 class PointListPipelineSingleColour(BaseWebGPUPipeline):
-    """
-    A pipeline for rendering points using WebGPU's native point-list topology.
+    """A pipeline for rendering points using WebGPU's native point-list topology.
 
     Features:
     - Native WebGPU point-list rendering (no billboarding)
@@ -223,8 +216,7 @@ class PointListPipelineSingleColour(BaseWebGPUPipeline):
         msaa_sample_count: int = 4,
         stride: int = 0,
     ):
-        """
-        Initialize the point list rendering pipeline.
+        """Initialize the point list rendering pipeline.
 
         Args:
             device: WebGPU device
@@ -293,8 +285,7 @@ class PointListPipelineSingleColour(BaseWebGPUPipeline):
         return "point_list_pipeline_single_colour"
 
     def set_data(self, positions, colours=None) -> None:
-        """
-        Set the point data for rendering.
+        """Set the point data for rendering.
 
         Args:
             positions: Nx3 array of point positions or a pre-existing GPUBuffer.
@@ -314,8 +305,7 @@ class PointListPipelineSingleColour(BaseWebGPUPipeline):
             )
 
     def update_uniforms(self, **kwargs) -> None:
-        """
-        Update uniform buffer values.
+        """Update uniform buffer values.
 
         Args:
             **kwargs: Pipeline-specific uniform parameters
@@ -334,8 +324,7 @@ class PointListPipelineSingleColour(BaseWebGPUPipeline):
         )
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
-        """
-        Render the points.
+        """Render the points.
 
         Args:
             render_pass: Active render pass encoder

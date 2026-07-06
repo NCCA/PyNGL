@@ -1,5 +1,4 @@
-"""
-A container for ngl.Vec3 objects that mimics some of the behavior of a std::vector
+"""A container for ngl.Vec3 objects that mimics some of the behavior of a std::vector
 Optimized for graphics APIs with contiguous numpy storage
 """
 
@@ -9,15 +8,13 @@ from .vec3 import Vec3
 
 
 class Vec3Array:
-    """
-    A class to hold Vec3 data in contiguous memory for efficient GPU transfer.
+    """A class to hold Vec3 data in contiguous memory for efficient GPU transfer.
     Internally uses a numpy array of shape (N, 3) for optimal performance.
     Mutable container — intentionally not hashable.
     """
 
     def __init__(self, values=None):
-        """
-        Initializes the Vec3Array.
+        """Initializes the Vec3Array.
 
         Args:
             values (iterable | int, optional): An iterable of Vec3 objects or an integer.
@@ -41,8 +38,7 @@ class Vec3Array:
             self._data = np.array(vec_list, dtype=np.float32)
 
     def __getitem__(self, index):
-        """
-        Get the Vec3 at the specified index.
+        """Get the Vec3 at the specified index.
 
         Args:
             index (int | slice): The index or slice of the element(s).
@@ -62,8 +58,7 @@ class Vec3Array:
             return Vec3(row[0], row[1], row[2])
 
     def __setitem__(self, index, value):
-        """
-        Set the Vec3 at the specified index.
+        """Set the Vec3 at the specified index.
 
         Args:
             index (int): The index of the element to set.
@@ -74,22 +69,17 @@ class Vec3Array:
         self._data[index] = [value.x, value.y, value.z]
 
     def __len__(self):
-        """
-        Return the number of elements in the array.
-        """
+        """Return the number of elements in the array."""
         return len(self._data)
 
     def __iter__(self):
-        """
-        Return an iterator that yields Vec3 objects.
-        """
+        """Return an iterator that yields Vec3 objects."""
         for i in range(len(self._data)):
             row = self._data[i]
             yield Vec3(row[0], row[1], row[2])
 
     def __eq__(self, other):
-        """
-        Compare two Vec3Array instances for equality.
+        """Compare two Vec3Array instances for equality.
 
         Args:
             other: Another Vec3Array instance to compare with.
@@ -102,8 +92,7 @@ class Vec3Array:
         return np.array_equal(self._data, other._data)
 
     def append(self, value):
-        """
-        Append a Vec3 object to the array.
+        """Append a Vec3 object to the array.
 
         Args:
             value (Vec3): The Vec3 object to append.
@@ -114,8 +103,7 @@ class Vec3Array:
         self._data = np.vstack([self._data, new_row])
 
     def extend(self, values):
-        """
-        Extend the array by appending elements from the iterable.
+        """Extend the array by appending elements from the iterable.
 
         Args:
             values (iterable): An iterable of Vec3 objects to append.
@@ -136,8 +124,7 @@ class Vec3Array:
             self._data = np.vstack([self._data, new_rows])
 
     def to_list(self):
-        """
-        Convert the array of Vec3 objects to a single flat list of floats.
+        """Convert the array of Vec3 objects to a single flat list of floats.
 
         Returns:
             list: A list of x, y, z components concatenated.
@@ -145,8 +132,7 @@ class Vec3Array:
         return self._data.flatten().tolist()
 
     def to_numpy(self):
-        """
-        Convert the array of Vec3 objects to a numpy array.
+        """Convert the array of Vec3 objects to a numpy array.
         This is the primary method for GPU data transfer.
 
         Returns:
@@ -167,8 +153,7 @@ class Vec3Array:
         return str(vec_list)
 
     def sizeof(self):
-        """
-        Return the size of the array in bytes.
+        """Return the size of the array in bytes.
 
         Returns:
             int: The size of the array in bytes.

@@ -20,16 +20,14 @@ class ObjParseFaceError(Exception):
 
 
 class Obj(BaseMesh):
-    """
-    OBJ mesh loader and exporter.
+    """OBJ mesh loader and exporter.
 
     Inherits from BaseMesh and provides methods to parse, load, and save OBJ files,
     including support for vertices, normals, UVs, faces, and optional vertex colors.
     """
 
     def __init__(self):
-        """
-        Initialize an empty OBJ mesh.
+        """Initialize an empty OBJ mesh.
         Tracks current offsets for vertices, normals, and UVs to handle negative indices.
         """
         super().__init__()
@@ -39,11 +37,11 @@ class Obj(BaseMesh):
         self._current_uv_offset: int = 0
 
     def _parse_vertex(self, tokens: list[str]) -> None:
-        """
-        Parse a vertex line from the OBJ file.
+        """Parse a vertex line from the OBJ file.
 
         Args:
             tokens: List of string tokens from the line.
+
         Raises:
             ObjParseVertexError: If vertex parsing fails.
         """
@@ -62,11 +60,11 @@ class Obj(BaseMesh):
             raise ObjParseVertexError
 
     def _parse_normal(self, tokens: list[str]) -> None:
-        """
-        Parse a normal line from the OBJ file.
+        """Parse a normal line from the OBJ file.
 
         Args:
             tokens: List of string tokens from the line.
+
         Raises:
             ObjParseNormalError: If normal parsing fails.
         """
@@ -79,11 +77,11 @@ class Obj(BaseMesh):
             raise ObjParseNormalError
 
     def _parse_uv(self, tokens: list[str]) -> None:
-        """
-        Parse a UV line from the OBJ file.
+        """Parse a UV line from the OBJ file.
 
         Args:
             tokens: List of string tokens from the line.
+
         Raises:
             ObjParseUVError: If UV parsing fails.
         """
@@ -98,11 +96,11 @@ class Obj(BaseMesh):
             raise ObjParseUVError
 
     def _parse_face_vertex_normal_uv(self, tokens: list[str]) -> None:
-        """
-        Parse a face line with vertex/uv/normal indices (f v/vt/vn ...).
+        """Parse a face line with vertex/uv/normal indices (f v/vt/vn ...).
 
         Args:
             tokens: List of string tokens from the line.
+
         Raises:
             ObjParseFaceError: If face parsing fails.
         """
@@ -134,11 +132,11 @@ class Obj(BaseMesh):
         self.faces.append(f)
 
     def _parse_face_vertex(self, tokens: list[str]) -> None:
-        """
-        Parse a face line with only vertex indices (f v v v ...).
+        """Parse a face line with only vertex indices (f v v v ...).
 
         Args:
             tokens: List of string tokens from the line.
+
         Raises:
             ObjParseFaceError: If face parsing fails.
         """
@@ -157,11 +155,11 @@ class Obj(BaseMesh):
         self.faces.append(f)
 
     def _parse_face_vertex_normal(self, tokens: list[str]) -> None:
-        """
-        Parse a face line with vertex//normal indices (f v//vn ...).
+        """Parse a face line with vertex//normal indices (f v//vn ...).
 
         Args:
             tokens: List of string tokens from the line.
+
         Raises:
             ObjParseFaceError: If face parsing fails.
         """
@@ -187,11 +185,11 @@ class Obj(BaseMesh):
         self.faces.append(f)
 
     def _parse_face_vertex_uv(self, tokens: list[str]) -> None:
-        """
-        Parse a face line with vertex/uv indices (f v/vt ...).
+        """Parse a face line with vertex/uv indices (f v/vt ...).
 
         Args:
             tokens: List of string tokens from the line.
+
         Raises:
             ObjParseFaceError: If face parsing fails.
         """
@@ -217,8 +215,7 @@ class Obj(BaseMesh):
         self.faces.append(f)
 
     def _parse_face(self, tokens: list[str]) -> None:
-        """
-        Parse a face line, dispatching to the correct face parser based on format.
+        """Parse a face line, dispatching to the correct face parser based on format.
 
         Args:
             tokens: List of string tokens from the line.
@@ -235,8 +232,7 @@ class Obj(BaseMesh):
             self._parse_face_vertex_uv(tokens)
 
     def load(self, file: str) -> bool:
-        """
-        Load an OBJ file and parse its contents into the mesh.
+        """Load an OBJ file and parse its contents into the mesh.
 
         Args:
             file: Path to the OBJ file.
@@ -262,8 +258,7 @@ class Obj(BaseMesh):
 
     @classmethod
     def from_file(cls, fname: str) -> "Obj":
-        """
-        Create an Obj instance from a file.
+        """Create an Obj instance from a file.
 
         Args:
             fname: Path to the OBJ file.
@@ -276,8 +271,7 @@ class Obj(BaseMesh):
         return obj
 
     def add_vertex(self, vertex: Vec3) -> None:
-        """
-        Add a vertex to the mesh.
+        """Add a vertex to the mesh.
 
         Args:
             vertex: The vertex to add.
@@ -285,8 +279,7 @@ class Obj(BaseMesh):
         self.vertex.append(vertex)
 
     def add_vertex_colour(self, vertex: Vec3, colour: Vec3) -> None:
-        """
-        Add a vertex and its color to the mesh.
+        """Add a vertex and its color to the mesh.
 
         Args:
             vertex: The vertex to add.
@@ -298,8 +291,7 @@ class Obj(BaseMesh):
         self.colour.append(colour)
 
     def add_normal(self, normal: Vec3) -> None:
-        """
-        Add a normal to the mesh.
+        """Add a normal to the mesh.
 
         Args:
             normal: The normal to add.
@@ -307,8 +299,7 @@ class Obj(BaseMesh):
         self.normals.append(normal)
 
     def add_uv(self, uv: Vec3) -> None:
-        """
-        Add a UV coordinate to the mesh.
+        """Add a UV coordinate to the mesh.
 
         Args:
             uv: The UV coordinate to add.
@@ -316,8 +307,7 @@ class Obj(BaseMesh):
         self.uv.append(uv)
 
     def add_face(self, face: Face) -> None:
-        """
-        Add a face to the mesh.
+        """Add a face to the mesh.
 
         Args:
             face: The face to add.
@@ -325,8 +315,7 @@ class Obj(BaseMesh):
         self.faces.append(face)
 
     def save(self, filename: str) -> None:
-        """
-        Save the mesh to an OBJ file.
+        """Save the mesh to an OBJ file.
 
         Args:
             filename: Path to the output OBJ file.
@@ -339,8 +328,7 @@ class Obj(BaseMesh):
             self._write_faces(obj_file)
 
     def _write_vertices(self, obj_file) -> None:
-        """
-        Write vertices (and optional colors) to the OBJ file.
+        """Write vertices (and optional colors) to the OBJ file.
 
         Args:
             obj_file: Open file object for writing.
@@ -354,8 +342,7 @@ class Obj(BaseMesh):
             obj_file.write("\n")
 
     def _write_uvs(self, obj_file) -> None:
-        """
-        Write UV coordinates to the OBJ file.
+        """Write UV coordinates to the OBJ file.
 
         Args:
             obj_file: Open file object for writing.
@@ -364,8 +351,7 @@ class Obj(BaseMesh):
             obj_file.write(f"vt {v.x} {v.y} \n")
 
     def _write_normals(self, obj_file) -> None:
-        """
-        Write normals to the OBJ file.
+        """Write normals to the OBJ file.
 
         Args:
             obj_file: Open file object for writing.
@@ -374,8 +360,7 @@ class Obj(BaseMesh):
             obj_file.write(f"vn {v.x} {v.y} {v.z} \n")
 
     def _write_faces(self, obj_file) -> None:
-        """
-        Write faces to the OBJ file.
+        """Write faces to the OBJ file.
 
         Args:
             obj_file: Open file object for writing.
@@ -396,8 +381,7 @@ class Obj(BaseMesh):
 
     @classmethod
     def obj_with_vao(cls, mesh_name: str, texture_name: str = None) -> "Obj":
-        """
-        Load an OBJ mesh and optionally a texture, then create a VAO.
+        """Load an OBJ mesh and optionally a texture, then create a VAO.
 
         Args:
             mesh_name: Path to the OBJ mesh file.

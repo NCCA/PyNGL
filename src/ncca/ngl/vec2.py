@@ -1,5 +1,4 @@
-"""
-Simple float only Vec2 class for 3D graphics, very similar to the pyngl ones
+"""Simple float only Vec2 class for 3D graphics, very similar to the pyngl ones
 NumPy-based implementation with VectorBase inheritance for code reuse.
 """
 
@@ -9,8 +8,7 @@ from .vector_base import VectorBase, _create_properties
 
 
 class Vec2(VectorBase["Vec2"]):
-    """
-    A simple 2D vector class for graphics, using numpy for efficient operations.
+    """A simple 2D vector class for graphics, using numpy for efficient operations.
 
     Attributes:
         x (float): The x-coordinate of the vector.
@@ -24,8 +22,7 @@ class Vec2(VectorBase["Vec2"]):
     __slots__ = ["_data"]
 
     def cross(self, rhs: "Vec2") -> float:
-        """
-        Cross product of two vectors a x b (2D version returns scalar).
+        """Cross product of two vectors a x b (2D version returns scalar).
 
         Args:
             rhs (Vec2): The right-hand side vector to cross product with.
@@ -36,8 +33,7 @@ class Vec2(VectorBase["Vec2"]):
         return self._data[0] * rhs._data[1] - self._data[1] * rhs._data[0]
 
     def reflected(self, n: "Vec2") -> "Vec2":
-        """
-        Return a new vector reflected about a normal.
+        """Return a new vector reflected about a normal.
 
         Args:
             n (Vec2): The normal to reflect about.
@@ -52,8 +48,7 @@ class Vec2(VectorBase["Vec2"]):
         )
 
     def outer(self, rhs: "Vec2"):
-        """
-        Outer product of two vectors a x b.
+        """Outer product of two vectors a x b.
 
         Args:
             rhs (Vec2): The right-hand side vector to outer product with.
@@ -68,8 +63,7 @@ class Vec2(VectorBase["Vec2"]):
         return result
 
     def __matmul__(self, rhs):
-        """
-        Vec2 @ Mat2 matrix multiplication.
+        """Vec2 @ Mat2 matrix multiplication.
 
         Args:
             rhs (Mat2): The matrix to multiply by.
@@ -83,8 +77,7 @@ class Vec2(VectorBase["Vec2"]):
         )
 
     def set(self, *args: float) -> None:
-        """
-        Set the x,y values of the vector.
+        """Set the x,y values of the vector.
 
         Args:
             *args: Component values (x, y).

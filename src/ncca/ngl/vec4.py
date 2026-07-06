@@ -1,5 +1,4 @@
-"""
-Simple Float only Vec4 class for 3D graphics, very similar to the pyngl ones
+"""Simple Float only Vec4 class for 3D graphics, very similar to the pyngl ones
 NumPy-based implementation with VectorBase inheritance for code reuse.
 """
 
@@ -9,8 +8,7 @@ from .vector_base import VectorBase, _create_properties
 
 
 class Vec4(VectorBase["Vec4"]):
-    """
-    A simple 4D vector class for graphics, using numpy for efficient operations.
+    """A simple 4D vector class for graphics, using numpy for efficient operations.
 
     Attributes:
         x (float): The x-coordinate of the vector.
@@ -26,8 +24,7 @@ class Vec4(VectorBase["Vec4"]):
     __slots__ = ["_data"]
 
     def cross(self, rhs: "Vec4") -> "Vec4":
-        """
-        Cross product of two vectors a x b (4D version uses first 3 components).
+        """Cross product of two vectors a x b (4D version uses first 3 components).
 
         Args:
             rhs (Vec4): The right-hand side vector to cross product with.
@@ -42,8 +39,7 @@ class Vec4(VectorBase["Vec4"]):
         return result
 
     def reflected(self, n: "Vec4") -> "Vec4":
-        """
-        Return a new vector reflected about a normal.
+        """Return a new vector reflected about a normal.
 
         Args:
             n (Vec4): The normal to reflect about.
@@ -58,8 +54,7 @@ class Vec4(VectorBase["Vec4"]):
         return result
 
     def outer(self, rhs: "Vec4"):
-        """
-        Outer product of two vectors a x b.
+        """Outer product of two vectors a x b.
 
         Args:
             rhs (Vec4): The right-hand side vector to outer product with.
@@ -74,8 +69,7 @@ class Vec4(VectorBase["Vec4"]):
         return result
 
     def __matmul__(self, rhs):
-        """
-        Vec4 @ Mat4 matrix multiplication.
+        """Vec4 @ Mat4 matrix multiplication.
 
         Args:
             rhs (Mat4): The matrix to multiply by.
@@ -86,8 +80,7 @@ class Vec4(VectorBase["Vec4"]):
         return Vec4(*(self._data @ rhs._data))
 
     def set(self, *args: float) -> None:
-        """
-        Set the x,y,z,w values of the vector.
+        """Set the x,y,z,w values of the vector.
 
         Args:
             *args: Component values (x, y, z, w). w defaults to 1.0 if not provided.

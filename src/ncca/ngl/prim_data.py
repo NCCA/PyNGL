@@ -34,8 +34,7 @@ class Prims(Enum):
 
 
 def _circle_table(n: int) -> np.ndarray:
-    """
-    Generates a table of sine and cosine values for a circle divided into n segments.
+    """Generates a table of sine and cosine values for a circle divided into n segments.
 
     Args:
         n: The number of segments to divide the circle into.
@@ -67,8 +66,7 @@ def _circle_table(n: int) -> np.ndarray:
 class PrimData:
     @staticmethod
     def line_grid(width: float, depth: float, steps: int) -> np.ndarray:
-        """
-        Creates a line grid primitive.
+        """Creates a line grid primitive.
 
         Args:
             width: The width of the grid.
@@ -109,8 +107,7 @@ class PrimData:
     def triangle_plane(
         width: float, depth: float, w_p: int, d_p: int, v_n: Vec3
     ) -> np.ndarray:
-        """
-        Creates a triangle plane primitive.
+        """Creates a triangle plane primitive.
 
         Args:
             width: The width of the plane.
@@ -162,8 +159,7 @@ class PrimData:
 
     @staticmethod
     def sphere(radius: float, precision: int) -> np.ndarray:
-        """
-        Creates a sphere primitive.
+        """Creates a sphere primitive.
 
         Args:
             radius: The radius of the sphere.
@@ -241,8 +237,7 @@ class PrimData:
 
     @staticmethod
     def cone(base: float, height: float, slices: int, stacks: int) -> np.ndarray:
-        """
-        Creates a cone primitive.
+        """Creates a cone primitive.
 
         Args:
             base: The radius of the cone's base.
@@ -412,8 +407,7 @@ class PrimData:
 
     @staticmethod
     def capsule(radius: float, height: float, precision: int) -> np.ndarray:
-        """
-        Creates a capsule primitive.
+        """Creates a capsule primitive.
         The capsule is aligned along the y-axis.
         It is composed of a cylinder and two hemispherical caps.
         based on code from here https://code.google.com/p/rgine/source/browse/trunk/RGine/opengl/src/RGLShapes.cpp
@@ -440,8 +434,7 @@ class PrimData:
 
     @staticmethod
     def cylinder(radius: float, height: float, slices: int, stacks: int) -> np.ndarray:
-        """
-        Creates a cylinder primitive.
+        """Creates a cylinder primitive.
         The cylinder is aligned along the y-axis.
         This method generates the cylinder walls, but not the top and bottom caps.
         """
@@ -494,8 +487,7 @@ class PrimData:
 
     @staticmethod
     def disk(radius: float, slices: int) -> np.ndarray:
-        """
-        Creates a disk primitive.
+        """Creates a disk primitive.
 
         Args:
             radius: The radius of the disk.
@@ -546,8 +538,7 @@ class PrimData:
         sides: int,
         rings: int,
     ) -> np.ndarray:
-        """
-        Creates a torus primitive.
+        """Creates a torus primitive.
 
         Args:
             minor_radius: The minor radius of the torus.

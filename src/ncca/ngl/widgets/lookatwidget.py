@@ -26,10 +26,9 @@ class LookAtWidget(QFrame):
         eye=Vec3(2, 2, 2),
         look=Vec3(0, 0, 0),
     ) -> None:
-        """
-        Args:
-            name: The name of the widget.
-            parent: The parent widget.
+        """Args:
+        name: The name of the widget.
+        parent: The parent widget.
         """
         super().__init__(parent)
         self.setFrameShape(QFrame.Shape.StyledPanel)

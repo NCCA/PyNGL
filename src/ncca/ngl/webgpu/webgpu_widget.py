@@ -9,8 +9,7 @@ from PySide6.QtWidgets import QWidget
 
 
 class QWidgetABCMeta(ABCMeta, type(QWidget)):
-    """
-    A metaclass that combines the functionality of ABCMeta and QWidget's metaclass.
+    """A metaclass that combines the functionality of ABCMeta and QWidget's metaclass.
 
     This allows the creation of abstract base classes that are also QWidgets.
     """
@@ -19,10 +18,10 @@ class QWidgetABCMeta(ABCMeta, type(QWidget)):
 
 
 class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
-    """
-    An abstract base class for WebGPUWidget widgets.
+    """An abstract base class for WebGPUWidget widgets.
 
     This class allows us to generate a simple numpy buffer and render it to the screen.
+
     Attributes:
         initialized (bool): A flag indicating whether the widget has been initialized, default is False and will allow initializeWebGPU to be called once.
     """
@@ -31,8 +30,7 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
         self,
         background_colour: Tuple[float, float, float, float] = (0.4, 0.4, 0.4, 1.0),
     ) -> None:
-        """
-        Initialize the class.
+        """Initialize the class.
 
         Args:
             background_colour: RGBA background color as tuple of floats (0.0-1.0)
@@ -50,8 +48,7 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
         self._initialize_buffer()
 
     def start_update_timer(self, interval_ms: int) -> None:
-        """
-        Starts the update timer with the given interval.
+        """Starts the update timer with the given interval.
 
         Args:
             interval_ms (int): The interval in milliseconds.
@@ -64,14 +61,11 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
 
     @abstractmethod
     def resizeWebGPU(self, w, h) -> None:
-        """
-        Initialize the WebGPU context.
-        """
+        """Initialize the WebGPU context."""
         pass
 
     def resizeEvent(self, event) -> None:
-        """
-        Called whenever the window is resized.
+        """Called whenever the window is resized.
 
         Args:
             event: The resize event object.
@@ -94,8 +88,7 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
 
     @abstractmethod
     def paintWebGPU(self) -> None:
-        """
-        Paint the WebGPU content.
+        """Paint the WebGPU content.
 
         This method must be implemented in subclasses to render the WebGPU content. This will be called on every paint event
         and is where all the main rendering code should be placed.
@@ -103,8 +96,7 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
         pass
 
     def paintEvent(self, event) -> None:
-        """
-        Handle the paint event to render the WebGPU content.
+        """Handle the paint event to render the WebGPU content.
 
         Args:
             event (QPaintEvent): The paint event.
@@ -137,10 +129,7 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
         return super().paintEvent(event)
 
     def _initialize_buffer(self) -> None:
-        """
-        Initialize the numpy buffer for rendering .
-
-        """
+        """Initialize the numpy buffer for rendering ."""
         width = int(self.width() * self.ratio)
         height = int(self.height() * self.ratio)
         self.frame_buffer = np.zeros([height, width, 4], dtype=np.uint8)
@@ -191,8 +180,7 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
         font: str = "Arial",
         colour: QColor = Qt.black,
     ) -> None:
-        """
-        Add text to the buffer to be rendered on the canvas.
+        """Add text to the buffer to be rendered on the canvas.
 
         The size of the text will be scaled based on the window's height.
 
@@ -207,8 +195,7 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
         self.text_buffer.append((x, y, text, size, font, colour))
 
     def _calculate_aligned_row_size(self) -> int:
-        """
-        Calculate the aligned row size for texture copy operations.
+        """Calculate the aligned row size for texture copy operations.
         Many GPUs require row alignment to 256 or 512 bytes.
         """
         bytes_per_pixel = 4  # RGBA8 = 4 bytes per pixel
@@ -221,17 +208,14 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
         return aligned_row_size
 
     def _calculate_aligned_buffer_size(self) -> int:
-        """
-        Calculate the aligned buffer size needed for texture copy operations.
+        """Calculate the aligned buffer size needed for texture copy operations.
         Many GPUs require row alignment to 256 or 512 bytes.
         """
         aligned_row_size = self._calculate_aligned_row_size()
         return aligned_row_size * self.texture_size[1]
 
     def _update_colour_buffer(self) -> None:
-        """
-        Update the colour buffer with the rendered texture data.
-        """
+        """Update the colour buffer with the rendered texture data."""
         # Use the aligned row size calculation
         bytes_per_row = self._calculate_aligned_row_size()
 
@@ -280,8 +264,7 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
                 self.frame_buffer.fill(128)
 
     def _present_image(self, painter, image_data: np.ndarray) -> None:
-        """
-        Present the image data on the canvas.
+        """Present the image data on the canvas.
 
         Args:
             image_data (np.ndarray): The image data to render.
@@ -302,8 +285,7 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
     def _create_render_pass(
         self, command_encoder: wgpu.GPUCommandEncoder
     ) -> wgpu.GPURenderPassEncoder:
-        """
-        Create a render pass with the configured background color.
+        """Create a render pass with the configured background color.
 
         Args:
             command_encoder: WebGPU command encoder

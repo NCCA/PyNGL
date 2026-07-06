@@ -17,6 +17,31 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Strict build to catch docs drift: broken references, bad ::: targets,
+  # missing/orphaned nav entries, and docstring/signature mismatches.
+  # Currently non-blocking (continue-on-error) because of a backlog of
+  # pre-existing griffe docstring warnings. Once those are driven to zero,
+  # remove `continue-on-error` so drift blocks the deploy.
+  docs-strict:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install the project (needed for mkdocstrings API reference)
+        run: uv sync --locked --all-extras --dev
+
+      - name: Install docs dependencies
+        run: uv pip install mkdocs "mkdocstrings[python]"
+
+      - name: Strict docs build
+        run: uv run mkdocs build --strict -f docs/mkdocs.yml
+
   deploy:
     runs-on: ubuntu-latest
     steps:

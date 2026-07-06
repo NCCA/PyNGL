@@ -1,6 +1,5 @@
 #!/usr/bin/env -S uv run --active --script
-"""
-OpenGL pipeline tour demo, mirroring `uv run python -m ncca.ngl.webgpu`.
+"""OpenGL pipeline tour demo, mirroring `uv run python -m ncca.ngl.webgpu`.
 
 Cycles through a series of small scenes every 1.5 seconds, each one built with a
 different combination of techniques from the ncca.ngl.opengl stack: SimpleVAO

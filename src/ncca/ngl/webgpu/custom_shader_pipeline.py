@@ -1,5 +1,4 @@
-"""
-Custom WebGPU pipeline that accepts user-provided shader source files.
+"""Custom WebGPU pipeline that accepts user-provided shader source files.
 Provides flexibility for users to write their own WGSL shaders.
 """
 
@@ -14,8 +13,7 @@ from .webgpu_constants import NGLToWebGPU
 
 
 class CustomShaderPipeline(BaseWebGPUPipeline):
-    """
-    A WebGPU pipeline that uses custom shader source provided by the user.
+    """A WebGPU pipeline that uses custom shader source provided by the user.
 
     This pipeline allows users to provide their own WGSL shader source code
     while handling the boilerplate for buffer management, uniform updates,
@@ -34,8 +32,7 @@ class CustomShaderPipeline(BaseWebGPUPipeline):
         uniform_struct_definition: Optional[str] = None,
         pipeline_label: str = "CustomShaderPipeline",
     ):
-        """
-        Initialize custom shader pipeline.
+        """Initialize custom shader pipeline.
 
         Args:
             device: WebGPU device
@@ -160,8 +157,7 @@ class CustomShaderPipeline(BaseWebGPUPipeline):
         interleaved_data: Optional[np.ndarray] = None,
         **kwargs,
     ) -> None:
-        """
-        Set vertex data for rendering.
+        """Set vertex data for rendering.
 
         Args:
             positions: Vertex position data (N, 3)
@@ -217,8 +213,7 @@ class CustomShaderPipeline(BaseWebGPUPipeline):
                     binding += 1
 
     def update_uniforms(self, **kwargs) -> None:
-        """
-        Update uniform buffer values.
+        """Update uniform buffer values.
 
         Args:
             **kwargs: Uniform values to update (e.g., mvp=matrix, colour=array)
@@ -240,8 +235,7 @@ class CustomShaderPipeline(BaseWebGPUPipeline):
             )
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
-        """
-        Render using this pipeline.
+        """Render using this pipeline.
 
         Args:
             render_pass: Active render pass encoder
@@ -264,8 +258,7 @@ class CustomShaderPipeline(BaseWebGPUPipeline):
     def from_file(
         cls, device: wgpu.GPUDevice, shader_file: str, **kwargs
     ) -> "CustomShaderPipeline":
-        """
-        Create a CustomShaderPipeline from a WGSL file.
+        """Create a CustomShaderPipeline from a WGSL file.
 
         Args:
             device: WebGPU device

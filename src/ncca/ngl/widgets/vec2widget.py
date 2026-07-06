@@ -17,11 +17,10 @@ class Vec2Widget(QFrame):
         name: str = "",
         value: Vec2 = Vec2(0.0, 0.0),
     ) -> None:
-        """
-        Args:
-            name: The name of the widget.
-            value: The initial value of the widget.
-            parent: The parent widget.
+        """Args:
+        name: The name of the widget.
+        value: The initial value of the widget.
+        parent: The parent widget.
         """
         super().__init__(parent)
         self.setFrameShape(QFrame.Shape.StyledPanel)
@@ -55,9 +54,8 @@ class Vec2Widget(QFrame):
         return spinbox
 
     def get_value(self) -> Vec2:
-        """
-        Returns:
-            The current value of the widget.
+        """Returns:
+        The current value of the widget.
         """
         return self._value
 
@@ -90,9 +88,8 @@ class Vec2Widget(QFrame):
         self.valueChanged.emit(self._value)
 
     def get_name(self) -> str:
-        """
-        Returns:
-            The name of the widget.
+        """Returns:
+        The name of the widget.
         """
         return self._name
 

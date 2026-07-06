@@ -1,5 +1,4 @@
-"""
-Simple float only Vec3 class for 3D graphics, very similar to the pyngl ones
+"""Simple float only Vec3 class for 3D graphics, very similar to the pyngl ones
 NumPy-based implementation with VectorBase inheritance for code reuse.
 """
 
@@ -9,8 +8,7 @@ from .vector_base import VectorBase, _create_properties
 
 
 class Vec3(VectorBase["Vec3"]):
-    """
-    A simple 3D vector class for 3D graphics, using numpy for efficient operations.
+    """A simple 3D vector class for 3D graphics, using numpy for efficient operations.
 
     Attributes:
         x (float): The x-coordinate of the vector.
@@ -25,8 +23,7 @@ class Vec3(VectorBase["Vec3"]):
     __slots__ = ["_data"]
 
     def cross(self, rhs: "Vec3") -> "Vec3":
-        """
-        Cross product of two vectors a x b.
+        """Cross product of two vectors a x b.
 
         Args:
             rhs (Vec3): The right-hand side vector to cross product with.
@@ -39,8 +36,7 @@ class Vec3(VectorBase["Vec3"]):
         return result
 
     def reflected(self, n: "Vec3") -> "Vec3":
-        """
-        Return a new vector reflected about a normal.
+        """Return a new vector reflected about a normal.
 
         Args:
             n (Vec3): The normal to reflect about.
@@ -55,8 +51,7 @@ class Vec3(VectorBase["Vec3"]):
         return result
 
     def outer(self, rhs: "Vec3"):
-        """
-        Outer product of two vectors a x b.
+        """Outer product of two vectors a x b.
 
         Args:
             rhs (Vec3): The right-hand side vector to outer product with.
@@ -71,8 +66,7 @@ class Vec3(VectorBase["Vec3"]):
         return result
 
     def __matmul__(self, rhs):
-        """
-        Vec3 @ Mat3 matrix multiplication.
+        """Vec3 @ Mat3 matrix multiplication.
 
         Args:
             rhs (Mat3): The matrix to multiply by.
@@ -85,8 +79,7 @@ class Vec3(VectorBase["Vec3"]):
         return result
 
     def set(self, *args: float) -> None:
-        """
-        Set the x,y,z values of the vector.
+        """Set the x,y,z values of the vector.
 
         Args:
             *args: Component values (x, y, z).

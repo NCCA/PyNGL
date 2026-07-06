@@ -1,5 +1,4 @@
-"""
-OpenGL primitive generation and drawing functions
+"""OpenGL primitive generation and drawing functions
 In this class we can generate a pipeline for drawing our data for the most part it will be
 x,y,z nx,ny,nz and u,v data in a flat numpy array.
 We need to create the data first which is stored in a map as part of the class, we can then call draw
@@ -27,8 +26,7 @@ class _primitive:
         draw_mode: int = gl.GL_TRIANGLES,
         floats_per_vertex: int = 8,
     ):
-        """
-        Initializes the primitive with the given data.
+        """Initializes the primitive with the given data.
 
         Args:
             prim_data: A numpy array containing the vertex data. Surface
@@ -63,8 +61,7 @@ class Primitives:
 
     @classmethod
     def create(cls, type: str, name: str, *args: object, **kwargs: object) -> None:
-        """
-        Creates and stores a primitive object of the specified type from :-
+        """Creates and stores a primitive object of the specified type from :-
         Prims.SPHERE : (radius: float, precision: int).
         Prims.TORUS : (radius: float, tube_radius: float, precision: int).
         Prims.LINE_GRID : (width: float, depth: float, steps: int).
@@ -127,8 +124,7 @@ class Primitives:
 
     @classmethod
     def draw(cls, name: str | Prims) -> None:
-        """
-        Draws the specified primitive.
+        """Draws the specified primitive.
 
         Args:
             name: The name of the primitive to draw, either as a string or a Prims enum.

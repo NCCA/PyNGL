@@ -1,5 +1,4 @@
-"""
-Generic line rendering pipeline for WebGPU.
+"""Generic line rendering pipeline for WebGPU.
 Handles line rendering with customizable color and projection.
 """
 
@@ -26,8 +25,7 @@ class BaseLinePipeline(BaseWebGPUPipeline):
         stride: int = 0,
         topology: wgpu.PrimitiveTopology = wgpu.PrimitiveTopology.line_list,
     ):
-        """
-        Initialize the base line pipeline.
+        """Initialize the base line pipeline.
 
         Args:
             device: WebGPU device
@@ -53,8 +51,7 @@ class BaseLinePipeline(BaseWebGPUPipeline):
 
 
 class LinePipelineMultiColour(BaseLinePipeline):
-    """
-    A reusable pipeline for rendering lines in WebGPU with per-vertex colors.
+    """A reusable pipeline for rendering lines in WebGPU with per-vertex colors.
 
     Features:
     - Line strips or line segments
@@ -73,8 +70,7 @@ class LinePipelineMultiColour(BaseLinePipeline):
         stride: int = 0,
         topology: wgpu.PrimitiveTopology = wgpu.PrimitiveTopology.line_list,
     ):
-        """
-        Initialize the line rendering pipeline.
+        """Initialize the line rendering pipeline.
 
         Args:
             device: WebGPU device
@@ -147,8 +143,7 @@ class LinePipelineMultiColour(BaseLinePipeline):
         return "line_pipeline_multi_coloured"
 
     def set_data(self, positions=None, colors=None, **kwargs) -> None:
-        """
-        Set the line data for rendering.
+        """Set the line data for rendering.
 
         Args:
             positions: Nx2/Nx3 array of line positions or a pre-existing GPUBuffer.
@@ -185,8 +180,7 @@ class LinePipelineMultiColour(BaseLinePipeline):
                     self.color_buffer = None
 
     def update_uniforms(self, **kwargs) -> None:
-        """
-        Update uniform buffer values.
+        """Update uniform buffer values.
 
         Args:
             **kwargs: Pipeline-specific uniform parameters
@@ -200,8 +194,7 @@ class LinePipelineMultiColour(BaseLinePipeline):
         )
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
-        """
-        Render the lines.
+        """Render the lines.
 
         Args:
             render_pass: Active render pass encoder
@@ -232,8 +225,7 @@ class LinePipelineMultiColour(BaseLinePipeline):
 
 
 class LinePipelineSingleColour(BaseLinePipeline):
-    """
-    A reusable pipeline for rendering lines in WebGPU with single color.
+    """A reusable pipeline for rendering lines in WebGPU with single color.
 
     Features:
     - Line strips or line segments
@@ -253,8 +245,7 @@ class LinePipelineSingleColour(BaseLinePipeline):
         topology: wgpu.PrimitiveTopology = wgpu.PrimitiveTopology.line_list,
         colour: Tuple[float, float, float] = (1.0, 1.0, 1.0),
     ):
-        """
-        Initialize line rendering pipeline.
+        """Initialize line rendering pipeline.
 
         Args:
             device: WebGPU device
@@ -319,8 +310,7 @@ class LinePipelineSingleColour(BaseLinePipeline):
         return "line_pipeline_single_colour"
 
     def set_data(self, positions=None, colors=None, **kwargs) -> None:
-        """
-        Set the line data for rendering.
+        """Set the line data for rendering.
 
         Args:
             positions: Nx2/Nx3 array of line positions or a pre-existing GPUBuffer.
@@ -340,8 +330,7 @@ class LinePipelineSingleColour(BaseLinePipeline):
                 self.num_vertices = buffer_size // self._stride
 
     def update_uniforms(self, **kwargs) -> None:
-        """
-        Update uniform buffer values.
+        """Update uniform buffer values.
 
         Args:
             **kwargs: Pipeline-specific uniform parameters
@@ -362,8 +351,7 @@ class LinePipelineSingleColour(BaseLinePipeline):
         )
 
     def set_color(self, colour: Tuple[float, float, float]) -> None:
-        """
-        Set the color for the lines.
+        """Set the color for the lines.
 
         Args:
             colour: RGB color tuple
@@ -377,8 +365,7 @@ class LinePipelineSingleColour(BaseLinePipeline):
             )
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
-        """
-        Render the lines.
+        """Render the lines.
 
         Args:
             render_pass: Active render pass encoder

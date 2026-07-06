@@ -1,5 +1,4 @@
-"""
-Instanced geometry rendering pipeline for WebGPU.
+"""Instanced geometry rendering pipeline for WebGPU.
 Renders multiple instances of the same geometry at different positions with optional per-instance colors.
 """
 
@@ -19,8 +18,7 @@ GEOM_ERROR = "geometry_data is required for instanced geometry pipelines"
 
 
 class BaseInstancedGeometryPipeline(BaseWebGPUPipeline):
-    """
-    Base class for instanced geometry rendering pipelines.
+    """Base class for instanced geometry rendering pipelines.
 
     Provides common functionality for:
     - Instanced rendering of arbitrary geometry
@@ -38,8 +36,7 @@ class BaseInstancedGeometryPipeline(BaseWebGPUPipeline):
         msaa_sample_count: int = 4,
         stride: int = 0,
     ):
-        """
-        Initialize the instanced geometry pipeline.
+        """Initialize the instanced geometry pipeline.
 
         Args:
             device: WebGPU device
@@ -73,10 +70,7 @@ class BaseInstancedGeometryPipeline(BaseWebGPUPipeline):
         return wgpu.PrimitiveTopology.triangle_list
 
     def _get_default_vertex_layouts(self) -> list:
-        """
-        Get default vertex buffer layouts for instanced geometry rendering.
-
-
+        """Get default vertex buffer layouts for instanced geometry rendering.
 
         Returns:
             List of vertex buffer layout configurations
@@ -164,8 +158,7 @@ class BaseInstancedGeometryPipeline(BaseWebGPUPipeline):
 
 
 class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
-    """
-    A reusable pipeline for rendering instanced geometry in WebGPU with per-instance colors.
+    """A reusable pipeline for rendering instanced geometry in WebGPU with per-instance colors.
 
     Features:
     - Instanced rendering of arbitrary geometry using interleaved x,y,z,nx,ny,nz,u,v format
@@ -204,8 +197,7 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
         return "instanced_geometry_pipeline_multi_colour"
 
     def set_data(self, **kwargs) -> None:
-        """
-        Set the instanced geometry data for rendering.
+        """Set the instanced geometry data for rendering.
 
         Args:
             **kwargs: Pipeline-specific data parameters
@@ -318,8 +310,7 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
         return geometry_data
 
     def update_uniforms(self, **kwargs) -> None:
-        """
-        Update uniform buffer values.
+        """Update uniform buffer values.
 
         Args:
             **kwargs: Pipeline-specific uniform parameters
@@ -341,8 +332,7 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
         )
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
-        """
-        Render the instanced geometry.
+        """Render the instanced geometry.
 
         Args:
             render_pass: Active render pass encoder
@@ -394,8 +384,7 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
 
 
 class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
-    """
-    A reusable pipeline for rendering instanced geometry in WebGPU with single color.
+    """A reusable pipeline for rendering instanced geometry in WebGPU with single color.
 
     Features:
     - Instanced rendering of arbitrary geometry using interleaved x,y,z,nx,ny,nz,u,v format
@@ -438,8 +427,7 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
         return "instanced_geometry_pipeline_single_colour"
 
     def set_data(self, **kwargs) -> None:
-        """
-        Set the instanced geometry data for rendering.
+        """Set the instanced geometry data for rendering.
 
         Args:
             **kwargs: Pipeline-specific data parameters
@@ -552,8 +540,7 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
         return geometry_data
 
     def update_uniforms(self, **kwargs) -> None:
-        """
-        Update uniform buffer values.
+        """Update uniform buffer values.
 
         Args:
             **kwargs: Pipeline-specific uniform parameters
@@ -579,8 +566,7 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
         )
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
-        """
-        Render the instanced geometry.
+        """Render the instanced geometry.
 
         Args:
             render_pass: Active render pass encoder

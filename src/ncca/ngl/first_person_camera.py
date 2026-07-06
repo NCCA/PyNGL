@@ -6,8 +6,7 @@ from .vec3 import Vec3
 
 
 class FirstPersonCamera:
-    """
-    A class representing a first-person camera.
+    """A class representing a first-person camera.
 
     This class provides functionality for a first-person camera, including movement,
     rotation, and projection matrix calculation.
@@ -41,8 +40,7 @@ class FirstPersonCamera:
         fov: float,
         persp_mode: PerspMode = PerspMode.OpenGL,
     ) -> None:
-        """
-        Initialize the FirstPersonCamera.
+        """Initialize the FirstPersonCamera.
 
         Args:
             eye (Vec3): The position of the camera.
@@ -90,8 +88,7 @@ class FirstPersonCamera:
     def process_mouse_movement(
         self, diffx: float, diffy: float, _constrain_pitch: bool = True
     ) -> None:
-        """
-        Process mouse movement to update the camera's direction vectors.
+        """Process mouse movement to update the camera's direction vectors.
 
         Args:
             diffx (float): The difference in the x-coordinate of the mouse movement.
@@ -114,9 +111,7 @@ class FirstPersonCamera:
         self._update_camera_vectors()
 
     def _update_camera_vectors(self) -> None:
-        """
-        Update the camera's direction vectors based on the current yaw and pitch angles.
-        """
+        """Update the camera's direction vectors based on the current yaw and pitch angles."""
         pitch = math.radians(self.pitch)
         yaw = math.radians(self.yaw)
         self.front.x = math.cos(yaw) * math.cos(pitch)
@@ -140,8 +135,7 @@ class FirstPersonCamera:
         far: float,
         persp_mode: PerspMode = PerspMode.OpenGL,
     ) -> Mat4:
-        """
-        Set the projection matrix for the camera.
+        """Set the projection matrix for the camera.
 
         Args:
             fov (float): The field of view.
@@ -152,12 +146,10 @@ class FirstPersonCamera:
         Returns:
             Mat4: The projection matrix.
         """
-
         return perspective(fov, aspect, near, far, persp_mode)
 
     def move(self, x: float, y: float, delta: float) -> None:
-        """
-        Move the camera based on input directions.
+        """Move the camera based on input directions.
 
         Args:
             x (float): The movement in the x-direction.
@@ -170,8 +162,7 @@ class FirstPersonCamera:
         self._update_camera_vectors()
 
     def get_vp(self) -> Mat4:
-        """
-        Get the view-projection matrix.
+        """Get the view-projection matrix.
 
         Returns:
             Mat4: The view-projection matrix.
@@ -179,8 +170,7 @@ class FirstPersonCamera:
         return self._projection @ self._view
 
     def process_mouse_scroll(self, y_offset: float) -> None:
-        """
-        Process mouse scroll events.
+        """Process mouse scroll events.
 
         Args:
             _yoffset (float): The scroll offset.

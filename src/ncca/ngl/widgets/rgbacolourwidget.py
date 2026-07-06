@@ -31,14 +31,13 @@ class RGBAColourWidget(QFrame):
         b: float = 1.0,
         a: float = 1.0,
     ) -> None:
-        """
-        Args:
-            name: The name of the widget.
-            r: The initial red component of the colour.
-            g: The initial green component of the colour.
-            b: The initial blue component of the colour.
-            a: The initial alpha component of the colour.
-            parent: The parent widget.
+        """Args:
+        name: The name of the widget.
+        r: The initial red component of the colour.
+        g: The initial green component of the colour.
+        b: The initial blue component of the colour.
+        a: The initial alpha component of the colour.
+        parent: The parent widget.
         """
         super().__init__(parent)
         self.setFrameShape(QFrame.Shape.StyledPanel)
@@ -81,9 +80,8 @@ class RGBAColourWidget(QFrame):
         return spinbox
 
     def colour(self) -> Vec4:
-        """
-        Returns:
-            The current value of the widget.
+        """Returns:
+        The current value of the widget.
         """
         return self._colour
 
@@ -157,9 +155,8 @@ class RGBAColourWidget(QFrame):
             self.set_colour(new_colour)
 
     def name(self) -> str:
-        """
-        Returns:
-            The name of the widget.
+        """Returns:
+        The name of the widget.
         """
         return self._name
 

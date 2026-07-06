@@ -15,8 +15,7 @@ from ..vec4 import Vec4
 
 
 class ShaderProgram:
-    """
-    A wrapper class for OpenGL shader programs.
+    """A wrapper class for OpenGL shader programs.
 
     This class provides functionality to create, link, and manage OpenGL shader programs,
     including automatic uniform and uniform block registration, and convenience methods
@@ -32,8 +31,7 @@ class ShaderProgram:
     """
 
     def __init__(self, name: str, exit_on_error: bool = True) -> None:
-        """
-        Initialize a new shader program.
+        """Initialize a new shader program.
 
         Args:
             name: Name of the shader program for identification
@@ -47,8 +45,7 @@ class ShaderProgram:
         self._registered_uniform_blocks: dict[str, dict] = {}
 
     def attach_shader(self, shader: Shader) -> None:
-        """
-        Attach a shader to this program.
+        """Attach a shader to this program.
 
         Args:
             shader: The Shader object to attach
@@ -57,8 +54,7 @@ class ShaderProgram:
         self._shaders.append(shader)
 
     def link(self) -> bool:
-        """
-        Link the attached shaders to create the final shader program.
+        """Link the attached shaders to create the final shader program.
 
         Returns:
             bool: True if linking succeeded, False otherwise.
@@ -76,8 +72,7 @@ class ShaderProgram:
         return True
 
     def auto_register_uniforms(self) -> None:
-        """
-        Automatically register all active uniforms in the shader program.
+        """Automatically register all active uniforms in the shader program.
 
         This method queries OpenGL for all active uniforms and stores their
         information including location, type, size, and array status.
@@ -132,8 +127,7 @@ class ShaderProgram:
                 )
 
     def auto_register_uniform_blocks(self) -> None:
-        """
-        Automatically register uniform blocks for this shader program.
+        """Automatically register uniform blocks for this shader program.
         This is the Python equivalent of the C++ ShaderProgram::autoRegisterUniformBlocks method.
         """
         # Clear existing uniform blocks
@@ -169,14 +163,11 @@ class ShaderProgram:
             logger.info(f"Uniform Block {name_str} {data['loc']} {data['buffer']}")
 
     def use(self) -> None:
-        """
-        Set this shader program as the current active program.
-        """
+        """Set this shader program as the current active program."""
         gl.glUseProgram(self._id)
 
     def get_id(self) -> int:
-        """
-        Get the OpenGL shader program ID.
+        """Get the OpenGL shader program ID.
 
         Returns:
             int: The OpenGL program ID
@@ -184,8 +175,7 @@ class ShaderProgram:
         return self._id
 
     def get_uniform_location(self, name: str) -> int:
-        """
-        Get the location of a uniform variable.
+        """Get the location of a uniform variable.
 
         Args:
             name: The name of the uniform variable
@@ -200,8 +190,7 @@ class ShaderProgram:
             return -1
 
     def get_uniform_info(self, name: str) -> tuple[int, int, int, bool]:
-        """
-        Get complete uniform info: (location, shader_type, size, is_array).
+        """Get complete uniform info: (location, shader_type, size, is_array).
 
         Args:
             name: The name of the uniform variable
@@ -212,8 +201,7 @@ class ShaderProgram:
         return self._uniforms.get(name, (-1, 0, 0, False))
 
     def is_uniform_array(self, name: str) -> bool:
-        """
-        Check if a uniform is an array.
+        """Check if a uniform is an array.
 
         Args:
             name: The name of the uniform variable
@@ -226,8 +214,7 @@ class ShaderProgram:
         return False
 
     def get_uniform_array_size(self, name: str) -> int:
-        """
-        Get the size of a uniform array, returns 1 for non-arrays.
+        """Get the size of a uniform array, returns 1 for non-arrays.
 
         Args:
             name: The name of the uniform variable
@@ -240,8 +227,7 @@ class ShaderProgram:
         return 0
 
     def set_uniform_buffer(self, uniform_block_name: str, size: int, data) -> bool:
-        """
-        Set uniform buffer data for the specified uniform block.
+        """Set uniform buffer data for the specified uniform block.
         This is the Python equivalent of the C++ ShaderProgram::setUniformBuffer method.
 
         Args:
@@ -281,8 +267,7 @@ class ShaderProgram:
             return False
 
     def set_uniform(self, name: str, *value: Any) -> None:
-        """
-        Set a uniform variable value.
+        """Set a uniform variable value.
 
         This method automatically detects the type of the value and calls the
         appropriate OpenGL uniform function. Supports scalars, vectors, matrices,
@@ -372,8 +357,7 @@ class ShaderProgram:
             func(loc, *value)
 
     def set_uniform_1fv(self, name: str, values: List[float]) -> None:
-        """
-        Set a float array uniform.
+        """Set a float array uniform.
 
         Args:
             name: The name of the uniform variable
@@ -385,8 +369,7 @@ class ShaderProgram:
             gl.glUniform1fv(loc, len(values), (ctypes.c_float * len(values))(*values))
 
     def set_uniform_2fv(self, name: str, values: List[List[float]]) -> None:
-        """
-        Set a vec2 array uniform.
+        """Set a vec2 array uniform.
 
         Args:
             name: The name of the uniform variable
@@ -401,8 +384,7 @@ class ShaderProgram:
             )
 
     def set_uniform_3fv(self, name: str, values: List[List[float]]) -> None:
-        """
-        Set a vec3 array uniform.
+        """Set a vec3 array uniform.
 
         Args:
             name: The name of the uniform variable
@@ -417,8 +399,7 @@ class ShaderProgram:
             )
 
     def set_uniform_4fv(self, name: str, values: List[List[float]]) -> None:
-        """
-        Set a vec4 array uniform.
+        """Set a vec4 array uniform.
 
         Args:
             name: The name of the uniform variable
@@ -433,8 +414,7 @@ class ShaderProgram:
             )
 
     def set_uniform_1iv(self, name: str, values: List[int]) -> None:
-        """
-        Set an int array uniform.
+        """Set an int array uniform.
 
         Args:
             name: The name of the uniform variable
@@ -451,8 +431,7 @@ class ShaderProgram:
         matrices: List[Union[Mat2, List[float]]],
         transpose: bool = False,
     ) -> None:
-        """
-        Set a mat2 array uniform.
+        """Set a mat2 array uniform.
 
         Args:
             name: The name of the uniform variable
@@ -481,8 +460,7 @@ class ShaderProgram:
         matrices: List[Union[Mat3, List[float]]],
         transpose: bool = False,
     ) -> None:
-        """
-        Set a mat3 array uniform.
+        """Set a mat3 array uniform.
 
         Args:
             name: The name of the uniform variable
@@ -511,8 +489,7 @@ class ShaderProgram:
         matrices: List[Union[Mat4, List[float]]],
         transpose: bool = False,
     ) -> None:
-        """
-        Set a mat4 array uniform.
+        """Set a mat4 array uniform.
 
         Args:
             name: The name of the uniform variable
@@ -536,8 +513,7 @@ class ShaderProgram:
             )
 
     def get_uniform_1f(self, name: str) -> float:
-        """
-        Get a single float uniform value.
+        """Get a single float uniform value.
 
         Args:
             name: The name of the uniform variable
@@ -553,8 +529,7 @@ class ShaderProgram:
         return 0.0
 
     def get_uniform_2f(self, name: str) -> List[float]:
-        """
-        Get a vec2 uniform value.
+        """Get a vec2 uniform value.
 
         Args:
             name: The name of the uniform variable
@@ -570,8 +545,7 @@ class ShaderProgram:
         return [0.0, 0.0]
 
     def get_uniform_3f(self, name: str) -> List[float]:
-        """
-        Get a vec3 uniform value.
+        """Get a vec3 uniform value.
 
         Args:
             name: The name of the uniform variable
@@ -587,8 +561,7 @@ class ShaderProgram:
         return [0.0, 0.0, 0.0]
 
     def get_uniform_4f(self, name: str) -> List[float]:
-        """
-        Get a vec4 uniform value.
+        """Get a vec4 uniform value.
 
         Args:
             name: The name of the uniform variable
@@ -604,8 +577,7 @@ class ShaderProgram:
         return [0.0, 0.0, 0.0, 0.0]
 
     def get_uniform_mat2(self, name: str) -> List[float]:
-        """
-        Get a mat2 uniform value.
+        """Get a mat2 uniform value.
 
         Args:
             name: The name of the uniform variable
@@ -621,8 +593,7 @@ class ShaderProgram:
         return [0.0] * 4
 
     def get_uniform_mat3(self, name: str) -> List[float]:
-        """
-        Get a mat3 uniform value.
+        """Get a mat3 uniform value.
 
         Args:
             name: The name of the uniform variable
@@ -638,8 +609,7 @@ class ShaderProgram:
         return [0.0] * 9
 
     def get_uniform_mat4(self, name: str) -> List[float]:
-        """
-        Get a mat4 uniform value.
+        """Get a mat4 uniform value.
 
         Args:
             name: The name of the uniform variable
@@ -655,8 +625,7 @@ class ShaderProgram:
         return [0.0] * 16
 
     def get_uniform_mat4x3(self, name: str) -> List[float]:
-        """
-        Get a mat4x3 uniform value.
+        """Get a mat4x3 uniform value.
 
         Args:
             name: The name of the uniform variable
@@ -672,8 +641,7 @@ class ShaderProgram:
         return [0.0] * 12
 
     def get_uniform_block_data(self, name: str) -> Optional[Dict[str, Any]]:
-        """
-        Get uniform block data by name.
+        """Get uniform block data by name.
 
         Args:
             name: The name of the uniform block
@@ -685,8 +653,7 @@ class ShaderProgram:
         return self._registered_uniform_blocks.get(name, None)
 
     def get_registered_uniform_blocks(self) -> Dict[str, Dict[str, Any]]:
-        """
-        Get all registered uniform blocks.
+        """Get all registered uniform blocks.
 
         Returns:
             A copy of the registered uniform blocks dictionary
@@ -695,8 +662,7 @@ class ShaderProgram:
         return self._registered_uniform_blocks.copy()
 
     def get_uniform_block_location(self, name: str) -> int:
-        """
-        Get uniform block location by name.
+        """Get uniform block location by name.
 
         Args:
             name: The name of the uniform block
@@ -712,8 +678,7 @@ class ShaderProgram:
             return -1
 
     def get_uniform_block_buffer(self, name: str) -> int:
-        """
-        Get uniform block buffer by name.
+        """Get uniform block buffer by name.
 
         Args:
             name: The name of the uniform block
@@ -729,8 +694,7 @@ class ShaderProgram:
             return 0
 
     def get_gl_type_string(self, gl_type: int) -> str:
-        """
-        Convert OpenGL type constant to human-readable string.
+        """Convert OpenGL type constant to human-readable string.
 
         Args:
             gl_type: OpenGL type constant (e.g., GL_FLOAT, GL_FLOAT_VEC3)
@@ -858,9 +822,7 @@ class ShaderProgram:
         return type_map.get(gl_type, f"Unknown type {gl_type}")
 
     def print_registered_uniforms(self) -> None:
-        """
-        Print information about all registered uniforms to the log.
-        """
+        """Print information about all registered uniforms to the log."""
         logger.info(f"Registered uniforms for {self._name}:")
         base_uniforms = {}
         array_elements = {}
@@ -898,17 +860,13 @@ class ShaderProgram:
                 )
 
     def print_registered_uniform_blocks(self) -> None:
-        """
-        Print information about all registered uniform blocks to the log.
-        """
+        """Print information about all registered uniform blocks to the log."""
         logger.info(f"Registered uniform blocks for {self._name}:")
         for name, data in self._registered_uniform_blocks.items():
             logger.info(f"  {name} (index: {data['loc']}, buffer: {data['buffer']})")
 
     def print_properties(self) -> None:
-        """
-        Print detailed properties and status information about this shader program.
-        """
+        """Print detailed properties and status information about this shader program."""
         logger.info(f"Properties for shader program {self._name}:")
         logger.info(f"  ID: {self._id}")
 

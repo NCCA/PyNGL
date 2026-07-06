@@ -10,8 +10,7 @@ from ..log import logger
 
 
 class Face:
-    """
-    Simple face structure for mesh geometry.
+    """Simple face structure for mesh geometry.
     Holds indices for vertices, UVs, and normals.
     """
 
@@ -24,8 +23,7 @@ class Face:
 
 
 class BaseMesh:
-    """
-    Base class for mesh geometry.
+    """Base class for mesh geometry.
     Provides storage for vertices, normals, UVs, faces, and VAO management.
     """
 
@@ -46,8 +44,7 @@ class BaseMesh:
         self.texture: bool = False
 
     def is_triangular(self) -> bool:
-        """
-        Check if all faces in the mesh are triangles.
+        """Check if all faces in the mesh are triangles.
 
         Returns:
             bool: True if all faces are triangles, False otherwise.
@@ -73,16 +70,15 @@ class BaseMesh:
             raise RuntimeError("Can only create VBO from all Triangle data at present")
 
     def create_vao(self, reset_vao: bool = False) -> None:
-        """
-        Create a Vertex Array Object (VAO) for the mesh.
+        """Create a Vertex Array Object (VAO) for the mesh.
         Only supports triangular meshes.
 
         Args:
             reset_vao: If True, will not create a new VAO if one already exists.
+
         Raises:
             RuntimeError: If the mesh is not composed entirely of triangles.
         """
-
         # Handle existing VAO based on reset_vao flag
         if self._should_skip_vao_creation(reset_vao):
             return
@@ -93,9 +89,7 @@ class BaseMesh:
 
         @dataclass
         class VertData:
-            """
-            Structure for a single vertex's data, including position, normal, and UV.
-            """
+            """Structure for a single vertex's data, including position, normal, and UV."""
 
             x: float = 0.0
             y: float = 0.0
@@ -154,8 +148,7 @@ class BaseMesh:
         )
 
     def calc_dimensions(self) -> None:
-        """
-        Calculate the bounding box extents for the mesh.
+        """Calculate the bounding box extents for the mesh.
         Updates min_x, max_x, min_y, max_y, min_z, max_z.
         """
         if not self.vertex:
@@ -172,9 +165,7 @@ class BaseMesh:
             self.max_z = max(self.max_z, v.z)
 
     def draw(self) -> None:
-        """
-        Draw the mesh using its VAO and bound texture (if any).
-        """
+        """Draw the mesh using its VAO and bound texture (if any)."""
         if self.vao:
             if self.texture_id:
                 gl.glBindTexture(gl.GL_TEXTURE_2D, self.texture_id)

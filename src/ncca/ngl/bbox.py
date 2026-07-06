@@ -2,8 +2,7 @@ from .vec3 import Vec3
 
 
 class BBox:
-    """
-    A bounding box class for 3D geometry.
+    """A bounding box class for 3D geometry.
 
     Stores center, dimensions, extents, vertices, and normals for a box.
     Provides methods to recalculate from center/dimensions or from extents.
@@ -16,8 +15,7 @@ class BBox:
         height: float = 2.0,
         depth: float = 2.0,
     ) -> None:
-        """
-        Initialize a bounding box from center and dimensions.
+        """Initialize a bounding box from center and dimensions.
 
         Args:
             center: Center of the bounding box (Vec3)
@@ -49,8 +47,7 @@ class BBox:
         min_z: float,
         max_z: float,
     ) -> "BBox":
-        """
-        Create a bounding box from min/max extents.
+        """Create a bounding box from min/max extents.
 
         Args:
             min_x, max_x, min_y, max_y, min_z, max_z: Box extents
@@ -133,8 +130,7 @@ class BBox:
         return self._max_z
 
     def get_vertex_array(self) -> list[Vec3]:
-        """
-        Get the list of 8 vertices for the bounding box.
+        """Get the list of 8 vertices for the bounding box.
 
         Returns:
             list[Vec3]: The 8 vertices of the box.
@@ -142,8 +138,7 @@ class BBox:
         return self._verts
 
     def get_normal_array(self) -> list[Vec3]:
-        """
-        Get the list of 6 normals for the bounding box faces.
+        """Get the list of 6 normals for the bounding box faces.
 
         Returns:
             list[Vec3]: The 6 normals of the box.
@@ -159,8 +154,7 @@ class BBox:
         min_z: float,
         max_z: float,
     ) -> None:
-        """
-        Set the extents of the bounding box and recalculate center/dimensions.
+        """Set the extents of the bounding box and recalculate center/dimensions.
 
         Args:
             min_x, max_x, min_y, max_y, min_z, max_z: Box extents
@@ -174,9 +168,7 @@ class BBox:
         self.recalculate_from_extents()
 
     def recalculate_from_center_dims(self) -> None:
-        """
-        Recalculate extents and update vertices/normals from center and dimensions.
-        """
+        """Recalculate extents and update vertices/normals from center and dimensions."""
         half_width = self._width / 2.0
         half_height = self._height / 2.0
         half_depth = self._depth / 2.0
@@ -190,9 +182,7 @@ class BBox:
         self._update_verts_and_normals()
 
     def recalculate_from_extents(self) -> None:
-        """
-        Recalculate center and dimensions from extents, then update vertices/normals.
-        """
+        """Recalculate center and dimensions from extents, then update vertices/normals."""
         self._width = self._max_x - self._min_x
         self._height = self._max_y - self._min_y
         self._depth = self._max_z - self._min_z
@@ -204,9 +194,7 @@ class BBox:
         self._update_verts_and_normals()
 
     def _update_verts_and_normals(self) -> None:
-        """
-        Update the 8 vertices and 6 normals of the bounding box based on current extents.
-        """
+        """Update the 8 vertices and 6 normals of the bounding box based on current extents."""
         self._verts[0].set(self._min_x, self._max_y, self._min_z)
         self._verts[1].set(self._max_x, self._max_y, self._min_z)
         self._verts[2].set(self._max_x, self._max_y, self._max_z)

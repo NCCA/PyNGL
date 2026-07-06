@@ -11,9 +11,7 @@ from .shader_program import ShaderProgram
 
 
 class DefaultShader(enum.Enum):
-    """
-    Enum representing the default shaders available in the library.
-    """
+    """Enum representing the default shaders available in the library."""
 
     COLOUR = "nglColourShader"
     TEXT = "nglTextShader"
@@ -22,15 +20,12 @@ class DefaultShader(enum.Enum):
 
 
 class _ShaderLib:
-    """
-    Shader library for managing OpenGL shader programs and shaders.
+    """Shader library for managing OpenGL shader programs and shaders.
     Provides methods to load, compile, link, and use shaders, as well as manage uniforms and uniform blocks.
     """
 
     def __init__(self):
-        """
-        Initialize the shader library with empty registries for shader programs, shaders, and uniform blocks.
-        """
+        """Initialize the shader library with empty registries for shader programs, shaders, and uniform blocks."""
         self._shader_programs: dict[str, ShaderProgram] = {}
         self._shaders: dict[str, Shader] = {}
         self._current_shader: str | None = None
@@ -45,8 +40,7 @@ class _ShaderLib:
         geo: str = None,
         exit_on_error: bool = True,
     ) -> bool:
-        """
-        Load, compile, and link a shader program from vertex, fragment, and optionally geometry shader sources.
+        """Load, compile, and link a shader program from vertex, fragment, and optionally geometry shader sources.
 
         Args:
             name: Name of the shader program.
@@ -101,8 +95,7 @@ class _ShaderLib:
         return True
 
     def use(self, name: str | None) -> None:
-        """
-        Activate the specified shader program by name, or deactivate shaders if name is None.
+        """Activate the specified shader program by name, or deactivate shaders if name is None.
 
         Args:
             name: Name of the shader program to use, or None to clear the current shader.
@@ -127,8 +120,7 @@ class _ShaderLib:
             self._current_shader = None
 
     def get_current_shader_name(self) -> str | None:
-        """
-        Get the name of the currently active shader program.
+        """Get the name of the currently active shader program.
 
         Returns:
             str | None: Name of the current shader, or None if no shader is active.
@@ -136,8 +128,7 @@ class _ShaderLib:
         return self._current_shader
 
     def get_program_id(self, name: str) -> int | None:
-        """
-        Get the OpenGL program ID for a shader program by name.
+        """Get the OpenGL program ID for a shader program by name.
 
         Args:
             name: Name of the shader program.
@@ -150,8 +141,7 @@ class _ShaderLib:
         return None
 
     def create_shader_program(self, name: str, exit_on_error: bool = True) -> None:
-        """
-        Create a new ShaderProgram and register it by name.
+        """Create a new ShaderProgram and register it by name.
 
         Args:
             name: Name of the shader program.
@@ -162,8 +152,7 @@ class _ShaderLib:
     def attach_shader(
         self, name: str, type: ShaderType, exit_on_error: bool = True
     ) -> None:
-        """
-        Create and register a Shader object by name and type.
+        """Create and register a Shader object by name and type.
 
         Args:
             name: Name of the shader.
@@ -173,8 +162,7 @@ class _ShaderLib:
         self._shaders[name] = Shader(name, type.value, exit_on_error)
 
     def load_shader_source(self, name: str, source_file: str) -> None:
-        """
-        Load shader source code from a file into a registered Shader.
+        """Load shader source code from a file into a registered Shader.
 
         Args:
             name: Name of the shader.
@@ -186,8 +174,7 @@ class _ShaderLib:
             logger.error(f"Error: shader {name} not found")
 
     def load_shader_source_from_string(self, name: str, source_string: str) -> None:
-        """
-        Load shader source code from a string into a registered Shader.
+        """Load shader source code from a string into a registered Shader.
 
         Args:
             name: Name of the shader.
@@ -199,8 +186,7 @@ class _ShaderLib:
             logger.error(f"Error: shader {name} not found")
 
     def compile_shader(self, name: str) -> bool:
-        """
-        Compile a registered Shader by name.
+        """Compile a registered Shader by name.
 
         Args:
             name: Name of the shader.
@@ -215,8 +201,7 @@ class _ShaderLib:
             return False
 
     def attach_shader_to_program(self, program_name: str, shader_name: str) -> None:
-        """
-        Attach a registered Shader to a registered ShaderProgram.
+        """Attach a registered Shader to a registered ShaderProgram.
 
         Args:
             program_name: Name of the shader program.
@@ -232,8 +217,7 @@ class _ShaderLib:
             )
 
     def link_program_object(self, name: str) -> bool:
-        """
-        Link a registered ShaderProgram by name.
+        """Link a registered ShaderProgram by name.
 
         Args:
             name: Name of the shader program.
@@ -248,8 +232,7 @@ class _ShaderLib:
             return False
 
     def set_uniform(self, name: str, *value) -> None:
-        """
-        Set a uniform variable in the currently active shader program.
+        """Set a uniform variable in the currently active shader program.
 
         Args:
             name: Name of the uniform variable.
@@ -259,8 +242,7 @@ class _ShaderLib:
             self._shader_programs[self._current_shader].set_uniform(name, *value)
 
     def set_uniform_buffer(self, uniform_block_name: str, size: int, data) -> bool:
-        """
-        Set uniform buffer data for the specified uniform block in the current shader.
+        """Set uniform buffer data for the specified uniform block in the current shader.
 
         Args:
             uniform_block_name: Name of the uniform block.
@@ -279,8 +261,7 @@ class _ShaderLib:
             return False
 
     def get_uniform_1f(self, name: str) -> float:
-        """
-        Get the value of a float uniform variable from the current shader.
+        """Get the value of a float uniform variable from the current shader.
 
         Args:
             name: Name of the uniform variable.
@@ -293,8 +274,7 @@ class _ShaderLib:
         return 0.0
 
     def get_uniform_2f(self, name: str) -> list[float]:
-        """
-        Get the value of a vec2 uniform variable from the current shader.
+        """Get the value of a vec2 uniform variable from the current shader.
 
         Args:
             name: Name of the uniform variable.
@@ -307,8 +287,7 @@ class _ShaderLib:
         return [0.0, 0.0]
 
     def get_uniform_3f(self, name: str) -> list[float]:
-        """
-        Get the value of a vec3 uniform variable from the current shader.
+        """Get the value of a vec3 uniform variable from the current shader.
 
         Args:
             name: Name of the uniform variable.
@@ -321,8 +300,7 @@ class _ShaderLib:
         return [0.0, 0.0, 0.0]
 
     def get_uniform_4f(self, name: str) -> list[float]:
-        """
-        Get the value of a vec4 uniform variable from the current shader.
+        """Get the value of a vec4 uniform variable from the current shader.
 
         Args:
             name: Name of the uniform variable.
@@ -335,8 +313,7 @@ class _ShaderLib:
         return [0.0, 0.0, 0.0, 0.0]
 
     def get_uniform_mat2(self, name: str) -> list[float]:
-        """
-        Get the value of a mat2 uniform variable from the current shader.
+        """Get the value of a mat2 uniform variable from the current shader.
 
         Args:
             name: Name of the uniform variable.
@@ -349,8 +326,7 @@ class _ShaderLib:
         return [0.0] * 4
 
     def get_uniform_mat3(self, name: str) -> list[float]:
-        """
-        Get the value of a mat3 uniform variable from the current shader.
+        """Get the value of a mat3 uniform variable from the current shader.
 
         Args:
             name: Name of the uniform variable.
@@ -363,8 +339,7 @@ class _ShaderLib:
         return [0.0] * 9
 
     def get_uniform_mat4(self, name: str) -> list[float]:
-        """
-        Get the value of a mat4 uniform variable from the current shader.
+        """Get the value of a mat4 uniform variable from the current shader.
 
         Args:
             name: Name of the uniform variable.
@@ -377,8 +352,7 @@ class _ShaderLib:
         return [0.0] * 16
 
     def edit_shader(self, shader_name: str, to_find: str, replace_with: str) -> bool:
-        """
-        Edit the source code of a registered shader by replacing a substring.
+        """Edit the source code of a registered shader by replacing a substring.
 
         Args:
             shader_name: Name of the shader.
@@ -393,8 +367,7 @@ class _ShaderLib:
         return False
 
     def reset_edits(self, shader_name: str) -> None:
-        """
-        Reset any edits made to a registered shader's source code.
+        """Reset any edits made to a registered shader's source code.
 
         Args:
             shader_name: Name of the shader.
@@ -403,9 +376,7 @@ class _ShaderLib:
             self._shaders[shader_name].reset_edits()
 
     def _load_default_shaders(self) -> None:
-        """
-        Load the default shaders from the 'shaders' directory and register them.
-        """
+        """Load the default shaders from the 'shaders' directory and register them."""
         shader_folder = Path(__file__).parent / "shaders"
 
         # Define which default shaders to load and their corresponding files
@@ -443,8 +414,7 @@ class _ShaderLib:
         self._default_shaders_loaded = True
 
     def print_registered_uniforms(self, shader_name: str = None) -> None:
-        """
-        Print the registered uniforms for a shader program.
+        """Print the registered uniforms for a shader program.
 
         Args:
             shader_name: Name of the shader program. If None, uses the current shader.
@@ -458,9 +428,7 @@ class _ShaderLib:
             logger.error(f"Shader '{shader_name}' not found")
 
     def print_properties(self) -> None:
-        """
-        Print properties of the currently active shader program.
-        """
+        """Print properties of the currently active shader program."""
         if self._current_shader in self._shader_programs:
             logger.info(
                 "_______________________________________________________________________________________________________________________"
@@ -481,8 +449,7 @@ class _ShaderLib:
             )
 
     def auto_register_uniform_blocks(self, shader_name: str = None) -> None:
-        """
-        Auto-register uniform blocks for the specified shader program.
+        """Auto-register uniform blocks for the specified shader program.
         If no shader_name is provided, uses the current shader.
 
         Args:
@@ -508,8 +475,7 @@ class _ShaderLib:
         )
 
     def get_uniform_block_data(self, shader_name: str = None, block_name: str = None):
-        """
-        Get uniform block data for the specified shader and block name.
+        """Get uniform block data for the specified shader and block name.
         If shader_name is None, uses current shader.
         If block_name is None, returns all blocks for the shader.
 

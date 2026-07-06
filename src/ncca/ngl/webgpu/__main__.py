@@ -16,8 +16,7 @@ NUM_POINTS = 10000
 
 
 class WebGPUScene(WebGPUWidget):
-    """
-    A concrete implementation of NumpyBufferWidget for a WebGPU scene.
+    """A concrete implementation of NumpyBufferWidget for a WebGPU scene.
 
     This class implements the abstract methods to provide functionality for initializing,
     painting, and resizing the WebGPU context.
@@ -41,8 +40,7 @@ class WebGPUScene(WebGPUWidget):
         self.update()
 
     def _initialize_web_gpu(self) -> None:
-        """
-        Initialize the WebGPU context.
+        """Initialize the WebGPU context.
 
         This method sets up the WebGPU context for the scene.
         """
@@ -355,8 +353,7 @@ class WebGPUScene(WebGPUWidget):
         super()._create_render_buffer()
 
     def paintWebGPU(self) -> None:
-        """
-        Paint WebGPU content.
+        """Paint WebGPU content.
 
         This method renders WebGPU content for the scene.
         """
@@ -394,15 +391,13 @@ class WebGPUScene(WebGPUWidget):
             self.background_colour = original_bg_color
 
     def resizeWebGPU(self, w, h) -> None:
-        """
-        Called whenever the window is resized.
+        """Called whenever the window is resized.
         It's crucial to update the viewport and projection matrix here.
 
         Args:
             w: The new width of the window.
             h: The new height of the window.
         """
-
         # Update texture size to match window dimensions
         self.texture_size = (w, h)
 
@@ -555,9 +550,7 @@ class WebGPUScene(WebGPUWidget):
         pipeline.render(render_pass, num_instances=len(self.instance_positions))
 
     def update_uniform_buffers(self) -> None:
-        """
-        update the uniform buffers for the line pipeline.
-        """
+        """Update the uniform buffers for the line pipeline."""
         rotation = Mat4.rotate_y(self.rotation)
         self.mvp_matrix = (
             (self.project @ self.view @ rotation).to_numpy().astype(np.float32)
@@ -565,8 +558,7 @@ class WebGPUScene(WebGPUWidget):
         self.view_matrix = (self.view @ rotation).to_numpy().astype(np.float32)
 
     def keyPressEvent(self, event) -> None:
-        """
-        Handles keyboard press events.
+        """Handles keyboard press events.
 
         Args:
             event: The QKeyEvent object containing information about the key press.
@@ -610,17 +602,14 @@ class WebGPUScene(WebGPUWidget):
         self.update()
 
     def timerEvent(self, event) -> None:
-        """
-        Handle timer events to update the scene.
-        """
+        """Handle timer events to update the scene."""
         if self.animate:
             self.rotation += 0.5
         self.update()
 
 
 def main():
-    """
-    Main function to run the application.
+    """Main function to run the application.
     Parses command line arguments and initializes the WebGPUScene.
     """
     app = QApplication(sys.argv)

@@ -16,17 +16,14 @@ if TYPE_CHECKING:
 
 
 def clamp(num, low, high):
-    "clamp to range min and max will throw ValueError is low>=high"
+    """Clamp to range min and max will throw ValueError is low>=high"""
     if low > high or low == high:
         raise ValueError
     return max(min(num, high), low)
 
 
 def look_at(eye: "Vec3", look: "Vec3", up: "Vec3") -> Mat4:
-    """
-    Calculate 4x4 matrix for camera lookAt
-    """
-
+    """Calculate 4x4 matrix for camera lookAt"""
     n = look - eye
     u = up
     v = n.cross(u)
@@ -64,8 +61,7 @@ def perspective(
     far: float,
     mode: PerspMode = PerspMode.OpenGL,
 ) -> Mat4:
-    """
-    Calculate a perspective matrix for various 3D graphics API's default mode is OpenGL but will covert for Vulkan and Web GPU if
+    """Calculate a perspective matrix for various 3D graphics API's default mode is OpenGL but will covert for Vulkan and Web GPU if
     required.
 
     Args :
@@ -108,8 +104,7 @@ def ortho(
     far: float,
     mode: PerspMode = PerspMode.OpenGL,
 ) -> Mat4:
-    """
-    Calculate an orthographic projection matrix.
+    """Calculate an orthographic projection matrix.
 
     Args:
         left: Left clipping plane.
@@ -186,8 +181,7 @@ def lerp(a: T, b: T, t: float) -> T:
 
 
 def calc_normal(p1: "Vec3", p2: "Vec3", p3: "Vec3") -> "Vec3":
-    """
-    Calculates the normal of a triangle defined by three points.
+    """Calculates the normal of a triangle defined by three points.
 
     This is a Python implementation of the NGL C++ Util::calcNormal function.
     It uses the vector cross product method for clarity and leverages the py-ngl library.
@@ -225,8 +219,7 @@ def hash_combine(seed, h):
 
 
 def renderman_look_at(eye, look, up):
-    """
-    Calculate 4x4 matrix for RenderMan camera lookAt
+    """Calculate 4x4 matrix for RenderMan camera lookAt
     Accounts for RenderMan's right-handed Y-down, Z-forward coordinate system
 
     Args:
@@ -278,8 +271,7 @@ def renderman_look_at(eye, look, up):
 
 
 def prim_data_to_ri_points_polygons(triangles: np.ndarray):
-    """
-    Convert a packed numpy array of triangles to RenderMan PointsPolygons format.
+    """Convert a packed numpy array of triangles to RenderMan PointsPolygons format.
     This is designed to work with the PrimData class outputs.
     Parameters
     ----------
@@ -287,7 +279,7 @@ def prim_data_to_ri_points_polygons(triangles: np.ndarray):
         Array of shape (n_vertices, 8) where each row is: x, y, z, nx, ny, nz, u, v
         n_vertices must be divisible by 3 (since we have triangles)
 
-    Returns
+    Returns:
     -------
     tuple
         (nvertices, vertices, parameterlist)

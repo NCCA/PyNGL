@@ -1,5 +1,4 @@
-"""
-Abstract base classes for WebGPU rendering pipelines.
+"""Abstract base classes for WebGPU rendering pipelines.
 Provides common functionality for buffer management, pipeline creation, and rendering.
 """
 
@@ -13,8 +12,7 @@ from .webgpu_constants import NGLToWebGPU
 
 
 class BaseWebGPUPipeline(ABC):
-    """
-    Abstract base class for all WebGPU rendering pipelines.
+    """Abstract base class for all WebGPU rendering pipelines.
 
     Provides common functionality for:
     - Buffer management and creation
@@ -32,8 +30,7 @@ class BaseWebGPUPipeline(ABC):
         data_type: str = "Vec3",
         stride: int = 0,
     ):
-        """
-        Initialize base pipeline.
+        """Initialize base pipeline.
 
         Args:
             device: WebGPU device
@@ -150,8 +147,7 @@ class BaseWebGPUPipeline(ABC):
         usage: wgpu.BufferUsage,
         buffer_label: str,
     ) -> Tuple[Optional[wgpu.GPUBuffer], int]:
-        """
-        Create or update a GPU buffer with new data.
+        """Create or update a GPU buffer with new data.
 
         Args:
             current_buffer: Existing buffer (may be None)
@@ -192,8 +188,7 @@ class BaseWebGPUPipeline(ABC):
         padding_size: Optional[int] = None,
         buffer_label: str = "vertex_buffer",
     ) -> Optional[Union[wgpu.GPUBuffer, Tuple[wgpu.GPUBuffer, int]]]:
-        """
-        Process vertex data, handling numpy arrays, GPU buffers, and defaults.
+        """Process vertex data, handling numpy arrays, GPU buffers, and defaults.
 
         Args:
             data: Input data (numpy array, GPU buffer, or None)
@@ -234,8 +229,7 @@ class BaseWebGPUPipeline(ABC):
 
     @abstractmethod
     def set_data(self, **kwargs) -> None:
-        """
-        Set rendering data (vertices, colours, etc.).
+        """Set rendering data (vertices, colours, etc.).
 
         Args:
             **kwargs: Pipeline-specific data parameters
@@ -244,8 +238,7 @@ class BaseWebGPUPipeline(ABC):
 
     @abstractmethod
     def update_uniforms(self, **kwargs) -> None:
-        """
-        Update uniform buffer values.
+        """Update uniform buffer values.
 
         Args:
             **kwargs: Pipeline-specific uniform parameters
@@ -254,8 +247,7 @@ class BaseWebGPUPipeline(ABC):
 
     @abstractmethod
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
-        """
-        Render using this pipeline.
+        """Render using this pipeline.
 
         Args:
             render_pass: Active render pass encoder
@@ -270,8 +262,7 @@ class BaseWebGPUPipeline(ABC):
 
 
 class BasePointPipeline(BaseWebGPUPipeline):
-    """
-    Base class for point rendering pipelines.
+    """Base class for point rendering pipelines.
 
     Provides common functionality for:
     - Point billboarding
@@ -286,8 +277,7 @@ class BasePointPipeline(BaseWebGPUPipeline):
     def _get_default_vertex_layouts(
         self, has_colour_buffer: bool = False
     ) -> List[Dict[str, Any]]:
-        """
-        Get default vertex buffer layouts for point rendering.
+        """Get default vertex buffer layouts for point rendering.
 
         Args:
             has_colour_buffer: Whether to include colour buffer layout
@@ -333,8 +323,7 @@ class BasePointPipeline(BaseWebGPUPipeline):
         colour_buffer: Optional[wgpu.GPUBuffer] = None,
         num_points: Optional[int] = None,
     ) -> None:
-        """
-        Common point rendering implementation.
+        """Common point rendering implementation.
 
         Args:
             render_pass: Active render pass encoder
