@@ -212,4 +212,4 @@ You can use https://github.com/NCCA and https://nccastaff.bournemouth.ac.uk/jmac
 
 - Write using clear, concise English as would be used by an English-speaking professional. Do not use jargon or technical terms unless they are standard in the field. Do not use emojis or other non-standard formatting, including emdashes or other non-standard punctuation.
 
-
+When making changes to the PyNGL codebase, always ensure that you check the documentation and tutorials and ensure any changes you make are reflected in the documentation.
