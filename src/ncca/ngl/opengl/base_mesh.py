@@ -1,3 +1,5 @@
+"""Base classes for loadable/generatable mesh geometry."""
+
 from dataclasses import dataclass
 
 import numpy as np
@@ -11,12 +13,14 @@ from ..log import logger
 
 class Face:
     """Simple face structure for mesh geometry.
+
     Holds indices for vertices, UVs, and normals.
     """
 
     slots = ("vertex", "uv", "normal")
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """Create an empty face."""
         self.vertex: list[int] = []
         self.uv: list[int] = []
         self.normal: list[int] = []
@@ -24,10 +28,12 @@ class Face:
 
 class BaseMesh:
     """Base class for mesh geometry.
+
     Provides storage for vertices, normals, UVs, faces, and VAO management.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """Create an empty mesh."""
         self.vertex: list = []
         self.normals: list = []
         self.uv: list = []
@@ -71,6 +77,7 @@ class BaseMesh:
 
     def create_vao(self, reset_vao: bool = False) -> None:
         """Create a Vertex Array Object (VAO) for the mesh.
+
         Only supports triangular meshes.
 
         Args:
@@ -149,6 +156,7 @@ class BaseMesh:
 
     def calc_dimensions(self) -> None:
         """Calculate the bounding box extents for the mesh.
+
         Updates min_x, max_x, min_y, max_y, min_z, max_z.
         """
         if not self.vertex:

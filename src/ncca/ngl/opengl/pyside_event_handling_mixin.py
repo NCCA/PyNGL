@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Event Handling Mixin for PyNGL Applications
+"""Event Handling Mixin for PyNGL Applications.
 
 This module provides a reusable mixin class that implements common event handling
 patterns used across PyNGL applications, including mouse-based camera control,
@@ -15,6 +15,7 @@ Usage:
 
 import OpenGL.GL as gl
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QKeyEvent, QMouseEvent, QWheelEvent
 
 from ..vec3 import Vec3
 
@@ -81,7 +82,7 @@ class PySideEventHandlingMixin:
         self.spin_y_face = 0
         self.model_position.set(0, 0, 0)
 
-    def keyPressEvent(self, event) -> None:
+    def keyPressEvent(self, event: QKeyEvent) -> None:
         """Handle keyboard press events with common shortcuts.
 
         Shortcuts:
@@ -110,7 +111,7 @@ class PySideEventHandlingMixin:
 
         self.update()
 
-    def mouseMoveEvent(self, event) -> None:
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
         """Handle mouse movement for camera control.
 
         - Left button: Rotate the scene
@@ -147,7 +148,7 @@ class PySideEventHandlingMixin:
 
             self.update()
 
-    def mousePressEvent(self, event) -> None:
+    def mousePressEvent(self, event: QMouseEvent) -> None:
         """Handle mouse button press events to initiate rotation or translation.
 
         - Left button: Start rotation mode
@@ -168,7 +169,7 @@ class PySideEventHandlingMixin:
             self.original_y_pos = position.y()
             self.translate = True
 
-    def mouseReleaseEvent(self, event) -> None:
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         """Handle mouse button release events to stop rotation or translation.
 
         Args:
@@ -179,7 +180,7 @@ class PySideEventHandlingMixin:
         elif event.button() == Qt.RightButton:
             self.translate = False
 
-    def wheelEvent(self, event) -> None:
+    def wheelEvent(self, event: QWheelEvent) -> None:
         """Handle mouse wheel events for zooming.
 
         Zooming is performed by adjusting the Z coordinate of the model position.

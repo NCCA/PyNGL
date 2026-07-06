@@ -14,8 +14,8 @@ from pathlib import Path
 
 import numpy as np
 import OpenGL.GL as gl
-from PySide6.QtCore import Qt, QTimer
-from PySide6.QtGui import QSurfaceFormat
+from PySide6.QtCore import Qt, QTimer, QTimerEvent
+from PySide6.QtGui import QKeyEvent, QSurfaceFormat
 from PySide6.QtOpenGL import QOpenGLWindow
 from PySide6.QtWidgets import QApplication
 
@@ -85,6 +85,7 @@ class OpenGLPipelineDemo(PySideEventHandlingMixin, QOpenGLWindow):
     """Cycles through OpenGL VAO/shader techniques, one scene at a time."""
 
     def __init__(self) -> None:
+        """Set up event handling, window state, and demo stages."""
         super().__init__()
         self.setup_event_handling(
             rotation_sensitivity=0.5,
@@ -104,6 +105,7 @@ class OpenGLPipelineDemo(PySideEventHandlingMixin, QOpenGLWindow):
         self.stage_timer: QTimer | None = None
 
     def initializeGL(self) -> None:
+        """Initialize the GL context, shaders, primitives, and stage list."""
         self.makeCurrent()
         # Qt's own context/surface setup can leave a stale error in the queue
         # before user code runs its first GL call; drain it so PyOpenGL's
@@ -363,6 +365,7 @@ class OpenGLPipelineDemo(PySideEventHandlingMixin, QOpenGLWindow):
             Primitives.draw(name)
 
     def paintGL(self) -> None:
+        """Render the current demo stage."""
         self.makeCurrent()
         gl.glViewport(0, 0, self.window_width, self.window_height)
         label, background, draw_stage = self.stages[self.stage_index]
@@ -395,12 +398,14 @@ class OpenGLPipelineDemo(PySideEventHandlingMixin, QOpenGLWindow):
         )
 
     def resizeGL(self, w: int, h: int) -> None:
+        """Update viewport size, projection matrix, and text screen size."""
         self.window_width = int(w * self.devicePixelRatio())
         self.window_height = int(h * self.devicePixelRatio())
         self.project = perspective(45.0, float(w) / h if h > 0 else 1.0, 0.01, 350.0)
         Text.set_screen_size(self.window_width, self.window_height)
 
-    def timerEvent(self, event) -> None:
+    def timerEvent(self, event: QTimerEvent) -> None:
+        """Advance the rotation animation on each timer tick."""
         if self.animate:
             self.rotation += 0.5
         self.update()
@@ -410,7 +415,8 @@ class OpenGLPipelineDemo(PySideEventHandlingMixin, QOpenGLWindow):
         logger.info(f"Switched to {self.stages[self.stage_index][0]}")
         self.update()
 
-    def keyPressEvent(self, event) -> None:
+    def keyPressEvent(self, event: QKeyEvent) -> None:
+        """Handle demo shortcuts, delegating the rest to the mixin."""
         key = event.key()
         if key == Qt.Key_Space:
             self.animate = not self.animate
@@ -436,11 +442,13 @@ class OpenGLPipelineDemo(PySideEventHandlingMixin, QOpenGLWindow):
 class DebugApplication(QApplication):
     """QApplication that surfaces exceptions raised inside Qt event handlers."""
 
-    def __init__(self, argv):
+    def __init__(self, argv: list[str]) -> None:
+        """Create the application in debug mode."""
         super().__init__(argv)
         logger.info("Running in full debug mode")
 
-    def notify(self, receiver, event):
+    def notify(self, receiver: object, event: object) -> bool:
+        """Dispatch the event, printing any exception before re-raising."""
         try:
             return super().notify(receiver, event)
         except Exception:
@@ -449,6 +457,7 @@ class DebugApplication(QApplication):
 
 
 def main() -> None:
+    """Configure the GL surface format and run the demo application."""
     surface_format = QSurfaceFormat()
     surface_format.setSamples(4)
     surface_format.setMajorVersion(4)

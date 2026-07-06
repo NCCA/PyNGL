@@ -1,3 +1,5 @@
+"""OpenGL-coupled modules for PyNGL: VAOs, shaders, meshes, textures, and text."""
+
 from importlib.metadata import PackageNotFoundError, version
 
 try:

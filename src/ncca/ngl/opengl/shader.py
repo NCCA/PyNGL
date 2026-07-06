@@ -1,3 +1,5 @@
+"""Single OpenGL shader object: loading, compiling, and error checking."""
+
 from __future__ import annotations
 
 from enum import Enum
@@ -28,10 +30,11 @@ class MatrixTranspose(Enum):
 
 class Shader:
     """Class representing an OpenGL shader object.
+
     Handles loading, compiling, and editing shader source code.
     """
 
-    def __init__(self, name: str, type: int, exit_on_error: bool = True):
+    def __init__(self, name: str, type: int, exit_on_error: bool = True) -> None:
         """Initialize a Shader object.
 
         Args:

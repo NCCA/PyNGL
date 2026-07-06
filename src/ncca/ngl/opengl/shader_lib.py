@@ -1,3 +1,5 @@
+"""Singleton registry of named OpenGL shader programs (ShaderLib)."""
+
 from __future__ import annotations
 
 import enum
@@ -21,10 +23,12 @@ class DefaultShader(enum.Enum):
 
 class _ShaderLib:
     """Shader library for managing OpenGL shader programs and shaders.
-    Provides methods to load, compile, link, and use shaders, as well as manage uniforms and uniform blocks.
+
+    Provides methods to load, compile, link, and use shaders, as well as
+    manage uniforms and uniform blocks.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the shader library with empty registries for shader programs, shaders, and uniform blocks."""
         self._shader_programs: dict[str, ShaderProgram] = {}
         self._shaders: dict[str, Shader] = {}
@@ -231,7 +235,7 @@ class _ShaderLib:
             logger.error(f"Error: program {name} not found")
             return False
 
-    def set_uniform(self, name: str, *value) -> None:
+    def set_uniform(self, name: str, *value: object) -> None:
         """Set a uniform variable in the currently active shader program.
 
         Args:
@@ -241,7 +245,9 @@ class _ShaderLib:
         if self._current_shader:
             self._shader_programs[self._current_shader].set_uniform(name, *value)
 
-    def set_uniform_buffer(self, uniform_block_name: str, size: int, data) -> bool:
+    def set_uniform_buffer(
+        self, uniform_block_name: str, size: int, data: object
+    ) -> bool:
         """Set uniform buffer data for the specified uniform block in the current shader.
 
         Args:
@@ -448,8 +454,9 @@ class _ShaderLib:
                 f"Warning no currently active shader to print properties for {self._current_shader} "
             )
 
-    def auto_register_uniform_blocks(self, shader_name: str = None) -> None:
+    def auto_register_uniform_blocks(self, shader_name: str | None = None) -> None:
         """Auto-register uniform blocks for the specified shader program.
+
         If no shader_name is provided, uses the current shader.
 
         Args:
@@ -474,8 +481,11 @@ class _ShaderLib:
             program.get_registered_uniform_blocks()
         )
 
-    def get_uniform_block_data(self, shader_name: str = None, block_name: str = None):
+    def get_uniform_block_data(
+        self, shader_name: str | None = None, block_name: str | None = None
+    ) -> dict | None:
         """Get uniform block data for the specified shader and block name.
+
         If shader_name is None, uses current shader.
         If block_name is None, returns all blocks for the shader.
 

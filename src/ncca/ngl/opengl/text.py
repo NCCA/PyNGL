@@ -53,7 +53,9 @@ class FontAtlas:
     into a single texture. It also stores metadata for each glyph.
     """
 
-    def __init__(self, font_path: str, font_size: int = 48, debug: bool = False):
+    def __init__(
+        self, font_path: str, font_size: int = 48, debug: bool = False
+    ) -> None:
         """Initializes the FontAtlas.
 
         Args:

@@ -1,3 +1,5 @@
+"""Linked OpenGL shader program wrapper with uniform management."""
+
 import ctypes
 from typing import Any, Dict, List, Optional, Union
 
@@ -109,7 +111,9 @@ class ShaderProgram:
                     f"Registered uniform: {base_name} (type: {self.get_gl_type_string(shader_type)}, location: {location})"
                 )
 
-    def _register_array_elements(self, base_name: str, size: int, shader_type) -> None:
+    def _register_array_elements(
+        self, base_name: str, size: int, shader_type: int
+    ) -> None:
         """Register individual elements of an array uniform."""
         for element_idx in range(size):
             element_name = f"{base_name}[{element_idx}]"
@@ -128,6 +132,7 @@ class ShaderProgram:
 
     def auto_register_uniform_blocks(self) -> None:
         """Automatically register uniform blocks for this shader program.
+
         This is the Python equivalent of the C++ ShaderProgram::autoRegisterUniformBlocks method.
         """
         # Clear existing uniform blocks
@@ -226,8 +231,11 @@ class ShaderProgram:
             return self._uniforms[name][2]
         return 0
 
-    def set_uniform_buffer(self, uniform_block_name: str, size: int, data) -> bool:
+    def set_uniform_buffer(
+        self, uniform_block_name: str, size: int, data: object
+    ) -> bool:
         """Set uniform buffer data for the specified uniform block.
+
         This is the Python equivalent of the C++ ShaderProgram::setUniformBuffer method.
 
         Args:
