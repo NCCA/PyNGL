@@ -30,8 +30,10 @@ extend-select = [
     "D",   # pydocstyle: require/validate docstrings
 ]
 ignore = [
-    "D203", # incompatible with D211 (no-blank-line-before-class)
-    "D213", # incompatible with D212 (multi-line-summary-first-line)
+    "D203",   # incompatible with D211 (no-blank-line-before-class)
+    "D213",   # incompatible with D212 (multi-line-summary-first-line)
+    "ANN401", # Any is a deliberate choice at math/shader-uniform bridge points
+              # (e.g. cross-type Vec/Mat operators, GLSL uniform setters)
 ]
 
 [tool.ruff.lint.pydocstyle]

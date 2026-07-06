@@ -25,7 +25,7 @@ jobs:
         run: uv sync --locked --all-extras --dev
 
       - name: Check type annotations and docstrings
-        run: uv run ruff check --select ANN,D src/
+        run: uv run ruff check src/
 
   build:
     name: UV tests

@@ -57,13 +57,15 @@ uv run --with mkdocs --with "mkdocstrings[python]" mkdocs build --strict -f docs
 
 ### Type hints and docstring linting
 
-Ruff enforces type-hint presence (`ANN` rules) and docstring presence/format (`D` rules, Google convention) on `src/` — see `[tool.ruff.lint]` in `pyproject.toml`. Check before committing:
+Ruff enforces type-hint presence (`ANN` rules) and docstring presence/format (`D` rules, Google convention) on `src/` — see `[tool.ruff.lint]` in `pyproject.toml` (`ANN401`/`Any` is deliberately allowed at math/shader-uniform bridge points). Check before committing with the normal lint command — it already picks up these rules from config:
 
 ```bash
-uv run ruff check --select ANN,D src/
+uv run ruff check src/
 ```
 
-This currently reports a backlog (~750 issues: missing type hints and missing docstrings) inherited from before these rules were enabled — it runs in CI as a **non-blocking** `lint-annotations-docstrings` job (see `uv.yml`). Don't add to the backlog: any new or touched function/class must have complete type hints and a Google-style docstring. When the backlog reaches zero, remove `continue-on-error` from that job to make it blocking.
+**Do not** run `ruff check --select ANN,D src/` — an explicit CLI `--select` overrides the config's `ignore` list, which wrongly re-flags the allowed `ANN401` cases.
+
+This currently reports a backlog (missing type hints and missing docstrings, being fixed module-by-module) inherited from before these rules were enabled — it runs in CI as a **non-blocking** `lint-annotations-docstrings` job (see `uv.yml`). Don't add to the backlog: any new or touched function/class must have complete type hints and a Google-style docstring. When the backlog reaches zero, remove `continue-on-error` from that job to make it blocking.
 
 **Always run the whole test suite after making changes, not just the tests for the touched file.**
 

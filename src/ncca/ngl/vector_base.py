@@ -7,7 +7,7 @@ while allowing dimension-specific behavior through abstract methods.
 import ctypes
 import math
 from abc import ABC, abstractmethod
-from typing import Any, ClassVar, Generic, Self, Tuple, TypeVar
+from typing import Any, ClassVar, Generator, Generic, Self, Tuple, TypeVar
 
 import numpy as np
 
@@ -99,7 +99,7 @@ class VectorBase(ABC, Generic[T]):
         """Return the size of the vector in bytes (for OpenGL compatibility)."""
         return cls.DIMENSION * ctypes.sizeof(ctypes.c_float)
 
-    def __iter__(self):
+    def __iter__(self) -> Generator[float, None, None]:
         """Make the vector class iterable.
 
         Yields:
@@ -181,7 +181,7 @@ class VectorBase(ABC, Generic[T]):
         result._data = self._data - rhs._data
         return result
 
-    def __eq__(self, rhs: Any) -> bool:
+    def __eq__(self, rhs: object) -> bool:
         """Vector comparison a==b using numpy.allclose.
 
         Args:
@@ -195,7 +195,7 @@ class VectorBase(ABC, Generic[T]):
             return NotImplemented
         return np.allclose(self._data, rhs._data)
 
-    def __ne__(self, rhs: Any) -> bool:
+    def __ne__(self, rhs: object) -> bool:
         """Vector comparison a!=b using numpy.allclose.
 
         Args:
@@ -510,7 +510,7 @@ class VectorBase(ABC, Generic[T]):
         """
         pass  # pragma: no cover
 
-    def __getattr__(self, name: str):
+    def __getattr__(self, name: str) -> None:
         """Handle access to non-existent attributes.
 
         Args:
@@ -552,11 +552,11 @@ def _create_properties(cls: type) -> None:
         cls: The vector class to add properties to.
     """
 
-    def make_property(index: int):
-        def getter(self):
+    def make_property(index: int) -> property:
+        def getter(self: "VectorBase") -> float:
             return self._data[index]
 
-        def setter(self, value):
+        def setter(self: "VectorBase", value: float) -> None:
             if not isinstance(value, (int, float, np.float32)):
                 raise ValueError("need float or int")
             self._data[index] = float(value)
