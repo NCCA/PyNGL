@@ -1,11 +1,14 @@
 #!/usr/bin/env -S uv run --active --script
+"""Standalone demo app touring the WebGPU rendering pipelines."""
+
 import sys
 import time
 from typing import Tuple
 
 import numpy as np
-from PySide6.QtCore import Qt, QTimer
-from PySide6.QtGui import QColor
+import wgpu
+from PySide6.QtCore import Qt, QTimer, QTimerEvent
+from PySide6.QtGui import QColor, QKeyEvent
 from PySide6.QtWidgets import QApplication
 from wgpu.utils import get_default_device
 
@@ -25,7 +28,12 @@ class WebGPUScene(WebGPUWidget):
     def __init__(
         self,
         background_colour: Tuple[float, float, float, float] = (0.4, 0.4, 0.4, 1.0),
-    ):
+    ) -> None:
+        """Initialize the scene's WebGPU device, pipelines, and view state.
+
+        Args:
+            background_colour: Default RGBA clear colour for the scene.
+        """
         super().__init__(background_colour=background_colour)
         self.setWindowTitle("WebGPU Pipeline Demo - Dynamic Background Colors")
         self.device = None
@@ -227,7 +235,8 @@ class WebGPUScene(WebGPUWidget):
         self.pipeline_timer.timeout.connect(self.switch_pipeline)
         self.pipeline_timer.start(1000)  # Switch every 5 seconds
 
-    def _create_buffers(self, num_points):
+    def _create_buffers(self, num_points: int) -> None:
+        """Create the random point/line/triangle/strip demo geometry buffers."""
         rng = np.random.default_rng(int(time.time()))
         self.colours = rng.random((num_points, 3)).astype(np.float32)
         # Create 3D positions for line rendering with Z elevation
@@ -315,7 +324,7 @@ class WebGPUScene(WebGPUWidget):
         # Create instanced geometry data
         self._create_instanced_geometry_data(rng)
 
-    def _create_instanced_geometry_data(self, rng):
+    def _create_instanced_geometry_data(self, rng: np.random.Generator) -> None:
         """Create data for instanced geometry rendering."""
         # Create geometry using PrimData (in correct interleaved format)
         geometry_data = PrimData.primitive("teapot")
@@ -348,7 +357,7 @@ class WebGPUScene(WebGPUWidget):
         self.instance_positions = np.array(self.instance_positions, dtype=np.float32)
         self.instance_colours = np.array(self.instance_colours, dtype=np.float32)
 
-    def _create_render_buffer(self):
+    def _create_render_buffer(self) -> None:
         """Delegate to parent class method."""
         super()._create_render_buffer()
 
@@ -390,8 +399,9 @@ class WebGPUScene(WebGPUWidget):
             # Restore original background color
             self.background_colour = original_bg_color
 
-    def resizeWebGPU(self, w, h) -> None:
+    def resizeWebGPU(self, w: int, h: int) -> None:
         """Called whenever the window is resized.
+
         It's crucial to update the viewport and projection matrix here.
 
         Args:
@@ -409,8 +419,13 @@ class WebGPUScene(WebGPUWidget):
         self.update()
 
     def _render_pipeline(
-        self, render_pass, positions, colours=None, point_size=None, colour=None
-    ):
+        self,
+        render_pass: wgpu.GPURenderPassEncoder,
+        positions: np.ndarray,
+        colours: np.ndarray | None = None,
+        point_size: float | None = None,
+        colour: np.ndarray | None = None,
+    ) -> None:
         """Generic pipeline rendering method to eliminate code duplication."""
         pipeline = self.pipelines[self.current_pipeline_index][0]
 
@@ -448,68 +463,92 @@ class WebGPUScene(WebGPUWidget):
         else:
             pipeline.update_uniforms(mvp=self.mvp_matrix)
 
-    def _render_multi_colour_point_pipeline(self, render_pass):
+    def _render_multi_colour_point_pipeline(
+        self, render_pass: wgpu.GPURenderPassEncoder
+    ) -> None:
         self._render_pipeline(
             render_pass, self.positions, colours=self.colours, point_size=0.05
         )
 
-    def _render_single_colour_point_pipeline(self, render_pass):
+    def _render_single_colour_point_pipeline(
+        self, render_pass: wgpu.GPURenderPassEncoder
+    ) -> None:
         # Use bright yellow for single colour points
         yellow_color = np.array([1.0, 1.0, 0.0], dtype=np.float32)
         self._render_pipeline(
             render_pass, self.positions, point_size=0.05, colour=yellow_color
         )
 
-    def _render_multi_colour_line_pipeline(self, render_pass):
+    def _render_multi_colour_line_pipeline(
+        self, render_pass: wgpu.GPURenderPassEncoder
+    ) -> None:
         self._render_pipeline(render_pass, self.positions_2d, colours=self.colours)
 
-    def _render_single_colour_line_pipeline(self, render_pass):
+    def _render_single_colour_line_pipeline(
+        self, render_pass: wgpu.GPURenderPassEncoder
+    ) -> None:
         # Use bright magenta for single colour lines
         magenta_color = np.array([1.0, 0.0, 1.0], dtype=np.float32)
         self._render_pipeline(render_pass, self.positions_2d, colour=magenta_color)
 
-    def _render_multi_colour_triangle_pipeline(self, render_pass):
+    def _render_multi_colour_triangle_pipeline(
+        self, render_pass: wgpu.GPURenderPassEncoder
+    ) -> None:
         self._render_pipeline(
             render_pass, self.triangle_positions, colours=self.triangle_colours
         )
 
-    def _render_single_colour_triangle_pipeline(self, render_pass):
+    def _render_single_colour_triangle_pipeline(
+        self, render_pass: wgpu.GPURenderPassEncoder
+    ) -> None:
         # Use a bright orange color for single colour triangles
         orange_color = np.array([1.0, 0.5, 0.0], dtype=np.float32)
         self._render_pipeline(render_pass, self.triangle_positions, colour=orange_color)
 
-    def _render_triangle_list_single_colour_pipeline(self, render_pass):
+    def _render_triangle_list_single_colour_pipeline(
+        self, render_pass: wgpu.GPURenderPassEncoder
+    ) -> None:
         # Use a bright purple color for triangle list single colour
         purple_color = np.array([0.8, 0.2, 0.8], dtype=np.float32)
         self._render_pipeline(render_pass, self.triangle_positions, colour=purple_color)
 
-    def _render_triangle_strip_multi_colour_pipeline(self, render_pass):
+    def _render_triangle_strip_multi_colour_pipeline(
+        self, render_pass: wgpu.GPURenderPassEncoder
+    ) -> None:
         self._render_pipeline(
             render_pass,
             self.triangle_strip_positions,
             colours=self.triangle_strip_colours,
         )
 
-    def _render_triangle_strip_single_colour_pipeline(self, render_pass):
+    def _render_triangle_strip_single_colour_pipeline(
+        self, render_pass: wgpu.GPURenderPassEncoder
+    ) -> None:
         # Use a bright cyan color for triangle strip single colour
         cyan_color = np.array([0.0, 0.8, 0.8], dtype=np.float32)
         self._render_pipeline(
             render_pass, self.triangle_strip_positions, colour=cyan_color
         )
 
-    def _render_point_list_multi_colour_pipeline(self, render_pass):
+    def _render_point_list_multi_colour_pipeline(
+        self, render_pass: wgpu.GPURenderPassEncoder
+    ) -> None:
         self._render_pipeline(
             render_pass, self.positions, colours=self.colours, point_size=5.0
         )
 
-    def _render_point_list_single_colour_pipeline(self, render_pass):
+    def _render_point_list_single_colour_pipeline(
+        self, render_pass: wgpu.GPURenderPassEncoder
+    ) -> None:
         # Use bright lime green for point list single colour
         lime_color = np.array([0.5, 1.0, 0.0], dtype=np.float32)
         self._render_pipeline(
             render_pass, self.positions, point_size=5.0, colour=lime_color
         )
 
-    def _render_multi_colour_instanced_geometry_pipeline(self, render_pass):
+    def _render_multi_colour_instanced_geometry_pipeline(
+        self, render_pass: wgpu.GPURenderPassEncoder
+    ) -> None:
         """Render multi-colour instanced geometry."""
         pipeline = self.pipelines[self.current_pipeline_index][0]
 
@@ -529,7 +568,9 @@ class WebGPUScene(WebGPUWidget):
 
         pipeline.render(render_pass, num_instances=len(self.instance_positions))
 
-    def _render_single_colour_instanced_geometry_pipeline(self, render_pass):
+    def _render_single_colour_instanced_geometry_pipeline(
+        self, render_pass: wgpu.GPURenderPassEncoder
+    ) -> None:
         """Render single-colour instanced geometry."""
         pipeline = self.pipelines[self.current_pipeline_index][0]
 
@@ -557,7 +598,7 @@ class WebGPUScene(WebGPUWidget):
         )
         self.view_matrix = (self.view @ rotation).to_numpy().astype(np.float32)
 
-    def keyPressEvent(self, event) -> None:
+    def keyPressEvent(self, event: QKeyEvent) -> None:
         """Handles keyboard press events.
 
         Args:
@@ -601,17 +642,15 @@ class WebGPUScene(WebGPUWidget):
         print(f"Switched to {self.pipelines[self.current_pipeline_index][2]}")
         self.update()
 
-    def timerEvent(self, event) -> None:
+    def timerEvent(self, event: QTimerEvent) -> None:
         """Handle timer events to update the scene."""
         if self.animate:
             self.rotation += 0.5
         self.update()
 
 
-def main():
-    """Main function to run the application.
-    Parses command line arguments and initializes the WebGPUScene.
-    """
+def main() -> None:
+    """Run the application, parsing arguments and showing the WebGPUScene."""
     app = QApplication(sys.argv)
 
     # Use basic blue background as requested
