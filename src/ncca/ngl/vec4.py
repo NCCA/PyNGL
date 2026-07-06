@@ -1,10 +1,16 @@
-"""Simple Float only Vec4 class for 3D graphics, very similar to the pyngl ones
+"""Simple Float only Vec4 class for 3D graphics, very similar to the pyngl ones.
+
 NumPy-based implementation with VectorBase inheritance for code reuse.
 """
+
+from typing import TYPE_CHECKING
 
 import numpy as np
 
 from .vector_base import VectorBase, _create_properties
+
+if TYPE_CHECKING:
+    from .mat4 import Mat4
 
 
 class Vec4(VectorBase["Vec4"]):
@@ -53,7 +59,7 @@ class Vec4(VectorBase["Vec4"]):
         result._data = self._data - 2.0 * d * n._data
         return result
 
-    def outer(self, rhs: "Vec4"):
+    def outer(self, rhs: "Vec4") -> "Mat4":
         """Outer product of two vectors a x b.
 
         Args:
@@ -68,7 +74,7 @@ class Vec4(VectorBase["Vec4"]):
         result._data = np.outer(self._data, rhs._data).astype(np.float32)
         return result
 
-    def __matmul__(self, rhs):
+    def __matmul__(self, rhs: "Mat4") -> "Vec4":
         """Vec4 @ Mat4 matrix multiplication.
 
         Args:

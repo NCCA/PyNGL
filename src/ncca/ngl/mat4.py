@@ -1,8 +1,12 @@
 """Mat4: 4x4 float32 matrix built on MatrixBase."""
 
 import math
+from typing import TYPE_CHECKING
 
 from .mat_base import MatrixBase, MatrixError  # noqa: F401  (re-export)
+
+if TYPE_CHECKING:
+    from .mat3 import Mat3
 
 
 class Mat4(MatrixBase):
@@ -73,7 +77,7 @@ class Mat4(MatrixBase):
         return a
 
     @classmethod
-    def from_mat3(cls, mat3) -> "Mat4":
+    def from_mat3(cls, mat3: "Mat3") -> "Mat4":
         """Return a Mat4 with the given Mat3 as its upper-left block."""
         result = cls()
         result._data[:3, :3] = mat3._data

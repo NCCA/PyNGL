@@ -1,10 +1,16 @@
-"""Simple float only Vec2 class for 3D graphics, very similar to the pyngl ones
+"""Simple float only Vec2 class for 3D graphics, very similar to the pyngl ones.
+
 NumPy-based implementation with VectorBase inheritance for code reuse.
 """
+
+from typing import TYPE_CHECKING
 
 import numpy as np
 
 from .vector_base import VectorBase, _create_properties
+
+if TYPE_CHECKING:
+    from .mat2 import Mat2
 
 
 class Vec2(VectorBase["Vec2"]):
@@ -47,7 +53,7 @@ class Vec2(VectorBase["Vec2"]):
             self._data[0] - 2.0 * d * n._data[0], self._data[1] - 2.0 * d * n._data[1]
         )
 
-    def outer(self, rhs: "Vec2"):
+    def outer(self, rhs: "Vec2") -> "Mat2":
         """Outer product of two vectors a x b.
 
         Args:
@@ -62,7 +68,7 @@ class Vec2(VectorBase["Vec2"]):
         result._data = np.outer(self._data, rhs._data).astype(np.float32)
         return result
 
-    def __matmul__(self, rhs):
+    def __matmul__(self, rhs: "Mat2") -> "Vec2":
         """Vec2 @ Mat2 matrix multiplication.
 
         Args:

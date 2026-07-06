@@ -6,7 +6,7 @@ via ``m[row][col] = value`` or ``m[row] = [...]``.
 """
 
 import ctypes
-from typing import Any, ClassVar, Self
+from typing import Any, ClassVar, Generator, Self
 
 import numpy as np
 
@@ -236,7 +236,7 @@ class MatrixBase:
         """Return the row count."""
         return self.SIZE
 
-    def __iter__(self):
+    def __iter__(self) -> Generator[float, None, None]:
         """Yield the elements flat, row-major, as floats."""
         for v in self._data.flatten("C"):
             yield float(v)
