@@ -1,4 +1,5 @@
 """Abstract base classes for WebGPU rendering pipelines.
+
 Provides common functionality for buffer management, pipeline creation, and rendering.
 """
 
@@ -29,7 +30,7 @@ class BaseWebGPUPipeline(ABC):
         msaa_sample_count: int = 4,
         data_type: str = "Vec3",
         stride: int = 0,
-    ):
+    ) -> None:
         """Initialize base pipeline.
 
         Args:
@@ -228,7 +229,7 @@ class BaseWebGPUPipeline(ABC):
         return buffer
 
     @abstractmethod
-    def set_data(self, **kwargs) -> None:
+    def set_data(self, **kwargs: Any) -> None:
         """Set rendering data (vertices, colours, etc.).
 
         Args:
@@ -237,7 +238,7 @@ class BaseWebGPUPipeline(ABC):
         pass
 
     @abstractmethod
-    def update_uniforms(self, **kwargs) -> None:
+    def update_uniforms(self, **kwargs: Any) -> None:
         """Update uniform buffer values.
 
         Args:
@@ -246,7 +247,7 @@ class BaseWebGPUPipeline(ABC):
         pass
 
     @abstractmethod
-    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
+    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs: Any) -> None:
         """Render using this pipeline.
 
         Args:

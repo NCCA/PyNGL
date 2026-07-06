@@ -1,8 +1,9 @@
 """Generic point rendering pipeline for WebGPU.
+
 Handles point rendering with customizable size, colour, and projection.
 """
 
-from typing import Optional
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import wgpu
@@ -30,7 +31,7 @@ class PointPipelineMultiColour(BasePointPipeline):
         depth_format: wgpu.TextureFormat = wgpu.TextureFormat.depth24plus,
         msaa_sample_count: int = 4,
         stride: int = 0,
-    ):
+    ) -> None:
         """Initialize the point rendering pipeline.
 
         Args:
@@ -69,7 +70,7 @@ class PointPipelineMultiColour(BasePointPipeline):
         """Get the WGSL shader code for this pipeline."""
         return POINT_SHADER_MULTI_COLOURED
 
-    def _get_vertex_buffer_layouts(self):
+    def _get_vertex_buffer_layouts(self) -> List[Dict[str, Any]]:
         """Get vertex buffer layout configurations for the pipeline."""
         return self._get_default_vertex_layouts(has_colour_buffer=True)
 
@@ -133,7 +134,7 @@ class PointPipelineMultiColour(BasePointPipeline):
             else:
                 self.colour_buffer = None
 
-    def update_uniforms(self, **kwargs) -> None:
+    def update_uniforms(self, **kwargs: Any) -> None:
         """Update uniform buffer values.
 
         Args:
@@ -155,7 +156,7 @@ class PointPipelineMultiColour(BasePointPipeline):
             self.uniform_buffer, 0, self.uniform_data.tobytes()
         )
 
-    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
+    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs: Any) -> None:
         """Render the points.
 
         Args:
@@ -205,7 +206,7 @@ class PointPipelineSingleColour(BasePointPipeline):
         depth_format: wgpu.TextureFormat = wgpu.TextureFormat.depth24plus,
         msaa_sample_count: int = 4,
         stride: int = 0,
-    ):
+    ) -> None:
         """Initialize the point rendering pipeline.
 
         Args:
@@ -242,7 +243,7 @@ class PointPipelineSingleColour(BasePointPipeline):
         """Get the WGSL shader code for this pipeline."""
         return POINT_SHADER_SINGLE_COLOUR
 
-    def _get_vertex_buffer_layouts(self):
+    def _get_vertex_buffer_layouts(self) -> List[Dict[str, Any]]:
         """Get vertex buffer layout configurations for the pipeline."""
         return self._get_default_vertex_layouts(has_colour_buffer=False)
 
@@ -277,7 +278,7 @@ class PointPipelineSingleColour(BasePointPipeline):
                 "point_pipeline_single_colour_position_buffer",
             )
 
-    def update_uniforms(self, **kwargs) -> None:
+    def update_uniforms(self, **kwargs: Any) -> None:
         """Update uniform buffer values.
 
         Args:
@@ -303,7 +304,7 @@ class PointPipelineSingleColour(BasePointPipeline):
             self.uniform_buffer, 0, self.uniform_data.tobytes()
         )
 
-    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
+    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs: Any) -> None:
         """Render the points.
 
         Args:

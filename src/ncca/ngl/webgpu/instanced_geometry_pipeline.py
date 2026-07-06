@@ -1,8 +1,9 @@
 """Instanced geometry rendering pipeline for WebGPU.
+
 Renders multiple instances of the same geometry at different positions with optional per-instance colors.
 """
 
-from typing import Optional
+from typing import Any, Optional
 
 import numpy as np
 import wgpu
@@ -35,7 +36,7 @@ class BaseInstancedGeometryPipeline(BaseWebGPUPipeline):
         depth_format: wgpu.TextureFormat = wgpu.TextureFormat.depth24plus,
         msaa_sample_count: int = 4,
         stride: int = 0,
-    ):
+    ) -> None:
         """Initialize the instanced geometry pipeline.
 
         Args:
@@ -196,7 +197,7 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
         """Get the label for the pipeline."""
         return "instanced_geometry_pipeline_multi_colour"
 
-    def set_data(self, **kwargs) -> None:
+    def set_data(self, **kwargs: Any) -> None:
         """Set the instanced geometry data for rendering.
 
         Args:
@@ -309,7 +310,7 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
 
         return geometry_data
 
-    def update_uniforms(self, **kwargs) -> None:
+    def update_uniforms(self, **kwargs: Any) -> None:
         """Update uniform buffer values.
 
         Args:
@@ -331,7 +332,7 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
             self.uniform_buffer, 0, self.uniform_data.tobytes()
         )
 
-    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
+    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs: Any) -> None:
         """Render the instanced geometry.
 
         Args:
@@ -426,7 +427,7 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
         """Get the label for the pipeline."""
         return "instanced_geometry_pipeline_single_colour"
 
-    def set_data(self, **kwargs) -> None:
+    def set_data(self, **kwargs: Any) -> None:
         """Set the instanced geometry data for rendering.
 
         Args:
@@ -539,7 +540,7 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
 
         return geometry_data
 
-    def update_uniforms(self, **kwargs) -> None:
+    def update_uniforms(self, **kwargs: Any) -> None:
         """Update uniform buffer values.
 
         Args:
@@ -565,7 +566,7 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
             self.uniform_buffer, 0, self.uniform_data.tobytes()
         )
 
-    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
+    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs: Any) -> None:
         """Render the instanced geometry.
 
         Args:

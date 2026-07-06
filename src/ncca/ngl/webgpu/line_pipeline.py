@@ -1,8 +1,9 @@
 """Generic line rendering pipeline for WebGPU.
+
 Handles line rendering with customizable color and projection.
 """
 
-from typing import Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import wgpu
@@ -24,11 +25,12 @@ class BaseLinePipeline(BaseWebGPUPipeline):
         msaa_sample_count: int = 4,
         stride: int = 0,
         topology: wgpu.PrimitiveTopology = wgpu.PrimitiveTopology.line_list,
-    ):
+    ) -> None:
         """Initialize the base line pipeline.
 
         Args:
             device: WebGPU device
+            data_type: NGL vertex data type name (e.g. "Vec3")
             texture_format: Color attachment format
             depth_format: Depth attachment format
             msaa_sample_count: Number of MSAA samples
@@ -69,11 +71,12 @@ class LinePipelineMultiColour(BaseLinePipeline):
         msaa_sample_count: int = 4,
         stride: int = 0,
         topology: wgpu.PrimitiveTopology = wgpu.PrimitiveTopology.line_list,
-    ):
+    ) -> None:
         """Initialize the line rendering pipeline.
 
         Args:
             device: WebGPU device
+            data_type: NGL vertex data type name (e.g. "Vec3")
             texture_format: Color attachment format
             depth_format: Depth attachment format
             msaa_sample_count: Number of MSAA samples
@@ -107,7 +110,7 @@ class LinePipelineMultiColour(BaseLinePipeline):
         """Get the WGSL shader code for this pipeline."""
         return LINE_SHADER_MULTI_COLOURED
 
-    def _get_vertex_buffer_layouts(self):
+    def _get_vertex_buffer_layouts(self) -> List[Dict[str, Any]]:
         """Get vertex buffer layout configurations for the pipeline."""
         return [
             {
@@ -142,12 +145,18 @@ class LinePipelineMultiColour(BaseLinePipeline):
         """Get the label for the pipeline."""
         return "line_pipeline_multi_coloured"
 
-    def set_data(self, positions=None, colors=None, **kwargs) -> None:
+    def set_data(
+        self,
+        positions: np.ndarray | wgpu.GPUBuffer | None = None,
+        colors: np.ndarray | wgpu.GPUBuffer | None = None,
+        **kwargs: Any,
+    ) -> None:
         """Set the line data for rendering.
 
         Args:
             positions: Nx2/Nx3 array of line positions or a pre-existing GPUBuffer.
             colors: Nx3 array of line colors (RGB) or a pre-existing GPUBuffer.
+            **kwargs: Unused, accepted for interface compatibility.
         """
         if positions is not None:
             if isinstance(positions, wgpu.GPUBuffer):
@@ -179,7 +188,7 @@ class LinePipelineMultiColour(BaseLinePipeline):
                 else:
                     self.color_buffer = None
 
-    def update_uniforms(self, **kwargs) -> None:
+    def update_uniforms(self, **kwargs: Any) -> None:
         """Update uniform buffer values.
 
         Args:
@@ -193,7 +202,7 @@ class LinePipelineMultiColour(BaseLinePipeline):
             self.uniform_buffer, 0, self.uniform_data.tobytes()
         )
 
-    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
+    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs: Any) -> None:
         """Render the lines.
 
         Args:
@@ -244,11 +253,12 @@ class LinePipelineSingleColour(BaseLinePipeline):
         stride: int = 0,
         topology: wgpu.PrimitiveTopology = wgpu.PrimitiveTopology.line_list,
         colour: Tuple[float, float, float] = (1.0, 1.0, 1.0),
-    ):
+    ) -> None:
         """Initialize line rendering pipeline.
 
         Args:
             device: WebGPU device
+            data_type: NGL vertex data type name (e.g. "Vec3")
             texture_format: Color attachment format
             depth_format: Depth attachment format
             msaa_sample_count: Number of MSAA samples
@@ -285,7 +295,7 @@ class LinePipelineSingleColour(BaseLinePipeline):
         """Get the WGSL shader code for this pipeline."""
         return LINE_SHADER_SINGLE_COLOUR
 
-    def _get_vertex_buffer_layouts(self):
+    def _get_vertex_buffer_layouts(self) -> List[Dict[str, Any]]:
         """Get vertex buffer layout configurations for the pipeline."""
         return [
             {
@@ -309,12 +319,18 @@ class LinePipelineSingleColour(BaseLinePipeline):
         """Get the label for the pipeline."""
         return "line_pipeline_single_colour"
 
-    def set_data(self, positions=None, colors=None, **kwargs) -> None:
+    def set_data(
+        self,
+        positions: np.ndarray | wgpu.GPUBuffer | None = None,
+        colors: np.ndarray | wgpu.GPUBuffer | None = None,
+        **kwargs: Any,
+    ) -> None:
         """Set the line data for rendering.
 
         Args:
             positions: Nx2/Nx3 array of line positions or a pre-existing GPUBuffer.
             colors: Ignored for single colour pipeline
+            **kwargs: Unused, accepted for interface compatibility.
         """
         if positions is not None:
             if isinstance(positions, wgpu.GPUBuffer):
@@ -329,7 +345,7 @@ class LinePipelineSingleColour(BaseLinePipeline):
                 )
                 self.num_vertices = buffer_size // self._stride
 
-    def update_uniforms(self, **kwargs) -> None:
+    def update_uniforms(self, **kwargs: Any) -> None:
         """Update uniform buffer values.
 
         Args:
@@ -364,7 +380,7 @@ class LinePipelineSingleColour(BaseLinePipeline):
                 self.uniform_buffer, 0, self.uniform_data.tobytes()
             )
 
-    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
+    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs: Any) -> None:
         """Render the lines.
 
         Args:

@@ -1,9 +1,10 @@
 """Custom WebGPU pipeline that accepts user-provided shader source files.
+
 Provides flexibility for users to write their own WGSL shaders.
 """
 
 import os
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import numpy as np
 import wgpu
@@ -31,7 +32,7 @@ class CustomShaderPipeline(BaseWebGPUPipeline):
         msaa_sample_count: int = 4,
         uniform_struct_definition: Optional[str] = None,
         pipeline_label: str = "CustomShaderPipeline",
-    ):
+    ) -> None:
         """Initialize custom shader pipeline.
 
         Args:
@@ -212,7 +213,7 @@ class CustomShaderPipeline(BaseWebGPUPipeline):
                     self.vertex_buffers[binding] = buffer[0]
                     binding += 1
 
-    def update_uniforms(self, **kwargs) -> None:
+    def update_uniforms(self, **kwargs: Any) -> None:
         """Update uniform buffer values.
 
         Args:
@@ -234,7 +235,7 @@ class CustomShaderPipeline(BaseWebGPUPipeline):
                 self.uniform_buffer, 0, self.uniform_data.tobytes()
             )
 
-    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
+    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs: Any) -> None:
         """Render using this pipeline.
 
         Args:
