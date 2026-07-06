@@ -21,26 +21,36 @@ from ..vec3 import Vec3
 class _primitive:
     """A private class to hold VAO data for a primitive."""
 
-    def __init__(self, prim_data: np.ndarray):
+    def __init__(
+        self,
+        prim_data: np.ndarray,
+        draw_mode: int = gl.GL_TRIANGLES,
+        floats_per_vertex: int = 8,
+    ):
         """
         Initializes the primitive with the given data.
 
         Args:
-            prim_data: A numpy array containing the vertex data (x,y,z,nx,ny,nz,u,v).
+            prim_data: A numpy array containing the vertex data. Surface
+                primitives use 8 floats per vertex (x,y,z,nx,ny,nz,u,v);
+                line primitives use 3 (x,y,z).
+            draw_mode: The OpenGL primitive mode to draw with.
+            floats_per_vertex: Number of floats per vertex in prim_data (8 or 3).
         """
-        self.vao = VAOFactory.create_vao(VAOType.SIMPLE, gl.GL_TRIANGLES)
+        self.vao = VAOFactory.create_vao(VAOType.SIMPLE, draw_mode)
         with self.vao:
             data = VertexData(data=prim_data.data, size=prim_data.size)
             self.vao.set_data(data)
-            vert_data_size = 8 * 4  # 4 is sizeof float and 8 is x,y,z,nx,ny,nz,uv
+            vert_data_size = floats_per_vertex * 4  # 4 is sizeof float
             self.vao.set_vertex_attribute_pointer(0, 3, gl.GL_FLOAT, vert_data_size, 0)
-            self.vao.set_vertex_attribute_pointer(
-                1, 3, gl.GL_FLOAT, vert_data_size, Vec3.sizeof()
-            )
-            self.vao.set_vertex_attribute_pointer(
-                2, 2, gl.GL_FLOAT, vert_data_size, 2 * Vec3.sizeof()
-            )
-            self.vao.set_num_indices(prim_data.size // 8)
+            if floats_per_vertex == 8:
+                self.vao.set_vertex_attribute_pointer(
+                    1, 3, gl.GL_FLOAT, vert_data_size, Vec3.sizeof()
+                )
+                self.vao.set_vertex_attribute_pointer(
+                    2, 2, gl.GL_FLOAT, vert_data_size, 2 * Vec3.sizeof()
+                )
+            self.vao.set_num_indices(prim_data.size // floats_per_vertex)
 
 
 class Primitives:
@@ -86,12 +96,20 @@ class Primitives:
             Prims.CAPSULE: PrimData.capsule,
             Prims.CONE: PrimData.cone,
         }
+        # line primitives are position-only GL_LINES data; everything else is
+        # 8-float (position, normal, uv) triangle data
+        prim_layouts = {
+            Prims.LINE_GRID: (gl.GL_LINES, 3),
+        }
         try:
             method = prim_methods[type]
         except KeyError:
             raise ValueError(f"Unknown primitive: {name}")
 
-        cls._primitives[name] = _primitive(method(*args, **kwargs))
+        draw_mode, floats_per_vertex = prim_layouts.get(type, (gl.GL_TRIANGLES, 8))
+        cls._primitives[name] = _primitive(
+            method(*args, **kwargs), draw_mode, floats_per_vertex
+        )
 
     @classmethod
     def load_default_primitives(cls) -> None:
