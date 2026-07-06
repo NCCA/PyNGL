@@ -1,5 +1,7 @@
-"""A simple Quaternion class for use in NCCA Python
-NumPy-based implementation for efficient operations
+"""A simple Quaternion class for use in NCCA Python.
+
+NumPy-based implementation for efficient operations.
+
 Attributes:
     s (float): The scalar part of the quaternion.
     x (float): The x-coordinate of the vector part of the quaternion.
@@ -8,6 +10,7 @@ Attributes:
 """
 
 import math
+from typing import Generator
 
 import numpy as np
 
@@ -16,6 +19,15 @@ from .vec3 import Vec3
 
 
 class Quaternion:
+    """A quaternion for representing and composing 3D rotations.
+
+    Attributes:
+        s (float): The scalar part of the quaternion.
+        x (float): The x-coordinate of the vector part of the quaternion.
+        y (float): The y-coordinate of the vector part of the quaternion.
+        z (float): The z-coordinate of the vector part of the quaternion.
+    """
+
     __slots__ = ("_data",)  # Store as [s, x, y, z]
 
     def __init__(
@@ -93,11 +105,13 @@ class Quaternion:
         return cls(s, x, y, z)
 
     def __add__(self, rhs: "Quaternion") -> "Quaternion":
+        """Quaternion addition a+b, component-wise."""
         result = Quaternion()
         result._data = self._data + rhs._data
         return result
 
     def __sub__(self, rhs: "Quaternion") -> "Quaternion":
+        """Quaternion subtraction a-b, component-wise."""
         result = Quaternion()
         result._data = self._data - rhs._data
         return result
@@ -115,7 +129,7 @@ class Quaternion:
             s1 * z2 + x1 * y2 - y1 * x2 + z1 * s2,
         )
 
-    def __mul__(self, rhs):
+    def __mul__(self, rhs: "float | int | Vec3") -> "Quaternion | Vec3":
         """Scalar scale or Vec3 rotation. Quaternion product uses @."""
         if isinstance(rhs, Quaternion):
             raise TypeError("use q1 @ q2 for the quaternion product")
@@ -149,6 +163,7 @@ class Quaternion:
         raise TypeError(f"cannot multiply Quaternion by {type(rhs)}")
 
     def __rmul__(self, rhs: float) -> "Quaternion":
+        """Scalar scale (right operand)."""
         if isinstance(rhs, (int, float)):
             return self * rhs
         raise TypeError(f"cannot multiply {type(rhs)} by Quaternion")
@@ -198,7 +213,7 @@ class Quaternion:
         return result
 
     def length(self) -> float:
-        """Return the length/magnitude of the quaternion"""
+        """Return the length/magnitude of the quaternion."""
         return float(np.linalg.norm(self._data))
 
     def length_squared(self) -> float:
@@ -206,7 +221,7 @@ class Quaternion:
         return float(np.dot(self._data, self._data))
 
     def conjugate(self) -> "Quaternion":
-        """Return the conjugate of the quaternion (s, -x, -y, -z)"""
+        """Return the conjugate of the quaternion (s, -x, -y, -z)."""
         result = Quaternion()
         result._data = self._data.copy()
         result._data[1:] *= -1  # Negate x, y, z components
@@ -222,7 +237,7 @@ class Quaternion:
         return result
 
     def dot(self, rhs: "Quaternion") -> float:
-        """Dot product of two quaternions"""
+        """Dot product of two quaternions."""
         return float(np.dot(self._data, rhs._data))
 
     def slerp(self, rhs: "Quaternion", t: float) -> "Quaternion":
@@ -269,11 +284,11 @@ class Quaternion:
         return Quaternion(*self._data)
 
     def to_numpy(self) -> np.ndarray:
-        """Return the quaternion as a numpy array [s, x, y, z]"""
+        """Return the quaternion as a numpy array [s, x, y, z]."""
         return self._data.copy()
 
     def to_list(self) -> list[float]:
-        """Return the quaternion as a list [s, x, y, z]"""
+        """Return the quaternion as a list [s, x, y, z]."""
         return self._data.tolist()
 
     def to_tuple(self) -> tuple[float, float, float, float]:
@@ -296,15 +311,18 @@ class Quaternion:
         return cls(*arr)
 
     def __eq__(self, rhs: object) -> bool:
+        """Quaternion comparison a==b using numpy.allclose."""
         if not isinstance(rhs, Quaternion):
             return NotImplemented
         return bool(np.allclose(self._data, rhs._data, rtol=1e-5, atol=1e-6))
 
     def __ne__(self, rhs: object) -> bool:
+        """Quaternion comparison a!=b using numpy.allclose."""
         result = self.__eq__(rhs)
         return result if result is NotImplemented else not result
 
     def __hash__(self) -> int:
+        """Compute hash for use in sets and dictionaries."""
         from .util import hash_combine
 
         seed = 0
@@ -313,26 +331,32 @@ class Quaternion:
         return seed
 
     def __len__(self) -> int:
+        """Return the number of components (always 4)."""
         return 4
 
-    def __iter__(self):
+    def __iter__(self) -> Generator[float, None, None]:
+        """Yield the components in order (s, x, y, z)."""
         return iter(self._data.tolist())
 
     def __repr__(self) -> str:
+        """Eval-able representation, e.g. Quaternion(1.0, 0.0, 0.0, 0.0)."""
         args = ", ".join(repr(float(v)) for v in self._data)
         return f"Quaternion({args})"
 
     def __str__(self) -> str:
+        """Pretty representation, e.g. Quaternion(1.0, [0.0, 0.0, 0.0])."""
         s, x, y, z = (float(v) for v in self._data)
         return f"Quaternion({s}, [{x}, {y}, {z}])"
 
 
 # Helper function to create properties
-def _create_property(index):
-    def getter(self):
+def _create_property(index: int) -> property:
+    """Create a property that reads/writes a single component by index."""
+
+    def getter(self: Quaternion) -> float:
         return self._data[index]
 
-    def setter(self, value):
+    def setter(self: Quaternion, value: float) -> None:
         if not isinstance(value, (int, float, np.float32)):
             raise ValueError("need float or int")
         self._data[index] = value
