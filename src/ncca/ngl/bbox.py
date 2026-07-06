@@ -1,3 +1,5 @@
+"""Axis-aligned bounding box geometry for 3D graphics."""
+
 from .vec3 import Vec3
 
 
@@ -50,7 +52,12 @@ class BBox:
         """Create a bounding box from min/max extents.
 
         Args:
-            min_x, max_x, min_y, max_y, min_z, max_z: Box extents
+            min_x: Minimum x extent.
+            max_x: Maximum x extent.
+            min_y: Minimum y extent.
+            max_y: Maximum y extent.
+            min_z: Minimum z extent.
+            max_z: Maximum z extent.
 
         Returns:
             BBox: The constructed bounding box
@@ -157,7 +164,12 @@ class BBox:
         """Set the extents of the bounding box and recalculate center/dimensions.
 
         Args:
-            min_x, max_x, min_y, max_y, min_z, max_z: Box extents
+            min_x: Minimum x extent.
+            max_x: Maximum x extent.
+            min_y: Minimum y extent.
+            max_y: Maximum y extent.
+            min_z: Minimum z extent.
+            max_z: Maximum z extent.
         """
         self._min_x = min_x
         self._max_x = max_x
