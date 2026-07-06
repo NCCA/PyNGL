@@ -112,8 +112,8 @@ class PointListPipelineMultiColour(BaseWebGPUPipeline):
 
     def set_data(
         self,
-        positions,
-        colours=None,
+        positions: np.ndarray | wgpu.GPUBuffer,
+        colours: np.ndarray | wgpu.GPUBuffer | None = None,
     ) -> None:
         """Set the point data for rendering.
 
@@ -285,7 +285,11 @@ class PointListPipelineSingleColour(BaseWebGPUPipeline):
         """Get the label for the pipeline."""
         return "point_list_pipeline_single_colour"
 
-    def set_data(self, positions, colours=None) -> None:
+    def set_data(
+        self,
+        positions: np.ndarray | wgpu.GPUBuffer,
+        colours: np.ndarray | wgpu.GPUBuffer | None = None,
+    ) -> None:
         """Set the point data for rendering.
 
         Args:

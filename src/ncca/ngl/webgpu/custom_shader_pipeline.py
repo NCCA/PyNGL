@@ -156,7 +156,7 @@ class CustomShaderPipeline(BaseWebGPUPipeline):
         positions: Optional[np.ndarray] = None,
         colours: Optional[np.ndarray] = None,
         interleaved_data: Optional[np.ndarray] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         """Set vertex data for rendering.
 
@@ -257,7 +257,7 @@ class CustomShaderPipeline(BaseWebGPUPipeline):
 
     @classmethod
     def from_file(
-        cls, device: wgpu.GPUDevice, shader_file: str, **kwargs
+        cls, device: wgpu.GPUDevice, shader_file: str, **kwargs: Any
     ) -> "CustomShaderPipeline":
         """Create a CustomShaderPipeline from a WGSL file.
 

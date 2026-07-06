@@ -1,10 +1,12 @@
-"""Extensible factory for WebGPU pipelines It will create several default pipelines used in demos
-and allow the user to create custom pipelines.
-Provides abstract base class and factory for creating various pipeline types.
+"""Extensible factory for WebGPU pipelines.
+
+It will create several default pipelines used in demos and allow the user
+to create custom pipelines. Provides abstract base class and factory for
+creating various pipeline types.
 """
 
 from enum import Enum
-from typing import Dict, Type
+from typing import Any, Dict, Type
 
 import wgpu
 
@@ -48,7 +50,7 @@ BasePipeline = BaseWebGPUPipeline
 class _PipelineFactory:
     """Factory for creating pipeline instances with various configurations."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the pipeline factory with default pipeline types."""
         self._pipeline_registry: Dict[PipelineType, Type[BasePipeline]] = {}
         self.register_pipeline(
@@ -72,19 +74,31 @@ class _PipelineFactory:
 
         # Create wrapper classes for specific topology types
         class TriangleListMultiColour(TrianglePipelineMultiColour):
-            def __init__(self, device):
+            """Multi-colour triangle pipeline fixed to triangle_list topology."""
+
+            def __init__(self, device: wgpu.GPUDevice) -> None:
+                """Create the pipeline with triangle_list topology."""
                 super().__init__(device, topology=wgpu.PrimitiveTopology.triangle_list)
 
         class TriangleListSingleColour(TrianglePipelineSingleColour):
-            def __init__(self, device):
+            """Single-colour triangle pipeline fixed to triangle_list topology."""
+
+            def __init__(self, device: wgpu.GPUDevice) -> None:
+                """Create the pipeline with triangle_list topology."""
                 super().__init__(device, topology=wgpu.PrimitiveTopology.triangle_list)
 
         class TriangleStripMultiColour(TrianglePipelineMultiColour):
-            def __init__(self, device):
+            """Multi-colour triangle pipeline fixed to triangle_strip topology."""
+
+            def __init__(self, device: wgpu.GPUDevice) -> None:
+                """Create the pipeline with triangle_strip topology."""
                 super().__init__(device, topology=wgpu.PrimitiveTopology.triangle_strip)
 
         class TriangleStripSingleColour(TrianglePipelineSingleColour):
-            def __init__(self, device):
+            """Single-colour triangle pipeline fixed to triangle_strip topology."""
+
+            def __init__(self, device: wgpu.GPUDevice) -> None:
+                """Create the pipeline with triangle_strip topology."""
                 super().__init__(device, topology=wgpu.PrimitiveTopology.triangle_strip)
 
         self.register_pipeline(
@@ -153,7 +167,7 @@ class _PipelineFactory:
         self._pipeline_registry[pipeline_type] = pipeline_class
 
     def create_pipeline(
-        self, device: wgpu.GPUDevice, pipeline_type: PipelineType, **kwargs
+        self, device: wgpu.GPUDevice, pipeline_type: PipelineType, **kwargs: Any
     ) -> BaseWebGPUPipeline:
         """Create a pipeline instance.
 

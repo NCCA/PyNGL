@@ -1,3 +1,5 @@
+"""Constants and type mappings between NGL data types and WebGPU formats."""
+
 import numpy as np
 
 
@@ -5,6 +7,8 @@ FLOAT_SIZE = np.dtype(np.float32).itemsize
 
 
 class NGLToWebGPU:
+    """Maps NGL type names to WebGPU strides and vertex formats."""
+
     _strides = {
         "vec2": 2 * FLOAT_SIZE,
         "vec3": 3 * FLOAT_SIZE,
@@ -20,9 +24,11 @@ class NGLToWebGPU:
     }
 
     @staticmethod
-    def stride_from_type(type: str):
+    def stride_from_type(type: str) -> int:
+        """Return the byte stride for the given NGL type name."""
         return NGLToWebGPU._strides[type.lower()]
 
     @staticmethod
-    def vertex_format(type: str):
+    def vertex_format(type: str) -> str:
+        """Return the WebGPU vertex format for the given NGL type name."""
         return NGLToWebGPU._vertex_format[type.lower()]

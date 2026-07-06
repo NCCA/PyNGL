@@ -1,10 +1,12 @@
+"""Qt widget base class hosting a WebGPU rendering surface."""
+
 from abc import ABCMeta, abstractmethod
 from typing import List, Tuple
 
 import numpy as np
 import wgpu
 from PySide6.QtCore import QRect, Qt, QTimer
-from PySide6.QtGui import QColor, QFont, QImage, QPainter
+from PySide6.QtGui import QColor, QFont, QImage, QPainter, QPaintEvent, QResizeEvent
 from PySide6.QtWidgets import QWidget
 
 
@@ -60,11 +62,11 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
         self._update_timer.stop()
 
     @abstractmethod
-    def resizeWebGPU(self, w, h) -> None:
+    def resizeWebGPU(self, w: int, h: int) -> None:
         """Initialize the WebGPU context."""
         pass
 
-    def resizeEvent(self, event) -> None:
+    def resizeEvent(self, event: QResizeEvent) -> None:
         """Called whenever the window is resized.
 
         Args:
@@ -95,7 +97,7 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
         """
         pass
 
-    def paintEvent(self, event) -> None:
+    def paintEvent(self, event: QPaintEvent) -> None:
         """Handle the paint event to render the WebGPU content.
 
         Args:
@@ -135,7 +137,8 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
         self.frame_buffer = np.zeros([height, width, 4], dtype=np.uint8)
         self.texture_size = (width, height)
 
-    def _create_render_buffer(self):
+    def _create_render_buffer(self) -> None:
+        """Create the colour, MSAA, and depth textures for the render target."""
         # This is the texture that the multisampled texture will be resolved to
         colour_buffer_texture = self.device.create_texture(
             size=self.texture_size,
@@ -196,6 +199,7 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
 
     def _calculate_aligned_row_size(self) -> int:
         """Calculate the aligned row size for texture copy operations.
+
         Many GPUs require row alignment to 256 or 512 bytes.
         """
         bytes_per_pixel = 4  # RGBA8 = 4 bytes per pixel
@@ -209,6 +213,7 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
 
     def _calculate_aligned_buffer_size(self) -> int:
         """Calculate the aligned buffer size needed for texture copy operations.
+
         Many GPUs require row alignment to 256 or 512 bytes.
         """
         aligned_row_size = self._calculate_aligned_row_size()
@@ -263,10 +268,11 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
             if self.frame_buffer is not None:
                 self.frame_buffer.fill(128)
 
-    def _present_image(self, painter, image_data: np.ndarray) -> None:
+    def _present_image(self, painter: QPainter, image_data: np.ndarray) -> None:
         """Present the image data on the canvas.
 
         Args:
+            painter (QPainter): The active painter to draw the image with.
             image_data (np.ndarray): The image data to render.
         """
         height, width, _ = image_data.shape

@@ -36,6 +36,7 @@ class PointPipelineMultiColour(BasePointPipeline):
 
         Args:
             device: WebGPU device
+            data_type: NGL vertex data type name (e.g. "Vec3")
             texture_format: colour attachment format
             depth_format: Depth attachment format
             msaa_sample_count: Number of MSAA samples
@@ -83,7 +84,11 @@ class PointPipelineMultiColour(BasePointPipeline):
         """Get the label for the pipeline."""
         return "point_pipeline_multi_coloured"
 
-    def set_data(self, positions, colours=None) -> None:
+    def set_data(
+        self,
+        positions: np.ndarray | wgpu.GPUBuffer,
+        colours: np.ndarray | wgpu.GPUBuffer | None = None,
+    ) -> None:
         """Set the point data for rendering.
 
         Args:
@@ -211,6 +216,7 @@ class PointPipelineSingleColour(BasePointPipeline):
 
         Args:
             device: WebGPU device
+            data_type: NGL vertex data type name (e.g. "Vec3")
             texture_format: colour attachment format
             depth_format: Depth attachment format
             msaa_sample_count: Number of MSAA samples
@@ -258,7 +264,11 @@ class PointPipelineSingleColour(BasePointPipeline):
         """Get the label for the pipeline."""
         return "point_pipeline_single_colour"
 
-    def set_data(self, positions, colours=None) -> None:
+    def set_data(
+        self,
+        positions: np.ndarray | wgpu.GPUBuffer,
+        colours: np.ndarray | wgpu.GPUBuffer | None = None,
+    ) -> None:
         """Set the point data for rendering.
 
         Args:
