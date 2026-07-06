@@ -1,6 +1,7 @@
 """Tests for the wiki staleness checker (wiki/tools/check_sync.py)."""
 
 import importlib.util
+import subprocess
 import sys
 from pathlib import Path
 
@@ -65,3 +66,78 @@ class TestGlobToRegex:
     )
     def test_matching(self, pattern, path, matches):
         assert bool(check_sync.glob_to_regex(pattern).match(path)) is matches
+
+
+def _git(repo: Path, *args: str) -> str:
+    return subprocess.run(
+        ["git", "-C", str(repo), *args], capture_output=True, text=True, check=True
+    ).stdout
+
+
+@pytest.fixture
+def wiki_repo(tmp_path):
+    """A temp git repo with one src file and one fresh wiki page."""
+    _git(tmp_path, "init", "-b", "main")
+    _git(tmp_path, "config", "user.email", "test@example.com")
+    _git(tmp_path, "config", "user.name", "Test")
+    src = tmp_path / "src" / "ncca" / "ngl"
+    src.mkdir(parents=True)
+    (src / "vec3.py").write_text("x = 1\n")
+    _git(tmp_path, "add", ".")
+    _git(tmp_path, "commit", "-m", "initial")
+    head = _git(tmp_path, "rev-parse", "HEAD").strip()
+    wiki = tmp_path / "wiki" / "modules"
+    wiki.mkdir(parents=True)
+    (wiki / "math.md").write_text(
+        f"---\nsources:\n  - src/ncca/ngl/vec*.py\nsynced: {head}\n---\n# Math\n"
+    )
+    _git(tmp_path, "add", ".")
+    _git(tmp_path, "commit", "-m", "add wiki page")
+    return tmp_path
+
+
+class TestCheckPage:
+    def test_fresh_when_sources_unchanged(self, wiki_repo):
+        status = check_sync.check_page(wiki_repo, wiki_repo / "wiki" / "modules" / "math.md")
+        assert status.state == "fresh"
+        assert status.changed == []
+
+    def test_stale_when_source_changes_after_sync(self, wiki_repo):
+        (wiki_repo / "src" / "ncca" / "ngl" / "vec3.py").write_text("x = 2\n")
+        _git(wiki_repo, "commit", "-am", "change vec3")
+        status = check_sync.check_page(wiki_repo, wiki_repo / "wiki" / "modules" / "math.md")
+        assert status.state == "stale"
+        assert status.changed == ["src/ncca/ngl/vec3.py"]
+
+    def test_fresh_when_unrelated_file_changes(self, wiki_repo):
+        (wiki_repo / "README.md").write_text("hello\n")
+        _git(wiki_repo, "add", ".")
+        _git(wiki_repo, "commit", "-m", "add readme")
+        status = check_sync.check_page(wiki_repo, wiki_repo / "wiki" / "modules" / "math.md")
+        assert status.state == "fresh"
+
+    def test_error_on_unknown_synced_commit(self, wiki_repo):
+        page = wiki_repo / "wiki" / "modules" / "math.md"
+        page.write_text("---\nsources:\n  - src/ncca/ngl/vec*.py\nsynced: " + "0" * 40 + "\n---\n")
+        status = check_sync.check_page(wiki_repo, page)
+        assert status.state == "error"
+        assert "commit" in status.message
+
+    def test_error_on_malformed_frontmatter(self, wiki_repo):
+        page = wiki_repo / "wiki" / "modules" / "math.md"
+        page.write_text("# no frontmatter\n")
+        status = check_sync.check_page(wiki_repo, page)
+        assert status.state == "error"
+
+
+class TestFindUntracked:
+    def test_reports_src_file_matched_by_no_pattern(self, wiki_repo):
+        (wiki_repo / "src" / "ncca" / "ngl" / "quaternion.py").write_text("q = 1\n")
+        _git(wiki_repo, "add", ".")
+        _git(wiki_repo, "commit", "-m", "add quaternion")
+        untracked = check_sync.find_untracked(wiki_repo, ["src/ncca/ngl/vec*.py"])
+        assert untracked == ["src/ncca/ngl/quaternion.py"]
+
+    def test_empty_when_everything_covered(self, wiki_repo):
+        untracked = check_sync.find_untracked(wiki_repo, ["src/**"])
+        assert untracked == []

@@ -11,7 +11,9 @@ no page (UNTRACKED). Stdlib only.
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+import subprocess
+from dataclasses import dataclass, field
+from pathlib import Path
 
 
 class FrontmatterError(Exception):
@@ -110,3 +112,104 @@ def glob_to_regex(pattern: str) -> re.Pattern[str]:
             out.append(re.escape(pattern[i]))
             i += 1
     return re.compile("^" + "".join(out) + "$")
+
+
+@dataclass
+class PageStatus:
+    """Sync status of one wiki page.
+
+    Attributes:
+        path: Path to the page file.
+        state: One of ``"fresh"``, ``"stale"``, ``"error"``.
+        changed: Repo-relative source files changed since the synced commit.
+        message: Human-readable detail for error states.
+        frontmatter: Parsed frontmatter, or None when parsing failed.
+    """
+
+    path: Path
+    state: str
+    changed: list[str] = field(default_factory=list)
+    message: str = ""
+    frontmatter: Frontmatter | None = None
+
+
+def _git(repo_root: Path, *args: str) -> str:
+    """Run a git command in the repo and return its stdout.
+
+    Args:
+        repo_root: Repository root directory.
+        *args: Git subcommand and arguments.
+
+    Returns:
+        Captured stdout.
+
+    Raises:
+        subprocess.CalledProcessError: If git exits non-zero.
+    """
+    result = subprocess.run(
+        ["git", "-C", str(repo_root), *args],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return result.stdout
+
+
+def _commit_exists(repo_root: Path, ref: str) -> bool:
+    """Return True if ``ref`` resolves to a commit in the repository.
+
+    Args:
+        repo_root: Repository root directory.
+        ref: Commit hash or ref name.
+
+    Returns:
+        Whether the commit exists.
+    """
+    result = subprocess.run(
+        ["git", "-C", str(repo_root), "cat-file", "-e", f"{ref}^{{commit}}"],
+        capture_output=True,
+    )
+    return result.returncode == 0
+
+
+def check_page(repo_root: Path, page: Path) -> PageStatus:
+    """Determine whether a wiki page is fresh, stale, or broken.
+
+    Args:
+        repo_root: Repository root directory.
+        page: Path to the wiki page.
+
+    Returns:
+        The page's sync status; STALE lists the source files that changed
+        between the page's ``synced`` commit and HEAD.
+    """
+    try:
+        fm = parse_frontmatter(page.read_text(encoding="utf-8"))
+    except FrontmatterError as err:
+        return PageStatus(path=page, state="error", message=str(err))
+    if not _commit_exists(repo_root, fm.synced):
+        return PageStatus(
+            path=page,
+            state="error",
+            message=f"synced commit {fm.synced} not found in repository",
+            frontmatter=fm,
+        )
+    out = _git(repo_root, "diff", "--name-only", f"{fm.synced}..HEAD", "--", *fm.sources)
+    changed = [line for line in out.splitlines() if line]
+    state = "stale" if changed else "fresh"
+    return PageStatus(path=page, state=state, changed=changed, frontmatter=fm)
+
+
+def find_untracked(repo_root: Path, patterns: list[str]) -> list[str]:
+    """Find tracked ``src/`` files matched by no page's source patterns.
+
+    Args:
+        repo_root: Repository root directory.
+        patterns: All ``sources`` globs collected from every wiki page.
+
+    Returns:
+        Sorted repo-relative paths of uncovered ``src/`` files.
+    """
+    regexes = [glob_to_regex(p) for p in patterns]
+    files = [line for line in _git(repo_root, "ls-files", "src/").splitlines() if line]
+    return sorted(f for f in files if not any(r.match(f) for r in regexes))
