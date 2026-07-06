@@ -10,8 +10,11 @@ no page (UNTRACKED). Stdlib only.
 
 from __future__ import annotations
 
+import argparse
+import json
 import re
 import subprocess
+import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -213,3 +216,78 @@ def find_untracked(repo_root: Path, patterns: list[str]) -> list[str]:
     regexes = [glob_to_regex(p) for p in patterns]
     files = [line for line in _git(repo_root, "ls-files", "src/").splitlines() if line]
     return sorted(f for f in files if not any(r.match(f) for r in regexes))
+
+
+def collect_pages(wiki_dir: Path) -> list[Path]:
+    """Collect all wiki pages, excluding the tools directory.
+
+    Args:
+        wiki_dir: Root of the wiki tree.
+
+    Returns:
+        Sorted paths of every ``*.md`` page under ``wiki_dir``.
+    """
+    tools_dir = wiki_dir / "tools"
+    return sorted(p for p in wiki_dir.rglob("*.md") if tools_dir not in p.parents)
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Check every wiki page for staleness and report the results.
+
+    Args:
+        argv: Command-line arguments; defaults to ``sys.argv[1:]``.
+
+    Returns:
+        0 when every page is fresh, 1 when any page is stale or in error.
+    """
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--wiki-dir", type=Path, default=Path(__file__).resolve().parent.parent)
+    parser.add_argument("--repo-root", type=Path, default=None)
+    parser.add_argument("--json", action="store_true", dest="as_json")
+    args = parser.parse_args(argv)
+
+    repo_root = args.repo_root or Path(
+        _git(args.wiki_dir, "rev-parse", "--show-toplevel").strip()
+    )
+    statuses = [check_page(repo_root, page) for page in collect_pages(args.wiki_dir)]
+    patterns = [p for s in statuses if s.frontmatter for p in s.frontmatter.sources]
+    untracked = find_untracked(repo_root, patterns)
+
+    if args.as_json:
+        print(
+            json.dumps(
+                {
+                    "pages": [
+                        {
+                            "path": s.path.relative_to(repo_root).as_posix(),
+                            "state": s.state,
+                            "changed": s.changed,
+                            "message": s.message,
+                            "synced": s.frontmatter.synced if s.frontmatter else None,
+                        }
+                        for s in statuses
+                    ],
+                    "untracked": untracked,
+                },
+                indent=2,
+            )
+        )
+    else:
+        for s in statuses:
+            rel = s.path.relative_to(repo_root).as_posix()
+            if s.state == "fresh":
+                print(f"FRESH {rel}")
+            elif s.state == "stale":
+                print(f"STALE {rel} — {len(s.changed)} changed since {s.frontmatter.synced[:7]}:")
+                for f in s.changed:
+                    print(f"    {f}")
+            else:
+                print(f"ERROR {rel} — {s.message}")
+        for f in untracked:
+            print(f"UNTRACKED {f} — matched by no page's sources")
+
+    return 1 if any(s.state in ("stale", "error") for s in statuses) else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

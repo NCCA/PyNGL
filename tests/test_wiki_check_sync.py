@@ -1,6 +1,7 @@
 """Tests for the wiki staleness checker (wiki/tools/check_sync.py)."""
 
 import importlib.util
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -141,3 +142,45 @@ class TestFindUntracked:
     def test_empty_when_everything_covered(self, wiki_repo):
         untracked = check_sync.find_untracked(wiki_repo, ["src/**"])
         assert untracked == []
+
+
+class TestCli:
+    def _run(self, repo, *extra):
+        argv = ["--repo-root", str(repo), "--wiki-dir", str(repo / "wiki"), *extra]
+        return check_sync.main(argv)
+
+    def test_exit_zero_and_fresh_report_when_clean(self, wiki_repo, capsys):
+        assert self._run(wiki_repo) == 0
+        out = capsys.readouterr().out
+        assert "FRESH" in out and "wiki/modules/math.md" in out
+
+    def test_exit_one_and_stale_report_when_source_changed(self, wiki_repo, capsys):
+        (wiki_repo / "src" / "ncca" / "ngl" / "vec3.py").write_text("x = 3\n")
+        _git(wiki_repo, "commit", "-am", "change vec3")
+        assert self._run(wiki_repo) == 1
+        out = capsys.readouterr().out
+        assert "STALE" in out and "src/ncca/ngl/vec3.py" in out
+
+    def test_untracked_files_reported_but_do_not_fail(self, wiki_repo, capsys):
+        (wiki_repo / "src" / "ncca" / "ngl" / "quaternion.py").write_text("q = 1\n")
+        _git(wiki_repo, "add", ".")
+        _git(wiki_repo, "commit", "-m", "add quaternion")
+        assert self._run(wiki_repo) == 0
+        assert "UNTRACKED src/ncca/ngl/quaternion.py" in capsys.readouterr().out
+
+    def test_json_output(self, wiki_repo, capsys):
+        (wiki_repo / "src" / "ncca" / "ngl" / "vec3.py").write_text("x = 3\n")
+        _git(wiki_repo, "commit", "-am", "change vec3")
+        assert self._run(wiki_repo, "--json") == 1
+        data = json.loads(capsys.readouterr().out)
+        assert data["pages"][0]["state"] == "stale"
+        assert data["pages"][0]["path"] == "wiki/modules/math.md"
+        assert data["pages"][0]["changed"] == ["src/ncca/ngl/vec3.py"]
+        assert data["untracked"] == []
+
+    def test_tools_dir_and_index_are_scanned_but_tools_excluded(self, wiki_repo):
+        tools = wiki_repo / "wiki" / "tools"
+        tools.mkdir()
+        (tools / "README.md").write_text("# not a wiki page\n")
+        pages = check_sync.collect_pages(wiki_repo / "wiki")
+        assert pages == [wiki_repo / "wiki" / "modules" / "math.md"]
