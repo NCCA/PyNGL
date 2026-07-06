@@ -15,15 +15,19 @@ if TYPE_CHECKING:
     from .vec3 import Vec3
 
 
-def clamp(num, low, high):
-    """Clamp to range min and max will throw ValueError is low>=high"""
+def clamp(num: float, low: float, high: float) -> float:
+    """Clamp num to the range [low, high].
+
+    Raises:
+        ValueError: If low >= high.
+    """
     if low > high or low == high:
         raise ValueError
     return max(min(num, high), low)
 
 
 def look_at(eye: "Vec3", look: "Vec3", up: "Vec3") -> Mat4:
-    """Calculate 4x4 matrix for camera lookAt"""
+    """Calculate 4x4 matrix for camera lookAt."""
     n = look - eye
     u = up
     v = n.cross(u)
@@ -49,6 +53,8 @@ def look_at(eye: "Vec3", look: "Vec3", up: "Vec3") -> Mat4:
 
 
 class PerspMode(enum.Enum):
+    """Target graphics API clip-space convention for projection matrices."""
+
     OpenGL = "OpenGL"
     WebGPU = "WebGPU"
     Vulkan = "Vulkan"
@@ -61,7 +67,9 @@ def perspective(
     far: float,
     mode: PerspMode = PerspMode.OpenGL,
 ) -> Mat4:
-    """Calculate a perspective matrix for various 3D graphics API's default mode is OpenGL but will covert for Vulkan and Web GPU if
+    """Calculate a perspective matrix for various 3D graphics APIs.
+
+    Default mode is OpenGL, but will convert for Vulkan and WebGPU if
     required.
 
     Args :
@@ -209,8 +217,11 @@ def calc_normal(p1: "Vec3", p2: "Vec3", p3: "Vec3") -> "Vec3":
     return normal
 
 
-def hash_combine(seed, h):
-    # emulate the NGL C++ combine: seed ^= h + 0x9e3779b9 + (seed<<6) + (seed>>2)
+def hash_combine(seed: int, h: int) -> int:
+    """Combine a running hash seed with a new hash value.
+
+    Emulates the NGL C++ combine: seed ^= h + 0x9e3779b9 + (seed<<6) + (seed>>2).
+    """
     seed = (
         seed + 0x9E3779B9 + ((seed << 6) & 0xFFFFFFFFFFFFFFFF) + (seed >> 2)
     ) & 0xFFFFFFFFFFFFFFFF
@@ -218,9 +229,10 @@ def hash_combine(seed, h):
     return seed
 
 
-def renderman_look_at(eye, look, up):
-    """Calculate 4x4 matrix for RenderMan camera lookAt
-    Accounts for RenderMan's right-handed Y-down, Z-forward coordinate system
+def renderman_look_at(eye: "Vec3", look: "Vec3", up: "Vec3") -> Mat4:
+    """Calculate 4x4 matrix for RenderMan camera lookAt.
+
+    Accounts for RenderMan's right-handed Y-down, Z-forward coordinate system.
 
     Args:
         eye: Vec3 - camera position
@@ -270,19 +282,20 @@ def renderman_look_at(eye, look, up):
     return result
 
 
-def prim_data_to_ri_points_polygons(triangles: np.ndarray):
+def prim_data_to_ri_points_polygons(
+    triangles: np.ndarray,
+) -> tuple[list[int], list[int], dict[str, list[float]]]:
     """Convert a packed numpy array of triangles to RenderMan PointsPolygons format.
-    This is designed to work with the PrimData class outputs.
-    Parameters
-    ----------
-    triangles : np.ndarray
-        Array of shape (n_vertices, 8) where each row is: x, y, z, nx, ny, nz, u, v
-        n_vertices must be divisible by 3 (since we have triangles)
+
+    Designed to work with the PrimData class outputs.
+
+    Args:
+        triangles: Array of shape (n_vertices, 8) where each row is
+            x, y, z, nx, ny, nz, u, v. n_vertices must be divisible by 3
+            (since we have triangles).
 
     Returns:
-    -------
-    tuple
-        (nvertices, vertices, parameterlist)
+        (nvertices, vertices, parameterlist):
         - nvertices: list of vertex counts per polygon (all 3 for triangles)
         - vertices: flat list of vertex indices
         - parameterlist: dict with 'P', 'N', 'st' arrays for RenderMan
