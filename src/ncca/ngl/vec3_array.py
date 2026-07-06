@@ -1,6 +1,9 @@
-"""A container for ngl.Vec3 objects that mimics some of the behavior of a std::vector
-Optimized for graphics APIs with contiguous numpy storage
+"""A container for ngl.Vec3 objects that mimics some of the behavior of a std::vector.
+
+Optimized for graphics APIs with contiguous numpy storage.
 """
+
+from typing import Iterable
 
 import numpy as np
 
@@ -9,11 +12,12 @@ from .vec3 import Vec3
 
 class Vec3Array:
     """A class to hold Vec3 data in contiguous memory for efficient GPU transfer.
+
     Internally uses a numpy array of shape (N, 3) for optimal performance.
     Mutable container — intentionally not hashable.
     """
 
-    def __init__(self, values=None):
+    def __init__(self, values: "Iterable[Vec3] | int | None" = None) -> None:
         """Initializes the Vec3Array.
 
         Args:
@@ -37,7 +41,7 @@ class Vec3Array:
                 vec_list.append([v.x, v.y, v.z])
             self._data = np.array(vec_list, dtype=np.float32)
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int | slice) -> "Vec3 | Vec3Array":
         """Get the Vec3 at the specified index.
 
         Args:
@@ -57,7 +61,7 @@ class Vec3Array:
             row = self._data[index]
             return Vec3(row[0], row[1], row[2])
 
-    def __setitem__(self, index, value):
+    def __setitem__(self, index: int, value: Vec3) -> None:
         """Set the Vec3 at the specified index.
 
         Args:
@@ -68,17 +72,17 @@ class Vec3Array:
             raise TypeError("Only Vec3 objects can be assigned")
         self._data[index] = [value.x, value.y, value.z]
 
-    def __len__(self):
+    def __len__(self) -> int:
         """Return the number of elements in the array."""
         return len(self._data)
 
-    def __iter__(self):
+    def __iter__(self) -> "Iterable[Vec3]":
         """Return an iterator that yields Vec3 objects."""
         for i in range(len(self._data)):
             row = self._data[i]
             yield Vec3(row[0], row[1], row[2])
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         """Compare two Vec3Array instances for equality.
 
         Args:
@@ -91,7 +95,7 @@ class Vec3Array:
             return NotImplemented
         return np.array_equal(self._data, other._data)
 
-    def append(self, value):
+    def append(self, value: Vec3) -> None:
         """Append a Vec3 object to the array.
 
         Args:
@@ -102,7 +106,7 @@ class Vec3Array:
         new_row = np.array([[value.x, value.y, value.z]], dtype=np.float32)
         self._data = np.vstack([self._data, new_row])
 
-    def extend(self, values):
+    def extend(self, values: "Iterable[Vec3]") -> None:
         """Extend the array by appending elements from the iterable.
 
         Args:
@@ -123,7 +127,7 @@ class Vec3Array:
         else:
             self._data = np.vstack([self._data, new_rows])
 
-    def to_list(self):
+    def to_list(self) -> list[float]:
         """Convert the array of Vec3 objects to a single flat list of floats.
 
         Returns:
@@ -131,8 +135,9 @@ class Vec3Array:
         """
         return self._data.flatten().tolist()
 
-    def to_numpy(self):
+    def to_numpy(self) -> np.ndarray:
         """Convert the array of Vec3 objects to a numpy array.
+
         This is the primary method for GPU data transfer.
 
         Returns:
@@ -144,15 +149,17 @@ class Vec3Array:
         """Return all components as one flat tuple of floats."""
         return tuple(float(v) for v in self._data.flatten())
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Eval-able representation, e.g. Vec3Array([Vec3(0.0, 0.0, 0.0)])."""
         vec_list = [Vec3(row[0], row[1], row[2]) for row in self._data]
         return f"Vec3Array({vec_list!r})"
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Pretty representation as a list of Vec3 values."""
         vec_list = [Vec3(row[0], row[1], row[2]) for row in self._data]
         return str(vec_list)
 
-    def sizeof(self):
+    def sizeof(self) -> int:
         """Return the size of the array in bytes.
 
         Returns:

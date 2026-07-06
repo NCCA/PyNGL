@@ -1,6 +1,9 @@
-"""A container for ngl.Vec4 objects that mimics some of the behavior of a std::vector
-Optimized for graphics APIs with contiguous numpy storage
+"""A container for ngl.Vec4 objects that mimics some of the behavior of a std::vector.
+
+Optimized for graphics APIs with contiguous numpy storage.
 """
+
+from typing import Iterable
 
 import numpy as np
 
@@ -9,11 +12,12 @@ from .vec4 import Vec4
 
 class Vec4Array:
     """A class to hold Vec4 data in contiguous memory for efficient GPU transfer.
+
     Internally uses a numpy array of shape (N, 4) for optimal performance.
     Mutable container — intentionally not hashable.
     """
 
-    def __init__(self, values=None):
+    def __init__(self, values: "Iterable[Vec4] | int | None" = None) -> None:
         """Initializes the Vec4Array.
 
         Args:
@@ -38,7 +42,7 @@ class Vec4Array:
                 vec_list.append([v.x, v.y, v.z, v.w])
             self._data = np.array(vec_list, dtype=np.float32)
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int | slice) -> "Vec4 | Vec4Array":
         """Get the Vec4 at the specified index.
 
         Args:
@@ -46,6 +50,7 @@ class Vec4Array:
 
         Returns:
             Vec4: The Vec4 object at the given index.
+            Vec4Array: A new Vec4Array if slicing.
         """
         if isinstance(index, slice):
             # Return a new Vec4Array with sliced data
@@ -57,7 +62,7 @@ class Vec4Array:
             row = self._data[index]
             return Vec4(row[0], row[1], row[2], row[3])
 
-    def __setitem__(self, index, value):
+    def __setitem__(self, index: int, value: Vec4) -> None:
         """Set the Vec4 at the specified index.
 
         Args:
@@ -68,17 +73,17 @@ class Vec4Array:
             raise TypeError("Only Vec4 objects can be assigned")
         self._data[index] = [value.x, value.y, value.z, value.w]
 
-    def __len__(self):
+    def __len__(self) -> int:
         """Return the number of elements in the array."""
         return len(self._data)
 
-    def __iter__(self):
+    def __iter__(self) -> "Iterable[Vec4]":
         """Return an iterator that yields Vec4 objects."""
         for i in range(len(self._data)):
             row = self._data[i]
             yield Vec4(row[0], row[1], row[2], row[3])
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         """Compare two Vec4Array instances for equality.
 
         Args:
@@ -91,7 +96,7 @@ class Vec4Array:
             return NotImplemented
         return np.array_equal(self._data, other._data)
 
-    def append(self, value):
+    def append(self, value: Vec4) -> None:
         """Append a Vec4 object to the array.
 
         Args:
@@ -102,7 +107,7 @@ class Vec4Array:
         new_row = np.array([[value.x, value.y, value.z, value.w]], dtype=np.float32)
         self._data = np.vstack([self._data, new_row])
 
-    def extend(self, values):
+    def extend(self, values: "Iterable[Vec4]") -> None:
         """Extend the array with a list of Vec4 objects.
 
         Args:
@@ -117,7 +122,7 @@ class Vec4Array:
         else:
             self._data = np.vstack([self._data, new_rows])
 
-    def to_list(self):
+    def to_list(self) -> list[float]:
         """Convert the array of Vec4 objects to a single flat list of floats.
 
         Returns:
@@ -125,8 +130,9 @@ class Vec4Array:
         """
         return self._data.flatten().tolist()
 
-    def to_numpy(self):
+    def to_numpy(self) -> np.ndarray:
         """Convert the array of Vec4 objects to a numpy array.
+
         This is the primary method for GPU data transfer.
 
         Returns:
@@ -138,15 +144,17 @@ class Vec4Array:
         """Return all components as one flat tuple of floats."""
         return tuple(float(v) for v in self._data.flatten())
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Eval-able representation, e.g. Vec4Array([Vec4(0.0, 0.0, 0.0, 1.0)])."""
         vec_list = [Vec4(row[0], row[1], row[2], row[3]) for row in self._data]
         return f"Vec4Array({vec_list!r})"
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Pretty representation as a list of Vec4 values."""
         vec_list = [Vec4(row[0], row[1], row[2], row[3]) for row in self._data]
         return str(vec_list)
 
-    def sizeof(self):
+    def sizeof(self) -> int:
         """Return the size of the array in bytes.
 
         Returns:
