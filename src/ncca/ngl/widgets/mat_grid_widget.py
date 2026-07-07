@@ -12,7 +12,6 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QPushButton,
-    QStackedWidget,
     QVBoxLayout,
     QWidget,
 )
@@ -114,6 +113,11 @@ class _MatGridWidget(QFrame):
     def _add_method_combo(self, methods: dict[str, tuple[str, Callable]]) -> None:
         """Add a combo box that sets the matrix via a classmethod.
 
+        The angle spinbox sits beside the combo box; the xyz widget sits
+        on its own row below. Only the one matching the selected method's
+        kind is shown at a time, so the widget doesn't reserve space for
+        whichever parameter panel is currently hidden.
+
         Args:
             methods: Maps a display label to (param_kind, factory), where
                 param_kind is "angle" (a single degrees spinbox) or "xyz"
@@ -122,21 +126,21 @@ class _MatGridWidget(QFrame):
         """
         self._methods = methods
 
-        self._method_combo = QComboBox()
-        for label in methods:
-            self._method_combo.addItem(label)
-        self._main_layout.addWidget(self._method_combo)
-
         self._angle_spinbox = QDoubleSpinBox()
         self._angle_spinbox.setRange(-360.0, 360.0)
         self._angle_spinbox.setSingleStep(0.5)
 
-        self._xyz_widget = Vec3Widget(self, "xyz", Vec3(1.0, 1.0, 1.0))
+        self._method_combo = QComboBox()
+        for label in methods:
+            self._method_combo.addItem(label)
 
-        self._param_stack = QStackedWidget()
-        self._param_stack.addWidget(self._angle_spinbox)
-        self._param_stack.addWidget(self._xyz_widget)
-        self._main_layout.addWidget(self._param_stack)
+        combo_row = QHBoxLayout()
+        combo_row.addWidget(self._angle_spinbox)
+        combo_row.addWidget(self._method_combo)
+        self._main_layout.addLayout(combo_row)
+
+        self._xyz_widget = Vec3Widget(self, "xyz", Vec3(1.0, 1.0, 1.0))
+        self._main_layout.addWidget(self._xyz_widget)
 
         first_label = next(iter(methods))
         self._show_panel_for(first_label)
@@ -146,16 +150,14 @@ class _MatGridWidget(QFrame):
         self._xyz_widget.valueChanged.connect(self._on_method_param_changed)
 
     def _show_panel_for(self, label: str) -> None:
-        """Switch the parameter panel to match the given method's kind.
+        """Show the parameter panel matching the given method's kind.
 
         Args:
             label: The method's display label, as shown in the combo box.
         """
-        kind, _ = self._methods[label]
-        if kind == "angle":
-            self._param_stack.setCurrentWidget(self._angle_spinbox)
-        else:
-            self._param_stack.setCurrentWidget(self._xyz_widget)
+        is_angle = self._methods[label][0] == "angle"
+        self._angle_spinbox.setVisible(is_angle)
+        self._xyz_widget.setVisible(not is_angle)
 
     def _on_method_selected(self, index: int) -> None:
         """Switch panels and reapply the newly selected method.

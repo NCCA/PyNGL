@@ -30,8 +30,11 @@ def test_rotate_x_selected_shows_angle_panel(
 ):
     widget = widget_cls()
     qtbot.addWidget(widget)
+    widget.show()
+    qtbot.waitExposed(widget)
 
-    assert widget._param_stack.currentWidget() is widget._angle_spinbox
+    assert widget._angle_spinbox.isVisible()
+    assert not widget._xyz_widget.isVisible()
 
 
 @pytest.mark.parametrize("widget_cls,mat_cls,expected_items", WIDGET_CASES)
@@ -40,10 +43,13 @@ def test_selecting_scale_shows_xyz_panel(
 ):
     widget = widget_cls()
     qtbot.addWidget(widget)
+    widget.show()
+    qtbot.waitExposed(widget)
 
     widget._method_combo.setCurrentText("scale")
 
-    assert widget._param_stack.currentWidget() is widget._xyz_widget
+    assert widget._xyz_widget.isVisible()
+    assert not widget._angle_spinbox.isVisible()
 
 
 @pytest.mark.parametrize("widget_cls,mat_cls,expected_items", WIDGET_CASES)
