@@ -2,7 +2,7 @@ import mat4Data as mat4Data  # this is generated from the julia file gen_mat4_te
 import numpy as np
 import pytest
 
-from ncca.ngl import Mat4, MatrixError, Vec4
+from ncca.ngl import Mat3, Mat4, MatrixError, Vec4
 
 
 def test_ctor():
@@ -401,3 +401,30 @@ def test_element_write_through():
 def test_from_numpy():
     m = Mat4.from_numpy(np.arange(16, dtype=np.float32).reshape(4, 4))
     assert m.to_list() == [float(i) for i in range(16)]
+
+
+def test_from_mat3_places_upper_left_block():
+    mat3 = Mat3(2.0, 0.0, 0.0, 0.0, 3.0, 0.0, 0.0, 0.0, 4.0)
+
+    m = Mat4.from_mat3(mat3)
+
+    assert m.to_list() == pytest.approx(
+        [
+            2.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            3.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+        ]
+    )

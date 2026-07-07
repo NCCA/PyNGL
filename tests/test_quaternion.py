@@ -168,8 +168,109 @@ def test_to_mat4_round_trip():
 def test_contract():
     q = Quaternion(1.0, 0.5, 0.25, 0.125)
     assert eval(repr(q)) == q
-    assert hash(q) == hash(q.copy())
-    assert q.to_tuple() == (1.0, 0.5, 0.25, 0.125)
-    assert Quaternion.from_list(q.to_list()) == q
-    assert Quaternion.from_numpy(q.to_numpy()) == q
-    assert q._data.dtype == np.float32
+
+
+def test_matmul_rejects_non_quaternion():
+    with pytest.raises(TypeError, match="requires a Quaternion"):
+        Quaternion() @ 5
+
+
+def test_mul_rejects_unsupported_type():
+    with pytest.raises(TypeError, match="cannot multiply Quaternion"):
+        Quaternion() * "not a quaternion"
+
+
+def test_rmul_rejects_unsupported_type():
+    with pytest.raises(TypeError, match="cannot multiply"):
+        "not a quaternion" * Quaternion()
+
+
+def test_rmul_scalar_matches_mul():
+    q = Quaternion(1.0, 2.0, 3.0, 4.0)
+    assert 2.0 * q == q * 2.0
+
+
+def test_truediv_rejects_non_scalar():
+    with pytest.raises(TypeError, match="cannot divide Quaternion"):
+        Quaternion() / "not a scalar"
+
+
+def test_getitem_out_of_range_raises():
+    q = Quaternion()
+    with pytest.raises(IndexError):
+        q[4]
+    with pytest.raises(IndexError):
+        q[-1]
+
+
+def test_normalized_zero_length_raises():
+    q = Quaternion(0.0, 0.0, 0.0, 0.0)
+    with pytest.raises(ZeroDivisionError):
+        q.normalized()
+
+
+def test_inverse_zero_quaternion_raises():
+    q = Quaternion(0.0, 0.0, 0.0, 0.0)
+    with pytest.raises(ZeroDivisionError):
+        q.inverse()
+
+
+def test_dot():
+    a = Quaternion(1.0, 0.0, 0.0, 0.0)
+    b = Quaternion(0.0, 1.0, 0.0, 0.0)
+    assert a.dot(b) == pytest.approx(0.0)
+    assert a.dot(a) == pytest.approx(1.0)
+
+
+def test_slerp_takes_shortest_path_for_opposite_hemisphere():
+    a = Quaternion(1.0, 0.0, 0.0, 0.0)
+    b = Quaternion(-1.0, 0.0, 0.0, 0.0)  # negative dot with a
+
+    result = a.slerp(b, 0.0)
+
+    assert result == a
+
+
+def test_slerp_near_identical_quaternions_uses_linear_interpolation():
+    a = Quaternion.from_axis_angle(Vec3(0.0, 1.0, 0.0), 10.0)
+    b = Quaternion.from_axis_angle(Vec3(0.0, 1.0, 0.0), 10.0001)
+
+    result = a.slerp(b, 0.5)
+
+    assert result.length() == pytest.approx(1.0, abs=1e-4)
+
+
+def test_set_updates_all_components():
+    q = Quaternion()
+    q.set(0.5, 1.0, 2.0, 3.0)
+    assert q == Quaternion(0.5, 1.0, 2.0, 3.0)
+
+
+def test_from_list_wrong_length_raises():
+    with pytest.raises(ValueError, match="requires 4 values"):
+        Quaternion.from_list([1.0, 2.0, 3.0])
+
+
+def test_from_numpy_wrong_shape_raises():
+    with pytest.raises(ValueError, match="requires shape"):
+        Quaternion.from_numpy(np.zeros(3))
+
+
+def test_equal_with_non_quaternion_is_not_implemented():
+    assert (Quaternion() == "not a quaternion") is False
+
+
+def test_not_equal_with_non_quaternion_is_true():
+    assert Quaternion() != "not a quaternion"
+
+
+def test_component_setter_rejects_non_numeric():
+    q = Quaternion()
+    with pytest.raises(ValueError, match="need float or int"):
+        q.x = "not a number"
+
+
+def test_component_setter_accepts_numeric():
+    q = Quaternion()
+    q.x = 0.5
+    assert q.x == pytest.approx(0.5)

@@ -408,6 +408,22 @@ def test_lerp():
     assert a.lerp(b, 0.5) == Vec3(1.0, 2.0, 3.0)
 
 
+def test_lerp_rejects_incompatible_type():
+    a = Vec3(0.0, 0.0, 0.0)
+    with pytest.raises(ValueError, match="Can only lerp with Vec3"):
+        a.lerp("not a vec3", 0.5)
+
+
+def test_from_list_wrong_length_raises():
+    with pytest.raises(ValueError, match="requires 3 values"):
+        Vec3.from_list([1.0, 2.0])
+
+
+def test_from_numpy_wrong_shape_raises():
+    with pytest.raises(ValueError, match="requires shape"):
+        Vec3.from_numpy(np.zeros(2))
+
+
 def test_from_numpy_round_trip():
     import numpy as np
 
