@@ -149,3 +149,23 @@ def test_show_color_dialog_applies_selection_and_emits(qt_app, monkeypatch, qtbo
 
     # button stylesheet should have been updated to the chosen colour
     assert "#" in w._color_button.styleSheet()
+
+
+def test_show_color_dialog_cancelled_does_not_change_colour(qt_app, monkeypatch, qtbot):
+    w = RGBAColourWidget(r=0.1, g=0.2, b=0.3, a=0.4)
+    qtbot.addWidget(w)
+
+    # monkeypatch QColorDialog.getColor to return an invalid colour, as it does
+    # when the user cancels the dialog
+    def fake_get_color(current, parent, title, options=None):
+        return QColor()
+
+    monkeypatch.setattr(QColorDialog, "getColor", fake_get_color)
+
+    emissions = []
+    w.colourChanged.connect(emissions.append)
+
+    w._show_color_dialog()
+
+    assert emissions == []
+    assert w.colour() == Vec4(0.1, 0.2, 0.3, 0.4)
