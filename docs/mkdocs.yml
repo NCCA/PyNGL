@@ -13,6 +13,11 @@ nav:
       - Vector Arrays: tutorials/vector_arrays.md
       - Geometry Maths: tutorials/geometry_maths.md
       - Utility Functions: tutorials/utility_functions.md
+  - WebGPU:
+      - Overview: webgpu/index.md
+      - Getting Started with WebGPU: webgpu/getting_started.md
+      - The Built-in Pipelines: webgpu/builtin_pipelines.md
+      - Custom Pipelines: webgpu/custom_pipelines.md
   - API Reference:
       - Math: Math.md
       - Geometry: Geometry.md
@@ -21,9 +26,13 @@ nav:
       - Camera: Camera.md
       - Image and Texture: ImageAndTexture.md
       - Text: Text.md
+      - WebGPU: WebGPU.md
       - Miscellaneous: Misc.md
   - About: about.md
 theme: readthedocs
+
+markdown_extensions:
+  - admonition
 
 plugins:
   - mkdocstrings
