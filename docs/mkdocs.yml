@@ -13,11 +13,18 @@ nav:
       - Vector Arrays: tutorials/vector_arrays.md
       - Geometry Maths: tutorials/geometry_maths.md
       - Utility Functions: tutorials/utility_functions.md
+  - OpenGL:
+      - Overview: opengl/index.md
+      - Getting Started with OpenGL: opengl/getting_started.md
+      - Shaders and ShaderLib: opengl/shaders.md
+      - Geometry, Primitives, and VAOs: opengl/geometry.md
   - WebGPU:
       - Overview: webgpu/index.md
       - Getting Started with WebGPU: webgpu/getting_started.md
       - The Built-in Pipelines: webgpu/builtin_pipelines.md
       - Custom Pipelines: webgpu/custom_pipelines.md
+  - Widgets:
+      - Qt Widgets for NGL Types: widgets/index.md
   - API Reference:
       - Math: Math.md
       - Geometry: Geometry.md
@@ -27,6 +34,7 @@ nav:
       - Image and Texture: ImageAndTexture.md
       - Text: Text.md
       - WebGPU: WebGPU.md
+      - Widgets: Widgets.md
       - Miscellaneous: Misc.md
   - About: about.md
 theme: readthedocs

@@ -19,3 +19,15 @@
 ## VAOFactory
 
 ::: ncca.ngl.opengl.VAOFactory
+
+## VAOType
+
+::: ncca.ngl.opengl.VAOType
+
+## VertexData
+
+::: ncca.ngl.opengl.VertexData
+
+## IndexVertexData
+
+::: ncca.ngl.opengl.IndexVertexData

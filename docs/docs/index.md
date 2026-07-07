@@ -6,10 +6,13 @@ University). It gives you:
 
 - **Math classes** for 3D graphics — `Vec2/3/4`, `Mat2/3/4`, `Quaternion`,
   `Transform`, and helpers such as `look_at` and `perspective`.
-- **OpenGL support** (`ncca.ngl.opengl`) — VAO abstractions, shader
-  management (`ShaderLib`), primitives, textures, and text rendering.
-- **WebGPU support** — a parallel rendering stack built on `wgpu`.
-- **Qt widgets** — PySide6 widgets for editing NGL types in GUIs.
+- **[OpenGL support](opengl/index.md)** (`ncca.ngl.opengl`) — VAO
+  abstractions, shader management (`ShaderLib`), primitives, textures, and
+  text rendering.
+- **[WebGPU support](webgpu/index.md)** — a parallel rendering stack built
+  on `wgpu`.
+- **[Qt widgets](widgets/index.md)** — PySide6 widgets for editing NGL
+  types in GUIs.
 
 ## Where to start
 
@@ -40,6 +43,24 @@ print(v)             # [2.0, 0.0, 0.0]
 
 If that surprises you, read the
 [grammar guide](tutorials/method_names.md) — it explains why.
+
+## The OpenGL API
+
+The `ncca.ngl.opengl` package is the classic NGL rendering stack:
+`ShaderLib` (a registry of named shader programs with four built-in
+shaders), `Primitives` (teapot, bunny, and parametric shapes as one-line
+drawables), the `VAOFactory` abstraction for custom geometry, plus
+textures, text rendering, and a mouse-control mixin for PySide6 windows.
+
+The [OpenGL section](opengl/index.md) covers it in depth:
+
+1. **[Getting Started with OpenGL](opengl/getting_started.md)** — the
+   `QOpenGLWindow` lifecycle and a complete spinning-teapot application.
+2. **[Shaders and ShaderLib](opengl/shaders.md)** — the built-in shaders
+   and their uniforms, loading your own GLSL, and uniform buffer objects.
+3. **[Geometry: Primitives, Meshes, and VAOs](opengl/geometry.md)** —
+   stock and parametric primitives, OBJ files, textures, and custom
+   vertex data.
 
 ## The WebGPU API
 
@@ -83,3 +104,11 @@ The [WebGPU section](webgpu/index.md) covers the stack in depth:
 3. **[Custom Pipelines](webgpu/custom_pipelines.md)** — your own WGSL
    shaders via `CustomShaderPipeline` or a `BaseWebGPUPipeline` subclass.
 4. **[WebGPU API Reference](WebGPU.md)** — every class in the package.
+
+## Qt widgets
+
+[`ncca.ngl.widgets`](widgets/index.md) provides PySide6 widgets for
+editing NGL types in a GUI — vector spin-box clusters, colour pickers
+that emit `Vec3`/`Vec4`, and transform / look-at editors that emit
+finished `Mat4` matrices, ready to wire straight into an OpenGL or WebGPU
+viewport. See them all with `uv run python -m ncca.ngl.widgets`.
