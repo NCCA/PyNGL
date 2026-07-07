@@ -13,13 +13,20 @@ class Mat2Widget(_MatGridWidget):
 
     valueChanged = Signal(Mat2)
 
-    def __init__(self, parent: QWidget | None = None, name: str = "") -> None:
+    def __init__(
+        self,
+        parent: QWidget | None = None,
+        name: str = "",
+        read_only: bool = False,
+    ) -> None:
         """Initialize the widget.
 
         Args:
             parent: The parent widget.
             name: The name of the widget.
+            read_only: If True, the grid is a view-only display: no
+                editing, no reset buttons.
         """
-        super().__init__(Mat2, 2, parent, name)
+        super().__init__(Mat2, 2, parent, name, read_only)
 
     value = Property(Mat2, _MatGridWidget.get_value, _MatGridWidget.set_value)

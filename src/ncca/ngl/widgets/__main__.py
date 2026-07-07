@@ -78,7 +78,9 @@ class SimpleDialog(QDialog):
         self.mat4_widget = Mat4Widget(self, "Mat4 Widget")
         layout.addWidget(self.mat4_widget, 2, 2)
 
-        self.transform_matrix_widget = Mat4Widget(self, "Transform Output")
+        self.transform_matrix_widget = Mat4Widget(
+            self, "Transform Output", read_only=True
+        )
         layout.addWidget(self.transform_matrix_widget, 3, 2)
         self.transform_widget.valueChanged.connect(self._update_transform_matrix)
 

@@ -13,21 +13,29 @@ class Mat3Widget(_MatGridWidget):
 
     valueChanged = Signal(Mat3)
 
-    def __init__(self, parent: QWidget | None = None, name: str = "") -> None:
+    def __init__(
+        self,
+        parent: QWidget | None = None,
+        name: str = "",
+        read_only: bool = False,
+    ) -> None:
         """Initialize the widget.
 
         Args:
             parent: The parent widget.
             name: The name of the widget.
+            read_only: If True, the grid is a view-only display: no
+                editing, no reset buttons, no method combo box.
         """
-        super().__init__(Mat3, 3, parent, name)
-        self._add_method_combo(
-            {
-                "rotate_x": ("angle", Mat3.rotate_x),
-                "rotate_y": ("angle", Mat3.rotate_y),
-                "rotate_z": ("angle", Mat3.rotate_z),
-                "scale": ("xyz", Mat3.scale),
-            }
-        )
+        super().__init__(Mat3, 3, parent, name, read_only)
+        if not read_only:
+            self._add_method_combo(
+                {
+                    "rotate_x": ("angle", Mat3.rotate_x),
+                    "rotate_y": ("angle", Mat3.rotate_y),
+                    "rotate_z": ("angle", Mat3.rotate_z),
+                    "scale": ("xyz", Mat3.scale),
+                }
+            )
 
     value = Property(Mat3, _MatGridWidget.get_value, _MatGridWidget.set_value)

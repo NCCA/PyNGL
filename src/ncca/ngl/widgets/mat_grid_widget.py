@@ -3,7 +3,7 @@
 from contextlib import ExitStack
 from typing import Callable
 
-from PySide6.QtCore import Property, QSignalBlocker
+from PySide6.QtCore import Property, Qt, QSignalBlocker
 from PySide6.QtWidgets import (
     QComboBox,
     QDoubleSpinBox,
@@ -35,6 +35,7 @@ class _MatGridWidget(QFrame):
         size: int,
         parent: QWidget | None = None,
         name: str = "",
+        read_only: bool = False,
     ) -> None:
         """Initialize the widget.
 
@@ -43,19 +44,26 @@ class _MatGridWidget(QFrame):
             size: The row/column count of the matrix.
             parent: The parent widget.
             name: The name of the widget.
+            read_only: If True, the grid is a view-only display: cells
+                cannot be typed into and no reset buttons or method combo
+                box are built.
         """
         super().__init__(parent)
         self.setFrameShape(QFrame.Shape.StyledPanel)
         self._mat_cls = mat_cls
         self._size = size
         self._name = name
+        self._read_only = read_only
         self._value = mat_cls()
 
         self._main_layout = QVBoxLayout(self)
         self._name_label = QLabel(self._name)
         self._main_layout.addWidget(self._name_label)
         self._cells = self._build_grid()
-        self._build_buttons()
+        if self._read_only:
+            self._set_cells_read_only()
+        else:
+            self._build_buttons()
 
     def _build_grid(self) -> list[list[QDoubleSpinBox]]:
         """Build the NxN grid of spinboxes and add it to the main layout.
@@ -80,6 +88,14 @@ class _MatGridWidget(QFrame):
             cells.append(cell_row)
         self._main_layout.addLayout(grid_layout)
         return cells
+
+    def _set_cells_read_only(self) -> None:
+        """Make every grid cell view-only: no typing, no spin buttons."""
+        for row in self._cells:
+            for spinbox in row:
+                spinbox.setReadOnly(True)
+                spinbox.setButtonSymbols(QDoubleSpinBox.ButtonSymbols.NoButtons)
+                spinbox.setFocusPolicy(Qt.FocusPolicy.NoFocus)
 
     def _build_buttons(self) -> None:
         """Build the Identity/Zero/Transpose/Inverse reset buttons."""
