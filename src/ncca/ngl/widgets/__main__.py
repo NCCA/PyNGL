@@ -4,9 +4,12 @@ import sys
 
 from PySide6.QtWidgets import QApplication, QDialog, QGridLayout, QLabel
 
-from ncca.ngl import Vec2, Vec3, Vec4
+from ncca.ngl import Mat4, Vec2, Vec3, Vec4
 from ncca.ngl.widgets import (
     LookAtWidget,
+    Mat2Widget,
+    Mat3Widget,
+    Mat4Widget,
     RGBAColourWidget,
     RGBColourWidget,
     TransformWidget,
@@ -66,6 +69,19 @@ class SimpleDialog(QDialog):
         )
         layout.addWidget(self.rgba_colour_widget, 6, 0)
 
+        self.mat2_widget = Mat2Widget(self, "Mat2 Widget")
+        layout.addWidget(self.mat2_widget, 0, 2)
+
+        self.mat3_widget = Mat3Widget(self, "Mat3 Widget")
+        layout.addWidget(self.mat3_widget, 1, 2)
+
+        self.mat4_widget = Mat4Widget(self, "Mat4 Widget")
+        layout.addWidget(self.mat4_widget, 2, 2)
+
+        self.transform_matrix_widget = Mat4Widget(self, "Transform Output")
+        layout.addWidget(self.transform_matrix_widget, 3, 2)
+        self.transform_widget.valueChanged.connect(self._update_transform_matrix)
+
         self.setLayout(layout)
 
     def _update_vec3(self, value: Vec3) -> None:
@@ -78,6 +94,9 @@ class SimpleDialog(QDialog):
         self.vec4_label.setText(
             f"[{value.x:0.2f}, {value.y:0.2f}, {value.z:0.2f}, {value.w:0.2f}]"
         )
+
+    def _update_transform_matrix(self, value: Mat4) -> None:
+        self.transform_matrix_widget.set_value(value)
 
 
 if __name__ == "__main__":
