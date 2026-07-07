@@ -19,14 +19,17 @@ uv run python -m ncca.ngl.widgets
 | `Vec2Widget` | two spin boxes | `valueChanged(Vec2)` |
 | `Vec3Widget` | three spin boxes | `valueChanged(Vec3)` |
 | `Vec4Widget` | four spin boxes | `valueChanged(Vec4)` |
+| `Mat2Widget` | 2x2 grid + reset buttons | `valueChanged(Mat2)` |
+| `Mat3Widget` | 3x3 grid + reset buttons + method combo | `valueChanged(Mat3)` |
+| `Mat4Widget` | 4x4 grid + reset buttons + method combo | `valueChanged(Mat4)` |
 | `TransformWidget` | position / rotation / scale | `valueChanged(Mat4)` |
 | `LookAtWidget` | eye / look / up | `valueChanged(Mat4)` (a `look_at` view matrix) |
 | `RGBColourWidget` | RGB sliders + colour dialog | `colourChanged(Vec3)` |
 | `RGBAColourWidget` | RGBA sliders + colour dialog | `colourChanged(Vec4)` |
 
-All widgets share the constructor shape
-`Widget(parent=None, name="", <initial value...>)` — `name` is the label
-shown on the widget frame:
+The vector, transform, look-at and colour widgets share the constructor
+shape `Widget(parent=None, name="", <initial value...>)` — `name` is the
+label shown on the widget frame:
 
 ```python
 from ncca.ngl import Vec3
@@ -34,6 +37,10 @@ from ncca.ngl.widgets import Vec3Widget
 
 position = Vec3Widget(self, "Position", Vec3(0, 1, 0))
 ```
+
+The matrix widgets (below) instead take `Widget(parent=None, name="",
+read_only=False)` — no initial-value argument, since they always start
+from an identity matrix; use `set_value()` to set a starting value.
 
 ## Signals
 
@@ -61,6 +68,45 @@ needs — per component or all at once:
 position.set_range(-10.0, 10.0)     # all components
 position.set_y_range(0.0, 5.0)      # just Y
 position.set_single_step(0.1)
+```
+
+`set_range()`/`set_single_step()` work the same way on the matrix grid
+widgets below, applied to every cell.
+
+## Matrix grid widgets
+
+`Mat2Widget`/`Mat3Widget`/`Mat4Widget` edit a matrix as a grid of spin
+boxes, with **Identity**/**Zero**/**Transpose**/**Inverse** buttons that
+reset or transform the current value (Inverse shows "Matrix is singular"
+instead of raising if the matrix isn't invertible):
+
+```python
+from ncca.ngl.widgets import Mat4Widget
+
+model_matrix = Mat4Widget(self, "Model")
+model_matrix.valueChanged.connect(viewport.set_model)   # Mat4
+```
+
+`Mat3Widget` and `Mat4Widget` also have a method combo box
+(`rotate_x`/`rotate_y`/`rotate_z`/`scale`, plus `translate` on
+`Mat4Widget`) that sets the matrix from the corresponding classmethod.
+Selecting a rotation shows a single angle (degrees) spin box; selecting
+`scale`/`translate` shows an embedded `Vec3Widget` instead. Whichever
+panel is visible updates the matrix live — there's no separate "Apply"
+button.
+
+### Read-only (view) mode
+
+Pass `read_only=True` to get a plain display grid with no reset buttons
+and no method combo — the cells can't be typed into, but `set_value()`
+still updates what's shown. Use this to display a matrix that's produced
+elsewhere (e.g. a `TransformWidget` output) without offering a second,
+conflicting way to edit it:
+
+```python
+transform = TransformWidget(self, "Model")
+transform_matrix = Mat4Widget(self, "Model Matrix", read_only=True)
+transform.valueChanged.connect(transform_matrix.set_value)
 ```
 
 ## Driving a viewport
