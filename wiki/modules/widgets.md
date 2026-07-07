@@ -3,7 +3,7 @@ sources:
   - src/ncca/ngl/widgets/**
   - src/ncca/ngl/opengl/pyside_event_handling_mixin.py
   - src/ncca/ngl/first_person_camera.py
-synced: 5d77fb96677b29d3a349da8f592cf1ef9c16ea7f
+synced: 060d5fd52e6f85ca18c0351723becf3285f7ddd8
 ---
 
 # Widgets and Camera Controls
@@ -87,7 +87,17 @@ Every widget is a `QFrame` subclass exported from
   classmethod and calls `set_value` — there is no separate "Apply"
   button, matching `TransformWidget`'s live-update pattern. `Mat2Widget`
   has no combo box
-  since `Mat2` has no `rotate_*`/`scale` classmethods.
+  since `Mat2` has no `rotate_*`/`scale` classmethods. All three
+  constructors take a `read_only: bool = False` kwarg, threaded through to
+  `_MatGridWidget.__init__`: when `True`, `_build_buttons()` and (for
+  Mat3/Mat4) `_add_method_combo()` are skipped entirely — no reset
+  buttons, no method combo, nothing built — and `_set_cells_read_only()`
+  sets every cell spinbox `setReadOnly(True)` + `NoButtons` so it can't be
+  typed into or spun, though `get_value`/`set_value` still work
+  unaffected (read-only only blocks *user* editing of the spinboxes, not
+  programmatic updates). Used by `widgets/__main__.py`'s "Transform
+  Output" `Mat4Widget` to display `TransformWidget`'s live matrix output
+  without offering a redundant, conflicting way to edit it.
 - **`widgets/glsl/`** holds four demo shaders for whatever OpenGL view a
   widget-based inspector renders into: `phong.vert`/`phong.frag` (ambient+
   diffuse+specular, uniforms `model`, `MVP`, `normal_matrix`, `light_pos`,
