@@ -3,7 +3,7 @@ sources:
   - src/ncca/ngl/widgets/**
   - src/ncca/ngl/opengl/pyside_event_handling_mixin.py
   - src/ncca/ngl/first_person_camera.py
-synced: 4891d49afd4ef2329ac7b95298f1677fd2b3a5ef
+synced: 33b278187fbf30621d08376f7256c7bd5bb5f926
 ---
 
 # Widgets and Camera Controls
@@ -13,7 +13,8 @@ synced: 4891d49afd4ef2329ac7b95298f1677fd2b3a5ef
 This page covers PyNGL's PySide6 (Qt) GUI layer and the two camera-control
 helpers apps built with it typically pair it with. `src/ncca/ngl/widgets/`
 holds `QFrame`-based editor widgets for the core math value types (`Vec2/3/4`,
-colours, `Transform`, look-at matrices) plus their GLSL demo assets.
+`Mat2/3/4`, colours, `Transform`, look-at matrices) plus their GLSL demo
+assets.
 `PySideEventHandlingMixin` (`src/ncca/ngl/opengl/pyside_event_handling_mixin.py`)
 gives a Qt/OpenGL window mouse-orbit and keyboard shortcuts "for free".
 `FirstPersonCamera` (`src/ncca/ngl/first_person_camera.py`) is an
@@ -58,9 +59,30 @@ Every widget is a `QFrame` subclass exported from
   (Eye/Look) and a world-up `QComboBox` (y-up/x-up/z-up, indexing the
   class-level `world_up` list). `_update_matrix` calls `ncca.ngl.look_at`
   and emits `valueChanged(Mat4)` — a view matrix.
-- **`Mat4ViewWidget`** (`mat4widget.py`) is currently a placeholder
-  `QFrame` subclass with only a docstring and no body — not implemented,
-  not exported from `__init__.py`.
+- **`Mat2Widget` / `Mat3Widget` / `Mat4Widget`** (`mat2widget.py`,
+  `mat3widget.py`, `mat4widget.py`) each edit an NxN matrix as a grid of
+  `QDoubleSpinBox`es, plus Identity/Zero/Transpose/Inverse reset buttons.
+  All the mechanical grid/button/name/range logic lives once in the
+  private, unexported `_MatGridWidget` base (`mat_grid_widget.py`); the
+  three concrete classes just call `super().__init__(mat_cls, size, ...)`
+  and declare their own typed `valueChanged = Signal(Mat2|Mat3|Mat4)`
+  (Qt signals must be redeclared per-subclass — the base class emits via
+  `self.valueChanged` but never declares it itself). Editing a cell updates
+  the backing matrix element and re-emits `valueChanged`; the Identity/Zero
+  buttons call `mat_cls.identity()`/`.zero()`; Transpose/Inverse operate on
+  the *current* value (`self._value.transposed()`/`.inverse()`). Inverse
+  catches `MatrixError` on a singular matrix, leaves the value unchanged,
+  and writes "Matrix is singular" to a `_status_label` instead of raising.
+  `Mat3Widget`/`Mat4Widget` additionally call `_add_method_combo(methods)`
+  with a `dict[str, tuple[str, Callable]]` mapping a display label to a
+  `("angle" | "xyz", classmethod)` pair (`rotate_x/y/z` + `scale` for
+  Mat3; adds `translate` for Mat4). The combo box drives a `QStackedWidget`
+  that swaps between a single angle `QDoubleSpinBox` (degrees) and an
+  embedded `Vec3Widget`; changing the combo selection or the visible
+  panel's value recomputes the matrix via the stored classmethod and calls
+  `set_value` — there is no separate "Apply" button, matching
+  `TransformWidget`'s live-update pattern. `Mat2Widget` has no combo box
+  since `Mat2` has no `rotate_*`/`scale` classmethods.
 - **`widgets/glsl/`** holds four demo shaders for whatever OpenGL view a
   widget-based inspector renders into: `phong.vert`/`phong.frag` (ambient+
   diffuse+specular, uniforms `model`, `MVP`, `normal_matrix`, `light_pos`,
@@ -134,8 +156,20 @@ rebuilds `_projection`). `projection` and `view` are read-only properties;
 - `FirstPersonCamera` pitch is always clamped to [-89, 89] degrees in
   `process_mouse_movement` when `_constrain_pitch` is true (the default) —
   disabling it allows the up vector to flip.
-- `Mat4ViewWidget` is a stub with no behaviour and is not part of the
-  public `widgets` API (`__init__.py` does not export it).
+- `_MatGridWidget` (base for `Mat2Widget`/`Mat3Widget`/`Mat4Widget`) never
+  declares `valueChanged` itself — each concrete subclass must redeclare
+  `valueChanged = Signal(Mat2|Mat3|Mat4)` or `self.valueChanged.emit(...)`
+  in the base class's `set_value`/`_on_cell_changed`/method-combo handlers
+  will raise `AttributeError`.
+- `_MatGridWidget.set_value` wraps every cell spinbox in `QSignalBlocker`
+  via a `contextlib.ExitStack` (the count varies with `SIZE`) before
+  updating them, then emits `valueChanged` once itself — same
+  never-rely-on-child-signals-during-set_value rule as the vector widgets,
+  just generalised to N*N children instead of a fixed 2/3/4.
+- The Mat3/Mat4 method combo's angle and xyz parameter panels are shared
+  across every method of that kind — switching from `scale` to `translate`
+  on `Mat4Widget` keeps whatever xyz values were already entered; the
+  panels do not reset when the combo selection changes.
 
 ## Connections
 

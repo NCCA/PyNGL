@@ -2,7 +2,7 @@
 sources:
   - CLAUDE.md
   - tests/test_api_consistency.py
-synced: 4891d49afd4ef2329ac7b95298f1677fd2b3a5ef
+synced: 33b278187fbf30621d08376f7256c7bd5bb5f926
 ---
 
 # Decision log

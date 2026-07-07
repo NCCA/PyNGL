@@ -8,7 +8,7 @@ sources:
   - src/ncca/ngl/random.py
   - src/ncca/ngl/log.py
   - pyproject.toml
-synced: 4891d49afd4ef2329ac7b95298f1677fd2b3a5ef
+synced: 33b278187fbf30621d08376f7256c7bd5bb5f926
 ---
 
 # Architecture Overview
@@ -68,10 +68,11 @@ Has its own `__main__.py` for standalone demo/dev runs.
 
 **Widgets layer (`src/ncca/ngl/widgets/`, `widgets/__init__.py`).** PySide6
 (Qt) widgets for editing/displaying core NGL types in GUIs: `Vec2Widget`,
-`Vec3Widget`, `Vec4Widget`, `TransformWidget`, `LookAtWidget`,
-`RGBColourWidget`, `RGBAColourWidget`. Depends on core for the types it
-edits and on Qt for the GUI; not re-exported from top-level `ncca.ngl`. Has
-its own `glsl/` asset directory for any preview shaders.
+`Vec3Widget`, `Vec4Widget`, `Mat2Widget`, `Mat3Widget`, `Mat4Widget`,
+`TransformWidget`, `LookAtWidget`, `RGBColourWidget`, `RGBAColourWidget`.
+Depends on core for the types it edits and on Qt for the GUI; not
+re-exported from top-level `ncca.ngl`. Has its own `glsl/` asset directory
+for any preview shaders.
 
 **Other utilities (in core, `src/ncca/ngl/`).**
 
