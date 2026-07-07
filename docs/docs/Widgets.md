@@ -31,9 +31,14 @@ usage examples.
 
 ::: ncca.ngl.widgets.RGBAColourWidget
 
-## Mat4ViewWidget
+## Mat2Widget
 
-A read-only `Mat4` display. Not exported from `ncca.ngl.widgets` —
-import it from `ncca.ngl.widgets.mat4widget` if you need it.
+::: ncca.ngl.widgets.Mat2Widget
 
-::: ncca.ngl.widgets.mat4widget.Mat4ViewWidget
+## Mat3Widget
+
+::: ncca.ngl.widgets.Mat3Widget
+
+## Mat4Widget
+
+::: ncca.ngl.widgets.Mat4Widget

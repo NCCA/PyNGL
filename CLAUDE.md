@@ -100,7 +100,7 @@ Parallel rendering stack targeting `wgpu` instead of OpenGL. `base_webgpu_pipeli
 
 ### `src/ncca/ngl/widgets/`
 
-PySide6 (Qt) widgets for editing/displaying NGL types in GUIs: `vec2widget.py`/`vec3widget.py`/`vec4widget.py`, `mat4widget.py`, `transformwidget.py`, `rgbcolourwidget.py`/`rgbacolourwidget.py`, `lookatwidget.py`. Has GLSL assets under `widgets/glsl/`.
+PySide6 (Qt) widgets for editing/displaying NGL types in GUIs: `vec2widget.py`/`vec3widget.py`/`vec4widget.py`, `mat2widget.py`/`mat3widget.py`/`mat4widget.py` (editable NxN grids sharing the private `_MatGridWidget` base in `mat_grid_widget.py`; Mat3Widget/Mat4Widget add a method combo box for `rotate_x`/`rotate_y`/`rotate_z`/`scale`/`translate`), `transformwidget.py`, `rgbcolourwidget.py`/`rgbacolourwidget.py`, `lookatwidget.py`. Has GLSL assets under `widgets/glsl/`.
 
 ### API consistency conventions
 
