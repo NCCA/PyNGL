@@ -86,6 +86,25 @@ A full class listing and documentations can be found here :-
 
 The site covers the math API design rules, vectors/matrices/quaternions, transforms, cameras and projections, geometry, and the full module-by-module API reference.
 
+### Knowledge wiki
+
+Alongside the API reference, [`wiki/`](wiki/index.md) is an agent-maintained
+knowledge base about *how PyNGL works* — architecture narratives, module
+deep-dives, design decisions, and gotchas — written for both people and
+coding agents. Start at [`wiki/index.md`](wiki/index.md).
+
+Every page records which source files it describes and the commit it was
+last verified against. To check the wiki is in sync with the code:
+
+```bash
+uv run wiki/tools/check_sync.py
+```
+
+Exit code 0 means every page is fresh; stale pages are listed with the
+source files that changed. If you use Claude Code, `/wiki status`,
+`/wiki update`, and `/wiki build` maintain the wiki for you (see
+`.claude/skills/wiki/SKILL.md`).
+
 ## License
 
 See [LICENSE.txt](LICENSE.txt) or just use the [Beerware License](https://scancode-licensedb.aboutcode.org/beerware.html)
