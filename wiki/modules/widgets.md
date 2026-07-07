@@ -3,7 +3,7 @@ sources:
   - src/ncca/ngl/widgets/**
   - src/ncca/ngl/opengl/pyside_event_handling_mixin.py
   - src/ncca/ngl/first_person_camera.py
-synced: 33b278187fbf30621d08376f7256c7bd5bb5f926
+synced: 5d77fb96677b29d3a349da8f592cf1ef9c16ea7f
 ---
 
 # Widgets and Camera Controls
@@ -76,12 +76,17 @@ Every widget is a `QFrame` subclass exported from
   `Mat3Widget`/`Mat4Widget` additionally call `_add_method_combo(methods)`
   with a `dict[str, tuple[str, Callable]]` mapping a display label to a
   `("angle" | "xyz", classmethod)` pair (`rotate_x/y/z` + `scale` for
-  Mat3; adds `translate` for Mat4). The combo box drives a `QStackedWidget`
-  that swaps between a single angle `QDoubleSpinBox` (degrees) and an
-  embedded `Vec3Widget`; changing the combo selection or the visible
-  panel's value recomputes the matrix via the stored classmethod and calls
-  `set_value` — there is no separate "Apply" button, matching
-  `TransformWidget`'s live-update pattern. `Mat2Widget` has no combo box
+  Mat3; adds `translate` for Mat4). The angle `QDoubleSpinBox` (degrees)
+  sits beside the combo box in a row; an embedded `Vec3Widget` sits below
+  on its own row. `_show_panel_for` toggles each with plain
+  `setVisible()` (not a `QStackedWidget`) so the hidden one doesn't
+  reserve layout space — a `QStackedWidget` sizes itself to its *largest*
+  page, which left a large empty gap under the angle spinbox when the
+  taller `Vec3Widget` page wasn't showing. Changing the combo selection or
+  the visible panel's value recomputes the matrix via the stored
+  classmethod and calls `set_value` — there is no separate "Apply"
+  button, matching `TransformWidget`'s live-update pattern. `Mat2Widget`
+  has no combo box
   since `Mat2` has no `rotate_*`/`scale` classmethods.
 - **`widgets/glsl/`** holds four demo shaders for whatever OpenGL view a
   widget-based inspector renders into: `phong.vert`/`phong.frag` (ambient+
