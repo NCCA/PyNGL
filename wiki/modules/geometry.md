@@ -7,7 +7,7 @@ sources:
   - src/ncca/ngl/bbox.py
   - src/ncca/ngl/base_mesh.pyi
   - src/ncca/ngl/PrimData/**
-synced: 9c2b6deffde456bb528df654ca6ce5e810d8f3a8
+synced: 4891d49afd4ef2329ac7b95298f1677fd2b3a5ef
 ---
 
 # Geometry and Mesh Data

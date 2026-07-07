@@ -3,7 +3,7 @@ sources:
   - src/ncca/ngl/widgets/**
   - src/ncca/ngl/opengl/pyside_event_handling_mixin.py
   - src/ncca/ngl/first_person_camera.py
-synced: 9c2b6deffde456bb528df654ca6ce5e810d8f3a8
+synced: 4891d49afd4ef2329ac7b95298f1677fd2b3a5ef
 ---
 
 # Widgets and Camera Controls
@@ -58,9 +58,9 @@ Every widget is a `QFrame` subclass exported from
   (Eye/Look) and a world-up `QComboBox` (y-up/x-up/z-up, indexing the
   class-level `world_up` list). `_update_matrix` calls `ncca.ngl.look_at`
   and emits `valueChanged(Mat4)` — a view matrix.
-- **`Mat4ViewWidget`** (`mat4widget.py`) is currently an empty `QFrame`
-  stub (`class Mat4ViewWidget(QFrame): ...`) — not implemented, not
-  exported from `__init__.py`.
+- **`Mat4ViewWidget`** (`mat4widget.py`) is currently a placeholder
+  `QFrame` subclass with only a docstring and no body — not implemented,
+  not exported from `__init__.py`.
 - **`widgets/glsl/`** holds four demo shaders for whatever OpenGL view a
   widget-based inspector renders into: `phong.vert`/`phong.frag` (ambient+
   diffuse+specular, uniforms `model`, `MVP`, `normal_matrix`, `light_pos`,

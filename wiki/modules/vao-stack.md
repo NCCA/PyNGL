@@ -9,7 +9,7 @@ sources:
   - src/ncca/ngl/opengl/base_mesh.py
   - src/ncca/ngl/opengl/__main__.py
   - src/ncca/ngl/opengl/pipeline_demo_shaders/**
-synced: 9c2b6deffde456bb528df654ca6ce5e810d8f3a8
+synced: 4891d49afd4ef2329ac7b95298f1677fd2b3a5ef
 ---
 
 # The VAO Stack

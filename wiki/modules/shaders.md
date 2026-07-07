@@ -4,7 +4,7 @@ sources:
   - src/ncca/ngl/opengl/text.py
   - src/ncca/ngl/opengl/texture.py
   - src/ncca/ngl/opengl/shaders/**
-synced: 9c2b6deffde456bb528df654ca6ce5e810d8f3a8
+synced: 4891d49afd4ef2329ac7b95298f1677fd2b3a5ef
 ---
 
 # Shaders

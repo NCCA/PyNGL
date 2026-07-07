@@ -3,7 +3,7 @@ sources:
   - tests/conftest.py
   - CLAUDE.md
   - .github/workflows/**
-synced: 9c2b6deffde456bb528df654ca6ce5e810d8f3a8
+synced: 4891d49afd4ef2329ac7b95298f1677fd2b3a5ef
 ---
 
 # Gotchas
@@ -40,21 +40,20 @@ them the hard way.
   `docs/mkdocs.yml`. Forgetting this step means the symbol silently has
   no docs page, with no error to flag it locally.
 
-- **The docs strict-build gate exists but doesn't block anything yet.**
+- **The docs strict-build gate is now blocking.**
   `.github/workflows/docs.yml` runs a `docs-strict` job
-  (`uv run mkdocs build --strict -f docs/mkdocs.yml`) that would catch
+  (`uv run mkdocs build --strict -f docs/mkdocs.yml`) that catches
   broken references, bad `:::` targets, missing/orphaned nav entries,
-  and docstring/signature mismatches — but it has `continue-on-error:
-  true` because of a backlog of ~37 pre-existing griffe warnings, so a
-  failing strict build does not fail CI or block `gh-deploy`. Run the
-  strict build locally before committing docs/API changes; don't rely
-  on CI to catch drift.
+  and docstring/signature mismatches. The prior griffe-warning backlog
+  has been cleared, `continue-on-error` removed, so a failing strict
+  build now fails CI and blocks `gh-deploy`. Still run the strict build
+  locally before committing docs/API changes — don't discover drift
+  only in CI.
 
 - **`lint-annotations-docstrings` in `.github/workflows/uv.yml` is also
-  non-blocking** (`continue-on-error: true`), for the same reason: a
-  pre-existing backlog of missing type hints/docstrings in `src/`. New
-  or touched code must still have complete type hints and Google-style
-  docstrings — CI won't stop a regression, review must.
+  blocking now** (no `continue-on-error`): `src/` passes the `ANN`/`D`
+  rules clean, so any new or touched code missing complete type hints or
+  a Google-style docstring fails CI.
 
 - **Import OpenGL-coupled modules from `ncca.ngl.opengl`, not
   `ncca.ngl`.** The top-level `src/ncca/ngl/` package holds only
@@ -87,9 +86,9 @@ them the hard way.
   equivalent of the CI annotation/docstring check.
 - A new public symbol needs a docs `:::` directive and nav entry, or it
   is invisible on the deployed site even though the build "succeeds".
-- `docs-strict` and `lint-annotations-docstrings` failing does not fail
-  the workflow run — check their logs explicitly, don't trust the green
-  check mark alone.
+- `docs-strict` and `lint-annotations-docstrings` are blocking jobs —
+  keep the strict docs build and `ruff check src/` at zero warnings, or
+  CI fails.
 
 ## Connections
 

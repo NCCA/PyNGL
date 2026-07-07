@@ -2,7 +2,7 @@
 sources:
   - tests/test_api_consistency.py
   - CLAUDE.md
-synced: 9c2b6deffde456bb528df654ca6ce5e810d8f3a8
+synced: 4891d49afd4ef2329ac7b95298f1677fd2b3a5ef
 ---
 
 # API Conventions
@@ -56,9 +56,9 @@ module-specific errors are plain `Exception` subclasses named `<Module>Error`
 sentinel values; numeric data prefers numpy `np.float32` arrays over Python
 lists, and data-heavy classes use `__slots__`; every function/class touched
 must carry complete type hints and a Google-style docstring
-(Args/Returns/Raises) — Ruff's `ANN`/`D` rules enforce this on new/edited
-code via a non-blocking CI job while an inherited backlog is cleared
-module-by-module; standalone executable scripts use the shebang
+(Args/Returns/Raises) — Ruff's `ANN`/`D` rules enforce this and `src/`
+passes clean, so it runs as a **blocking** `lint-annotations-docstrings`
+CI job; standalone executable scripts use the shebang
 `#!/usr/bin/env -S uv run --script`; and "colour" (not "color") is the
 correct spelling throughout identifiers, docs, and variables.
 
@@ -85,7 +85,8 @@ correct spelling throughout identifiers, docs, and variables.
 - Custom exceptions are named `<Module>Error` and raised — never sentinel
   return values (`None`, `-1`, etc.) for error conditions.
 - New/edited functions and classes require full type hints and a
-  Google-style docstring; don't add to the pre-existing lint backlog.
+  Google-style docstring — the `ANN`/`D` lint job is blocking, so a
+  regression fails CI.
 - Spell it "colour", not "color", in all new identifiers, docs, and prose.
 - Executable scripts start with `#!/usr/bin/env -S uv run --script`.
 
