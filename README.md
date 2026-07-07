@@ -2,7 +2,7 @@
 
 PyNGL is the full Python version of [NGL](https://github.com/NCCA/NGL), the NCCA graphics library used for teaching 3D computer graphics at the [NCCA Bournemouth University](https://nccastaff.bournemouth.ac.uk/jmacey/). It provides a consistent set of 3D math primitives, geometry loaders, and rendering back-ends for **OpenGL**, **WebGPU**, and **Qt (PySide6)**.
 
-📖 **Full documentation, tutorials and API reference:** <https://ncca.github.io/PyNGL/>
+**Full documentation, tutorials and API reference:** <https://ncca.github.io/PyNGL/>
 
 [![UV Tests](https://github.com/NCCA/PyNGL/actions/workflows/uv.yml/badge.svg)](https://github.com/NCCA/PyNGL/actions/workflows/uv.yml)[![Sonar Scanner](https://github.com/NCCA/PyNGL/actions/workflows/sonar-scan.yml/badge.svg)](https://github.com/NCCA/PyNGL/actions/workflows/sonar-scan.yml)
 
