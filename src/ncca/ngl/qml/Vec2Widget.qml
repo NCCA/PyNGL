@@ -28,12 +28,20 @@ Frame {
         DecimalSpinBox {
             id: xSpin
             realValue: vecModel.x
-            onRealValueChanged: vecModel.x = realValue
+            onRealValueChanged: {
+                if (vecModel.x !== realValue) {
+                    vecModel.x = realValue
+                }
+            }
         }
         DecimalSpinBox {
             id: ySpin
             realValue: vecModel.y
-            onRealValueChanged: vecModel.y = realValue
+            onRealValueChanged: {
+                if (vecModel.y !== realValue) {
+                    vecModel.y = realValue
+                }
+            }
         }
     }
 }

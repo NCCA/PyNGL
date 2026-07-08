@@ -28,7 +28,7 @@ ColumnLayout {
                 enabled: !root.readOnly
                 realValue: root.model.get_cell(row, col)
                 onRealValueChanged: {
-                    if (!root.readOnly) {
+                    if (!root.readOnly && root.model.get_cell(row, col) !== realValue) {
                         root.model.set_cell(row, col, realValue)
                     }
                 }

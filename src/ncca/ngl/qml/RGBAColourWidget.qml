@@ -23,25 +23,41 @@ Frame {
             from_: 0.0
             to_: 1.0
             realValue: colourModel.r
-            onRealValueChanged: colourModel.r = realValue
+            onRealValueChanged: {
+                if (colourModel.r !== realValue) {
+                    colourModel.r = realValue
+                }
+            }
         }
         DecimalSpinBox {
             from_: 0.0
             to_: 1.0
             realValue: colourModel.g
-            onRealValueChanged: colourModel.g = realValue
+            onRealValueChanged: {
+                if (colourModel.g !== realValue) {
+                    colourModel.g = realValue
+                }
+            }
         }
         DecimalSpinBox {
             from_: 0.0
             to_: 1.0
             realValue: colourModel.b
-            onRealValueChanged: colourModel.b = realValue
+            onRealValueChanged: {
+                if (colourModel.b !== realValue) {
+                    colourModel.b = realValue
+                }
+            }
         }
         DecimalSpinBox {
             from_: 0.0
             to_: 1.0
             realValue: colourModel.a
-            onRealValueChanged: colourModel.a = realValue
+            onRealValueChanged: {
+                if (colourModel.a !== realValue) {
+                    colourModel.a = realValue
+                }
+            }
         }
         Rectangle {
             width: 20
