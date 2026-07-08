@@ -40,17 +40,29 @@ consistent with how the rest of the QML layer is tested).
   `decimals`, assign to `realValue`. `Escape` cancels, reverting the
   displayed text to the current `realValue` without committing.
 - **Middle-click + hold (or right-click + hold)**: opens a vertical `Popup`
-  anchored at the cursor listing the fixed increment tiers
-  `[100, 10, 1, 0.1, 0.01, 0.001, 0.0001]`. While the button is held,
-  vertical mouse movement highlights whichever entry the cursor is nearest
-  to; releasing the button commits the highlighted entry into `currentStep`
-  (an internal property, not written back to the external `stepSize_` — the
-  ladder selection is a per-instance runtime preference, `stepSize_` remains
-  the field's design-time default) and closes the popup. This is a
+  listing the fixed increment tiers `[100, 10, 1, 0.1, 0.01, 0.001, 0.0001]`,
+  anchored **to the left of the field** (`x = -popup.width - gap`, always
+  negative relative to the field regardless of where within it the press
+  landed), vertically positioned so the row matching the field's current
+  drag increment aligns with the press point. This is a
   **press-drag-release** gesture matching the reference image, not a
   click-to-open static menu.
 
-  **Amended:** right-click was added as an equal trigger alongside
+  **Amended (live per-row scrubbing):** while the button is held, moving the
+  mouse **vertically** selects which row (magnitude) is active — highlighted
+  in the popup — and moving the mouse **horizontally** live-scrubs the
+  field's actual value using that row's magnitude as the per-pixel step,
+  visible in the field immediately (not just after release). Switching rows
+  re-anchors the scrub's reference value and reference x-position to
+  wherever the value currently is, so changing magnitude mid-gesture never
+  causes a value jump — only subsequent horizontal movement at the new
+  magnitude does. Releasing the button commits the row's magnitude into
+  `currentStep` for future left-drags and closes the popup; the value stays
+  wherever the live scrub left it (no separate "confirm" step). This matches
+  Houdini's actual ladder behaviour more closely than the original design's
+  "pick a sensitivity, then drag separately afterward" flow.
+
+  **Amended (trigger):** right-click was added as an equal trigger alongside
   middle-click, because a laptop trackpad (particularly macOS) generally has
   no native middle-click at all — a two-finger tap/click is the trackpad's
   native secondary-click gesture and is delivered to Qt as `RightButton`,
