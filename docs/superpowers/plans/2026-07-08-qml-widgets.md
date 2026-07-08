@@ -17,6 +17,7 @@
 - Matrix cell default range: `-20.0..20.0`, step `0.01`; angle spin range `-360.0..360.0`, step `0.5` (matches `widgets/mat_grid_widget.py`).
 - Colour channel range: `0.0..1.0`, step `0.01` (matches `widgets/rgbcolourwidget.py`).
 - No colour-picker popup — swatch (`Rectangle.color`) driven by a `hex` string property only (per approved spec).
+- Vec2/3/4Widget's top-level component aliases for the vector components are named `xValue`/`yValue`/`zValue`/`wValue` (NOT bare `x`/`y`/`z`/`w`) — `Frame` derives from `Item`, which declares `x`/`y`/`z` as Qt `FINAL` properties, so `property alias x: vecModel.x` on a `Frame`-rooted component is rejected by the QML engine at load time ("Cannot override FINAL property"). Discovered and fixed during Task 11's implementation; every task that binds to a `Vec2Widget`/`Vec3Widget`/`Vec4Widget` instance's component values (Mat3/Mat4's embedded `xyzWidget`, Transform/LookAtWidget's Position/Rotation/Scale/Eye/Look sub-widgets, `main.qml`, the tutorial doc) uses `xValue`/`yValue`/`zValue`/`wValue`. The underlying `Vec2Model`/`Vec3Model`/`Vec4Model` Python properties are unaffected and remain plain `x`/`y`/`z`/`w` (they're not QtQuick `Item`s, so no collision there).
 - Model-layer tests use the existing `qt_app`/`qtbot` fixtures from `tests/conftest.py`, marked `qt` (auto-deselected from the default `uv run pytest` run, run via `uv run pytest -m qt`).
 - Every new public class needs a complete Google-style docstring and type hints (`ruff check src/` enforces `ANN`/`D` rules — this is a blocking CI job).
 - Doc-sync: any new public class/module needs a `::: ncca.ngl.qml...` entry in a new `docs/docs/QmlWidgets.md`, a nav entry in `docs/mkdocs.yml`, and `uv run --with mkdocs --with "mkdocstrings[python]" mkdocs build --strict -f docs/mkdocs.yml` must pass with zero warnings before the final commit.
@@ -2313,8 +2314,8 @@ Frame {
     id: root
 
     property string name: ""
-    property alias x: vecModel.x
-    property alias y: vecModel.y
+    property alias xValue: vecModel.x
+    property alias yValue: vecModel.y
     property alias xFrom: xSpin.from_
     property alias xTo: xSpin.to_
     property alias yFrom: ySpin.from_
@@ -2355,9 +2356,9 @@ Frame {
     id: root
 
     property string name: ""
-    property alias x: vecModel.x
-    property alias y: vecModel.y
-    property alias z: vecModel.z
+    property alias xValue: vecModel.x
+    property alias yValue: vecModel.y
+    property alias zValue: vecModel.z
     property alias xFrom: xSpin.from_
     property alias xTo: xSpin.to_
     property alias yFrom: ySpin.from_
@@ -2405,10 +2406,10 @@ Frame {
     id: root
 
     property string name: ""
-    property alias x: vecModel.x
-    property alias y: vecModel.y
-    property alias z: vecModel.z
-    property alias w: vecModel.w
+    property alias xValue: vecModel.x
+    property alias yValue: vecModel.y
+    property alias zValue: vecModel.z
+    property alias wValue: vecModel.w
     property alias xFrom: xSpin.from_
     property alias xTo: xSpin.to_
     property alias yFrom: ySpin.from_
@@ -2637,12 +2638,12 @@ Frame {
                 id: xyzWidget
                 visible: mat3Model.method_kind(methodCombo.currentText) === "xyz"
                 name: "xyz"
-                x: 1.0
-                y: 1.0
-                z: 1.0
+                xValue: 1.0
+                yValue: 1.0
+                zValue: 1.0
                 onValueChanged: {
                     if (visible) {
-                        mat3Model.apply_xyz_method(methodCombo.currentText, x, y, z)
+                        mat3Model.apply_xyz_method(methodCombo.currentText, xValue, yValue, zValue)
                     }
                 }
             }
@@ -2708,12 +2709,12 @@ Frame {
                 id: xyzWidget
                 visible: mat4Model.method_kind(methodCombo.currentText) === "xyz"
                 name: "xyz"
-                x: 1.0
-                y: 1.0
-                z: 1.0
+                xValue: 1.0
+                yValue: 1.0
+                zValue: 1.0
                 onValueChanged: {
                     if (visible) {
-                        mat4Model.apply_xyz_method(methodCombo.currentText, x, y, z)
+                        mat4Model.apply_xyz_method(methodCombo.currentText, xValue, yValue, zValue)
                     }
                 }
             }
@@ -2787,46 +2788,46 @@ Frame {
 
             Vec3Widget {
                 name: "Position"
-                x: txModel.position.x
-                y: txModel.position.y
-                z: txModel.position.z
+                xValue: txModel.position.x
+                yValue: txModel.position.y
+                zValue: txModel.position.z
                 xFrom: -20.0; xTo: 20.0
                 yFrom: -20.0; yTo: 20.0
                 zFrom: -20.0; zTo: 20.0
                 onValueChanged: {
-                    txModel.position.x = x
-                    txModel.position.y = y
-                    txModel.position.z = z
+                    txModel.position.x = xValue
+                    txModel.position.y = yValue
+                    txModel.position.z = zValue
                 }
             }
 
             Vec3Widget {
                 name: "Rotation"
-                x: txModel.rotation.x
-                y: txModel.rotation.y
-                z: txModel.rotation.z
+                xValue: txModel.rotation.x
+                yValue: txModel.rotation.y
+                zValue: txModel.rotation.z
                 xFrom: -360.0; xTo: 360.0
                 yFrom: -360.0; yTo: 360.0
                 zFrom: -360.0; zTo: 360.0
                 onValueChanged: {
-                    txModel.rotation.x = x
-                    txModel.rotation.y = y
-                    txModel.rotation.z = z
+                    txModel.rotation.x = xValue
+                    txModel.rotation.y = yValue
+                    txModel.rotation.z = zValue
                 }
             }
 
             Vec3Widget {
                 name: "Scale"
-                x: txModel.scale.x
-                y: txModel.scale.y
-                z: txModel.scale.z
+                xValue: txModel.scale.x
+                yValue: txModel.scale.y
+                zValue: txModel.scale.z
                 xFrom: -20.0; xTo: 20.0
                 yFrom: -20.0; yTo: 20.0
                 zFrom: -20.0; zTo: 20.0
                 onValueChanged: {
-                    txModel.scale.x = x
-                    txModel.scale.y = y
-                    txModel.scale.z = z
+                    txModel.scale.x = xValue
+                    txModel.scale.y = yValue
+                    txModel.scale.z = zValue
                 }
             }
 
@@ -2876,31 +2877,31 @@ Frame {
 
             Vec3Widget {
                 name: "Eye"
-                x: lookAtModel.eye.x
-                y: lookAtModel.eye.y
-                z: lookAtModel.eye.z
+                xValue: lookAtModel.eye.x
+                yValue: lookAtModel.eye.y
+                zValue: lookAtModel.eye.z
                 xFrom: -20.0; xTo: 20.0
                 yFrom: -20.0; yTo: 20.0
                 zFrom: -20.0; zTo: 20.0
                 onValueChanged: {
-                    lookAtModel.eye.x = x
-                    lookAtModel.eye.y = y
-                    lookAtModel.eye.z = z
+                    lookAtModel.eye.x = xValue
+                    lookAtModel.eye.y = yValue
+                    lookAtModel.eye.z = zValue
                 }
             }
 
             Vec3Widget {
                 name: "Look"
-                x: lookAtModel.look.x
-                y: lookAtModel.look.y
-                z: lookAtModel.look.z
+                xValue: lookAtModel.look.x
+                yValue: lookAtModel.look.y
+                zValue: lookAtModel.look.z
                 xFrom: -20.0; xTo: 20.0
                 yFrom: -20.0; yTo: 20.0
                 zFrom: -20.0; zTo: 20.0
                 onValueChanged: {
-                    lookAtModel.look.x = x
-                    lookAtModel.look.y = y
-                    lookAtModel.look.z = z
+                    lookAtModel.look.x = xValue
+                    lookAtModel.look.y = yValue
+                    lookAtModel.look.z = zValue
                 }
             }
 
@@ -3112,36 +3113,36 @@ ApplicationWindow {
             Vec2Widget {
                 id: vec2Widget
                 name: "Vec2 Widget"
-                x: 1.0
-                y: 2.0
+                xValue: 1.0
+                yValue: 2.0
             }
             Label {
-                text: "[" + vec2Widget.x.toFixed(2) + ", " + vec2Widget.y.toFixed(2) + "]"
+                text: "[" + vec2Widget.xValue.toFixed(2) + ", " + vec2Widget.yValue.toFixed(2) + "]"
             }
 
             Vec3Widget {
                 id: vec3Widget
                 name: "Vec3 Widget"
-                x: 1.0
-                y: 2.0
-                z: 3.0
+                xValue: 1.0
+                yValue: 2.0
+                zValue: 3.0
             }
             Label {
-                text: "[" + vec3Widget.x.toFixed(2) + ", " + vec3Widget.y.toFixed(2)
-                    + ", " + vec3Widget.z.toFixed(2) + "]"
+                text: "[" + vec3Widget.xValue.toFixed(2) + ", " + vec3Widget.yValue.toFixed(2)
+                    + ", " + vec3Widget.zValue.toFixed(2) + "]"
             }
 
             Vec4Widget {
                 id: vec4Widget
                 name: "Vec4 Widget"
-                x: 1.0
-                y: 2.0
-                z: 3.0
-                w: 1.0
+                xValue: 1.0
+                yValue: 2.0
+                zValue: 3.0
+                wValue: 1.0
             }
             Label {
-                text: "[" + vec4Widget.x.toFixed(2) + ", " + vec4Widget.y.toFixed(2)
-                    + ", " + vec4Widget.z.toFixed(2) + ", " + vec4Widget.w.toFixed(2) + "]"
+                text: "[" + vec4Widget.xValue.toFixed(2) + ", " + vec4Widget.yValue.toFixed(2)
+                    + ", " + vec4Widget.zValue.toFixed(2) + ", " + vec4Widget.wValue.toFixed(2) + "]"
             }
 
             Mat2Widget { id: mat2Widget; name: "Mat2 Widget" }
@@ -3371,8 +3372,8 @@ uv run python -m ncca.ngl.qml
 Unlike the PySide6 widgets (which emit the actual `Vec3`/`Mat4` object),
 the QML signals are plain no-argument notifications — QML/JS can't hold a
 numpy-backed `ncca.ngl` object directly, so read the value back through the
-widget's aliased properties (`x`/`y`/`z`/...) or its `model.get_value()`
-slot.
+widget's aliased properties (`xValue`/`yValue`/`zValue`/...) or its
+`model.get_value()` slot.
 
 ## Using a widget in your own `.qml` file
 
@@ -3390,8 +3391,8 @@ ColumnLayout {
     Vec3Widget {
         id: position
         name: "Position"
-        x: 0.0; y: 1.0; z: 0.0
-        onValueChanged: console.log(position.x, position.y, position.z)
+        xValue: 0.0; yValue: 1.0; zValue: 0.0
+        onValueChanged: console.log(position.xValue, position.yValue, position.zValue)
     }
 }
 ```
