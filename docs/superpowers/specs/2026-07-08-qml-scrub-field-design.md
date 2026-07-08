@@ -39,15 +39,23 @@ consistent with how the rest of the QML layer is tested).
   or focus-out commits: parse as float, clamp to `[from_, to_]`, round to
   `decimals`, assign to `realValue`. `Escape` cancels, reverting the
   displayed text to the current `realValue` without committing.
-- **Middle-click + hold**: opens a vertical `Popup` anchored at the cursor
-  listing the fixed increment tiers `[100, 10, 1, 0.1, 0.01, 0.001, 0.0001]`.
-  While the button is held, vertical mouse movement highlights whichever
-  entry the cursor is nearest to; releasing the middle button commits the
-  highlighted entry into `currentStep` (an internal property, not written
-  back to the external `stepSize_` — the ladder selection is a per-instance
-  runtime preference, `stepSize_` remains the field's design-time default)
-  and closes the popup. This is a **press-drag-release** gesture matching
-  the reference image, not a click-to-open static menu.
+- **Middle-click + hold (or right-click + hold)**: opens a vertical `Popup`
+  anchored at the cursor listing the fixed increment tiers
+  `[100, 10, 1, 0.1, 0.01, 0.001, 0.0001]`. While the button is held,
+  vertical mouse movement highlights whichever entry the cursor is nearest
+  to; releasing the button commits the highlighted entry into `currentStep`
+  (an internal property, not written back to the external `stepSize_` — the
+  ladder selection is a per-instance runtime preference, `stepSize_` remains
+  the field's design-time default) and closes the popup. This is a
+  **press-drag-release** gesture matching the reference image, not a
+  click-to-open static menu.
+
+  **Amended:** right-click was added as an equal trigger alongside
+  middle-click, because a laptop trackpad (particularly macOS) generally has
+  no native middle-click at all — a two-finger tap/click is the trackpad's
+  native secondary-click gesture and is delivered to Qt as `RightButton`,
+  not `MiddleButton`. Without this, trackpad users had no way to open the
+  ladder at all.
 
 ## Visual design
 
