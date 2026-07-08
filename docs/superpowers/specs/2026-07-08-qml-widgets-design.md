@@ -106,12 +106,18 @@ class Vec3Model(QObject):
 - `RGBColourModel`/`RGBAColourModel` expose `r/g/b[/a]` floats and a computed
   `hex` string property for the QML swatch `Rectangle.color` binding.
 
-### Colour widgets — no picker popup
+### Colour widgets — picker popup
 
-The QML colour widgets are spinbox-driven only (r/g/b[/a] `DecimalSpinBox`es
+**Amended after initial implementation:** the swatch `Rectangle` is clickable
+and opens a `Qt.labs.platform.ColorDialog` (with `ShowAlphaChannel` on the
+RGBA widget), writing the picked colour back into `r`/`g`/`b`[`/a`]. This
+supersedes the original decision below to skip a picker, once cross-platform
+`ColorDialog` support was confirmed adequate for this project's use.
+
+~~The QML colour widgets are spinbox-driven only (r/g/b[/a] `DecimalSpinBox`es
 + a live swatch `Rectangle`), with no `ColorDialog` popup. `Qt.labs.platform`'s
 `ColorDialog` has patchier cross-platform support in QML than `QColorDialog`
-does in QtWidgets, and the spinboxes already give full editing capability.
+does in QtWidgets, and the spinboxes already give full editing capability.~~
 
 ## View layer (QML) & registration mechanics
 

@@ -24,8 +24,8 @@ uv run python -m ncca.ngl.qml
 | `Mat4Widget` | 4x4 grid + reset buttons + method combo | `valueChanged()` |
 | `TransformWidget` | position / rotation / scale | `valueChanged()` |
 | `LookAtWidget` | eye / look / up | `valueChanged()` (a `look_at` view matrix) |
-| `RGBColourWidget` | RGB spin boxes + swatch | `colourChanged()` |
-| `RGBAColourWidget` | RGBA spin boxes + swatch | `colourChanged()` |
+| `RGBColourWidget` | RGB spin boxes + swatch + colour picker | `colourChanged()` |
+| `RGBAColourWidget` | RGBA spin boxes + swatch + colour picker | `colourChanged()` |
 
 Unlike the PySide6 widgets (which emit the actual `Vec3`/`Mat4` object),
 the QML signals are plain no-argument notifications — QML/JS can't hold a
