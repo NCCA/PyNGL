@@ -95,20 +95,27 @@ Item {
         id: mouseArea
         anchors.fill: parent
         hoverEnabled: true
-        acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+        acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
         cursorShape: Qt.SizeHorCursor
 
         onPressed: (mouse) => {
-            if (mouse.button === Qt.LeftButton) {
+            // MiddleButton for a real mouse; RightButton too since a
+            // trackpad's two-finger click (macOS) has no middle-click
+            // equivalent and reports as RightButton instead.
+            if (mouse.button === Qt.MiddleButton || mouse.button === Qt.RightButton) {
+                ladder.startAt(mouse.x, mouse.y)
+            } else if (mouse.button === Qt.LeftButton) {
                 root._dragStartX = mouse.x
                 root._dragStartValue = root.realValue
                 root._dragging = false
-            } else if (mouse.button === Qt.MiddleButton) {
-                ladder.startAt(mouse.x, mouse.y)
             }
         }
 
         onPositionChanged: (mouse) => {
+            if (ladder.visible) {
+                ladder.updateHighlight(mouse.y)
+                return
+            }
             if (pressedButtons & Qt.LeftButton) {
                 var dx = mouse.x - root._dragStartX
                 if (!root._dragging && Math.abs(dx) > root._dragThreshold) {
@@ -118,19 +125,19 @@ Item {
                     var steps = Math.round(dx / root._pixelsPerStep)
                     root.realValue = root._clamp(root._dragStartValue + steps * root.currentStep)
                 }
-            } else if (ladder.visible) {
-                ladder.updateHighlight(mouse.y)
             }
         }
 
         onReleased: (mouse) => {
+            if (ladder.visible) {
+                ladder.finish()
+                return
+            }
             if (mouse.button === Qt.LeftButton) {
                 if (!root._dragging) {
                     root._editing = true
                 }
                 root._dragging = false
-            } else if (mouse.button === Qt.MiddleButton) {
-                ladder.finish()
             }
         }
     }
