@@ -113,7 +113,7 @@ Item {
 
         onPositionChanged: (mouse) => {
             if (ladder.visible) {
-                ladder.updateHighlight(mouse.y)
+                ladder.updateHighlight(mouse.x, mouse.y)
                 return
             }
             if (pressedButtons & Qt.LeftButton) {
@@ -152,19 +152,34 @@ Item {
         property var steps: [100, 10, 1, 0.1, 0.01, 0.001, 0.0001]
         property int highlightedIndex: -1
         property int rowHeightPx: 22
+        property real _baseValue: 0
+        property real _baseX: 0
+        readonly property int _gap: 6
 
         function startAt(localX, localY) {
             highlightedIndex = steps.indexOf(root.currentStep)
             if (highlightedIndex < 0) highlightedIndex = 2
-            x = localX - width / 2
+            // Anchor to the left of the field, regardless of press position.
+            x = -width - _gap
             y = localY - (highlightedIndex + 0.5) * rowHeightPx
+            _baseValue = root.realValue
+            _baseX = localX
             open()
         }
 
-        function updateHighlight(localY) {
+        function updateHighlight(localX, localY) {
             var relativeY = localY - y
             var idx = Math.floor(relativeY / rowHeightPx)
-            highlightedIndex = Math.max(0, Math.min(steps.length - 1, idx))
+            idx = Math.max(0, Math.min(steps.length - 1, idx))
+            if (idx !== highlightedIndex) {
+                // Re-anchor so switching rows never jumps the value.
+                highlightedIndex = idx
+                _baseValue = root.realValue
+                _baseX = localX
+            }
+            var dx = localX - _baseX
+            var stepsMoved = Math.round(dx / root._pixelsPerStep)
+            root.realValue = root._clamp(_baseValue + stepsMoved * steps[highlightedIndex])
         }
 
         function finish() {
