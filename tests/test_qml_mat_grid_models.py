@@ -1,10 +1,11 @@
 import pytest
 
-from ncca.ngl import Mat2
+from ncca.ngl import Mat2, Mat3
 from ncca.ngl.mat_base import MatrixError
 
 WIDGET_CASES = [
     ("ncca.ngl.qml.mat2_model", "Mat2Model", Mat2, 2),
+    ("ncca.ngl.qml.mat3_model", "Mat3Model", Mat3, 3),
 ]
 
 

@@ -11,6 +11,7 @@ __author__ = "Jon Macey jmacey@bournemouth.ac.uk"
 __license__ = "MIT"
 
 from .mat2_model import Mat2Model
+from .mat3_model import Mat3Model
 from .vec2_model import Vec2Model
 from .vec3_model import Vec3Model
 from .vec4_model import Vec4Model
@@ -20,4 +21,5 @@ __all__ = [
     "Vec3Model",
     "Vec4Model",
     "Mat2Model",
+    "Mat3Model",
 ]
