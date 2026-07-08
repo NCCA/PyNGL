@@ -30,6 +30,7 @@ Frame {
             visible: toggle.checked
 
             Vec3Widget {
+                id: positionWidget
                 name: "Position"
                 xValue: txModel.position.x
                 yValue: txModel.position.y
@@ -37,7 +38,10 @@ Frame {
                 xFrom: -20.0; xTo: 20.0
                 yFrom: -20.0; yTo: 20.0
                 zFrom: -20.0; zTo: 20.0
+                property bool _ready: false
+                Component.onCompleted: _ready = true
                 onValueChanged: {
+                    if (!_ready) return
                     if (txModel.position.x !== xValue) txModel.position.x = xValue
                     if (txModel.position.y !== yValue) txModel.position.y = yValue
                     if (txModel.position.z !== zValue) txModel.position.z = zValue
@@ -45,6 +49,7 @@ Frame {
             }
 
             Vec3Widget {
+                id: rotationWidget
                 name: "Rotation"
                 xValue: txModel.rotation.x
                 yValue: txModel.rotation.y
@@ -52,7 +57,10 @@ Frame {
                 xFrom: -360.0; xTo: 360.0
                 yFrom: -360.0; yTo: 360.0
                 zFrom: -360.0; zTo: 360.0
+                property bool _ready: false
+                Component.onCompleted: _ready = true
                 onValueChanged: {
+                    if (!_ready) return
                     if (txModel.rotation.x !== xValue) txModel.rotation.x = xValue
                     if (txModel.rotation.y !== yValue) txModel.rotation.y = yValue
                     if (txModel.rotation.z !== zValue) txModel.rotation.z = zValue
@@ -60,6 +68,7 @@ Frame {
             }
 
             Vec3Widget {
+                id: scaleWidget
                 name: "Scale"
                 xValue: txModel.scale.x
                 yValue: txModel.scale.y
@@ -67,7 +76,10 @@ Frame {
                 xFrom: -20.0; xTo: 20.0
                 yFrom: -20.0; yTo: 20.0
                 zFrom: -20.0; zTo: 20.0
+                property bool _ready: false
+                Component.onCompleted: _ready = true
                 onValueChanged: {
+                    if (!_ready) return
                     if (txModel.scale.x !== xValue) txModel.scale.x = xValue
                     if (txModel.scale.y !== yValue) txModel.scale.y = yValue
                     if (txModel.scale.z !== zValue) txModel.scale.z = zValue

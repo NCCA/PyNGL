@@ -30,6 +30,7 @@ Frame {
             visible: toggle.checked
 
             Vec3Widget {
+                id: eyeWidget
                 name: "Eye"
                 xValue: lookAtModel.eye.x
                 yValue: lookAtModel.eye.y
@@ -37,7 +38,10 @@ Frame {
                 xFrom: -20.0; xTo: 20.0
                 yFrom: -20.0; yTo: 20.0
                 zFrom: -20.0; zTo: 20.0
+                property bool _ready: false
+                Component.onCompleted: _ready = true
                 onValueChanged: {
+                    if (!_ready) return
                     if (lookAtModel.eye.x !== xValue) lookAtModel.eye.x = xValue
                     if (lookAtModel.eye.y !== yValue) lookAtModel.eye.y = yValue
                     if (lookAtModel.eye.z !== zValue) lookAtModel.eye.z = zValue
@@ -45,6 +49,7 @@ Frame {
             }
 
             Vec3Widget {
+                id: lookWidget
                 name: "Look"
                 xValue: lookAtModel.look.x
                 yValue: lookAtModel.look.y
@@ -52,7 +57,10 @@ Frame {
                 xFrom: -20.0; xTo: 20.0
                 yFrom: -20.0; yTo: 20.0
                 zFrom: -20.0; zTo: 20.0
+                property bool _ready: false
+                Component.onCompleted: _ready = true
                 onValueChanged: {
+                    if (!_ready) return
                     if (lookAtModel.look.x !== xValue) lookAtModel.look.x = xValue
                     if (lookAtModel.look.y !== yValue) lookAtModel.look.y = yValue
                     if (lookAtModel.look.z !== zValue) lookAtModel.look.z = zValue
