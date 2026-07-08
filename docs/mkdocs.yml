@@ -25,6 +25,8 @@ nav:
       - Custom Pipelines: webgpu/custom_pipelines.md
   - Widgets:
       - Qt Widgets for NGL Types: widgets/index.md
+  - QML Widgets:
+      - Qt Quick Widgets for NGL Types: qml/index.md
   - API Reference:
       - Math: Math.md
       - Geometry: Geometry.md
@@ -35,6 +37,7 @@ nav:
       - Text: Text.md
       - WebGPU: WebGPU.md
       - Widgets: Widgets.md
+      - QML Widgets: QmlWidgets.md
       - Miscellaneous: Misc.md
   - About: about.md
 theme: readthedocs
