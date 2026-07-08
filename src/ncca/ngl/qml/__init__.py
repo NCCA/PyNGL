@@ -12,8 +12,10 @@ __license__ = "MIT"
 
 from .vec2_model import Vec2Model
 from .vec3_model import Vec3Model
+from .vec4_model import Vec4Model
 
 __all__ = [
     "Vec2Model",
     "Vec3Model",
+    "Vec4Model",
 ]
