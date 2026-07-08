@@ -33,6 +33,31 @@ numpy-backed `ncca.ngl` object directly, so read the value back through the
 widget's aliased properties (`xValue`/`yValue`/`zValue`/...) or its
 `model.get_value()` slot.
 
+## Editing a number: the scrub field
+
+Every numeric field in these widgets (vector components, matrix cells,
+colour channels) is a `DecimalSpinBox` — a Houdini-style drag/scrub control,
+not a conventional spin box with up/down arrows:
+
+- **Left-click and drag** left/right to scrub the value smoothly, using the
+  field's current increment (`stepSize_` by default, or whatever the ladder
+  below last selected).
+- **Left-click without dragging** puts the field into text-edit mode so you
+  can type an exact value — `Enter` commits, `Escape` cancels back to the
+  previous value.
+- **Middle-click (or right-click, i.e. a trackpad's two-finger click) and
+  hold** opens a ladder popup to the left of the field, listing magnitudes
+  `100 / 10 / 1 / .1 / .01 / .001 / .0001`. While the button is held, moving
+  the mouse **vertically** picks which magnitude is active, and moving it
+  **horizontally** scrubs the value live at that magnitude — release to
+  commit that magnitude as the field's new drag increment. This lets you
+  jump to large or very fine changes without repeatedly re-dragging at the
+  default increment.
+
+The colour widgets' swatch is also clickable: it opens a native colour
+picker (`Qt.labs.platform.ColorDialog`, with alpha support on
+`RGBAColourWidget`) that writes the picked colour back into the model.
+
 ## Using a widget in your own `.qml` file
 
 Every widget registers itself under the `ncca.ngl.qml` import, so importing
