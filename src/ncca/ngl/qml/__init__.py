@@ -10,6 +10,7 @@ except PackageNotFoundError:  # pragma: no cover
 __author__ = "Jon Macey jmacey@bournemouth.ac.uk"
 __license__ = "MIT"
 
+from .lookat_model import LookAtModel
 from .mat2_model import Mat2Model
 from .mat3_model import Mat3Model
 from .mat4_model import Mat4Model
@@ -26,4 +27,5 @@ __all__ = [
     "Mat3Model",
     "Mat4Model",
     "TransformModel",
+    "LookAtModel",
 ]
