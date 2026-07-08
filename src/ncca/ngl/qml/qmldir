@@ -1,0 +1,13 @@
+module ncca.ngl.qml
+DecimalSpinBox 1.0 DecimalSpinBox.qml
+Vec2Widget 1.0 Vec2Widget.qml
+Vec3Widget 1.0 Vec3Widget.qml
+Vec4Widget 1.0 Vec4Widget.qml
+Mat2Widget 1.0 Mat2Widget.qml
+Mat3Widget 1.0 Mat3Widget.qml
+Mat4Widget 1.0 Mat4Widget.qml
+MatrixGridWidget 1.0 MatrixGridWidget.qml
+TransformWidget 1.0 TransformWidget.qml
+LookAtWidget 1.0 LookAtWidget.qml
+RGBColourWidget 1.0 RGBColourWidget.qml
+RGBAColourWidget 1.0 RGBAColourWidget.qml
