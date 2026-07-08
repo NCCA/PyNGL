@@ -37,6 +37,7 @@ nav:
       - Text: Text.md
       - WebGPU: WebGPU.md
       - Widgets: Widgets.md
+      - QML Widgets: QmlWidgets.md
       - Miscellaneous: Misc.md
   - About: about.md
 theme: readthedocs

@@ -102,6 +102,15 @@ Parallel rendering stack targeting `wgpu` instead of OpenGL. `base_webgpu_pipeli
 
 PySide6 (Qt) widgets for editing/displaying NGL types in GUIs: `vec2widget.py`/`vec3widget.py`/`vec4widget.py`, `mat2widget.py`/`mat3widget.py`/`mat4widget.py` (editable NxN grids sharing the private `_MatGridWidget` base in `mat_grid_widget.py`; Mat3Widget/Mat4Widget add a method combo box for `rotate_x`/`rotate_y`/`rotate_z`/`scale`/`translate`), `transformwidget.py`, `rgbcolourwidget.py`/`rgbacolourwidget.py`, `lookatwidget.py`. Has GLSL assets under `widgets/glsl/`.
 
+### `src/ncca/ngl/qml/`
+
+Qt Quick (QML) equivalents of the `widgets/` PySide6 widgets: `vec2_model.py`/`vec3_model.py`/`vec4_model.py`,
+`mat_grid_model.py` (shared base) + `mat2_model.py`/`mat3_model.py`/`mat4_model.py`, `transform_model.py`,
+`lookat_model.py`, `rgb_colour_model.py`/`rgba_colour_model.py` — each a `QObject` registered as a QML type via
+`@QmlElement`, paired with a same-named `.qml` view file (`Vec3Widget.qml`, `Mat4Widget.qml`, etc.) plus shared
+`DecimalSpinBox.qml`/`MatrixGridWidget.qml` components. Has its own `__main__.py` + `main.qml` demo, run via
+`python -m ncca.ngl.qml`.
+
 ### API consistency conventions
 
 - All math classes (`Vec2/3/4`, `Mat2/3/4`, `Quaternion`) follow one contract:

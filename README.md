@@ -14,7 +14,7 @@ PyNGL is the full Python version of [NGL](https://github.com/NCCA/NGL), the NCCA
 - **Geometry** — Wavefront OBJ loading (`Obj`), procedural primitives (`PrimData` / `Primitives`), and Bézier curves.
 - **OpenGL rendering** — shader management (`ShaderLib`), VAO abstractions, textures, and freetype-based text.
 - **WebGPU rendering** — a parallel pipeline stack targeting `wgpu`.
-- **Qt widgets** — PySide6 widgets for editing/displaying NGL math types, plus camera event handling.
+- **Qt Widgets & QML** — ready-made PySide6 widgets (`ncca.ngl.widgets`) and Qt Quick components (`ncca.ngl.qml`) for editing/displaying NGL math types in a GUI, plus camera event handling.
 
 ## Installation
 
