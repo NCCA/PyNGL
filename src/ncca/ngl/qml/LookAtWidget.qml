@@ -38,9 +38,9 @@ Frame {
                 yFrom: -20.0; yTo: 20.0
                 zFrom: -20.0; zTo: 20.0
                 onValueChanged: {
-                    lookAtModel.eye.x = xValue
-                    lookAtModel.eye.y = yValue
-                    lookAtModel.eye.z = zValue
+                    if (lookAtModel.eye.x !== xValue) lookAtModel.eye.x = xValue
+                    if (lookAtModel.eye.y !== yValue) lookAtModel.eye.y = yValue
+                    if (lookAtModel.eye.z !== zValue) lookAtModel.eye.z = zValue
                 }
             }
 
@@ -53,9 +53,9 @@ Frame {
                 yFrom: -20.0; yTo: 20.0
                 zFrom: -20.0; zTo: 20.0
                 onValueChanged: {
-                    lookAtModel.look.x = xValue
-                    lookAtModel.look.y = yValue
-                    lookAtModel.look.z = zValue
+                    if (lookAtModel.look.x !== xValue) lookAtModel.look.x = xValue
+                    if (lookAtModel.look.y !== yValue) lookAtModel.look.y = yValue
+                    if (lookAtModel.look.z !== zValue) lookAtModel.look.z = zValue
                 }
             }
 

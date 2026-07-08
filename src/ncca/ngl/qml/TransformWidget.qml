@@ -38,9 +38,9 @@ Frame {
                 yFrom: -20.0; yTo: 20.0
                 zFrom: -20.0; zTo: 20.0
                 onValueChanged: {
-                    txModel.position.x = xValue
-                    txModel.position.y = yValue
-                    txModel.position.z = zValue
+                    if (txModel.position.x !== xValue) txModel.position.x = xValue
+                    if (txModel.position.y !== yValue) txModel.position.y = yValue
+                    if (txModel.position.z !== zValue) txModel.position.z = zValue
                 }
             }
 
@@ -53,9 +53,9 @@ Frame {
                 yFrom: -360.0; yTo: 360.0
                 zFrom: -360.0; zTo: 360.0
                 onValueChanged: {
-                    txModel.rotation.x = xValue
-                    txModel.rotation.y = yValue
-                    txModel.rotation.z = zValue
+                    if (txModel.rotation.x !== xValue) txModel.rotation.x = xValue
+                    if (txModel.rotation.y !== yValue) txModel.rotation.y = yValue
+                    if (txModel.rotation.z !== zValue) txModel.rotation.z = zValue
                 }
             }
 
@@ -68,9 +68,9 @@ Frame {
                 yFrom: -20.0; yTo: 20.0
                 zFrom: -20.0; zTo: 20.0
                 onValueChanged: {
-                    txModel.scale.x = xValue
-                    txModel.scale.y = yValue
-                    txModel.scale.z = zValue
+                    if (txModel.scale.x !== xValue) txModel.scale.x = xValue
+                    if (txModel.scale.y !== yValue) txModel.scale.y = yValue
+                    if (txModel.scale.z !== zValue) txModel.scale.z = zValue
                 }
             }
 
