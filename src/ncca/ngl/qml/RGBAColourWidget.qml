@@ -2,6 +2,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Qt.labs.platform
 import ncca.ngl.qml 1.0
 
 Frame {
@@ -60,10 +61,32 @@ Frame {
             }
         }
         Rectangle {
+            id: swatch
             width: 20
             height: 20
             color: colourModel.hex
             border.color: "black"
+
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                onClicked: {
+                    colourDialog.color = colourModel.hex
+                    colourDialog.open()
+                }
+            }
+        }
+    }
+
+    ColorDialog {
+        id: colourDialog
+        title: root.name.length > 0 ? root.name : "Select Colour"
+        options: ColorDialog.ShowAlphaChannel
+        onAccepted: {
+            colourModel.r = colourDialog.color.r
+            colourModel.g = colourDialog.color.g
+            colourModel.b = colourDialog.color.b
+            colourModel.a = colourDialog.color.a
         }
     }
 }
