@@ -9,5 +9,6 @@ Mat4Widget 1.0 Mat4Widget.qml
 MatrixGridWidget 1.0 MatrixGridWidget.qml
 TransformWidget 1.0 TransformWidget.qml
 LookAtWidget 1.0 LookAtWidget.qml
+PerspectiveWidget 1.0 PerspectiveWidget.qml
 RGBColourWidget 1.0 RGBColourWidget.qml
 RGBAColourWidget 1.0 RGBAColourWidget.qml

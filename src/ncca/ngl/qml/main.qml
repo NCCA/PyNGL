@@ -92,6 +92,19 @@ ApplicationWindow {
                 }
             }
 
+            PerspectiveWidget { id: perspectiveWidget; name: "Perspective Widget"; showMode: true }
+            Label {
+                id: perspectiveMatrixLabel
+                font.family: "monospace"
+                text: perspectiveWidget.model.matrix_text()
+                Connections {
+                    target: perspectiveWidget.model
+                    function onValueChanged() {
+                        perspectiveMatrixLabel.text = perspectiveWidget.model.matrix_text()
+                    }
+                }
+            }
+
             RGBColourWidget { id: rgbWidget; name: "RGB Colour Widget" }
             Item {}
 
