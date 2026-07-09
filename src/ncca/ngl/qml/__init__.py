@@ -17,6 +17,7 @@ from .lookat_model import LookAtModel
 from .mat2_model import Mat2Model
 from .mat3_model import Mat3Model
 from .mat4_model import Mat4Model
+from .perspective_model import PerspectiveModel
 from .rgb_colour_model import RGBColourModel
 from .rgba_colour_model import RGBAColourModel
 from .transform_model import TransformModel
@@ -33,6 +34,7 @@ __all__ = [
     "Mat4Model",
     "TransformModel",
     "LookAtModel",
+    "PerspectiveModel",
     "RGBColourModel",
     "RGBAColourModel",
     "import_path",
