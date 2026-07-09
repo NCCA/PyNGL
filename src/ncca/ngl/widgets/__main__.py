@@ -19,6 +19,7 @@ from ncca.ngl.widgets import (
     Mat2Widget,
     Mat3Widget,
     Mat4Widget,
+    PerspectiveWidget,
     RGBAColourWidget,
     RGBColourWidget,
     TransformWidget,
@@ -69,14 +70,17 @@ class SimpleDialog(QDialog):
         self.lookat = LookAtWidget(self, "Look At")
         grid_layout.addWidget(self.lookat, 4, 0)
 
+        self.perspective_widget = PerspectiveWidget(self, "Perspective Widget")
+        grid_layout.addWidget(self.perspective_widget, 5, 0)
+
         self.rgb_colour_widget = RGBColourWidget(
             self, "RGB Colour Widget", 1.0, 0.0, 0.0
         )
-        grid_layout.addWidget(self.rgb_colour_widget, 5, 0)
+        grid_layout.addWidget(self.rgb_colour_widget, 6, 0)
         self.rgba_colour_widget = RGBAColourWidget(
             self, "RGB Colour Widget", 1.0, 0.0, 0.0, 1.0
         )
-        grid_layout.addWidget(self.rgba_colour_widget, 6, 0)
+        grid_layout.addWidget(self.rgba_colour_widget, 7, 0)
 
         self.mat2_widget = Mat2Widget(self, "Mat2 Widget")
         grid_layout.addWidget(self.mat2_widget, 0, 2)
@@ -92,6 +96,12 @@ class SimpleDialog(QDialog):
         )
         grid_layout.addWidget(self.transform_matrix_widget, 3, 2)
         self.transform_widget.valueChanged.connect(self._update_transform_matrix)
+
+        self.perspective_matrix_widget = Mat4Widget(
+            self, "Perspective Output", read_only=True
+        )
+        grid_layout.addWidget(self.perspective_matrix_widget, 4, 2)
+        self.perspective_widget.valueChanged.connect(self._update_perspective_matrix)
 
         content = QWidget()
         content.setLayout(grid_layout)
@@ -136,6 +146,9 @@ class SimpleDialog(QDialog):
 
     def _update_transform_matrix(self, value: Mat4) -> None:
         self.transform_matrix_widget.set_value(value)
+
+    def _update_perspective_matrix(self, value: Mat4) -> None:
+        self.perspective_matrix_widget.set_value(value)
 
 
 if __name__ == "__main__":
