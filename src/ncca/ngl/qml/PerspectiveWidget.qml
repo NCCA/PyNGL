@@ -91,7 +91,6 @@ Frame {
                 Label { text: "Mode" }
                 ComboBox {
                     model: perspectiveModel.mode_names()
-                    currentIndex: perspectiveModel.modeIndex
                     onCurrentIndexChanged: perspectiveModel.modeIndex = currentIndex
                 }
             }
