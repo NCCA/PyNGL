@@ -23,6 +23,10 @@ usage examples.
 
 ::: ncca.ngl.widgets.LookAtWidget
 
+## PerspectiveWidget
+
+::: ncca.ngl.widgets.PerspectiveWidget
+
 ## RGBColourWidget
 
 ::: ncca.ngl.widgets.RGBColourWidget

@@ -23,6 +23,10 @@ usage examples.
 
 ::: ncca.ngl.qml.LookAtModel
 
+## PerspectiveModel
+
+::: ncca.ngl.qml.PerspectiveModel
+
 ## RGBColourModel
 
 ::: ncca.ngl.qml.RGBColourModel
