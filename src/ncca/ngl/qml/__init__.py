@@ -1,6 +1,9 @@
 """QML widgets exposing NGL math types to Qt Quick applications."""
 
 from importlib.metadata import PackageNotFoundError, version
+from pathlib import Path
+
+from PySide6.QtQml import QQmlEngine
 
 try:
     __version__ = version("ncca-ngl")  # pragma: no cover
@@ -32,4 +35,31 @@ __all__ = [
     "LookAtModel",
     "RGBColourModel",
     "RGBAColourModel",
+    "import_path",
+    "add_import_path",
 ]
+
+
+def import_path() -> Path:
+    """Return the directory to add to a QML engine's import path.
+
+    ``ncca.ngl.qml`` is a file-based QML module whose ``qmldir`` declares
+    ``module ncca.ngl.qml``, so ``import ncca.ngl.qml 1.0`` only resolves from
+    an external ``.qml`` file if the engine's import path is the directory that
+    *contains* the ``ncca/`` package (``parents[3]`` of this file:
+    ``qml -> ngl -> ncca -> containing dir``), not the ``qml/`` leaf directory.
+
+    This is derived from the module file rather than ``ncca.__file__`` because
+    ``ncca`` is a PEP 420 namespace package and so has no ``__file__``.
+    """
+    return Path(__file__).parents[3]
+
+
+def add_import_path(engine: QQmlEngine) -> None:
+    """Register ``ncca.ngl.qml``'s import path on a QML engine.
+
+    Call this once after constructing the engine so that ``import ncca.ngl.qml``
+    resolves in your own ``.qml`` files. Works for both ``QQmlApplicationEngine``
+    and ``QQuickWidget.engine()`` (both are ``QQmlEngine``).
+    """
+    engine.addImportPath(str(import_path()))
