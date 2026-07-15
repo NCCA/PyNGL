@@ -1,3 +1,4 @@
+import logging
 from abc import ABCMeta, abstractmethod
 from typing import List, Optional, Tuple, Union
 
@@ -6,6 +7,8 @@ import wgpu
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QColor, QFont, QImage, QPainter
 from PySide6.QtWidgets import QWidget
+
+logger = logging.getLogger(__name__)
 
 # The WebGPU spec mandates this alignment for copy_texture_to_buffer
 # (COPY_BYTES_PER_ROW_ALIGNMENT). It is not a per-GPU quirk.
@@ -313,6 +316,19 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
         resize has nothing pending, so the previous frame buffer contents
         are shown once and everything flows from the next frame on.
         """
+        # A subclass that overrides _create_render_buffer must still create the
+        # read-back ring - easiest by calling super()._create_render_buffer().
+        # Without it the copy-back below would raise AttributeError on the ring
+        # attributes, which the try/except would swallow every single frame,
+        # leaving a grey window and no obvious cause. Fail loudly instead.
+        if not getattr(self, "readback_buffers", None):
+            raise RuntimeError(
+                "WebGPUWidget read-back ring is not initialised. A subclass that "
+                "overrides _create_render_buffer() must call "
+                "super()._create_render_buffer() (or otherwise create the "
+                "readback_buffers ring) before rendering."
+            )
+
         bytes_per_row = self._calculate_aligned_row_size()
         width, height = self.texture_size
         try:
@@ -355,8 +371,11 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
 
             # Alternate: next frame writes into the buffer just drained.
             self._readback_index = read_idx
-        except Exception as e:
-            print(f"Failed to update colour buffer: {e}")
+        except Exception:
+            # A genuine (usually transient) GPU/mapping error - log it with a
+            # traceback so it is visible, and fall back to a grey frame rather
+            # than tearing down the event loop.
+            logger.exception("Failed to update colour buffer")
             if self.frame_buffer is not None:
                 self.frame_buffer.fill(128)
 
