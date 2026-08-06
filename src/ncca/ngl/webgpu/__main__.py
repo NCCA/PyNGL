@@ -3,7 +3,6 @@
 
 import sys
 import time
-from typing import Tuple
 
 import numpy as np
 import wgpu
@@ -25,16 +24,9 @@ class WebGPUScene(WebGPUWidget):
     painting, and resizing the WebGPU context.
     """
 
-    def __init__(
-        self,
-        background_colour: Tuple[float, float, float, float] = (0.4, 0.4, 0.4, 1.0),
-    ) -> None:
-        """Initialize the scene's WebGPU device, pipelines, and view state.
-
-        Args:
-            background_colour: Default RGBA clear colour for the scene.
-        """
-        super().__init__(background_colour=background_colour)
+    def __init__(self) -> None:
+        """Initialize the scene's WebGPU device, pipelines, and view state."""
+        super().__init__()
         self.setWindowTitle("WebGPU Pipeline Demo - Dynamic Background Colors")
         self.device = None
         self.pipeline = None
@@ -61,7 +53,6 @@ class WebGPUScene(WebGPUWidget):
         self._create_buffers(NUM_POINTS)
 
         self.pipelines = []
-        self.pipeline_backgrounds = {}  # Store background colors for each pipeline
 
         # Define subtle background colors for each pipeline type
         pipeline_colors = {
@@ -357,10 +348,6 @@ class WebGPUScene(WebGPUWidget):
         self.instance_positions = np.array(self.instance_positions, dtype=np.float32)
         self.instance_colours = np.array(self.instance_colours, dtype=np.float32)
 
-    def _create_render_buffer(self) -> None:
-        """Delegate to parent class method."""
-        super()._create_render_buffer()
-
     def paintWebGPU(self) -> None:
         """Paint WebGPU content.
 
@@ -369,11 +356,7 @@ class WebGPUScene(WebGPUWidget):
         # Get the current pipeline and its background color
         current_pipeline = self.pipelines[self.current_pipeline_index]
         pipeline_name = current_pipeline[2]
-        pipeline_bg_color = current_pipeline[3]
-
-        # Temporarily update the background color for this pipeline
-        original_bg_color = self.background_colour
-        self.background_colour = pipeline_bg_color
+        pipeline_bg_colour = current_pipeline[3]
 
         self.render_text(
             10,
@@ -383,9 +366,24 @@ class WebGPUScene(WebGPUWidget):
             colour=QColor(255, 255, 255),  # White text for better contrast
         )
         try:
-            # Create a new command encoder for the render pass
             command_encoder = self.device.create_command_encoder()
-            render_pass = self._create_render_pass(command_encoder)
+            render_pass = command_encoder.begin_render_pass(
+                color_attachments=[
+                    {
+                        "view": self.multisample_texture_view,
+                        "resolve_target": self.colour_buffer_texture_view,
+                        "load_op": wgpu.LoadOp.clear,
+                        "store_op": wgpu.StoreOp.store,
+                        "clear_value": pipeline_bg_colour,
+                    }
+                ],
+                depth_stencil_attachment={
+                    "view": self.depth_buffer_view,
+                    "depth_load_op": wgpu.LoadOp.clear,
+                    "depth_store_op": wgpu.StoreOp.store,
+                    "depth_clear_value": 1.0,
+                },
+            )
             self.update_uniform_buffers()
             render_pass.set_viewport(
                 0, 0, self.texture_size[0], self.texture_size[1], 0, 1
@@ -393,11 +391,9 @@ class WebGPUScene(WebGPUWidget):
             self.pipelines[self.current_pipeline_index][1](render_pass)
             render_pass.end()
             self.device.queue.submit([command_encoder.finish()])
+            self._update_colour_buffer()
         except Exception as e:
             print(f"Failed to paint WebGPU content: {e}")
-        finally:
-            # Restore original background color
-            self.background_colour = original_bg_color
 
     def resizeWebGPU(self, w: int, h: int) -> None:
         """Called whenever the window is resized.
@@ -653,11 +649,7 @@ def main() -> None:
     """Run the application, parsing arguments and showing the WebGPUScene."""
     app = QApplication(sys.argv)
 
-    # Use basic blue background as requested
-    # Each pipeline will override this with its own subtle background color
-    background_colour = (0.1, 0.1, 0.3, 1.0)  # Basic blue background
-
-    win = WebGPUScene(background_colour=background_colour)
+    win = WebGPUScene()
     win.resize(1024, 720)
     win.show()
     sys.exit(app.exec())
