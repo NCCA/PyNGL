@@ -354,6 +354,48 @@ def test_triangle_topology_wrappers(webgpu_device):
         assert pipeline._get_primitive_topology() == expected_topology
 
 
+@pytest.mark.parametrize(
+    "pipeline_type",
+    [
+        PipelineType.TRIANGLE_LIST_MULTI_COLOURED,
+        PipelineType.TRIANGLE_LIST_SINGLE_COLOUR,
+        PipelineType.TRIANGLE_STRIP_MULTI_COLOURED,
+        PipelineType.TRIANGLE_STRIP_SINGLE_COLOUR,
+    ],
+)
+def test_topology_pinned_triangle_pipelines_forward_kwargs(
+    webgpu_device, pipeline_type
+):
+    """The topology-pinned triangle pipelines are registered as factory lambdas
+    rather than classes; they must still forward arbitrary **kwargs through to
+    the underlying pipeline class instead of only accepting `device`."""
+    pipeline = PipelineFactory.create_pipeline(
+        webgpu_device, pipeline_type, data_type="Vec3", msaa_sample_count=1
+    )
+    assert pipeline._data_type == "Vec3"
+    assert pipeline.msaa_sample_count == 1
+
+
+def test_topology_pinned_single_colour_triangle_forwards_colour_kwarg(webgpu_device):
+    """Regression test: single-colour triangle factories previously only accepted
+    `device`, so a `colour` kwarg (accepted by TrianglePipelineSingleColour itself)
+    raised TypeError when routed through TRIANGLE_LIST_SINGLE_COLOUR/TRIANGLE_STRIP_SINGLE_COLOUR."""
+    pipeline = PipelineFactory.create_pipeline(
+        webgpu_device,
+        PipelineType.TRIANGLE_LIST_SINGLE_COLOUR,
+        colour=(1.0, 0.0, 0.0),
+    )
+    assert np.allclose(pipeline._colour, [1.0, 0.0, 0.0])
+
+
+def test_all_pipeline_types_registered_exactly_once():
+    """Every PipelineType enum member must have exactly one factory registered;
+    guards against a later registration silently overwriting an earlier one
+    for a different intended pipeline."""
+    registered_types = set(PipelineFactory._pipeline_registry.keys())
+    assert registered_types == set(PipelineType)
+
+
 def test_point_list_pipeline_functionality(webgpu_device, render_pass):
     """Test specific point list pipeline functionality (covers lines 197-220, 236-242, 255-267, 375-380, 397-406, 419-430, 434-436)."""
     # Test multi-coloured point list
