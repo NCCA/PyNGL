@@ -6,7 +6,7 @@ creating various pipeline types.
 """
 
 from enum import Enum
-from typing import Any, Dict, Type
+from typing import Any, Callable, Dict
 
 import wgpu
 
@@ -46,13 +46,18 @@ class PipelineType(Enum):
 # Backward compatibility alias
 BasePipeline = BaseWebGPUPipeline
 
+# A registered entry is either a pipeline class or a factory callable (e.g. a
+# lambda binding a fixed keyword like `topology`); both are called as
+# `factory(device, **kwargs)` by create_pipeline.
+PipelineFactoryFn = Callable[..., BaseWebGPUPipeline]
+
 
 class _PipelineFactory:
     """Factory for creating pipeline instances with various configurations."""
 
     def __init__(self) -> None:
         """Initialize the pipeline factory with default pipeline types."""
-        self._pipeline_registry: Dict[PipelineType, Type[BasePipeline]] = {}
+        self._pipeline_registry: Dict[PipelineType, PipelineFactoryFn] = {}
         self.register_pipeline(
             PipelineType.MULTI_COLOURED_POINTS, PointPipelineMultiColour
         )
@@ -72,72 +77,33 @@ class _PipelineFactory:
             PipelineType.SINGLE_COLOUR_TRIANGLES, TrianglePipelineSingleColour
         )
 
-        # Create wrapper classes for specific topology types
-        class TriangleListMultiColour(TrianglePipelineMultiColour):
-            """Multi-colour triangle pipeline fixed to triangle_list topology."""
-
-            def __init__(self, device: wgpu.GPUDevice) -> None:
-                """Create the pipeline with triangle_list topology."""
-                super().__init__(device, topology=wgpu.PrimitiveTopology.triangle_list)
-
-        class TriangleListSingleColour(TrianglePipelineSingleColour):
-            """Single-colour triangle pipeline fixed to triangle_list topology."""
-
-            def __init__(self, device: wgpu.GPUDevice) -> None:
-                """Create the pipeline with triangle_list topology."""
-                super().__init__(device, topology=wgpu.PrimitiveTopology.triangle_list)
-
-        class TriangleStripMultiColour(TrianglePipelineMultiColour):
-            """Multi-colour triangle pipeline fixed to triangle_strip topology."""
-
-            def __init__(self, device: wgpu.GPUDevice) -> None:
-                """Create the pipeline with triangle_strip topology."""
-                super().__init__(device, topology=wgpu.PrimitiveTopology.triangle_strip)
-
-        class TriangleStripSingleColour(TrianglePipelineSingleColour):
-            """Single-colour triangle pipeline fixed to triangle_strip topology."""
-
-            def __init__(self, device: wgpu.GPUDevice) -> None:
-                """Create the pipeline with triangle_strip topology."""
-                super().__init__(device, topology=wgpu.PrimitiveTopology.triangle_strip)
-
-        self.register_pipeline(
-            PipelineType.TRIANGLE_LIST_MULTI_COLOURED, TriangleListMultiColour
-        )
-        self.register_pipeline(
-            PipelineType.TRIANGLE_LIST_SINGLE_COLOUR, TriangleListSingleColour
-        )
-        self.register_pipeline(
-            PipelineType.TRIANGLE_STRIP_MULTI_COLOURED, TriangleStripMultiColour
-        )
-        self.register_pipeline(
-            PipelineType.TRIANGLE_STRIP_SINGLE_COLOUR, TriangleStripSingleColour
-        )
-        self.register_pipeline(
-            PipelineType.SINGLE_COLOUR_TRIANGLES, TrianglePipelineSingleColour
-        )
+        # Triangle pipelines pinned to a specific topology: registered as
+        # factory callables (rather than classes) so the fixed `topology`
+        # keyword can be bound while still forwarding any other **kwargs
+        # create_pipeline receives (e.g. `colour`, `data_type`) to the
+        # underlying pipeline class.
         self.register_pipeline(
             PipelineType.TRIANGLE_LIST_MULTI_COLOURED,
-            lambda device: TrianglePipelineMultiColour(
-                device, topology=wgpu.PrimitiveTopology.triangle_list
+            lambda device, **kwargs: TrianglePipelineMultiColour(
+                device, topology=wgpu.PrimitiveTopology.triangle_list, **kwargs
             ),
         )
         self.register_pipeline(
             PipelineType.TRIANGLE_LIST_SINGLE_COLOUR,
-            lambda device: TrianglePipelineSingleColour(
-                device, topology=wgpu.PrimitiveTopology.triangle_list
+            lambda device, **kwargs: TrianglePipelineSingleColour(
+                device, topology=wgpu.PrimitiveTopology.triangle_list, **kwargs
             ),
         )
         self.register_pipeline(
             PipelineType.TRIANGLE_STRIP_MULTI_COLOURED,
-            lambda device: TrianglePipelineMultiColour(
-                device, topology=wgpu.PrimitiveTopology.triangle_strip
+            lambda device, **kwargs: TrianglePipelineMultiColour(
+                device, topology=wgpu.PrimitiveTopology.triangle_strip, **kwargs
             ),
         )
         self.register_pipeline(
             PipelineType.TRIANGLE_STRIP_SINGLE_COLOUR,
-            lambda device: TrianglePipelineSingleColour(
-                device, topology=wgpu.PrimitiveTopology.triangle_strip
+            lambda device, **kwargs: TrianglePipelineSingleColour(
+                device, topology=wgpu.PrimitiveTopology.triangle_strip, **kwargs
             ),
         )
         self.register_pipeline(
@@ -156,15 +122,17 @@ class _PipelineFactory:
         )
 
     def register_pipeline(
-        self, pipeline_type: PipelineType, pipeline_class: Type[BaseWebGPUPipeline]
+        self, pipeline_type: PipelineType, pipeline_factory: PipelineFactoryFn
     ) -> None:
         """Register a custom pipeline type.
 
         Args:
             pipeline_type: Enum identifier for the pipeline
-            pipeline_class: Pipeline class to register
+            pipeline_factory: Pipeline class, or a factory callable with the
+                same `(device, **kwargs) -> BaseWebGPUPipeline` signature, to
+                register for this type
         """
-        self._pipeline_registry[pipeline_type] = pipeline_class
+        self._pipeline_registry[pipeline_type] = pipeline_factory
 
     def create_pipeline(
         self, device: wgpu.GPUDevice, pipeline_type: PipelineType, **kwargs: Any
@@ -187,8 +155,8 @@ class _PipelineFactory:
                 f"Unknown pipeline type: {pipeline_type}. Available types: {list(self._pipeline_registry.keys())}"
             )
 
-        pipeline_class = self._pipeline_registry[pipeline_type]
-        return pipeline_class(device, **kwargs)
+        pipeline_factory = self._pipeline_registry[pipeline_type]
+        return pipeline_factory(device, **kwargs)
 
 
 PipelineFactory = _PipelineFactory()
