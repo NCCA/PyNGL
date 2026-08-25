@@ -5,9 +5,8 @@ sources:
   - src/ncca/ngl/bezier_curve.py
   - src/ncca/ngl/plane.py
   - src/ncca/ngl/bbox.py
-  - src/ncca/ngl/base_mesh.pyi
   - src/ncca/ngl/PrimData/**
-synced: 4891d49afd4ef2329ac7b95298f1677fd2b3a5ef
+synced: d4d3b9f977bd28f6ee44f8e004068d8b1ad33f08
 ---
 
 # Geometry and Mesh Data
@@ -38,8 +37,11 @@ pre-baked complex meshes (bunny, dragon, teapot, buddha, troll, ...) from
 name. The `src/ncca/ngl/PrimData/` directory holds those baked assets:
 the individual `.npy` mesh files, the packed `Primitives.npz`, and
 `pack_arrays.py`, the small script that rebuilds the `.npz` from the
-`.npy` files. `src/ncca/ngl/base_mesh.pyi` is a top-level type stub for
-the `Face`/`BaseMesh` types that `obj.py` uses from `ncca.ngl.opengl`. `_circle_table` is a shared helper producing cos/sin lookup tables
+`.npy` files. Only the `.npz` is ever loaded at runtime — the loose
+`.npy` files are its sources, kept in the repo so it can be rebuilt but
+excluded from the wheel by `wheel-exclude` in `pyproject.toml`.
+
+`_circle_table` is a shared helper producing cos/sin lookup tables
 used by the circular-cross-section generators (cone, cylinder, capsule).
 `ncca.ngl.opengl.primitives.Primitives` (a different, OpenGL-coupled
 class) is the consumer: `Primitives.create()` calls the matching
@@ -102,6 +104,10 @@ constructs a mesh's `bbox` via `BBox.from_extents()` after computing
   `Primitives._primitive` vertex-attribute-pointer offset that assumes it.
 - `PrimData.primitive()` reads keys straight from `PrimData/Primitives.npz`;
   `Prims` enum values must stay in sync with the `.npz` key names.
+- `Primitives.npz` is the only PrimData asset shipped in the wheel. Adding a
+  baked mesh means adding the `.npy` *and* re-running `pack_arrays.py` to
+  rebuild the `.npz` — dropping a loose `.npy` in on its own works from a
+  source checkout and then fails for anyone who pip-installed.
 - OBJ face-token format detection in `Obj._parse_face` inspects only the
   *first* face token per line — an OBJ line mixing formats across
   vertices is not supported and must not be assumed to work.
