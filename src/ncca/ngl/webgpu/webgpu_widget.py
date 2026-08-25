@@ -1,3 +1,5 @@
+"""Qt widget base class hosting a WebGPU rendering surface."""
+
 import logging
 from abc import ABCMeta, abstractmethod
 from typing import List, Optional, Tuple, Union
@@ -5,7 +7,14 @@ from typing import List, Optional, Tuple, Union
 import numpy as np
 import wgpu
 from PySide6.QtCore import Qt, QTimer
-from PySide6.QtGui import QColor, QFont, QImage, QPainter
+from PySide6.QtGui import (
+    QColor,
+    QFont,
+    QImage,
+    QPainter,
+    QPaintEvent,
+    QResizeEvent,
+)
 from PySide6.QtWidgets import QWidget
 
 logger = logging.getLogger(__name__)
@@ -20,8 +29,7 @@ NUM_READBACK_BUFFERS = 2
 
 
 class QWidgetABCMeta(ABCMeta, type(QWidget)):
-    """
-    A metaclass that combines the functionality of ABCMeta and QWidget's metaclass.
+    """A metaclass that combines the functionality of ABCMeta and QWidget's metaclass.
 
     This allows the creation of abstract base classes that are also QWidgets.
     """
@@ -30,9 +38,9 @@ class QWidgetABCMeta(ABCMeta, type(QWidget)):
 
 
 class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
-    """
-    An abstract base class for widgets that render WebGPU content offscreen
-    and present it via QPainter.
+    """An abstract base class for offscreen WebGPU widgets.
+
+    The rendered content is presented via QPainter.
 
     The scene is rendered to an offscreen texture, read back to a numpy
     buffer, and blitted to the widget with QPainter. This keeps the whole
@@ -54,8 +62,7 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
     """
 
     def __init__(self) -> None:
-        """
-        Initialize the widget.
+        """Initialize the widget.
 
         Note the wgpu device is not created here; subclasses are
         responsible for creating it (self.device) before the first paint.
@@ -77,8 +84,7 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
     # Timer control
     # ------------------------------------------------------------------
     def start_update_timer(self, interval_ms: int) -> None:
-        """
-        Start the update timer with the given interval.
+        """Start the update timer with the given interval.
 
         Args:
             interval_ms (int): The interval in milliseconds.
@@ -94,9 +100,7 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
     # ------------------------------------------------------------------
     @abstractmethod
     def resizeWebGPU(self, width: int, height: int) -> None:
-        """
-        Called when the widget is resized, after the render buffers have
-        been recreated at the new size.
+        """Handle a resize, after the buffers are recreated at the new size.
 
         Subclasses should update projection matrices and any per-pipeline
         sizes here. Width and height are in device pixels.
@@ -109,8 +113,7 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
 
     @abstractmethod
     def paintWebGPU(self) -> None:
-        """
-        Render the WebGPU content.
+        """Render the WebGPU content.
 
         Called on every paint event; all the main rendering code goes
         here. Implementations should end by calling
@@ -122,9 +125,8 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
     # ------------------------------------------------------------------
     # Qt event handlers
     # ------------------------------------------------------------------
-    def resizeEvent(self, event) -> None:
-        """
-        Handle window resize.
+    def resizeEvent(self, event: QResizeEvent) -> None:
+        """Handle window resize.
 
         Recreates the render targets and the readback frame buffer at the
         new size (in device pixels), then notifies the subclass via
@@ -148,10 +150,8 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
 
         return super().resizeEvent(event)
 
-    def paintEvent(self, event) -> None:
-        """
-        Handle the paint event to render and present the WebGPU content.
-        """
+    def paintEvent(self, event: QPaintEvent) -> None:
+        """Handle the paint event to render and present the WebGPU content."""
         # The device pixel ratio can change without a resize when the
         # window moves between screens - rebuild render targets if it has.
         current_ratio = self.devicePixelRatioF()
@@ -192,17 +192,14 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
     # Buffer / texture management
     # ------------------------------------------------------------------
     def _initialize_buffer(self) -> None:
-        """
-        Initialize the numpy buffer used for the final framebuffer render.
-        """
+        """Initialize the numpy buffer used for the final framebuffer render."""
         width = max(1, int(self.width() * self.ratio))
         height = max(1, int(self.height() * self.ratio))
         self.frame_buffer = np.zeros([height, width, 4], dtype=np.uint8)
         self.texture_size = (width, height)
 
     def _create_render_buffer(self) -> None:
-        """
-        Create the render target textures and the readback buffer ring.
+        """Create the render target textures and the readback buffer ring.
 
         Requires self.device to be set. Called automatically on resize;
         subclasses should call it once after creating the device.
@@ -266,8 +263,7 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
         font: str = "Arial",
         colour: Union[QColor, Qt.GlobalColor] = Qt.black,
     ) -> None:
-        """
-        Queue text to be drawn over the rendered frame.
+        """Queue text to be drawn over the rendered frame.
 
         The text buffer is cleared each frame, so text must be re-added
         every frame (typically from paintWebGPU or a timer callback).
@@ -289,9 +285,10 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
         self.text_buffer.append((x, y, text, size, font, QColor(colour)))
 
     def _calculate_aligned_row_size(self) -> int:
-        """
-        Calculate the row stride for texture copy operations, padded to
-        the WebGPU spec's COPY_BYTES_PER_ROW_ALIGNMENT (256 bytes).
+        """Calculate the row stride for texture copy operations.
+
+        The stride is padded to the WebGPU spec's
+        COPY_BYTES_PER_ROW_ALIGNMENT (256 bytes).
         """
         bytes_per_pixel = 4  # rgba8unorm
         raw_row_size = self.texture_size[0] * bytes_per_pixel
@@ -299,16 +296,14 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
         return ((raw_row_size + alignment - 1) // alignment) * alignment
 
     def _calculate_aligned_buffer_size(self) -> int:
-        """
-        Calculate the total readback buffer size (aligned row stride times
-        the number of rows).
+        """Calculate the total readback buffer size.
+
+        This is the aligned row stride times the number of rows.
         """
         return self._calculate_aligned_row_size() * self.texture_size[1]
 
     def _update_colour_buffer(self) -> None:
-        """
-        Copy the resolved colour texture to a readback buffer, and read
-        the *previous* frame's buffer into the numpy frame buffer.
+        """Copy this frame out, and read the previous frame back in.
 
         A buffer is only ever mapped when it is not the copy target, and
         is unmapped before it becomes the copy target again - the
@@ -380,8 +375,7 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
                 self.frame_buffer.fill(128)
 
     def _present_image(self, painter: QPainter, image_data: np.ndarray) -> None:
-        """
-        Present the frame buffer on the widget.
+        """Present the frame buffer on the widget.
 
         The image is tagged with the device pixel ratio so Qt blits it
         1:1 to the physical pixels rather than rescaling a

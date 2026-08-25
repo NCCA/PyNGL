@@ -9,7 +9,7 @@ sources:
   - src/ncca/ngl/opengl/base_mesh.py
   - src/ncca/ngl/opengl/__main__.py
   - src/ncca/ngl/opengl/pipeline_demo_shaders/**
-synced: 4891d49afd4ef2329ac7b95298f1677fd2b3a5ef
+synced: cdaf11bb67c017e478348ac5591c0c90634629c7
 ---
 
 # The VAO Stack
@@ -78,7 +78,9 @@ value, re-binds its VAO in a `with` block, and calls `draw()`.
 `BaseMesh` (`base_mesh.py:25`) is the base class for loadable/generated
 mesh geometry (subclassed by `Obj`, for instance). It stores raw
 `vertex`/`normals`/`uv` lists and `faces` (list of `Face`, each holding
-parallel index lists for vertex/uv/normal). `create_vao` only supports
+parallel index lists for vertex/uv/normal, and declaring `__slots__` — it
+was long spelt `slots`, a plain class attribute that did nothing, so `Face`
+carried a `__dict__` per instance until it was corrected). `create_vao` only supports
 triangular meshes (`is_triangular` checks every face has 3 vertices;
 `_validate_triangular_mesh` raises `RuntimeError` otherwise); it flattens
 faces into interleaved `(x,y,z,nx,ny,nz,u,v)` `VertData` records (V is

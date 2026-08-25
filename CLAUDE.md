@@ -96,20 +96,21 @@ OpenGL-coupled modules (anything that directly `import OpenGL.GL`), mirroring th
 
 ### `src/ncca/ngl/webgpu/`
 
-Parallel rendering stack targeting `wgpu` instead of OpenGL. `base_webgpu_pipeline.py` is the common base; `*_pipeline.py` files (triangle, line, point, point_list, instanced_geometry, custom_shader) are concrete render pipelines; `pipeline_factory.py` mirrors the OpenGL `VAOFactory` pattern for pipelines; `pipeline_shaders.py`/`webgpu_constants.py` hold shader source and enum constants. Has its own `__main__.py` for standalone demo/dev runs.
+Parallel rendering stack targeting `wgpu` instead of OpenGL. `webgpu_widget.py` (`WebGPUWidget`) is the PySide6 widget applications subclass — it renders offscreen and blits the result, so there is no OpenGL context or swapchain to manage. `base_webgpu_pipeline.py` is the common base; `*_pipeline.py` files (triangle, line, point, point_list, instanced_geometry, custom_shader) are concrete render pipelines; `pipeline_factory.py` mirrors the OpenGL `VAOFactory` pattern for pipelines; `pipeline_shaders.py`/`webgpu_constants.py` hold shader source and enum constants. Has its own `__main__.py` for standalone demo/dev runs.
 
 ### `src/ncca/ngl/widgets/`
 
-PySide6 (Qt) widgets for editing/displaying NGL types in GUIs: `vec2widget.py`/`vec3widget.py`/`vec4widget.py`, `mat2widget.py`/`mat3widget.py`/`mat4widget.py` (editable NxN grids sharing the private `_MatGridWidget` base in `mat_grid_widget.py`; Mat3Widget/Mat4Widget add a method combo box for `rotate_x`/`rotate_y`/`rotate_z`/`scale`/`translate`), `transformwidget.py`, `rgbcolourwidget.py`/`rgbacolourwidget.py`, `lookatwidget.py`. Has GLSL assets under `widgets/glsl/`.
+PySide6 (Qt) widgets for editing/displaying NGL types in GUIs: `vec2widget.py`/`vec3widget.py`/`vec4widget.py`, `mat2widget.py`/`mat3widget.py`/`mat4widget.py` (editable NxN grids sharing the private `_MatGridWidget` base in `mat_grid_widget.py`; Mat3Widget/Mat4Widget add a method combo box for `rotate_x`/`rotate_y`/`rotate_z`/`scale`/`translate`), `transformwidget.py`, `rgbcolourwidget.py`/`rgbacolourwidget.py`, `lookatwidget.py`, `perspectivewidget.py`. Has GLSL assets under `widgets/glsl/`.
 
 ### `src/ncca/ngl/qml/`
 
 Qt Quick (QML) equivalents of the `widgets/` PySide6 widgets: `vec2_model.py`/`vec3_model.py`/`vec4_model.py`,
 `mat_grid_model.py` (shared base) + `mat2_model.py`/`mat3_model.py`/`mat4_model.py`, `transform_model.py`,
-`lookat_model.py`, `rgb_colour_model.py`/`rgba_colour_model.py` — each a `QObject` registered as a QML type via
+`lookat_model.py`, `perspective_model.py`, `rgb_colour_model.py`/`rgba_colour_model.py` — each a `QObject` registered as a QML type via
 `@QmlElement`, paired with a same-named `.qml` view file (`Vec3Widget.qml`, `Mat4Widget.qml`, etc.) plus shared
-`DecimalSpinBox.qml`/`MatrixGridWidget.qml` components. Has its own `__main__.py` + `main.qml` demo, run via
-`python -m ncca.ngl.qml`.
+`DecimalSpinBox.qml`/`MatrixGridWidget.qml` components. It is a file-based QML module (`qmldir` declares
+`module ncca.ngl.qml`), so external `.qml` files only resolve `import ncca.ngl.qml 1.0` after calling the exported
+`add_import_path(engine)`. Has its own `__main__.py` + `main.qml` demo, run via `python -m ncca.ngl.qml`.
 
 ### API consistency conventions
 

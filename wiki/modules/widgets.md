@@ -3,7 +3,7 @@ sources:
   - src/ncca/ngl/widgets/**
   - src/ncca/ngl/opengl/pyside_event_handling_mixin.py
   - src/ncca/ngl/first_person_camera.py
-synced: 060d5fd52e6f85ca18c0351723becf3285f7ddd8
+synced: cdaf11bb67c017e478348ac5591c0c90634629c7
 ---
 
 # Widgets and Camera Controls
@@ -59,6 +59,16 @@ Every widget is a `QFrame` subclass exported from
   (Eye/Look) and a world-up `QComboBox` (y-up/x-up/z-up, indexing the
   class-level `world_up` list). `_update_matrix` calls `ncca.ngl.look_at`
   and emits `valueChanged(Mat4)` — a view matrix.
+- **`PerspectiveWidget`** (`perspectivewidget.py`) is the projection-matrix
+  counterpart to `LookAtWidget`: four `QDoubleSpinBox` rows (fov in degrees,
+  aspect, near, far) in the same collapsible `QToolButton` section, whose
+  `_update_matrix` calls `ncca.ngl.perspective(fov, aspect, near, far, mode)`
+  and emits `valueChanged(Mat4)`. `mode` is a `PerspMode` defaulting to
+  `PerspMode.OpenGL`; the `show_mode: bool = False` constructor kwarg adds an
+  OpenGL/Vulkan/WebGPU `QComboBox` for it, and `set_mode` accepts either a
+  `PerspMode` or a combo index whether or not that box is shown. Every field
+  has a `get_*`/`set_*` pair and a Qt `Property`, plus a read-only `matrix`
+  property for the current result.
 - **`Mat2Widget` / `Mat3Widget` / `Mat4Widget`** (`mat2widget.py`,
   `mat3widget.py`, `mat4widget.py`) each edit an NxN matrix as a grid of
   `QDoubleSpinBox`es, plus Identity/Zero/Transpose/Inverse reset buttons.
@@ -107,7 +117,10 @@ Every widget is a `QFrame` subclass exported from
   `ShaderLib` itself.
 - **`widgets/__main__.py`** is a standalone demo (`SimpleDialog`) wiring up
   one instance of every widget in a `QGridLayout`, useful as a live
-  reference for how to construct and connect each widget.
+  reference for how to construct and connect each widget. The grid sits
+  inside a `QScrollArea` and the dialog caps its height against the
+  available screen geometry — with every widget expanded the natural height
+  runs off the bottom of a laptop screen.
 
 ### `PySideEventHandlingMixin`
 
@@ -117,14 +130,28 @@ not a plain Qt widget. `setup_event_handling()` must be called from
 `__init__` (it is not itself an `__init__`) to set up state: `rotate`/
 `translate` booleans, `spin_x_face`/`spin_y_face` accumulators, last-mouse-
 position trackers, `model_position` (`Vec3`), and sensitivity constants.
-It then supplies `keyPressEvent` (Escape closes, W/S toggle wireframe/fill
-via `glPolygonMode`, Space calls `reset_camera()`), `mousePressEvent`/
+It also stores `handle_key_shortcuts` from its kwarg of the same name
+(default `True`), and defaults a `wireframe` bool — but behind a `hasattr`
+guard, so it never stamps on a host class that already owns that attribute.
+
+It then supplies `keyPressEvent` (Escape closes, W/S set `wireframe` and
+toggle wireframe/fill via `glPolygonMode`, Space calls `reset_camera()`),
+`mousePressEvent`/
 `mouseMoveEvent`/`mouseReleaseEvent` (left button accumulates
 `spin_x_face`/`spin_y_face` from mouse delta for orbit rotation; right
 button adjusts `model_position.x`/`.y` for panning), and `wheelEvent`
 (adjusts `model_position.z` for zoom). Unhandled keys fall through to
 `super().keyPressEvent(event)` so a subclass can still add its own
-shortcuts.
+shortcuts, and with `handle_key_shortcuts=False` *every* key falls through
+untouched, for an application that wants to own its own keyboard.
+
+Escape closes `close_target()`, not `self`. The mixin gets used two ways
+round: mixed into a `QOpenGLWindow` it is already the top-level thing, but
+mixed into a `QOpenGLWidget` sitting in a `QMainWindow` beside a control
+panel, `self.close()` would hide only the viewport and leave the rest of
+the window sitting there. `close_target` walks up via `window()` where that
+method exists and returns `self` otherwise — `QWindow` has no `window()` at
+all, which is why this cannot simply be `self.window()`.
 
 ### `FirstPersonCamera`
 
@@ -156,9 +183,15 @@ rebuilds `_projection`). `projection` and `view` are read-only properties;
   `colourChanged`, not `valueChanged`, even though the underlying value is
   a plain `Vec3`/`Vec4` — don't assume the vector-widget signal name
   applies to colour widgets.
-- `TransformWidget` and `LookAtWidget` emit `Mat4`, not the `Transform`
-  object or component vectors — consumers connect to `valueChanged` and
-  receive a ready-to-use matrix.
+- `TransformWidget`, `LookAtWidget`, and `PerspectiveWidget` emit `Mat4`,
+  not the `Transform` object or component vectors — consumers connect to
+  `valueChanged` and receive a ready-to-use matrix.
+- The mixin's Escape shortcut closes `close_target()`, never `self`. A
+  subclass overriding Escape must preserve that, or the mixin stops closing
+  the top-level window when it is used as a widget inside a `QMainWindow`.
+- `setup_event_handling` only defaults `wireframe` behind a `hasattr`
+  guard, so a host class that sets its own `wireframe` keeps that value
+  whatever the call order — don't turn the guard into a plain assignment.
 - `PySideEventHandlingMixin.setup_event_handling()` must be called
   explicitly from the host window's `__init__`; the mixin defines no
   `__init__` of its own, so state attributes (`rotate`, `model_position`,

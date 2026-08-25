@@ -50,3 +50,57 @@ in particular [Vectors](tutorials/vectors.md),
 ## BezierCurve
 
 ::: ncca.ngl.BezierCurve
+
+## Utility Functions
+
+Free functions from `ncca.ngl.util`, re-exported from `ncca.ngl`. The
+camera and projection ones are explained in the
+[Cameras and Projection tutorial](tutorials/cameras_and_projection.md);
+`clamp`, `lerp`, and `calc_normal` have
+[their own tutorial](tutorials/utility_functions.md).
+
+### clamp
+
+::: ncca.ngl.clamp
+
+### lerp
+
+::: ncca.ngl.lerp
+
+### calc_normal
+
+::: ncca.ngl.calc_normal
+
+### look_at
+
+::: ncca.ngl.look_at
+
+### perspective
+
+::: ncca.ngl.perspective
+
+### PerspMode
+
+::: ncca.ngl.PerspMode
+
+### ortho
+
+::: ncca.ngl.ortho
+
+### frustum
+
+::: ncca.ngl.frustum
+
+### renderman_look_at
+
+::: ncca.ngl.renderman_look_at
+
+## Exceptions
+
+### MatrixError
+
+::: ncca.ngl.MatrixError
+
+### TransformRotationOrder
+
+::: ncca.ngl.TransformRotationOrder

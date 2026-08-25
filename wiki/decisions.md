@@ -2,7 +2,7 @@
 sources:
   - CLAUDE.md
   - tests/test_api_consistency.py
-synced: 33b278187fbf30621d08376f7256c7bd5bb5f926
+synced: cdaf11bb67c017e478348ac5591c0c90634629c7
 ---
 
 # Decision log
@@ -42,7 +42,9 @@ Each entry is a standalone decision; read any one without the others.
   conversion. `test_storage_is_float32` checks every class's `_data.dtype`.
 - **`__slots__` on data-heavy classes.** Numeric-heavy classes use
   `__slots__` to keep memory overhead down and access fast, consistent with
-  preferring numpy arrays over Python lists for numeric data.
+  preferring numpy arrays over Python lists for numeric data. Worth spelling
+  carefully: a bare `slots = (...)` is a legal, inert class attribute, so
+  the saving is silently lost with nothing to warn you.
 - **`ShaderLib` as a singleton registry, not `ShaderProgram` directly.**
   `shader.py` (one compiled shader) links into `shader_program.py` (one
   linked program with uniform setters), but application code is meant to go
@@ -85,8 +87,8 @@ Each entry is a standalone decision; read any one without the others.
 
 - `Quaternion * Vec3` is the only sanctioned exception to "`*` is scalar
   only" — do not add further exceptions without matching NGL's C++ spec.
-- Never re-export an `opengl/` or `webgpu/` module from top-level
-  `ncca.ngl.__init__`.
+- Never re-export an `opengl/`, `webgpu/`, `widgets/`, or `qml/` module
+  from top-level `ncca.ngl.__init__`.
 - Never run `ruff check --select ANN,D src/` directly; it defeats the
   `ANN401` carve-out in `pyproject.toml`.
 - New math methods that transform a vector/matrix/quaternion must return a

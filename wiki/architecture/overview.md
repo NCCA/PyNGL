@@ -8,7 +8,7 @@ sources:
   - src/ncca/ngl/random.py
   - src/ncca/ngl/log.py
   - pyproject.toml
-synced: 33b278187fbf30621d08376f7256c7bd5bb5f926
+synced: cdaf11bb67c017e478348ac5591c0c90634629c7
 ---
 
 # Architecture Overview
@@ -69,10 +69,20 @@ Has its own `__main__.py` for standalone demo/dev runs.
 **Widgets layer (`src/ncca/ngl/widgets/`, `widgets/__init__.py`).** PySide6
 (Qt) widgets for editing/displaying core NGL types in GUIs: `Vec2Widget`,
 `Vec3Widget`, `Vec4Widget`, `Mat2Widget`, `Mat3Widget`, `Mat4Widget`,
-`TransformWidget`, `LookAtWidget`, `RGBColourWidget`, `RGBAColourWidget`.
-Depends on core for the types it edits and on Qt for the GUI; not
-re-exported from top-level `ncca.ngl`. Has its own `glsl/` asset directory
-for any preview shaders.
+`TransformWidget`, `LookAtWidget`, `PerspectiveWidget`, `RGBColourWidget`,
+`RGBAColourWidget`. Depends on core for the types it edits and on Qt for
+the GUI; not re-exported from top-level `ncca.ngl`. Has its own `glsl/`
+asset directory for any preview shaders.
+
+**QML layer (`src/ncca/ngl/qml/`, `qml/__init__.py`).** The same editors
+again, for Qt Quick instead of QtWidgets: a `@QmlElement`-registered
+`QObject` model per type (`Vec3Model`, `Mat4Model`, `TransformModel`,
+`LookAtModel`, `PerspectiveModel`, `RGBColourModel`, `RGBAColourModel`, …)
+paired with a same-named `.qml` view, all declared in `qmldir` as the
+file-based module `ncca.ngl.qml`. Also Qt-dependent and not re-exported
+from top-level `ncca.ngl`. Exports `add_import_path(engine)`/`import_path()`
+so an application's own `.qml` files can resolve the module. Has its own
+`__main__.py` + `main.qml` demo.
 
 **Other utilities (in core, `src/ncca/ngl/`).**
 
@@ -99,8 +109,8 @@ for any preview shaders.
 
 - No module under `src/ncca/ngl/` (the top level) may `import OpenGL.GL`,
   `wgpu`, or `PySide6` directly — that code belongs in `opengl/`, `webgpu/`,
-  or `widgets/` respectively.
-- `opengl/`, `webgpu/`, and `widgets/` symbols are **not** re-exported from
+  `widgets/`, or `qml/` respectively.
+- `opengl/`, `webgpu/`, `widgets/`, and `qml/` symbols are **not** re-exported from
   `ncca.ngl.__init__`; callers must import from the sub-package
   (`from ncca.ngl.opengl import ShaderLib`, etc.).
 - The OpenGL and WebGPU layers intentionally mirror each other's shape
@@ -124,3 +134,4 @@ for any preview shaders.
 - [../modules/math.md](../modules/math.md) — Vec/Mat/
   Quaternion API consistency contract.
 - [../modules/widgets.md](../modules/widgets.md) — Qt widget layer detail.
+- [../modules/qml.md](../modules/qml.md) — the Qt Quick equivalent.
