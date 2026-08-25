@@ -25,7 +25,7 @@ class CustomShaderPipeline(BaseWebGPUPipeline):
         self,
         device: wgpu.GPUDevice,
         shader_source: str,
-        vertex_formats: Optional[List[Union[str, wgpu.VertexFormat]]] = None,
+        vertex_formats: Union[List[Union[str, wgpu.VertexFormat]]] = None,
         primitive_topology: wgpu.PrimitiveTopology = wgpu.PrimitiveTopology.triangle_list,
         texture_format: wgpu.TextureFormat = wgpu.TextureFormat.rgba8unorm,
         depth_format: wgpu.TextureFormat = wgpu.TextureFormat.depth24plus,
@@ -53,9 +53,7 @@ class CustomShaderPipeline(BaseWebGPUPipeline):
         self._pipeline_label = pipeline_label
 
         # Calculate stride from vertex formats
-        self._stride = sum(
-            NGLToWebGPU.stride_from_type(fmt) for fmt in self._vertex_formats
-        )
+        self._stride = sum(NGLToWebGPU.stride_from_type(fmt) for fmt in self._vertex_formats)
 
         # Initialize buffers storage
         self.vertex_buffers: Dict[int, wgpu.GPUBuffer] = {}
@@ -73,23 +71,10 @@ class CustomShaderPipeline(BaseWebGPUPipeline):
 
     def get_dtype(self) -> np.dtype:
         """Get the numpy dtype for the uniform buffer structure."""
-        if self._uniform_struct_definition:
-            # For custom uniforms, we need to parse the struct or use a default
-            # For now, use a basic MVP + colour structure
-            return np.dtype(
-                [
-                    ("MVP", np.float32, (4, 4)),
-                    ("colour", np.float32, 4),
-                ]
-            )
-        else:
-            # Default uniform structure
-            return np.dtype(
-                [
-                    ("MVP", np.float32, (4, 4)),
-                    ("colour", np.float32, 4),
-                ]
-            )
+        return np.dtype([
+            ("MVP", np.float32, (4, 4)),
+            ("colour", np.float32, 4),
+        ])
 
     def _get_shader_code(self) -> str:
         """Return the custom shader source."""
@@ -105,9 +90,7 @@ class CustomShaderPipeline(BaseWebGPUPipeline):
                     "step_mode": "vertex",
                     "attributes": [
                         {
-                            "format": NGLToWebGPU.vertex_format(
-                                self._vertex_formats[0]
-                            ),
+                            "format": NGLToWebGPU.vertex_format(self._vertex_formats[0]),
                             "offset": 0,
                             "shader_location": 0,
                         },
@@ -117,24 +100,20 @@ class CustomShaderPipeline(BaseWebGPUPipeline):
         else:
             # Multiple separate buffers or interleaved with multiple attributes
             layouts = []
-            current_offset = 0
 
             for i, fmt in enumerate(self._vertex_formats):
                 stride = NGLToWebGPU.stride_from_type(fmt)
-                layouts.append(
-                    {
-                        "array_stride": stride,
-                        "step_mode": "vertex",
-                        "attributes": [
-                            {
-                                "format": NGLToWebGPU.vertex_format(fmt),
-                                "offset": 0,
-                                "shader_location": i,
-                            },
-                        ],
-                    }
-                )
-                current_offset += stride
+                layouts.append({
+                    "array_stride": stride,
+                    "step_mode": "vertex",
+                    "attributes": [
+                        {
+                            "format": NGLToWebGPU.vertex_format(fmt),
+                            "offset": 0,
+                            "shader_location": i,
+                        },
+                    ],
+                })
 
             return layouts
 
@@ -231,9 +210,7 @@ class CustomShaderPipeline(BaseWebGPUPipeline):
 
         # Update the GPU buffer
         if self.uniform_buffer:
-            self.device.queue.write_buffer(
-                self.uniform_buffer, 0, self.uniform_data.tobytes()
-            )
+            self.device.queue.write_buffer(self.uniform_buffer, 0, self.uniform_data.tobytes())
 
     def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs: Any) -> None:
         """Render using this pipeline.
@@ -256,9 +233,7 @@ class CustomShaderPipeline(BaseWebGPUPipeline):
         render_pass.draw(self.num_vertices)
 
     @classmethod
-    def from_file(
-        cls, device: wgpu.GPUDevice, shader_file: str, **kwargs: Any
-    ) -> "CustomShaderPipeline":
+    def from_file(cls, device: wgpu.GPUDevice, shader_file: str, **kwargs: Any) -> "CustomShaderPipeline":
         """Create a CustomShaderPipeline from a WGSL file.
 
         Args:
