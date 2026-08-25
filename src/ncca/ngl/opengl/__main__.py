@@ -127,9 +127,7 @@ class OpenGLPipelineDemo(PySideEventHandlingMixin, QOpenGLWindow):
         Primitives.create(Prims.SPHERE, "demo_sphere", 0.6, 32)
         Primitives.create(Prims.TORUS, "demo_torus", 0.3, 0.8, 32, 32)
 
-        font_path = (
-            Path(__file__).resolve().parents[4] / "tests" / "files" / "Arial.ttf"
-        )
+        font_path = Path(__file__).resolve().parents[4] / "tests" / "files" / "Arial.ttf"
         Text.add_font("Arial", str(font_path), 22)
         Text.set_screen_size(self.window_width, self.window_height)
 
@@ -155,15 +153,13 @@ class OpenGLPipelineDemo(PySideEventHandlingMixin, QOpenGLWindow):
         self.stage_timer.start(STAGE_DURATION_MS)
 
     def _build_geometry(self) -> None:
-        rng = np.random.default_rng()
+        rng = np.random.default_rng(seed=12345)
 
         point_positions = rng.uniform(-3.0, 3.0, (NUM_POINTS, 3)).astype(np.float32)
         point_colours = rng.random((NUM_POINTS, 3)).astype(np.float32)
         self.points_interleaved = np.hstack([point_positions, point_colours])
 
-        line_positions = rng.uniform(-3.0, 3.0, (NUM_LINE_SEGMENTS * 2, 3)).astype(
-            np.float32
-        )
+        line_positions = rng.uniform(-3.0, 3.0, (NUM_LINE_SEGMENTS * 2, 3)).astype(np.float32)
         line_colours = rng.random((NUM_LINE_SEGMENTS * 2, 3)).astype(np.float32)
         self.lines_interleaved = np.hstack([line_positions, line_colours])
 
@@ -175,9 +171,7 @@ class OpenGLPipelineDemo(PySideEventHandlingMixin, QOpenGLWindow):
             offsets = rng.normal(size=(3, 3))
             offsets /= np.linalg.norm(offsets, axis=1, keepdims=True)
             triangle_positions[i * 3 : i * 3 + 3] = centre + offsets * radius
-        self.triangles_interleaved = np.hstack(
-            [triangle_positions.astype(np.float32), triangle_colours]
-        )
+        self.triangles_interleaved = np.hstack([triangle_positions.astype(np.float32), triangle_colours])
 
         icosahedron_rows = [pos + colour for pos, colour in _ICOSAHEDRON_VERTS]
         self.icosahedron_interleaved = np.array(icosahedron_rows, dtype=np.float32)
@@ -206,9 +200,7 @@ class OpenGLPipelineDemo(PySideEventHandlingMixin, QOpenGLWindow):
 
         self.vao_lines = VAOFactory.create_vao(VAOType.SIMPLE, gl.GL_LINES)
         with self.vao_lines:
-            data = VertexData(
-                data=self.lines_interleaved.flatten(), size=len(self.lines_interleaved)
-            )
+            data = VertexData(data=self.lines_interleaved.flatten(), size=len(self.lines_interleaved))
             self.vao_lines.set_data(data)
             self.vao_lines.set_vertex_attribute_pointer(0, 3, gl.GL_FLOAT, 24, 0)
             self.vao_lines.set_vertex_attribute_pointer(1, 3, gl.GL_FLOAT, 24, 12)
@@ -235,18 +227,12 @@ class OpenGLPipelineDemo(PySideEventHandlingMixin, QOpenGLWindow):
             self.vao_index.set_vertex_attribute_pointer(0, 3, gl.GL_FLOAT, 24, 0)
             self.vao_index.set_vertex_attribute_pointer(1, 3, gl.GL_FLOAT, 24, 12)
 
-        self.vao_multi_buffer = VAOFactory.create_vao(
-            VAOType.MULTI_BUFFER, gl.GL_TRIANGLES
-        )
+        self.vao_multi_buffer = VAOFactory.create_vao(VAOType.MULTI_BUFFER, gl.GL_TRIANGLES)
         with self.vao_multi_buffer:
-            data = VertexData(
-                data=self.boid_positions.flatten(), size=len(self.boid_positions)
-            )
+            data = VertexData(data=self.boid_positions.flatten(), size=len(self.boid_positions))
             self.vao_multi_buffer.set_data(data)
             self.vao_multi_buffer.set_vertex_attribute_pointer(0, 3, gl.GL_FLOAT, 0, 0)
-            data = VertexData(
-                data=self.boid_normals.flatten(), size=len(self.boid_normals)
-            )
+            data = VertexData(data=self.boid_normals.flatten(), size=len(self.boid_normals))
             self.vao_multi_buffer.set_data(data)
             self.vao_multi_buffer.set_vertex_attribute_pointer(1, 3, gl.GL_FLOAT, 0, 0)
 

@@ -51,9 +51,7 @@ class Image:
                 if mode == ImageModes.GRAY:
                     self._data = np.zeros((height, width), dtype=np.uint8)
                 else:
-                    self._data = np.zeros(
-                        (height, width, len(mode.value)), dtype=np.uint8
-                    )
+                    self._data = np.zeros((height, width, len(mode.value)), dtype=np.uint8)
             else:
                 self._data = None
 
@@ -101,7 +99,7 @@ class Image:
                 self._data = np.array(img)
             return True
         except Exception as e:
-            logger.error(f"Error loading image {filename}: {e}")
+            logger.exception(f"Error loading image {filename}: {e}")
             return False
 
     def save(self, filename: str) -> bool:
@@ -115,7 +113,7 @@ class Image:
             img.save(filename)
             return True
         except Exception as e:
-            logger.error(f"Error saving image {filename}: {e}")
+            logger.exception(f"Error saving image {filename}: {e}")
             return False
 
     @property
