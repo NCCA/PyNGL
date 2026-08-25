@@ -17,7 +17,7 @@ class Face:
     Holds indices for vertices, UVs, and normals.
     """
 
-    slots = ("vertex", "uv", "normal")
+    __slots__ = ("vertex", "uv", "normal")
 
     def __init__(self) -> None:
         """Create an empty face."""
