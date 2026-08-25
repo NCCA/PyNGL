@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Shaders and ShaderLib - PyNGL - NCCA Python Graphics Library</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Shaders and ShaderLib";
+        var mkdocs_page_input_path = "opengl/shaders.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> PyNGL - NCCA Python Graphics Library
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../getting_started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/method_names/">Understanding the Method Names</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/vectors/">Vectors</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/matrices/">Matrices</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/quaternions/">Quaternions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/transforms/">The Transform Class</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/cameras_and_projection/">Cameras and Projection</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/vector_arrays/">Vector Arrays</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/geometry_maths/">Geometry Maths</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/utility_functions/">Utility Functions</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">OpenGL</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../getting_started/">Getting Started with OpenGL</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Shaders and ShaderLib</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#the-built-in-shaders">The built-in shaders</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setting-uniforms">Setting uniforms</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#loading-your-own-glsl">Loading your own GLSL</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#uniform-buffer-objects">Uniform buffer objects</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#odds-and-ends">Odds and ends</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../geometry/">Geometry, Primitives, and VAOs</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">WebGPU</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/getting_started/">Getting Started with WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/builtin_pipelines/">The Built-in Pipelines</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/custom_pipelines/">Custom Pipelines</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../widgets/">Qt Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">QML Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../qml/">Qt Quick Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Math/">Math</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Geometry/">Geometry</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../VAO/">VAO</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Shaders/">Shaders</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Camera/">Camera</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../ImageAndTexture/">Image and Texture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Text/">Text</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../WebGPU/">WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Widgets/">Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../QmlWidgets/">QML Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Misc/">Miscellaneous</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../about/">About</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">PyNGL - NCCA Python Graphics Library</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">OpenGL</li>
+      <li class="breadcrumb-item active">Shaders and ShaderLib</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="shaders-and-shaderlib">Shaders and ShaderLib</h1>
+<p><code>ShaderLib</code> is a singleton registry of named, linked shader programs, and
+the conventional way application code deals with GLSL. The underlying
+<code>Shader</code> (one compiled stage) and <code>ShaderProgram</code> (a linked program with
+uniform setters) classes are available, but you rarely need them directly.</p>
+<pre><code class="language-python">from ncca.ngl.opengl import DefaultShader, ShaderLib
+</code></pre>
+<h2 id="the-built-in-shaders">The built-in shaders</h2>
+<p>Four shaders ship with the library and need no loading — just <code>use</code> them:</p>
+<pre><code class="language-python">ShaderLib.use(DefaultShader.DIFFUSE)
+</code></pre>
+<p>Each expects certain uniforms to be set — forget them and geometry
+renders black or unlit:</p>
+<table>
+<thead>
+<tr>
+<th>Shader</th>
+<th>Uniforms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DefaultShader.COLOUR</code></td>
+<td><code>MVP</code> (Mat4), <code>Colour</code> (vec4) — flat colour</td>
+</tr>
+<tr>
+<td><code>DefaultShader.DIFFUSE</code></td>
+<td><code>MVP</code>, <code>MV</code> (Mat4), <code>normalMatrix</code> (Mat3), <code>Colour</code> (vec4), <code>lightPos</code> (vec3, view space), <code>lightDiffuse</code> (vec4)</td>
+</tr>
+<tr>
+<td><code>DefaultShader.CHECKER</code></td>
+<td><code>MVP</code>, <code>normalMatrix</code> (Mat3), <code>colour1</code> / <code>colour2</code> (vec4), <code>checkOn</code> (bool), <code>checkSize</code> (float, default 10), <code>lightPos</code> (vec3), <code>lightDiffuse</code> (vec4)</td>
+</tr>
+<tr>
+<td><code>DefaultShader.TEXT</code></td>
+<td>handled for you by the <a href="../../Text/"><code>Text</code></a> class</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>normalMatrix</code> is the inverse-transpose of the model-view's upper
+3×3:</p>
+<pre><code class="language-python">mv = self.view @ model
+ShaderLib.set_uniform(&quot;normalMatrix&quot;, Mat3.from_mat4(mv).inverse().transposed())
+</code></pre>
+<h2 id="setting-uniforms">Setting uniforms</h2>
+<p><code>set_uniform</code> dispatches on the value's type — pass a math object or the
+raw components:</p>
+<pre><code class="language-python">ShaderLib.set_uniform(&quot;MVP&quot;, mvp_mat4)          # Mat4
+ShaderLib.set_uniform(&quot;normalMatrix&quot;, n_mat3)   # Mat3
+ShaderLib.set_uniform(&quot;Colour&quot;, 1.0, 0.0, 0.0, 1.0)   # vec4 as components
+ShaderLib.set_uniform(&quot;lightPos&quot;, light_vec3)   # Vec3
+ShaderLib.set_uniform(&quot;checkSize&quot;, 20.0)        # float
+ShaderLib.set_uniform(&quot;tex&quot;, 0)                 # sampler = texture unit index
+</code></pre>
+<p>Uniforms go to the <strong>currently used</strong> program, so call
+<code>ShaderLib.use(...)</code> first. When something renders wrong,
+<code>ShaderLib.print_registered_uniforms(name)</code> dumps every uniform the
+program declares — the quickest way to catch a typo'd name or a uniform
+the compiler optimised away.</p>
+<h2 id="loading-your-own-glsl">Loading your own GLSL</h2>
+<p>One call compiles, links, and registers a program under a name of your
+choice:</p>
+<pre><code class="language-python">ShaderLib.load_shader(&quot;PBR&quot;, &quot;shaders/PBRVertex.glsl&quot;, &quot;shaders/PBRFragment.glsl&quot;)
+ShaderLib.use(&quot;PBR&quot;)
+ShaderLib.set_uniform(&quot;albedo&quot;, 0.9, 0.4, 0.1)
+</code></pre>
+<p><code>load_shader</code> also accepts an optional geometry-shader path. For
+finer-grained control (loading source from strings, attaching stages by
+hand, editing source before compilation) the lower-level calls
+<code>create_shader_program</code>, <code>load_shader_source</code> /
+<code>load_shader_source_from_string</code>, <code>compile_shader</code>,
+<code>attach_shader_to_program</code>, and <code>link_program_object</code> mirror the C++ NGL
+API — and <code>edit_shader</code> / <code>reset_edits</code> do textual substitution on the
+source before compiling, which the demos use to set things like light
+counts at run time.</p>
+<h2 id="uniform-buffer-objects">Uniform buffer objects</h2>
+<p>For blocks of uniforms (lights, per-frame camera data) use a UBO with a
+numpy structured array whose layout matches the GLSL <code>uniform</code> block
+(std140 — mind the padding, as with any std140 layout):</p>
+<pre><code class="language-python">import numpy as np
+
+light_data = np.zeros(1, dtype=[(&quot;position&quot;, np.float32, 4),
+                                (&quot;colour&quot;, np.float32, 4)])
+light_data[&quot;position&quot;] = [0.0, 2.0, 2.0, 1.0]
+light_data[&quot;colour&quot;] = [1.0, 1.0, 1.0, 1.0]
+
+ShaderLib.set_uniform_buffer(&quot;LightBlock&quot;, data=light_data.data,
+                             size=light_data.data.nbytes)
+</code></pre>
+<p><code>auto_register_uniform_blocks()</code> scans the current programs for uniform
+blocks, and <code>get_uniform_block_data(...)</code> reads one back — useful in
+tests. See <code>PyNGLDemos/SimplePyNGL</code> for a full PBR + UBO example.</p>
+<h2 id="odds-and-ends">Odds and ends</h2>
+<ul>
+<li><code>ShaderLib.get_program_id(name)</code> returns the raw GL program id when
+  you need to make PyOpenGL calls the wrapper doesn't cover.</li>
+<li><code>ShaderLib.get_current_shader_name()</code> tells you what <code>use</code> last
+  activated; <code>ShaderLib.use(None)</code> switches to program 0.</li>
+<li><code>print_properties()</code> logs the active program's attributes and
+  properties to the logger / <code>NGLDebug.log</code>.</li>
+</ul>
+<p>Full API: <a href="../../Shaders/">Shaders reference</a>.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../getting_started/" class="btn btn-neutral float-left" title="Getting Started with OpenGL"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../geometry/" class="btn btn-neutral float-right" title="Geometry, Primitives, and VAOs">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../getting_started/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../geometry/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Vector Arrays - PyNGL - NCCA Python Graphics Library</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Vector Arrays";
+        var mkdocs_page_input_path = "tutorials/vector_arrays.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> PyNGL - NCCA Python Graphics Library
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../getting_started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../method_names/">Understanding the Method Names</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../vectors/">Vectors</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../matrices/">Matrices</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../quaternions/">Quaternions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../transforms/">The Transform Class</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../cameras_and_projection/">Cameras and Projection</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Vector Arrays</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#creating-an-array">Creating an array</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#append-one-extend-many">append one, extend many</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#it-behaves-like-a-list">It behaves like a list</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#sending-it-to-the-gpu">Sending it to the GPU</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#worked-example-building-a-triangle-mesh">Worked example — building a triangle mesh</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#common-mistakes">Common mistakes</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../geometry_maths/">Geometry Maths</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../utility_functions/">Utility Functions</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">OpenGL</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/getting_started/">Getting Started with OpenGL</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/shaders/">Shaders and ShaderLib</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/geometry/">Geometry, Primitives, and VAOs</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">WebGPU</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/getting_started/">Getting Started with WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/builtin_pipelines/">The Built-in Pipelines</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/custom_pipelines/">Custom Pipelines</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../widgets/">Qt Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">QML Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../qml/">Qt Quick Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Math/">Math</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Geometry/">Geometry</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../VAO/">VAO</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Shaders/">Shaders</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Camera/">Camera</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../ImageAndTexture/">Image and Texture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Text/">Text</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../WebGPU/">WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Widgets/">Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../QmlWidgets/">QML Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Misc/">Miscellaneous</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../about/">About</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">PyNGL - NCCA Python Graphics Library</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Tutorials</li>
+      <li class="breadcrumb-item active">Vector Arrays</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="vector-arrays-vec2array-vec3array-vec4array">Vector Arrays :- <code>Vec2Array</code>, <code>Vec3Array</code>, <code>Vec4Array</code></h1>
+<p>Graphics APIs don't want one vector they want <em>thousands</em>, packed
+tightly together in memory. A Python <code>list</code> of <code>Vec3</code> objects is scattered
+all over memory and must be converted before the GPU can use it.</p>
+<p><code>Vec2Array</code>, <code>Vec3Array</code>, and <code>Vec4Array</code> solve this: they look like a
+Python list of vectors, but internally store everything in <strong>one
+contiguous <code>np.float32</code> numpy array</strong> — exactly the layout OpenGL and
+WebGPU expect for a vertex buffer.</p>
+<blockquote>
+<p><strong>Singular vs plural</strong> (<a href="../method_names/">grammar guide</a>): <code>Vec3</code> is
+<strong>one</strong> vector; <code>Vec3Array</code> holds <strong>many</strong>. The method names carry the
+same clue: <code>append(value)</code> takes one, <code>extend(values)</code> takes many.</p>
+</blockquote>
+<h2 id="creating-an-array">Creating an array</h2>
+<pre><code class="language-python">from ncca.ngl import Vec3, Vec3Array
+
+points = Vec3Array()                      # empty
+points = Vec3Array(100)                   # 100 zero vectors, ready to fill in
+points = Vec3Array([Vec3(1.0, 2.0, 3.0),  # from an iterable of Vec3
+                    Vec3(4.0, 5.0, 6.0)])
+</code></pre>
+<p>Only real <code>Vec3</code> objects are accepted — passing anything else raises
+<code>TypeError</code>. (This is stricter than a plain list, and it is what guarantees
+the data can be packed.)</p>
+<h2 id="append-one-extend-many"><code>append</code> one, <code>extend</code> many</h2>
+<pre><code class="language-python">points = Vec3Array()
+
+points.append(Vec3(1.0, 2.0, 3.0))       # ONE vector — parameter &quot;value&quot; is singular
+
+points.extend([                           # MANY vectors — parameter &quot;values&quot; is plural
+    Vec3(4.0, 5.0, 6.0),
+    Vec3(7.0, 8.0, 9.0),
+])
+</code></pre>
+<h2 id="it-behaves-like-a-list">It behaves like a list</h2>
+<pre><code class="language-python">len(points)          # 3
+points[0]            # Vec3(1.0, 2.0, 3.0)
+points[1] = Vec3(0.0, 0.0, 0.0)     # replace an element
+points[0:2]          # a new Vec3Array with the first two elements
+
+for p in points:     # iterate as Vec3 objects
+    print(p.length())
+</code></pre>
+<blockquote>
+<p><strong>A copy, not a view:</strong> <code>points[0]</code> gives you a <em>new</em> <code>Vec3</code> built from
+the stored data. Changing that <code>Vec3</code>'s components does <strong>not</strong> write
+back into the array — assign it back with <code>points[i] = p</code> if you want
+the array to change.</p>
+</blockquote>
+<h2 id="sending-it-to-the-gpu">Sending it to the GPU</h2>
+<p>This is the whole point of the class:</p>
+<pre><code class="language-python">data = points.to_numpy()   # flat np.float32 array: [x0, y0, z0, x1, y1, z1, ...]
+nbytes = points.sizeof()   # total size in BYTES — what glBufferData wants
+</code></pre>
+<p>A typical OpenGL upload:</p>
+<pre><code class="language-python">import OpenGL.GL as gl
+
+gl.glBufferData(gl.GL_ARRAY_BUFFER, points.sizeof(), points.to_numpy(), gl.GL_STATIC_DRAW)
+</code></pre>
+<p><code>to_list()</code> and <code>to_tuple()</code> also exist when you need plain Python values.</p>
+<h2 id="worked-example-building-a-triangle-mesh">Worked example — building a triangle mesh</h2>
+<pre><code class="language-python">from ncca.ngl import Vec3, Vec3Array, calc_normal
+
+verts   = Vec3Array()
+normals = Vec3Array()
+
+def add_triangle(p1: Vec3, p2: Vec3, p3: Vec3) -&gt; None:
+    n = calc_normal(p1, p2, p3)
+    verts.extend([p1, p2, p3])
+    normals.extend([n, n, n])      # flat shading: same normal at each corner
+
+add_triangle(Vec3(0.0, 0.0, 0.0), Vec3(1.0, 0.0, 0.0), Vec3(0.0, 1.0, 0.0))
+add_triangle(Vec3(1.0, 0.0, 0.0), Vec3(1.0, 1.0, 0.0), Vec3(0.0, 1.0, 0.0))
+
+# verts.to_numpy() / normals.to_numpy() now go straight into a VAO
+</code></pre>
+<h2 id="common-mistakes">Common mistakes</h2>
+<p><strong>Mistake 1  <code>append</code> with a list.</strong></p>
+<pre><code class="language-python">points.append([Vec3(1, 2, 3), Vec3(4, 5, 6)])   # ❌ a list is not one Vec3
+points.extend([Vec3(1, 2, 3), Vec3(4, 5, 6)])   #  many -&gt; extend
+</code></pre>
+<p><strong>Mistake 2  expecting <code>points[0].x = 5</code> to change the array.</strong></p>
+<pre><code class="language-python">p = points[0]
+p.x = 5.0            #  changes the copy only
+points[0] = p        #  write it back
+</code></pre>
+<p><strong>Mistake 3  growing a huge array one <code>append</code> at a time.</strong> Each <code>append</code>
+reallocates. If you know the size, create it up front (<code>Vec3Array(n)</code>) and
+assign by index, or collect into a list and <code>extend</code> once.</p>
+<p><strong>Next:</strong> <a href="../geometry_maths/">Geometry Maths</a> — bounding boxes, planes,
+and curves.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../cameras_and_projection/" class="btn btn-neutral float-left" title="Cameras and Projection"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../geometry_maths/" class="btn btn-neutral float-right" title="Geometry Maths">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../cameras_and_projection/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../geometry_maths/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

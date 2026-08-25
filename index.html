@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>PyNGL - NCCA Python Graphics Library</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Home";
+        var mkdocs_page_input_path = "index.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> PyNGL - NCCA Python Graphics Library
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Home</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#where-to-start">Where to start</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#the-one-rule-of-the-math-api">The one rule of the math API</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#the-opengl-api">The OpenGL API</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#the-webgpu-api">The WebGPU API</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#qt-widgets">Qt widgets</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="getting_started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="tutorials/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="tutorials/method_names/">Understanding the Method Names</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="tutorials/vectors/">Vectors</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="tutorials/matrices/">Matrices</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="tutorials/quaternions/">Quaternions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="tutorials/transforms/">The Transform Class</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="tutorials/cameras_and_projection/">Cameras and Projection</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="tutorials/vector_arrays/">Vector Arrays</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="tutorials/geometry_maths/">Geometry Maths</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="tutorials/utility_functions/">Utility Functions</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">OpenGL</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="opengl/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="opengl/getting_started/">Getting Started with OpenGL</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="opengl/shaders/">Shaders and ShaderLib</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="opengl/geometry/">Geometry, Primitives, and VAOs</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">WebGPU</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="webgpu/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="webgpu/getting_started/">Getting Started with WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="webgpu/builtin_pipelines/">The Built-in Pipelines</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="webgpu/custom_pipelines/">Custom Pipelines</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="widgets/">Qt Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">QML Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="qml/">Qt Quick Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="Math/">Math</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="Geometry/">Geometry</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="VAO/">VAO</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="Shaders/">Shaders</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="Camera/">Camera</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="ImageAndTexture/">Image and Texture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="Text/">Text</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="WebGPU/">WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="Widgets/">Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="QmlWidgets/">QML Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="Misc/">Miscellaneous</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="about/">About</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">PyNGL - NCCA Python Graphics Library</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Home</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="pyngl-ncca-python-graphics-library">PyNGL — NCCA Python Graphics Library</h1>
+<p>PyNGL is a Python port of <a href="https://github.com/NCCA/NGL">NGL</a>, the graphics
+library used for teaching 3D computer graphics at the NCCA (Bournemouth
+University). It gives you:</p>
+<ul>
+<li><strong>Math classes</strong> for 3D graphics — <code>Vec2/3/4</code>, <code>Mat2/3/4</code>, <code>Quaternion</code>,
+  <code>Transform</code>, and helpers such as <code>look_at</code> and <code>perspective</code>.</li>
+<li><strong><a href="opengl/">OpenGL support</a></strong> (<code>ncca.ngl.opengl</code>) — VAO
+  abstractions, shader management (<code>ShaderLib</code>), primitives, textures, and
+  text rendering.</li>
+<li><strong><a href="webgpu/">WebGPU support</a></strong> — a parallel rendering stack built
+  on <code>wgpu</code>.</li>
+<li><strong><a href="widgets/">Qt widgets</a></strong> — PySide6 widgets for editing NGL
+  types in GUIs.</li>
+</ul>
+<h2 id="where-to-start">Where to start</h2>
+<ol>
+<li><strong><a href="getting_started/">Getting Started</a></strong> — install the library and run
+   your first lines of PyNGL code.</li>
+<li><strong><a href="tutorials/method_names/">Understanding the Method Names</a></strong> — <em>read
+   this first!</em> It explains the one rule that makes the whole math API
+   predictable.</li>
+<li><strong><a href="tutorials/">Tutorials</a></strong> — in-depth, example-driven guides to
+   every math class.</li>
+<li><strong>API Reference</strong> — full auto-generated documentation for every class
+   (see the <em>API Reference</em> section in the navigation).</li>
+</ol>
+<h2 id="the-one-rule-of-the-math-api">The one rule of the math API</h2>
+<blockquote>
+<p>A method ending in <strong><code>-ed</code></strong> (<code>normalized()</code>, <code>transposed()</code>, <code>clamped()</code>)
+returns a <strong>new</strong> object and leaves the original unchanged. The plain verb
+<strong><code>set()</code></strong> is the only method that changes the object you call it on.</p>
+</blockquote>
+<pre><code class="language-python">from ncca.ngl import Vec3
+
+v = Vec3(2.0, 0.0, 0.0)
+u = v.normalized()   # u is a NEW unit vector; v is unchanged
+print(u)             # [1.0, 0.0, 0.0]
+print(v)             # [2.0, 0.0, 0.0]
+</code></pre>
+<p>If that surprises you, read the
+<a href="tutorials/method_names/">grammar guide</a> — it explains why.</p>
+<h2 id="the-opengl-api">The OpenGL API</h2>
+<p>The <code>ncca.ngl.opengl</code> package is the classic NGL rendering stack:
+<code>ShaderLib</code> (a registry of named shader programs with four built-in
+shaders), <code>Primitives</code> (teapot, bunny, and parametric shapes as one-line
+drawables), the <code>VAOFactory</code> abstraction for custom geometry, plus
+textures, text rendering, and a mouse-control mixin for PySide6 windows.</p>
+<p>The <a href="opengl/">OpenGL section</a> covers it in depth:</p>
+<ol>
+<li><strong><a href="opengl/getting_started/">Getting Started with OpenGL</a></strong> — the
+   <code>QOpenGLWindow</code> lifecycle and a complete spinning-teapot application.</li>
+<li><strong><a href="opengl/shaders/">Shaders and ShaderLib</a></strong> — the built-in shaders
+   and their uniforms, loading your own GLSL, and uniform buffer objects.</li>
+<li><strong><a href="opengl/geometry/">Geometry: Primitives, Meshes, and VAOs</a></strong> —
+   stock and parametric primitives, OBJ files, textures, and custom
+   vertex data.</li>
+</ol>
+<h2 id="the-webgpu-api">The WebGPU API</h2>
+<p>Alongside the OpenGL stack, PyNGL ships a parallel renderer built on
+<a href="https://gpuweb.github.io/gpuweb/">WebGPU</a> via the
+<a href="https://wgpu-py.readthedocs.io/"><code>wgpu</code></a> Python package. WebGPU is the
+modern successor to OpenGL: instead of a hidden global state machine you
+describe your rendering up front as explicit <strong>pipeline</strong> objects (shaders,
+vertex layouts, and render state bundled together), then record draw calls
+into a command encoder each frame. Shaders are written in
+<a href="https://www.w3.org/TR/WGSL/">WGSL</a> rather than GLSL.</p>
+<p>PyNGL wraps this in <code>ncca.ngl.webgpu</code>, which exports four things:</p>
+<ul>
+<li><strong><code>WebGPUWidget</code></strong> — a PySide6 <code>QWidget</code> base class. It renders
+  <em>offscreen</em> with <code>wgpu</code> into a colour buffer that the widget blits to the
+  screen, so there is no OpenGL context or swapchain to manage. Subclass it
+  and implement <code>paintWebGPU()</code> (record and submit your render pass) and
+  <code>resizeWebGPU(w, h)</code>.</li>
+<li><strong><code>PipelineFactory</code></strong> and <strong><code>PipelineType</code></strong> — a registry of ready-made
+  render pipelines (single- or multi-coloured points, lines, triangles,
+  triangle strips, and instanced geometry) mirroring the OpenGL
+  <code>VAOFactory</code> pattern. You can register your own pipeline classes without
+  touching library code.</li>
+<li><strong><code>NGLToWebGPU</code></strong> — helpers that translate NGL type names into WebGPU
+  vertex formats and strides (e.g. <code>"vec3"</code> → <code>"float32x3"</code>).</li>
+</ul>
+<p>All the maths and geometry classes are shared with the OpenGL stack —
+<code>Vec3</code>, <code>Mat4</code>, <code>look_at</code>, <code>perspective</code>, and <code>PrimData</code> work unchanged.
+The one difference to remember: WebGPU's clip-space depth runs from 0 to 1
+(OpenGL's runs from −1 to 1), so build projection matrices with
+<code>perspective(..., PerspMode.WebGPU)</code>.</p>
+<p>The <a href="webgpu/">WebGPU section</a> covers the stack in depth:</p>
+<ol>
+<li><strong><a href="webgpu/getting_started/">Getting Started with WebGPU</a></strong> — the
+   <code>WebGPUWidget</code> lifecycle and a minimal working application.</li>
+<li><strong><a href="webgpu/builtin_pipelines/">The Built-in Pipelines</a></strong> — drawing
+   points, lines, triangles, and instanced meshes without writing any
+   WGSL, following the bundled <code>python -m ncca.ngl.webgpu</code> demo.</li>
+<li><strong><a href="webgpu/custom_pipelines/">Custom Pipelines</a></strong> — your own WGSL
+   shaders via <code>CustomShaderPipeline</code> or a <code>BaseWebGPUPipeline</code> subclass.</li>
+<li><strong><a href="WebGPU/">WebGPU API Reference</a></strong> — every class in the package.</li>
+</ol>
+<h2 id="qt-widgets">Qt widgets</h2>
+<p><a href="widgets/"><code>ncca.ngl.widgets</code></a> provides PySide6 widgets for
+editing NGL types in a GUI — vector spin-box clusters, colour pickers
+that emit <code>Vec3</code>/<code>Vec4</code>, and transform / look-at editors that emit
+finished <code>Mat4</code> matrices, ready to wire straight into an OpenGL or WebGPU
+viewport. See them all with <code>uv run python -m ncca.ngl.widgets</code>.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="getting_started/" class="btn btn-neutral float-right" title="Getting Started">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+      <span><a href="getting_started/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.6.1
+Build Date UTC : 2026-08-25 18:37:15.382160+00:00
+-->

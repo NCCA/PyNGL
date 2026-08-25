@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Understanding the Method Names - PyNGL - NCCA Python Graphics Library</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Understanding the Method Names";
+        var mkdocs_page_input_path = "tutorials/method_names.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> PyNGL - NCCA Python Graphics Library
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../getting_started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Understanding the Method Names</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#the-one-rule-to-remember">The one rule to remember</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#why-this-library-almost-never-changes-your-object">Why: this library almost never changes your object</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#the-grammar-behind-the-names">The grammar behind the names</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-past-tense-vs-past-participle-the-ed-confusion">1. Past tense vs. past participle — the -ed confusion</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-the-plain-verb-set-the-one-real-command">2. The plain verb set — the one real command</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#3-noun-names-the-method-is-named-after-the-thing-it-returns">3. Noun names — the method is named after the thing it returns</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#4-to_-and-from_-conversions">4. to_ and from_ — conversions</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#singular-vs-plural-one-thing-or-many-things">Singular vs. plural — one thing or many things</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#one-vector-vs-a-collection-of-vectors">One vector vs. a collection of vectors</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#append-one-vs-extend-many">append (one) vs. extend (many)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#full-examples-for-the-main-classes">Full examples for the main classes</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#vec3">Vec3</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#mat4">Mat4</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#quaternion">Quaternion</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#common-mistakes-and-how-to-fix-them">Common mistakes and how to fix them</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#quick-reference-cheat-sheet">Quick reference cheat-sheet</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../vectors/">Vectors</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../matrices/">Matrices</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../quaternions/">Quaternions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../transforms/">The Transform Class</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../cameras_and_projection/">Cameras and Projection</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../vector_arrays/">Vector Arrays</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../geometry_maths/">Geometry Maths</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../utility_functions/">Utility Functions</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">OpenGL</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/getting_started/">Getting Started with OpenGL</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/shaders/">Shaders and ShaderLib</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/geometry/">Geometry, Primitives, and VAOs</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">WebGPU</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/getting_started/">Getting Started with WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/builtin_pipelines/">The Built-in Pipelines</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/custom_pipelines/">Custom Pipelines</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../widgets/">Qt Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">QML Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../qml/">Qt Quick Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Math/">Math</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Geometry/">Geometry</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../VAO/">VAO</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Shaders/">Shaders</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Camera/">Camera</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../ImageAndTexture/">Image and Texture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Text/">Text</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../WebGPU/">WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Widgets/">Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../QmlWidgets/">QML Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Misc/">Miscellaneous</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../about/">About</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">PyNGL - NCCA Python Graphics Library</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Tutorials</li>
+      <li class="breadcrumb-item active">Understanding the Method Names</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="understanding-the-method-names-an-english-grammar-guide">Understanding the Method Names — an English Grammar Guide</h1>
+<p>This guide explains <strong>why the math methods in <code>ncca.ngl</code> are named the way they
+are</strong>. The names follow English grammar rules. If English is not your first
+language, and especially if your language does <strong>not</strong> change a verb to show
+past tense, does <strong>not</strong> add a letter to show plurals, these small word
+endings can be confusing.</p>
+<p>This guide will help you understand the method names and why they are the way they are and give clues on how to design your own methods in line with the <a href="https://nccastaff.bournemouth.ac.uk/jmacey/NCCACodingStandard/">NCCA Coding Standard</a>.</p>
+<hr />
+<h2 id="the-one-rule-to-remember">The one rule to remember</h2>
+<blockquote>
+<p><strong>A method ending in <code>-ed</code> gives you a NEW object and leaves the original
+unchanged. The plain verb <code>set</code> is the ONLY method that changes the object
+you call it on.</strong></p>
+</blockquote>
+<p>Everything else in this guide explains that one sentence.</p>
+<hr />
+<h2 id="why-this-library-almost-never-changes-your-object">Why: this library almost never changes your object</h2>
+<p>In this library, a <code>Vec3</code>, a <code>Mat4</code>, and a <code>Quaternion</code> behave like a number.</p>
+<p>When you write <code>5 + 1</code>, the number <code>5</code> does <strong>not</strong> become <code>6</code>. You get a
+<strong>new</strong> number, <code>6</code>, and <code>5</code> is still <code>5</code>.</p>
+<p>Our math objects work the same way. When you "normalize" a vector, the original
+vector does <strong>not</strong> change. You receive a <strong>new</strong> vector as the answer. This is
+called an <a href="https://en.wikipedia.org/wiki/Immutable_object"><strong>immutable</strong> style</a>.</p>
+<p>Because the answer is always a <em>new, finished</em> object, the method names use the
+English grammar form that means <em>"a finished result"</em> — the <strong>past participle</strong>,
+which ends in <strong><code>-ed</code></strong>.</p>
+<hr />
+<h2 id="the-grammar-behind-the-names">The grammar behind the names</h2>
+<p>English verbs have different forms. This library uses four kinds of names.</p>
+<table>
+<thead>
+<tr>
+<th>Grammar form</th>
+<th>English example</th>
+<th>Meaning in the API</th>
+<th>Does it change the object?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Plain verb</strong> (a command)</td>
+<td><em>"Set the table!"</em></td>
+<td>Do this action to the object <strong>now</strong></td>
+<td><strong>YES</strong></td>
+</tr>
+<tr>
+<td><strong>Past participle</strong> (<code>-ed</code>, used as an adjective)</td>
+<td><em>"the normaliz</em><em>ed</em><em> vector"</em></td>
+<td>Give me a <strong>new</strong> object that is the finished result</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Noun</strong> (the name of a thing)</td>
+<td><em>"the length"</em>, <em>"the inverse"</em></td>
+<td>Give me this value / this new thing</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Preposition</strong> (<code>to_</code> / <code>from_</code>)</td>
+<td><em>"convert </em><em>to</em><em> a list"</em></td>
+<td>Convert between types</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>The rest of this section explains each row with real code.</p>
+<hr />
+<h3 id="1-past-tense-vs-past-participle-the-ed-confusion">1. Past tense vs. past participle — the <code>-ed</code> confusion</h3>
+<p>Many languages (for example Chinese, Japanese, Korean, Thai, Vietnamese, and
+others) do <strong>not</strong> add an ending to a verb to show time. In English, the same
+<code>-ed</code> spelling is used for two different grammar ideas:</p>
+<ul>
+<li><strong>Past tense</strong> — an action that <em>happened</em>: <em>"Yesterday I normaliz</em><em>ed</em><em> the
+  vector."</em></li>
+<li><strong>Past participle</strong> — an <em>adjective</em> describing a <em>finished result</em>: <em>"a
+  normaliz</em><em>ed</em><em> vector"</em> (a vector that <strong>has been</strong> normalized).</li>
+</ul>
+<p><strong>In this library, <code>-ed</code> always means the second one: a finished result.</strong></p>
+<p>Compare the two forms of the verb:</p>
+<table>
+<thead>
+<tr>
+<th>Base verb (the action)</th>
+<th>Past participle (the result)</th>
+<th>The library uses…</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>normalize</code> — <em>to make unit length</em></td>
+<td><code>normalized</code> — <em>made unit length</em></td>
+<td><strong><code>normalized()</code></strong></td>
+</tr>
+<tr>
+<td><code>reflect</code> — <em>to bounce off</em></td>
+<td><code>reflected</code> — <em>bounced off</em></td>
+<td><strong><code>reflected()</code></strong></td>
+</tr>
+<tr>
+<td><code>transpose</code> — <em>to flip rows and columns</em></td>
+<td><code>transposed</code> — <em>flipped</em></td>
+<td><strong><code>transposed()</code></strong></td>
+</tr>
+<tr>
+<td><code>clamp</code> — <em>to limit to a range</em></td>
+<td><code>clamped</code> — <em>limited</em></td>
+<td><strong><code>clamped()</code></strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Everyday analogy (laundry):</strong>
+<code>wash</code> is the action. <code>washed</code> is the result.
+<code>shirt.washed()</code> means <em>"give me a clean copy of this shirt"</em> — your original
+shirt in your hand does not suddenly become clean. You must <strong>take</strong> the clean
+shirt that is handed back to you.</p>
+</blockquote>
+<p>That last point is the most common mistake, so here it is in code:</p>
+<pre><code class="language-python">from ncca.ngl import Vec3
+
+v = Vec3(2.0, 0.0, 0.0)
+
+v.normalized()      #  WRONG use: the result is thrown away!
+print(v)            # [2.0, 0.0, 0.0]  ← v did NOT change
+
+u = v.normalized()  #  RIGHT: keep the new vector that is returned
+print(u)            # [1.0, 0.0, 0.0]  &lt;- the answer (length 1)
+print(v)            # [2.0, 0.0, 0.0]  &lt;- original is still unchanged
+</code></pre>
+<p>If you want <code>v</code> itself to hold the answer, assign it back to <code>v</code>:</p>
+<pre><code class="language-python">v = v.normalized()  # replace v with its normalized version
+</code></pre>
+<hr />
+<h3 id="2-the-plain-verb-set-the-one-real-command">2. The plain verb <code>set</code> — the one real command</h3>
+<p><code>set</code> is a <strong>command</strong> (imperative mood). A command tells the object to change
+<strong>itself, right now</strong>. It returns nothing. It is the only method here that
+changes the object you call it on.</p>
+<pre><code class="language-python">from ncca.ngl import Vec3
+
+v = Vec3(0.0, 0.0, 0.0)
+v.set(1.0, 2.0, 3.0)   # v itself changes now
+print(v)               # [1.0, 2.0, 3.0]
+</code></pre>
+<blockquote>
+<p>Notice the grammar difference:
+<code>v.set(...)</code>  <em>"Vector, change yourself!"</em> (a command -&gt; it changes).
+<code>v.normalized()</code> -&gt; <em>"the normalized version of v"</em> (a description -&gt; new object).</p>
+</blockquote>
+<hr />
+<h3 id="3-noun-names-the-method-is-named-after-the-thing-it-returns">3. Noun names — the method is named after the thing it returns</h3>
+<p>Some methods are named with a <strong>noun</strong>, not a verb. A noun name means: <em>"give me
+this thing."</em> It returns a value or a new object and never changes the original.</p>
+<pre><code class="language-python">from ncca.ngl import Vec3, Mat4
+
+v = Vec3(0.0, 3.0, 4.0)
+print(v.length())       # 5.0        -&gt; &quot;the length&quot; (a number)
+print(v.dot(v))         # 25.0       -&gt; &quot;the dot product&quot; (a number)
+
+m = Mat4.rotate_x(45.0)
+print(m.determinant())  # a number   -&gt; &quot;the determinant&quot;
+inv = m.inverse()       # new Mat4   -&gt; &quot;the inverse&quot;
+</code></pre>
+<p><code>length</code>, <code>dot</code>, <code>determinant</code>, <code>inverse</code>, <code>conjugate</code>, <code>cross</code> are all nouns —
+the name <strong>is</strong> the answer you get back.</p>
+<hr />
+<h3 id="4-to_-and-from_-conversions">4. <code>to_</code> and <code>from_</code> — conversions</h3>
+<p>The prepositions <code>to</code> and <code>from</code> show a conversion between two types.</p>
+<ul>
+<li><strong><code>to_something()</code></strong> — convert <strong>this object into</strong> something else.</li>
+<li><strong><code>from_something(...)</code></strong> — build a <strong>new object from</strong> something else. This is
+  written before the class name, because the class is doing the building.</li>
+</ul>
+<pre><code class="language-python">from ncca.ngl import Vec3
+import numpy as np
+
+v = Vec3(1.0, 2.0, 3.0)
+
+a_list  = v.to_list()          # Vec3  -&gt; list:  [1.0, 2.0, 3.0]
+a_tuple = v.to_tuple()         # Vec3  -&gt; tuple: (1.0, 2.0, 3.0)
+an_array = v.to_numpy()        # Vec3  -&gt; numpy array
+
+w = Vec3.from_list([4.0, 5.0, 6.0])          # list  -&gt; new Vec3
+x = Vec3.from_numpy(np.array([7.0, 8.0, 9.0]))  # array -&gt; new Vec3
+</code></pre>
+<hr />
+<h2 id="singular-vs-plural-one-thing-or-many-things">Singular vs. plural — one thing or many things</h2>
+<p>Some languages do <strong>not</strong> change a word to show "one" versus "many". English
+does. In this library, the singular/plural form of a name tells you whether it
+deals with <strong>one</strong> item or <strong>several</strong>.</p>
+<h3 id="one-vector-vs-a-collection-of-vectors">One vector vs. a collection of vectors</h3>
+<pre><code class="language-python">from ncca.ngl import Vec3, Vec3Array
+
+point  = Vec3(1.0, 2.0, 3.0)   # Vec3      = ONE vector (singular)
+points = Vec3Array()           # Vec3Array = MANY vectors (a collection)
+</code></pre>
+<p>The class name <code>Vec3</code> is singular: it is a single vector. The name <code>Vec3Array</code>
+contains the idea of <em>many</em> — an array holds a plural collection. Which is particularly important when we need to pass this data to a graphics API such as OpenGL or WebGPU.</p>
+<h3 id="append-one-vs-extend-many"><code>append</code> (one) vs. <code>extend</code> (many)</h3>
+<p>Look carefully at the <strong>parameter names</strong>. The singular/plural ending is a clue.</p>
+<pre><code class="language-python">from ncca.ngl import Vec3, Vec3Array
+
+points = Vec3Array()
+
+points.append(Vec3(1.0, 2.0, 3.0))     # append ONE  -&gt; parameter is &quot;value&quot;  (singular)
+
+points.extend([                        # extend with MANY -&gt; parameter is &quot;values&quot; (plural)
+    Vec3(4.0, 5.0, 6.0),
+    Vec3(7.0, 8.0, 9.0),
+])
+</code></pre>
+<ul>
+<li><code>append(value)</code>  the word <em>value</em> is <strong>singular</strong>, so you give <strong>one</strong> vector.</li>
+<li><code>extend(values)</code>  the word <em>values</em> is <strong>plural</strong>, so you give <strong>many</strong>
+  vectors (a list).</li>
+</ul>
+<p>If you give a <em>list</em> to <code>append</code>, or a <em>single</em> vector to <code>extend</code>, it will not
+work, the grammar of the name told you which one to use.</p>
+<hr />
+<h2 id="full-examples-for-the-main-classes">Full examples for the main classes</h2>
+<h3 id="vec3"><code>Vec3</code></h3>
+<pre><code class="language-python">from ncca.ngl import Vec3
+
+v = Vec3(0.0, 3.0, 4.0)
+n = Vec3(0.0, 1.0, 0.0)
+
+# -ed  -&gt; new object, v unchanged
+unit      = v.normalized()          # a unit-length copy
+bounced   = v.reflected(n)          # reflected off normal n
+limited   = v.clamped(0.0, 1.0)     # each component limited to [0, 1]
+
+# noun -&gt; a value or new object
+length    = v.length()              # 5.0
+d         = v.dot(n)                # 3.0
+
+# command -&gt; v itself changes
+v.set(1.0, 1.0, 1.0)                # v is now (1, 1, 1)
+</code></pre>
+<h3 id="mat4"><code>Mat4</code></h3>
+<pre><code class="language-python">from ncca.ngl import Mat4
+
+m = Mat4.rotate_x(45.0)             # &quot;rotate_x&quot; builds a rotation matrix
+
+# -ed  -&gt; new matrix, m unchanged
+flipped = m.transposed()            # rows and columns swapped (a new matrix)
+
+# noun -&gt; a value or new object
+det     = m.determinant()           # a single number
+inv     = m.inverse()               # the inverse (a new matrix)
+
+# You multiply matrices with @ (the multiply operator), which also returns a NEW matrix:
+combined = Mat4.rotate_x(45.0) @ Mat4.rotate_y(90.0)
+</code></pre>
+<blockquote>
+<p>Note: <code>m.transposed()</code> returns a new matrix. To change <code>m</code>, you must assign:
+<code>m = m.transposed()</code>.</p>
+</blockquote>
+<h3 id="quaternion"><code>Quaternion</code></h3>
+<pre><code class="language-python">from ncca.ngl import Quaternion, Vec3
+
+q = Quaternion.from_axis_angle(Vec3(0.0, 1.0, 0.0), 90.0)  # build FROM axis+angle
+
+# -ed  -&gt; new object, q unchanged
+unit = q.normalized()               # a unit-length copy
+
+# noun -&gt; a new object
+conj = q.conjugate()                # the conjugate
+inv  = q.inverse()                  # the inverse
+
+# convert TO another type
+m    = q.to_mat4()                  # Quaternion -&gt; Mat4
+</code></pre>
+<hr />
+<h2 id="common-mistakes-and-how-to-fix-them">Common mistakes and how to fix them</h2>
+<p><strong>Mistake 1 — Calling <code>-ed</code> methods but throwing the answer away.</strong></p>
+<pre><code class="language-python">v.normalized()          # ❌ does nothing useful — the new vector is lost
+</code></pre>
+<p><strong>Fix:</strong> keep the returned value.</p>
+<pre><code class="language-python">v = v.normalized()      # or: u = v.normalized()
+</code></pre>
+<p><strong>Mistake 2 — Expecting a <code>-ed</code> method to change the object.</strong></p>
+<pre><code class="language-python">m.transposed()
+print(m)                # ❌ surprised that m is unchanged
+</code></pre>
+<p><strong>Fix:</strong> <code>-ed</code> never changes the object. Assign the result:</p>
+<pre><code class="language-python">m = m.transposed()
+</code></pre>
+<p><strong>Mistake 3 — Using the old-style plain verb.</strong></p>
+<pre><code class="language-python">v.normalize()           # ❌ AttributeError — this name does not exist
+</code></pre>
+<p><strong>Fix:</strong> use the <code>-ed</code> result form:</p>
+<pre><code class="language-python">v = v.normalized()
+</code></pre>
+<p><strong>Mistake 4 — Confusing <code>append</code> (one) and <code>extend</code> (many).</strong></p>
+<pre><code class="language-python">points.append([Vec3(1,2,3), Vec3(4,5,6)])   # ❌ a list is not one Vec3
+</code></pre>
+<p><strong>Fix:</strong> many items -&gt; use the plural <code>extend</code>:</p>
+<pre><code class="language-python">points.extend([Vec3(1,2,3), Vec3(4,5,6)])
+</code></pre>
+<hr />
+<h2 id="quick-reference-cheat-sheet">Quick reference cheat-sheet</h2>
+<table>
+<thead>
+<tr>
+<th>You see…</th>
+<th>Grammar</th>
+<th>It means…</th>
+<th>Original changes?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>normalized()</code>, <code>reflected()</code>, <code>clamped()</code>, <code>transposed()</code></td>
+<td>past participle (<code>-ed</code>)</td>
+<td>returns a <strong>new</strong> finished object</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>inverse()</code>, <code>conjugate()</code>, <code>length()</code>, <code>dot()</code>, <code>determinant()</code>, <code>cross()</code></td>
+<td>noun</td>
+<td>returns that <strong>value / new object</strong></td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>to_list()</code>, <code>to_numpy()</code>, <code>to_mat4()</code></td>
+<td>preposition <code>to_</code></td>
+<td>convert <strong>this</strong> into another type</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>from_list()</code>, <code>from_numpy()</code>, <code>from_axis_angle()</code></td>
+<td>preposition <code>from_</code></td>
+<td>build a <strong>new</strong> object from something</td>
+<td>(makes new)</td>
+</tr>
+<tr>
+<td><code>set(...)</code></td>
+<td>plain verb (command)</td>
+<td>change <strong>this object now</strong></td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td><code>Vec3</code></td>
+<td>singular</td>
+<td><strong>one</strong> vector</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>Vec3Array</code>, <code>extend(values)</code></td>
+<td>plural</td>
+<td><strong>many</strong> vectors</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>append(value)</code></td>
+<td>singular parameter</td>
+<td><strong>one</strong> vector</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>If you remember nothing else:</strong> words ending in <strong><code>-ed</code></strong> create you a <strong>new</strong>
+object — you must store it in a variable. Only <strong><code>set</code></strong> changes the object
+you have created.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../" class="btn btn-neutral float-left" title="Overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../vectors/" class="btn btn-neutral float-right" title="Vectors">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../vectors/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

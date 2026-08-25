@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Getting Started with WebGPU - PyNGL - NCCA Python Graphics Library</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Getting Started with WebGPU";
+        var mkdocs_page_input_path = "webgpu/getting_started.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> PyNGL - NCCA Python Graphics Library
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../getting_started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/method_names/">Understanding the Method Names</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/vectors/">Vectors</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/matrices/">Matrices</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/quaternions/">Quaternions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/transforms/">The Transform Class</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/cameras_and_projection/">Cameras and Projection</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/vector_arrays/">Vector Arrays</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/geometry_maths/">Geometry Maths</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/utility_functions/">Utility Functions</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">OpenGL</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/getting_started/">Getting Started with OpenGL</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/shaders/">Shaders and ShaderLib</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/geometry/">Geometry, Primitives, and VAOs</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">WebGPU</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Getting Started with WebGPU</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-the-widget-works">How the widget works</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#a-minimal-application">A minimal application</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#projection-the-webgpu-depth-range">Projection: the WebGPU depth range</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#uploading-matrices">Uploading matrices</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#next-steps">Next steps</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../builtin_pipelines/">The Built-in Pipelines</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../custom_pipelines/">Custom Pipelines</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../widgets/">Qt Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">QML Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../qml/">Qt Quick Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Math/">Math</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Geometry/">Geometry</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../VAO/">VAO</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Shaders/">Shaders</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Camera/">Camera</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../ImageAndTexture/">Image and Texture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Text/">Text</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../WebGPU/">WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Widgets/">Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../QmlWidgets/">QML Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Misc/">Miscellaneous</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../about/">About</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">PyNGL - NCCA Python Graphics Library</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">WebGPU</li>
+      <li class="breadcrumb-item active">Getting Started with WebGPU</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="getting-started-with-webgpu">Getting Started with WebGPU</h1>
+<p>This page walks through the <code>WebGPUWidget</code> lifecycle and builds a minimal
+application from scratch. It assumes you have already
+<a href="../../getting_started/">installed PyNGL</a> along with the <code>wgpu</code> and
+<code>PySide6</code> packages.</p>
+<h2 id="how-the-widget-works">How the widget works</h2>
+<p><code>WebGPUWidget</code> is an abstract PySide6 <code>QWidget</code>. Unlike an OpenGL widget
+there is no window-system surface: the widget renders <strong>offscreen</strong>.</p>
+<p>Each frame goes through these steps:</p>
+<ol>
+<li>Qt delivers a paint event and the widget calls your <code>paintWebGPU()</code>
+   override.</li>
+<li>Your code records a render pass into a command encoder and submits it.
+   The pass draws into a multisampled texture that resolves into
+   <code>self.colour_buffer_texture</code> (RGBA8, with a <code>depth24plus</code> depth
+   buffer).</li>
+<li>The widget copies that texture back into a numpy array
+   (<code>self.frame_buffer</code>) and draws it onto the widget with <code>QPainter</code>,
+   along with any text queued with <code>render_text()</code>.</li>
+</ol>
+<p>The two abstract methods you must implement:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Called when</th>
+<th>Your job</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>paintWebGPU()</code></td>
+<td>every paint event</td>
+<td>record and submit the frame's render pass</td>
+</tr>
+<tr>
+<td><code>resizeWebGPU(w, h)</code></td>
+<td>the window resizes (<code>w</code>/<code>h</code> are in device pixels)</td>
+<td>update your projection matrix and any size-dependent state</td>
+</tr>
+</tbody>
+</table>
+<p>The widget handles high-DPI scaling (<code>self.ratio</code>), recreates the render
+textures on resize, and tracks the current pixel size in
+<code>self.texture_size</code>.</p>
+<h2 id="a-minimal-application">A minimal application</h2>
+<pre><code class="language-python">import sys
+
+import wgpu
+from PySide6.QtWidgets import QApplication
+from wgpu.utils import get_default_device
+
+from ncca.ngl import PerspMode, Vec3, look_at, perspective
+from ncca.ngl.webgpu import WebGPUWidget
+
+
+class Scene(WebGPUWidget):
+    def __init__(self):
+        super().__init__(background_colour=(0.4, 0.4, 0.4, 1.0))
+        # 1. Get a device — everything is created from this.
+        self.device = get_default_device()
+        # 2. Create the colour / MSAA / depth textures.
+        self._create_render_buffer()
+        # 3. Set up cameras. Note PerspMode.WebGPU!
+        self.view = look_at(Vec3(0, 2, 4), Vec3(0, 0, 0), Vec3(0, 1, 0))
+        self.project = perspective(45.0, 1.0, 0.1, 100.0, PerspMode.WebGPU)
+        # 4. Repaint at ~60 FPS.
+        self.start_update_timer(16)
+
+    def paintWebGPU(self):
+        encoder = self.device.create_command_encoder()
+        # The widget builds a render pass with the clear colour,
+        # MSAA resolve, and depth attachment already configured.
+        render_pass = self._create_render_pass(encoder)
+        # ... set pipelines and draw here (see the next page) ...
+        render_pass.end()
+        self.device.queue.submit([encoder.finish()])
+        self.render_text(10, 20, &quot;Hello WebGPU&quot;)
+
+    def resizeWebGPU(self, w, h):
+        self.project = perspective(
+            45.0, w / max(h, 1), 0.1, 100.0, PerspMode.WebGPU
+        )
+
+
+if __name__ == &quot;__main__&quot;:
+    app = QApplication(sys.argv)
+    win = Scene()
+    win.resize(1024, 720)
+    win.show()
+    sys.exit(app.exec())
+</code></pre>
+<p>Run it and you get a grey window — a cleared render target presented
+through Qt, ready for the pipelines on the
+<a href="../builtin_pipelines/">next page</a>.</p>
+<p>Some points worth noting:</p>
+<ul>
+<li><strong><code>self.device</code> must exist before the first resize/paint.</strong> Create it
+  first thing in <code>__init__</code>; the widget's resize handling calls
+  <code>_create_render_buffer()</code>, which needs it.</li>
+<li><strong>You don't submit the copy-to-screen yourself.</strong> After <code>paintWebGPU()</code>
+  returns, the widget reads the colour texture back and paints it — your
+  only job is to fill the texture.</li>
+<li><strong><code>_create_render_pass(encoder)</code></strong> is a convenience that begins a render
+  pass targeting the widget's multisample texture, resolving into the
+  colour buffer, clearing to <code>self.background_colour</code>, with the depth
+  buffer attached. You can also call <code>encoder.begin_render_pass(...)</code>
+  yourself with <code>self.multisample_texture_view</code>,
+  <code>self.colour_buffer_texture_view</code>, and <code>self.depth_buffer_view</code> if you
+  need different load/store behaviour.</li>
+<li><strong>Animation</strong> is just Qt: <code>start_update_timer(16)</code> (or a <code>QTimer</code> /
+  <code>startTimer</code> of your own) schedules repaints; change your scene state
+  each tick.</li>
+<li><strong>Text overlays</strong> — <code>render_text(x, y, text, size=10, font="Arial",
+  colour=Qt.black)</code> queues text that is drawn over the frame with
+  <code>QPainter</code>. A negative <code>y</code> positions relative to the bottom of the
+  window, and sizes scale with the window height.</li>
+</ul>
+<h2 id="projection-the-webgpu-depth-range">Projection: the WebGPU depth range</h2>
+<p>This deserves repeating because it is the most common porting mistake.
+WebGPU clip space is <em>z from 0 to 1</em>; OpenGL's is <em>z from −1 to 1</em>. The
+<code>perspective</code> (and <code>ortho</code>/<code>frustum</code>) helpers take a <code>PerspMode</code> argument
+for exactly this reason:</p>
+<pre><code class="language-python">from ncca.ngl import PerspMode, perspective
+
+project = perspective(45.0, aspect, 0.1, 100.0, PerspMode.WebGPU)
+</code></pre>
+<p>If you use the default (OpenGL) mode with the WebGPU renderer, half your
+depth range falls outside the clip volume — geometry disappears or
+z-fights.</p>
+<h2 id="uploading-matrices">Uploading matrices</h2>
+<p>The math classes are numpy-backed, and <code>wgpu</code> wants raw <code>float32</code> data.
+The pattern used throughout the demos is to build the matrix with <code>@</code> and
+convert at the point of upload:</p>
+<pre><code class="language-python">mvp = (self.project @ self.view @ model).to_numpy().astype(np.float32)
+pipeline.update_uniforms(mvp=mvp)
+</code></pre>
+<p>Everything you hand to a pipeline — vertex positions, colours, uniform
+matrices — must be <code>np.float32</code>. Data in <code>float64</code> (numpy's default!) has
+twice the byte size the GPU-side layout expects.</p>
+<h2 id="next-steps">Next steps</h2>
+<p>With the widget skeleton in place, the quickest way to get something on
+screen is one of the fourteen built-in pipelines — continue to
+<a href="../builtin_pipelines/">The Built-in Pipelines</a>.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../" class="btn btn-neutral float-left" title="Overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../builtin_pipelines/" class="btn btn-neutral float-right" title="The Built-in Pipelines">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../builtin_pipelines/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

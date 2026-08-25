@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Cameras and Projection - PyNGL - NCCA Python Graphics Library</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Cameras and Projection";
+        var mkdocs_page_input_path = "tutorials/cameras_and_projection.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> PyNGL - NCCA Python Graphics Library
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../getting_started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../method_names/">Understanding the Method Names</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../vectors/">Vectors</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../matrices/">Matrices</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../quaternions/">Quaternions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../transforms/">The Transform Class</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Cameras and Projection</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#look_at-the-view-matrix">look_at — the view matrix</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#orbiting-the-scene">Orbiting the scene</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#perspective-the-projection-matrix">perspective — the projection matrix</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#projection-modes">Projection Modes</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#ortho-projection">ortho projection.</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#the-mvp-matrix">The MVP Matrix</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#firstpersoncamera">FirstPersonCamera</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#common-mistakes">Common mistakes</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../vector_arrays/">Vector Arrays</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../geometry_maths/">Geometry Maths</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../utility_functions/">Utility Functions</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">OpenGL</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/getting_started/">Getting Started with OpenGL</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/shaders/">Shaders and ShaderLib</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/geometry/">Geometry, Primitives, and VAOs</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">WebGPU</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/getting_started/">Getting Started with WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/builtin_pipelines/">The Built-in Pipelines</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/custom_pipelines/">Custom Pipelines</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../widgets/">Qt Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">QML Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../qml/">Qt Quick Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Math/">Math</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Geometry/">Geometry</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../VAO/">VAO</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Shaders/">Shaders</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Camera/">Camera</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../ImageAndTexture/">Image and Texture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Text/">Text</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../WebGPU/">WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Widgets/">Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../QmlWidgets/">QML Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Misc/">Miscellaneous</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../about/">About</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">PyNGL - NCCA Python Graphics Library</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Tutorials</li>
+      <li class="breadcrumb-item active">Cameras and Projection</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="cameras-and-projection-look_at-perspective-ortho">Cameras and Projection — <code>look_at</code>, <code>perspective</code>, <code>ortho</code></h1>
+<p>To draw a 3D scene you need three matrices, traditionally called
+<strong>M V P</strong> — <em>Model</em>, <em>View</em>, <em>Projection</em>:</p>
+<table>
+<thead>
+<tr>
+<th>Matrix</th>
+<th>Question it answers</th>
+<th>How you build it in PyNGL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Model</strong></td>
+<td>Where is the object in the world?</td>
+<td><a href="../transforms/"><code>Transform</code></a> or <code>Mat4.translate/rotate/scale</code></td>
+</tr>
+<tr>
+<td><strong>View</strong></td>
+<td>Where is the camera, and which way is it looking?</td>
+<td><code>look_at(eye, look, up)</code></td>
+</tr>
+<tr>
+<td><strong>Projection</strong></td>
+<td>How does 3D become a 2D image (perspective)?</td>
+<td><code>perspective(fov, aspect, near, far)</code> or <code>ortho(...)</code></td>
+</tr>
+</tbody>
+</table>
+<p>This tutorial covers the <em>View</em> and <em>Projection</em> halves, which live as
+plain functions in <code>ncca.ngl</code>.</p>
+<hr />
+<h2 id="look_at-the-view-matrix"><code>look_at</code> — the view matrix</h2>
+<p><code>look_at(eye, look, up)</code> builds a <code>Mat4</code> that moves the whole world so
+that the camera sits at the origin looking down −z. You describe the
+camera in plain terms:</p>
+<ul>
+<li><strong><code>eye</code></strong>  :- where the camera <em>is</em>;</li>
+<li><strong><code>look</code></strong>  :- the point the camera looks <em>at</em>;</li>
+<li><strong><code>up</code></strong> :- which way is "up" for the camera (almost always the world y
+  axis).</li>
+</ul>
+<pre><code class="language-python">from ncca.ngl import Vec3, look_at
+
+view = look_at(
+    Vec3(0.0, 2.0, 10.0),   # eye: 2 up, 10 back
+    Vec3(0.0, 0.0, 0.0),    # look: at the origin
+    Vec3(0.0, 1.0, 0.0),    # up: world y
+)
+</code></pre>
+<blockquote>
+<p><strong>Why does the <em>world</em> move and not the camera?</strong> A camera is a trick:
+there is no camera object on the GPU. Instead, the view matrix is the
+<em>inverse</em> of the camera's own transform — moving the camera 10 units back
+is the same picture as moving the whole world 10 units forward.</p>
+</blockquote>
+<h3 id="orbiting-the-scene">Orbiting the scene</h3>
+<p>A classic turntable camera — the eye circles the origin:</p>
+<pre><code class="language-python">import math
+from ncca.ngl import Vec3, look_at
+
+def turntable(angle_deg: float, radius: float, height: float):
+    a = math.radians(angle_deg)
+    eye = Vec3(radius * math.cos(a), height, radius * math.sin(a))
+    return look_at(eye, Vec3(0.0, 0.0, 0.0), Vec3(0.0, 1.0, 0.0))
+</code></pre>
+<hr />
+<h2 id="perspective-the-projection-matrix"><code>perspective</code> — the projection matrix</h2>
+<p><code>perspective(fov, aspect, near, far)</code> builds the matrix that gives your
+image <em>depth</em> — distant objects appear smaller, like a real camera lens.</p>
+<pre><code class="language-python">from ncca.ngl import perspective
+
+projection = perspective(
+    45.0,           # fov: vertical field of view in DEGREES
+    1024 / 720,     # aspect: viewport width / height
+    0.1,            # near: closest visible distance
+    100.0,          # far: furthest visible distance
+)
+</code></pre>
+<ul>
+<li><strong><code>fov</code></strong> :- a small angle is a telephoto lens (zoomed in); a large angle
+  is a wide-angle lens (more scene, more distortion). 45° is a sensible
+  default.</li>
+<li><strong><code>aspect</code></strong> :- must match your window, or the image stretches.
+  Recalculate it in your resize handler.</li>
+<li><strong><code>near</code> / <code>far</code></strong> :- the visible depth range. Keep <code>near</code> as <em>large</em> as
+  you can get away with: depth buffer precision is concentrated near the
+  near plane, and <code>near=0.001, far=10000</code> is a recipe for z-fighting.
+  <code>near</code> must be greater than 0.</li>
+</ul>
+<h3 id="projection-modes">Projection Modes</h3>
+<p>OpenGL clips z to <code>[-1, 1]</code>, but WebGPU and Vulkan clip to <code>[0, 1]</code>.
+<code>perspective</code> (and <code>ortho</code>) take a <code>mode</code> argument so the same call works
+everywhere:</p>
+<pre><code class="language-python">from ncca.ngl import perspective, PerspMode
+
+proj_gl  = perspective(45.0, aspect, 0.1, 100.0)                        # OpenGL (default)
+proj_web = perspective(45.0, aspect, 0.1, 100.0, PerspMode.WebGPU)     # WebGPU / Vulkan
+</code></pre>
+<hr />
+<h2 id="ortho-projection"><code>ortho</code> projection.</h2>
+<p>An <strong>orthographic</strong> projection has no foreshortening, so objects are the
+same size at any distance. It is what you want for 2D/UI rendering,
+CAD-style views, and shadow maps for directional lights.</p>
+<pre><code class="language-python">from ncca.ngl import ortho
+
+# a 2D screen-space projection for a 1024x720 window
+projection = ortho(0.0, 1024.0, 0.0, 720.0, -1.0, 1.0)
+#                  left  right  bottom top   near  far
+</code></pre>
+<p>You describe a box (left/right/bottom/top/near/far); everything inside the
+box ends up on screen. There is also <code>frustum(left, right, bottom, top,
+near, far)</code> — a lower-level perspective projection where you give the box
+edges yourself instead of a field-of-view angle.</p>
+<hr />
+<h2 id="the-mvp-matrix">The MVP Matrix</h2>
+<p>Remember PyNGL's <a href="../matrices/">row-vector convention</a>: points go on the
+left, and combined matrices read <strong>right to left</strong>. A vertex must be
+transformed by model first, then view, then projection:</p>
+<pre><code class="language-python">from ncca.ngl import Mat4, Transform, Vec3, look_at, perspective
+
+# Model — where the teapot is
+tx = Transform()
+tx.set_position(0.0, 0.0, 0.0)
+tx.set_rotation(0.0, 45.0, 0.0)
+
+# View — where the camera is
+view = look_at(Vec3(0.0, 2.0, 10.0), Vec3(0.0, 0.0, 0.0), Vec3(0.0, 1.0, 0.0))
+
+# Projection — the lens
+projection = perspective(45.0, 1024 / 720, 0.1, 100.0)
+
+# combined: model is applied FIRST (rightmost)
+mvp = projection @ view @ tx.matrix()
+
+shader.set_uniform(&quot;MVP&quot;, mvp)     # one matrix, uploaded once per object
+</code></pre>
+<p>In the vertex shader the GPU then computes <code>position @ MVP</code> (or the
+equivalent for your shading language conventions) for every vertex.</p>
+<h2 id="firstpersoncamera"><code>FirstPersonCamera</code></h2>
+<p>For interactive apps, PyNGL also provides a ready made
+<code>FirstPersonCamera</code> class (movement + mouse look) that maintains its
+own view and projection matrices, see the <em>Camera</em> page in the API Reference. There are a number of PyNGL Demos that use this class. </p>
+<h2 id="common-mistakes">Common mistakes</h2>
+<p><strong>Mistake 1</strong> :- <code>eye</code> and <code>look</code> the same point. The camera cannot look at
+itself; you get a degenerate matrix. Keep them apart.</p>
+<p><strong>Mistake 2</strong> :- <code>up</code> parallel to the view direction. Looking straight down
+with <code>up = (0, 1, 0)</code> makes the cross products collapse. Use a different
+<code>up</code> (e.g. <code>(0, 0, -1)</code>) when looking along y.</p>
+<p><strong>Mistake 3</strong> :- a <code>near</code> plane of 0. Division by zero inside the
+projection. Use a small positive value like <code>0.1</code>.</p>
+<p><strong>Mistake 4</strong> :- multiplying MVP in the wrong order. It is
+<code>projection @ view @ model</code> — if your scene is visible but transforms
+behave strangely, check this first.</p>
+<p><strong>Next:</strong> <a href="../vector_arrays/">Vector Arrays</a> — packing many vectors for the
+GPU.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../transforms/" class="btn btn-neutral float-left" title="The Transform Class"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../vector_arrays/" class="btn btn-neutral float-right" title="Vector Arrays">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../transforms/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../vector_arrays/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

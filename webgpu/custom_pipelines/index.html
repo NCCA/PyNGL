@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Custom Pipelines - PyNGL - NCCA Python Graphics Library</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Custom Pipelines";
+        var mkdocs_page_input_path = "webgpu/custom_pipelines.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> PyNGL - NCCA Python Graphics Library
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../getting_started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/method_names/">Understanding the Method Names</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/vectors/">Vectors</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/matrices/">Matrices</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/quaternions/">Quaternions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/transforms/">The Transform Class</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/cameras_and_projection/">Cameras and Projection</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/vector_arrays/">Vector Arrays</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/geometry_maths/">Geometry Maths</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/utility_functions/">Utility Functions</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">OpenGL</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/getting_started/">Getting Started with OpenGL</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/shaders/">Shaders and ShaderLib</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/geometry/">Geometry, Primitives, and VAOs</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">WebGPU</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../getting_started/">Getting Started with WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../builtin_pipelines/">The Built-in Pipelines</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Custom Pipelines</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#route-1-customshaderpipeline">Route 1: CustomShaderPipeline</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#route-2-subclass-basewebgpupipeline">Route 2: subclass BaseWebGPUPipeline</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#uniform-layout-mind-the-padding">Uniform layout: mind the padding</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#vertex-format-helpers">Vertex format helpers</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#complete-examples">Complete examples</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../widgets/">Qt Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">QML Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../qml/">Qt Quick Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Math/">Math</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Geometry/">Geometry</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../VAO/">VAO</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Shaders/">Shaders</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Camera/">Camera</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../ImageAndTexture/">Image and Texture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Text/">Text</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../WebGPU/">WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Widgets/">Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../QmlWidgets/">QML Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Misc/">Miscellaneous</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../about/">About</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">PyNGL - NCCA Python Graphics Library</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">WebGPU</li>
+      <li class="breadcrumb-item active">Custom Pipelines</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="custom-pipelines">Custom Pipelines</h1>
+<p>The <a href="../builtin_pipelines/">built-in pipelines</a> only do flat colour. As
+soon as you want lighting, textures, or your own per-vertex attributes you
+need your own <a href="https://www.w3.org/TR/WGSL/">WGSL</a> shader. There are two
+routes, in increasing order of control:</p>
+<ol>
+<li><strong><code>CustomShaderPipeline</code></strong> — supply WGSL source and vertex formats;
+   the library handles buffers, uniforms, and pipeline creation.</li>
+<li><strong>Subclass <code>BaseWebGPUPipeline</code></strong> — full control over vertex layouts,
+   uniform structures, and rendering, with the buffer-management
+   boilerplate inherited.</li>
+</ol>
+<p>Neither class is re-exported from <code>ncca.ngl.webgpu</code>, so import them from
+their modules:</p>
+<pre><code class="language-python">from ncca.ngl.webgpu.custom_shader_pipeline import CustomShaderPipeline
+from ncca.ngl.webgpu.base_webgpu_pipeline import BaseWebGPUPipeline
+</code></pre>
+<h2 id="route-1-customshaderpipeline">Route 1: <code>CustomShaderPipeline</code></h2>
+<p>Give it WGSL source with <code>vertex_main</code> and <code>fragment_main</code> entry points
+and a list of vertex formats. Each format becomes its own vertex buffer,
+bound at successive <code>@location</code>s:</p>
+<pre><code class="language-python">import numpy as np
+import wgpu
+
+from ncca.ngl.webgpu.custom_shader_pipeline import CustomShaderPipeline
+
+SHADER = &quot;&quot;&quot;
+struct Uniforms {
+    MVP : mat4x4&lt;f32&gt;,
+    colour : vec4&lt;f32&gt;,
+};
+@group(0) @binding(0) var&lt;uniform&gt; uniforms : Uniforms;
+
+struct VertexOut {
+    @builtin(position) position : vec4&lt;f32&gt;,
+    @location(0) colour : vec3&lt;f32&gt;,
+};
+
+@vertex
+fn vertex_main(
+    @location(0) position : vec3&lt;f32&gt;,
+    @location(1) colour : vec3&lt;f32&gt;,
+) -&gt; VertexOut {
+    var out : VertexOut;
+    out.position = uniforms.MVP * vec4&lt;f32&gt;(position, 1.0);
+    out.colour = colour;
+    return out;
+}
+
+@fragment
+fn fragment_main(in : VertexOut) -&gt; @location(0) vec4&lt;f32&gt; {
+    return vec4&lt;f32&gt;(in.colour, 1.0) * uniforms.colour;
+}
+&quot;&quot;&quot;
+
+pipeline = CustomShaderPipeline(
+    device=self.device,
+    shader_source=SHADER,
+    vertex_formats=[&quot;Vec3&quot;, &quot;Vec3&quot;],   # position at @location(0), colour at @location(1)
+    primitive_topology=wgpu.PrimitiveTopology.triangle_list,
+)
+
+# per frame — same contract as the built-ins
+pipeline.set_data(positions=positions, colours=colours)
+pipeline.update_uniforms(mvp=mvp, colour=np.array([1, 1, 1, 1], dtype=np.float32))
+pipeline.render(render_pass)
+</code></pre>
+<p>Details worth knowing:</p>
+<ul>
+<li>The uniform buffer at <code>@group(0) @binding(0)</code> is a <code>mat4x4</code> MVP plus a
+  <code>vec4</code> colour — match that struct in your WGSL. <code>update_uniforms</code>
+  accepts <code>mvp=</code> and <code>colour=</code> (RGB is padded to RGBA for you).</li>
+<li><code>set_data</code> uploads <code>positions=</code> and <code>colours=</code> to bindings 0 and 1, and
+  any extra keyword arrays (e.g. <code>velocities=...</code>) to the bindings after
+  them, in order. Alternatively pass a single <code>interleaved_data=</code> array
+  when <code>vertex_formats</code> has one entry.</li>
+<li>Constructor keywords let you change topology, texture/depth formats, and
+  MSAA count; the defaults match what <code>WebGPUWidget</code> sets up
+  (<code>rgba8unorm</code>, <code>depth24plus</code>, 4 samples).</li>
+</ul>
+<h2 id="route-2-subclass-basewebgpupipeline">Route 2: subclass <code>BaseWebGPUPipeline</code></h2>
+<p>For full control — your own uniform structure, interleaved layouts,
+instancing — subclass <code>BaseWebGPUPipeline</code> and implement its abstract
+methods. This is exactly how the built-in pipelines are written, so
+<a href="https://github.com/NCCA/PyNGL/tree/main/src/ncca/ngl/webgpu"><code>point_pipeline.py</code>, <code>triangle_pipeline.py</code>, and friends</a>
+are working reference implementations.</p>
+<p>You must implement:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Returns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>get_dtype()</code></td>
+<td>numpy structured dtype mirroring your WGSL uniform struct</td>
+</tr>
+<tr>
+<td><code>_get_shader_code()</code></td>
+<td>the WGSL source (entry points <code>vertex_main</code> / <code>fragment_main</code>)</td>
+</tr>
+<tr>
+<td><code>_get_vertex_buffer_layouts()</code></td>
+<td>list of wgpu vertex-buffer layout dicts</td>
+</tr>
+<tr>
+<td><code>_get_primitive_topology()</code></td>
+<td>a <code>wgpu.PrimitiveTopology</code></td>
+</tr>
+<tr>
+<td><code>_set_default_uniforms()</code></td>
+<td>nothing — fill <code>self.uniform_data</code> with defaults</td>
+</tr>
+<tr>
+<td><code>_get_pipeline_label()</code></td>
+<td>debug label string</td>
+</tr>
+<tr>
+<td><code>set_data(**kwargs)</code></td>
+<td>nothing — upload vertex data</td>
+</tr>
+<tr>
+<td><code>update_uniforms(**kwargs)</code></td>
+<td>nothing — write <code>self.uniform_data</code> fields and upload</td>
+</tr>
+<tr>
+<td><code>render(render_pass, **kwargs)</code></td>
+<td>nothing — bind and draw</td>
+</tr>
+</tbody>
+</table>
+<p>The base class then builds the render pipeline, uniform buffer, and bind
+group for you, and provides <code>_create_or_update_buffer(...)</code> /
+<code>_process_vertex_data(...)</code> so per-frame uploads reuse buffers instead of
+reallocating.</p>
+<p>A sketch of the shape:</p>
+<pre><code class="language-python">class MyPipeline(BaseWebGPUPipeline):
+    def get_dtype(self):
+        return np.dtype([
+            (&quot;MVP&quot;, np.float32, (4, 4)),
+            (&quot;colour&quot;, np.float32, 4),
+        ])
+
+    def _get_shader_code(self):
+        return MY_WGSL_SOURCE
+
+    def _get_vertex_buffer_layouts(self):
+        return [{
+            &quot;array_stride&quot;: NGLToWebGPU.stride_from_type(&quot;Vec3&quot;),
+            &quot;step_mode&quot;: &quot;vertex&quot;,
+            &quot;attributes&quot;: [{
+                &quot;format&quot;: NGLToWebGPU.vertex_format(&quot;Vec3&quot;),
+                &quot;offset&quot;: 0,
+                &quot;shader_location&quot;: 0,
+            }],
+        }]
+
+    def _get_primitive_topology(self):
+        return wgpu.PrimitiveTopology.triangle_list
+
+    def _set_default_uniforms(self):
+        self.uniform_data[&quot;MVP&quot;] = np.eye(4, dtype=np.float32)
+        self.uniform_data[&quot;colour&quot;] = np.array([1, 1, 1, 1], dtype=np.float32)
+
+    def _get_pipeline_label(self):
+        return &quot;MyPipeline&quot;
+
+    def set_data(self, positions=None, **kwargs):
+        self.vertex_buffer, _ = self._create_or_update_buffer(
+            getattr(self, &quot;vertex_buffer&quot;, None), positions,
+            wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST, &quot;my_vertices&quot;,
+        )
+        self.num_vertices = len(positions)
+
+    def update_uniforms(self, mvp=None, colour=None, **kwargs):
+        if mvp is not None:
+            self.uniform_data[&quot;MVP&quot;] = mvp
+        if colour is not None:
+            self.uniform_data[&quot;colour&quot;] = colour
+        self.device.queue.write_buffer(self.uniform_buffer, 0, self.uniform_data.tobytes())
+
+    def render(self, render_pass, **kwargs):
+        render_pass.set_pipeline(self.pipeline)
+        render_pass.set_bind_group(0, self.bind_group, [], 0, 999999)
+        render_pass.set_vertex_buffer(0, self.vertex_buffer)
+        render_pass.draw(self.num_vertices)
+</code></pre>
+<p>Instantiate it directly (<code>MyPipeline(self.device)</code>), or register it with
+the factory to swap it in wherever a built-in type is requested:</p>
+<pre><code class="language-python">from ncca.ngl.webgpu import PipelineFactory, PipelineType
+
+PipelineFactory.register_pipeline(PipelineType.MULTI_COLOURED_TRIANGLES, MyPipeline)
+</code></pre>
+<h2 id="uniform-layout-mind-the-padding">Uniform layout: mind the padding</h2>
+<p>WGSL uniform structs follow WebGPU's alignment rules, and your numpy
+dtype must match <strong>byte for byte</strong>:</p>
+<ul>
+<li>A <code>vec3&lt;f32&gt;</code> field is aligned to 16 bytes — follow it with a
+  4-byte padding field in the dtype (the built-ins use e.g.
+  <code>("Colour", "float32", 3), ("padding", "float32")</code>).</li>
+<li>A <code>mat3x3&lt;f32&gt;</code> is stored as three <em>padded</em> columns — 12 floats, not 9
+  (<code>NGLToWebGPU.stride_from_type("mat3")</code> returns 48 bytes). The demos
+  simply use <code>mat4x4</code> for normal matrices to sidestep this.</li>
+<li>The whole struct is padded to a 16-byte multiple.</li>
+</ul>
+<p>If your rendering is subtly wrong — colours shifted, matrices sheared —
+mismatched uniform padding is the first thing to check.</p>
+<h2 id="vertex-format-helpers">Vertex format helpers</h2>
+<p><code>NGLToWebGPU</code> (exported from <code>ncca.ngl.webgpu</code>) maps NGL type names to
+the WebGPU values used in vertex layouts:</p>
+<pre><code class="language-python">NGLToWebGPU.stride_from_type(&quot;vec3&quot;)   # 12  (bytes)
+NGLToWebGPU.vertex_format(&quot;vec3&quot;)      # &quot;float32x3&quot;
+</code></pre>
+<h2 id="complete-examples">Complete examples</h2>
+<p>The <a href="https://github.com/NCCA/PyNGLDemos">PyNGLDemos</a> repository contains
+full custom-pipeline programs: <code>SimpleWebGPU</code> (a PBR-shaded teapot with a
+checkerboard floor — its <code>TeapotPipeline.py</code> is the canonical custom
+pipeline class), <code>TextureWebGPU</code>, <code>WebGPUShadows</code>, and compute-shader
+examples under <code>WebGPUCompute</code>.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../builtin_pipelines/" class="btn btn-neutral float-left" title="The Built-in Pipelines"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../widgets/" class="btn btn-neutral float-right" title="Qt Widgets for NGL Types">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../builtin_pipelines/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../../widgets/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
