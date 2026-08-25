@@ -8,7 +8,7 @@ sources:
   - src/ncca/ngl/random.py
   - src/ncca/ngl/log.py
   - pyproject.toml
-synced: cdaf11bb67c017e478348ac5591c0c90634629c7
+synced: b3ac1a4e16eb594b40036f776028ae25de168432
 ---
 
 # Architecture Overview
@@ -20,7 +20,9 @@ single API-agnostic core (`ncca.ngl`), and three API-coupled layers
 (`ncca.ngl.opengl`, `ncca.ngl.webgpu`, `ncca.ngl.widgets`) that depend on the
 core but never on each other. The installable module root is `src/` (see
 `pyproject.toml:tool.uv.build-backend`), package name `ncca.ngl`, distribution
-name `ncca-ngl`.
+name `ncca-ngl`. The same table's `wheel-exclude` keeps the loose
+`PrimData/*.npy` source meshes out of the wheel while leaving them in the repo
+and the sdist.
 
 ## How it works
 
@@ -122,7 +124,8 @@ so an application's own `.qml` files can resolve the module. Has its own
   reconsidering the layering.
 - Build backend module name is `ncca.ngl` with `module-root = "src"`
   (`pyproject.toml`) — the installable package is `ncca-ngl` on PyPI-style
-  metadata but imports as `ncca.ngl`.
+  metadata but imports as `ncca.ngl`. Anything added under `src/` ships in the
+  wheel unless `wheel-exclude` says otherwise.
 
 ## Connections
 

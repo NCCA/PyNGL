@@ -3,7 +3,7 @@ sources:
   - tests/conftest.py
   - run_coverage_nogpu.py
   - pyproject.toml
-synced: 9c2b6deffde456bb528df654ca6ce5e810d8f3a8
+synced: b3ac1a4e16eb594b40036f776028ae25de168432
 ---
 
 # Test Architecture

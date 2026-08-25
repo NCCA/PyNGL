@@ -3,7 +3,7 @@ sources:
   - tests/conftest.py
   - CLAUDE.md
   - .github/workflows/**
-synced: cdaf11bb67c017e478348ac5591c0c90634629c7
+synced: b3ac1a4e16eb594b40036f776028ae25de168432
 ---
 
 # Gotchas

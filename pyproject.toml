@@ -49,6 +49,11 @@ build-backend = "uv_build"
 [tool.uv.build-backend]
 module-name = "ncca.ngl"
 module-root = "src"
+# The loose PrimData/*.npy meshes are the *sources* pack_arrays.py bakes into
+# Primitives.npz, which is the only thing prim_data.py ever loads. They stay in
+# the repo so the .npz can be rebuilt, but shipping both put ~14MB of dead
+# weight in every wheel.
+wheel-exclude = ["PrimData/*.npy"]
 
 
 [dependency-groups]
