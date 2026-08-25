@@ -3,7 +3,7 @@ sources:
   - src/ncca/ngl/webgpu/pipeline_factory.py
   - src/ncca/ngl/webgpu/base_webgpu_pipeline.py
   - src/ncca/ngl/webgpu/line_pipeline.py
-synced: 9c2b6deffde456bb528df654ca6ce5e810d8f3a8
+synced: cdaf11bb67c017e478348ac5591c0c90634629c7
 ---
 
 # How to Add a WebGPU Pipeline
@@ -66,13 +66,22 @@ import the concrete class directly.
 6. **Register with `PipelineFactory`.** Add a `PipelineType` enum member in
    `pipeline_factory.py` and call
    `self.register_pipeline(PipelineType.YOUR_TYPE, YourPipelineClass)` in
-   `_PipelineFactory.__init__` (`pipeline_factory.py:56` onward shows every
-   existing registration). If the new pipeline needs a fixed-configuration
-   variant (e.g. one topology baked in), define a small wrapper subclass or
-   a `lambda device: YourPipelineClass(device, ...)` and register that,
-   mirroring the `TriangleListMultiColour`/`TriangleListSingleColour`
-   wrapper classes (`pipeline_factory.py:76-102`). Never have call-site code
-   import the concrete pipeline class directly — go through
+   `_PipelineFactory.__init__` (the run of `register_pipeline` calls at the
+   top of that method shows every existing registration). If the new
+   pipeline needs a fixed-configuration variant (e.g. one topology baked
+   in), register a factory callable rather than a wrapper subclass:
+
+       self.register_pipeline(
+           PipelineType.YOUR_TYPE,
+           lambda device, **kwargs: YourPipeline(device, topology=..., **kwargs),
+       )
+
+   The `**kwargs` is not optional. Everything in the registry is called as
+   `factory(device, **kwargs)`, so a callable that doesn't forward them
+   silently drops whatever `create_pipeline` was given — which is exactly
+   what the old `TriangleList*` wrapper subclasses did to `colour` and
+   `data_type` before they were replaced by these lambdas. Never have
+   call-site code import the concrete pipeline class directly — go through
    `PipelineFactory.create_pipeline(device, pipeline_type, **kwargs)`.
 
 7. **Test it.** Pipeline construction calls real `wgpu` device APIs

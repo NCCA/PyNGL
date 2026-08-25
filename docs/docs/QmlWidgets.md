@@ -46,3 +46,17 @@ usage examples.
 ## Mat4Model
 
 ::: ncca.ngl.qml.Mat4Model
+
+## Import path helpers
+
+`ncca.ngl.qml` is a file-based QML module, so an engine needs its import
+path set before `import ncca.ngl.qml 1.0` will resolve from your own
+`.qml` files.
+
+### add_import_path
+
+::: ncca.ngl.qml.add_import_path
+
+### import_path
+
+::: ncca.ngl.qml.import_path

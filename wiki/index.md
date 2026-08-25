@@ -1,7 +1,7 @@
 ---
 sources:
   - CLAUDE.md
-synced: 33b278187fbf30621d08376f7256c7bd5bb5f926
+synced: cdaf11bb67c017e478348ac5591c0c90634629c7
 ---
 
 # PyNGL Knowledge Wiki
@@ -34,6 +34,8 @@ this wiki documents *how and why* the system fits together.
   - [WebGPU](modules/webgpu.md) — pipeline base, factory, concrete pipelines
   - [Widgets](modules/widgets.md) — PySide6 widgets, event-handling mixin,
     first-person camera
+  - [QML](modules/qml.md) — Qt Quick models and views, the `ncca.ngl.qml`
+    module and its import path
 - **Decisions and gotchas**
   - [Decision log](decisions.md) — why the API is shaped the way it is
   - [Gotchas](gotchas.md) — traps that bite agents and contributors

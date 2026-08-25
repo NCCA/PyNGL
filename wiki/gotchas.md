@@ -3,7 +3,7 @@ sources:
   - tests/conftest.py
   - CLAUDE.md
   - .github/workflows/**
-synced: 33b278187fbf30621d08376f7256c7bd5bb5f926
+synced: cdaf11bb67c017e478348ac5591c0c90634629c7
 ---
 
 # Gotchas
@@ -62,7 +62,9 @@ them the hard way.
   `primitives.py`, `base_mesh.py`) lives in the `opengl/` sub-package
   and is deliberately **not** re-exported from `ncca.ngl.__init__`.
   `from ncca.ngl import Texture` (etc.) will fail or shadow the wrong
-  symbol — use `from ncca.ngl.opengl import Texture`.
+  symbol — use `from ncca.ngl.opengl import Texture`. The same holds for
+  `ncca.ngl.webgpu`, `ncca.ngl.widgets`, and `ncca.ngl.qml`: each is
+  imported from its own sub-package, never from the top level.
 
 - **The default CI matrix (`uv.yml build` job) ignores a long list of
   GPU/Qt/webgpu test files by name** (`test_shaderlib.py`,

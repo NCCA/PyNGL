@@ -35,10 +35,10 @@ uv pip install ncca-ngl
 The importable module is `ncca.ngl`:
 
 ```python
-from ncca.ngl import Vec3, Mat4, lookAt, perspective
+from ncca.ngl import Vec3, look_at, perspective
 
 eye = Vec3(0, 2, 5)
-view = lookAt(eye, Vec3(0, 0, 0), Vec3(0, 1, 0))
+view = look_at(eye, Vec3(0, 0, 0), Vec3(0, 1, 0))
 proj = perspective(45.0, 16.0 / 9.0, 0.1, 100.0)
 ```
 

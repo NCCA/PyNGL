@@ -2,7 +2,7 @@
 sources:
   - tests/test_api_consistency.py
   - CLAUDE.md
-synced: 33b278187fbf30621d08376f7256c7bd5bb5f926
+synced: cdaf11bb67c017e478348ac5591c0c90634629c7
 ---
 
 # API Conventions
@@ -66,6 +66,10 @@ correct spelling throughout identifiers, docs, and variables.
 
 - `_data` is always a numpy array of dtype `np.float32` — never `float64` or
   a Python list.
+- The `__slots__` convention is spelt with the dunders. `slots = (...)` is a
+  perfectly legal class attribute that does nothing at all, so the class
+  keeps its per-instance `__dict__` and nothing warns — `Face` in
+  `opengl/base_mesh.py` carried that typo for a long time.
 - `normalized()`, `transposed()`, `inverse()`, `clamped()`, `conjugate()`
   return new objects; they must never mutate `self`. Only `set()` and
   `__setitem__` mutate in place.
