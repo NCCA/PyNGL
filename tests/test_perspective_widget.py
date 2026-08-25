@@ -159,7 +159,9 @@ def test_show_mode_true_shows_combobox(qt_app, qtbot):
 
 def test_mode_switch_changes_matrix(qt_app, qtbot):
     """Test that changing mode produces a different matrix (WebGPU vs OpenGL)."""
-    widget = PerspectiveWidget(show_mode=True, fov=50.0, aspect=1.5, near=0.5, far=200.0)
+    widget = PerspectiveWidget(
+        show_mode=True, fov=50.0, aspect=1.5, near=0.5, far=200.0
+    )
     qtbot.addWidget(widget)
 
     opengl_matrix = widget.matrix()
@@ -172,7 +174,9 @@ def test_mode_switch_changes_matrix(qt_app, qtbot):
 
 def test_set_mode_programmatically_without_show_mode(qt_app, qtbot):
     """Test that mode can still be set programmatically when show_mode=False."""
-    widget = PerspectiveWidget(show_mode=False, fov=50.0, aspect=1.5, near=0.5, far=200.0)
+    widget = PerspectiveWidget(
+        show_mode=False, fov=50.0, aspect=1.5, near=0.5, far=200.0
+    )
     qtbot.addWidget(widget)
 
     widget.set_mode(PerspMode.Vulkan)

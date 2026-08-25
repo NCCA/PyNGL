@@ -1,6 +1,5 @@
 #!/usr/bin/env -S uv run --script
-"""
-Run coverage tests without GPU dependencies.
+"""Run coverage tests without GPU dependencies.
 This script separates CPU-only tests from GPU/Qt-dependent tests.
 """
 
@@ -32,7 +31,6 @@ def run_command(cmd: str, description: str) -> bool:
 
 def main():
     """Main function to run coverage without GPU."""
-
     # CPU-only tests (no OpenGL context, no Qt)
     cpu_only_tests = [
         "tests/test_vec2.py",

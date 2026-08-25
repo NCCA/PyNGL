@@ -8,7 +8,9 @@ from pathlib import Path
 
 import pytest
 
-_MODULE_PATH = Path(__file__).resolve().parent.parent / "wiki" / "tools" / "check_sync.py"
+_MODULE_PATH = (
+    Path(__file__).resolve().parent.parent / "wiki" / "tools" / "check_sync.py"
+)
 _spec = importlib.util.spec_from_file_location("check_sync", _MODULE_PATH)
 check_sync = importlib.util.module_from_spec(_spec)
 sys.modules["check_sync"] = check_sync
@@ -55,7 +57,11 @@ class TestGlobToRegex:
         [
             ("src/ncca/ngl/vec*.py", "src/ncca/ngl/vec3.py", True),
             ("src/ncca/ngl/vec*.py", "src/ncca/ngl/vec3_array.py", True),
-            ("src/ncca/ngl/vec*.py", "src/ncca/ngl/opengl/vec3.py", False),  # * stays in one dir
+            (
+                "src/ncca/ngl/vec*.py",
+                "src/ncca/ngl/opengl/vec3.py",
+                False,
+            ),  # * stays in one dir
             ("src/ncca/ngl/webgpu/**", "src/ncca/ngl/webgpu/line_pipeline.py", True),
             ("**/conftest.py", "tests/conftest.py", True),
             ("**/conftest.py", "conftest.py", True),  # **/ also matches zero dirs
@@ -99,14 +105,18 @@ def wiki_repo(tmp_path):
 
 class TestCheckPage:
     def test_fresh_when_sources_unchanged(self, wiki_repo):
-        status = check_sync.check_page(wiki_repo, wiki_repo / "wiki" / "modules" / "math.md")
+        status = check_sync.check_page(
+            wiki_repo, wiki_repo / "wiki" / "modules" / "math.md"
+        )
         assert status.state == "fresh"
         assert status.changed == []
 
     def test_stale_when_source_changes_after_sync(self, wiki_repo):
         (wiki_repo / "src" / "ncca" / "ngl" / "vec3.py").write_text("x = 2\n")
         _git(wiki_repo, "commit", "-am", "change vec3")
-        status = check_sync.check_page(wiki_repo, wiki_repo / "wiki" / "modules" / "math.md")
+        status = check_sync.check_page(
+            wiki_repo, wiki_repo / "wiki" / "modules" / "math.md"
+        )
         assert status.state == "stale"
         assert status.changed == ["src/ncca/ngl/vec3.py"]
 
@@ -114,12 +124,16 @@ class TestCheckPage:
         (wiki_repo / "README.md").write_text("hello\n")
         _git(wiki_repo, "add", ".")
         _git(wiki_repo, "commit", "-m", "add readme")
-        status = check_sync.check_page(wiki_repo, wiki_repo / "wiki" / "modules" / "math.md")
+        status = check_sync.check_page(
+            wiki_repo, wiki_repo / "wiki" / "modules" / "math.md"
+        )
         assert status.state == "fresh"
 
     def test_error_on_unknown_synced_commit(self, wiki_repo):
         page = wiki_repo / "wiki" / "modules" / "math.md"
-        page.write_text("---\nsources:\n  - src/ncca/ngl/vec*.py\nsynced: " + "0" * 40 + "\n---\n")
+        page.write_text(
+            "---\nsources:\n  - src/ncca/ngl/vec*.py\nsynced: " + "0" * 40 + "\n---\n"
+        )
         status = check_sync.check_page(wiki_repo, page)
         assert status.state == "error"
         assert "commit" in status.message

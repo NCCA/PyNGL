@@ -79,7 +79,7 @@ uv run ruff check src/
 
 ## Documentation
 
-A full class listing and documentations can be found here :- 
+A full class listing and documentations can be found here :-
 
 - **Docs site:** <https://ncca.github.io/PyNGL/>
 - **Getting started / tutorials:** <https://ncca.github.io/PyNGL/tutorials/> (Getting Started and Tutorials sections)
@@ -89,7 +89,7 @@ The site covers the math API design rules, vectors/matrices/quaternions, transfo
 ### Knowledge wiki
 
 Alongside the API reference, [`wiki/`](wiki/index.md) is an agent-maintained
-knowledge base about *how PyNGL works* — architecture narratives, module
+knowledge base about _how PyNGL works_ — architecture narratives, module
 deep-dives, design decisions, and gotchas — written for both people and
 coding agents. Start at [`wiki/index.md`](wiki/index.md).
 
@@ -104,6 +104,14 @@ Exit code 0 means every page is fresh; stale pages are listed with the
 source files that changed. If you use Claude Code, `/wiki status`,
 `/wiki update`, and `/wiki build` maintain the wiki for you (see
 `.claude/skills/wiki/SKILL.md`).
+
+## AI Usage
+
+This project has use various AI tools ([Claude](https://claude.ai) and [Codex](https://openai.com/codex/) and [OpenCode](https://opencode.ai/)) to assist with development.
+
+The initial phases were for the full port of NGL to PyNGL (C++ to Python conversion) and additional testing. Most of the work is shown in the docs section of the repository, and I have also written about various things on my blog [her](https://nccastaff.bournemouth.ac.uk/jmacey/post/).
+
+There will be a full write-up of my setup and usage of AI on the Blog soon.
 
 ## License
 

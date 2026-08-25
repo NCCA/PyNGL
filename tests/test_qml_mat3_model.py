@@ -1,5 +1,3 @@
-import pytest
-
 from ncca.ngl import Mat3
 
 

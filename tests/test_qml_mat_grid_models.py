@@ -1,7 +1,6 @@
 import pytest
 
 from ncca.ngl import Mat2, Mat3, Mat4
-from ncca.ngl.mat_base import MatrixError
 
 WIDGET_CASES = [
     ("ncca.ngl.qml.mat2_model", "Mat2Model", Mat2, 2),
@@ -34,7 +33,9 @@ def test_get_and_set_cell_round_trip(qt_app, module_name, class_name, mat_cls, s
 
 
 @pytest.mark.parametrize("module_name,class_name,mat_cls,size", WIDGET_CASES)
-def test_set_cell_emits_value_changed(qt_app, qtbot, module_name, class_name, mat_cls, size):
+def test_set_cell_emits_value_changed(
+    qt_app, qtbot, module_name, class_name, mat_cls, size
+):
     model = _load_model_cls(module_name, class_name)()
 
     with qtbot.waitSignal(model.valueChanged, timeout=1000):
@@ -53,7 +54,9 @@ def test_zero_then_identity_round_trip(qt_app, module_name, class_name, mat_cls,
 
 
 @pytest.mark.parametrize("module_name,class_name,mat_cls,size", WIDGET_CASES)
-def test_transpose_reflects_current_value(qt_app, module_name, class_name, mat_cls, size):
+def test_transpose_reflects_current_value(
+    qt_app, module_name, class_name, mat_cls, size
+):
     model = _load_model_cls(module_name, class_name)()
     model.set_cell(0, 1, 7.0)
 

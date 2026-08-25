@@ -56,7 +56,9 @@ def parse_frontmatter(text: str) -> Frontmatter:
     if not lines or lines[0].strip() != "---":
         raise FrontmatterError("page does not start with a '---' frontmatter block")
     try:
-        end = next(i for i, line in enumerate(lines[1:], start=1) if line.strip() == "---")
+        end = next(
+            i for i, line in enumerate(lines[1:], start=1) if line.strip() == "---"
+        )
     except StopIteration:
         raise FrontmatterError("frontmatter block is never closed with '---'") from None
 
@@ -197,7 +199,9 @@ def check_page(repo_root: Path, page: Path) -> PageStatus:
             message=f"synced commit {fm.synced} not found in repository",
             frontmatter=fm,
         )
-    out = _git(repo_root, "diff", "--name-only", f"{fm.synced}..HEAD", "--", *fm.sources)
+    out = _git(
+        repo_root, "diff", "--name-only", f"{fm.synced}..HEAD", "--", *fm.sources
+    )
     changed = [line for line in out.splitlines() if line]
     state = "stale" if changed else "fresh"
     return PageStatus(path=page, state=state, changed=changed, frontmatter=fm)
@@ -241,7 +245,9 @@ def main(argv: list[str] | None = None) -> int:
         0 when every page is fresh, 1 when any page is stale or in error.
     """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--wiki-dir", type=Path, default=Path(__file__).resolve().parent.parent)
+    parser.add_argument(
+        "--wiki-dir", type=Path, default=Path(__file__).resolve().parent.parent
+    )
     parser.add_argument("--repo-root", type=Path, default=None)
     parser.add_argument("--json", action="store_true", dest="as_json")
     args = parser.parse_args(argv)
@@ -278,7 +284,9 @@ def main(argv: list[str] | None = None) -> int:
             if s.state == "fresh":
                 print(f"FRESH {rel}")
             elif s.state == "stale":
-                print(f"STALE {rel} — {len(s.changed)} changed since {s.frontmatter.synced[:7]}:")
+                print(
+                    f"STALE {rel} — {len(s.changed)} changed since {s.frontmatter.synced[:7]}:"
+                )
                 for f in s.changed:
                     print(f"    {f}")
             else:
