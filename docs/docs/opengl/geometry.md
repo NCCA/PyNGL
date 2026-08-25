@@ -58,20 +58,23 @@ uses it this way).
 
 ## OBJ files
 
-`Obj` parses Wavefront OBJ files. The one-liner builds the VAO (and
-optionally a texture) for you:
+`Obj` parses Wavefront OBJ files into CPU-side mesh data. Upload it to an
+OpenGL VAO with `OpenGLMesh`:
 
 ```python
 from ncca.ngl import Obj
+from ncca.ngl.opengl import OpenGLMesh
 
-mesh = Obj.obj_with_vao("models/helix.obj", "textures/helix.png")
-mesh.draw()   # per frame, with your shader active
+data = Obj.from_file("models/helix.obj")
+mesh = OpenGLMesh(data)
+mesh.upload()  # whilst an OpenGL context is current
+mesh.draw()    # per frame, with your shader active
 ```
 
-Construct `Obj("file.obj")` instead when you only want the parsed data
-(vertices, normals, UVs, `Face` lists) — see the
-[Geometry reference](../Geometry.md). Parse errors raise `ObjParse*Error`
-exceptions rather than returning half-loaded meshes.
+`Obj.from_file("file.obj")` returns the parsed data (vertices, normals, UVs,
+and `Face` lists). `Obj` no longer has `create_vao()`, `draw()`, or
+`obj_with_vao()`. Parse errors raise `ObjParse*Error` exceptions rather than
+returning half-loaded meshes.
 
 ## Textures
 

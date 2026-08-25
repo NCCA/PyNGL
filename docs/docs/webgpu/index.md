@@ -29,6 +29,10 @@ things:
 All the maths and geometry classes are shared with the OpenGL stack —
 `Vec3`, `Mat4`, `look_at`, `perspective`, and `PrimData` work unchanged.
 
+OBJ files are parser-only. Load one with `Obj.from_file()`, then pass it to
+`WebGPUMesh`. `standard_mesh_vertex_layout()` describes its interleaved
+position, normal and UV buffer (32 bytes per vertex) for a custom pipeline.
+
 !!! warning "One thing to remember"
     WebGPU's clip-space depth runs from 0 to 1, whereas OpenGL's runs from
     −1 to 1. Always build projection matrices with
