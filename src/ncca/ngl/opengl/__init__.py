@@ -12,6 +12,7 @@ __license__ = "MIT"
 
 from .abstract_vao import AbstractVAO, VertexData
 from .base_mesh import BaseMesh, Face
+from .mesh import OpenGLMesh
 from .multi_buffer_vao import MultiBufferVAO
 from .primitives import Primitives
 from .pyside_event_handling_mixin import PySideEventHandlingMixin
@@ -29,6 +30,7 @@ __all__ = [
     "VertexData",
     "BaseMesh",
     "Face",
+    "OpenGLMesh",
     "MultiBufferVAO",
     "Primitives",
     "PySideEventHandlingMixin",

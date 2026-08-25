@@ -19,6 +19,7 @@ from .mat2 import Mat2
 from .mat3 import Mat3
 from .mat4 import Mat4
 from .mat_base import MatrixError
+from .mesh import Face, MeshData, MeshValidationError
 from .obj import (
     Obj,
     ObjParseFaceError,
@@ -61,6 +62,9 @@ __all__ = [
     "Mat3",
     "Mat4",
     "MatrixError",
+    "Face",
+    "MeshData",
+    "MeshValidationError",
     "Obj",
     "ObjParseFaceError",
     "ObjParseNormalError",

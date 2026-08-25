@@ -11,6 +11,12 @@ __author__ = "Jon Macey jmacey@bournemouth.ac.uk"
 __license__ = "MIT"
 
 from .pipeline_factory import PipelineFactory, PipelineType
+from .mesh import (
+    STANDARD_MESH_TOPOLOGY,
+    STANDARD_MESH_VERTEX_STRIDE,
+    WebGPUMesh,
+    standard_mesh_vertex_layout,
+)
 from .webgpu_constants import NGLToWebGPU
 from .webgpu_widget import WebGPUWidget
 
@@ -19,4 +25,8 @@ __all__ = [
     "NGLToWebGPU",
     "PipelineFactory",
     "PipelineType",
+    "STANDARD_MESH_TOPOLOGY",
+    "STANDARD_MESH_VERTEX_STRIDE",
+    "WebGPUMesh",
+    "standard_mesh_vertex_layout",
 ]

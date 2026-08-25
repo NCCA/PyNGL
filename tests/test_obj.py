@@ -8,9 +8,9 @@ from ncca.ngl import (
     ObjParseNormalError,
     ObjParseUVError,
     ObjParseVertexError,
+    Face,
     Vec3,
 )
-from ncca.ngl.opengl import Face
 
 validfiles = [
     "tests/files/Triangle1.obj",
@@ -178,7 +178,7 @@ def test_add_face():
         assert obj.faces[0].uv[i] == i
 
 
-def test_build_obj():
+def test_build_obj(tmp_path):
     obj = Obj()
     obj.add_vertex(Vec3(2.0, 0.0, 0.0))
     obj.add_vertex(Vec3(0.0, 4.0, 0.0))
@@ -199,9 +199,10 @@ def test_build_obj():
     face.normal.append(0)
     face.normal.append(0)
     obj.add_face(face)
-    obj.save("tests/tempObj.obj")
+    output = tmp_path / "tempObj.obj"
+    obj.save(str(output))
     # reload and check
-    new = Obj.from_file("tests/tempObj.obj")
+    new = Obj.from_file(str(output))
     assert new.vertex[0] == Vec3(2.0, 0.0, 0.0)
     assert new.vertex[1] == Vec3(0.0, 4.0, 0.0)
     assert new.vertex[2] == Vec3(-2.0, 0.0, 0.0)
@@ -214,7 +215,7 @@ def test_build_obj():
     assert new.faces[0].normal == [0, 0, 0]
 
 
-def test_build_obj_with_colour():
+def test_build_obj_with_colour(tmp_path):
     obj = Obj()
     obj.add_vertex_colour(Vec3(2.0, 0.0, 0.0), Vec3(1.0, 0.0, 0.0))
     obj.add_vertex_colour(Vec3(0.0, 4.0, 0.0), Vec3(0.0, 1.0, 0.0))
@@ -231,9 +232,10 @@ def test_build_obj_with_colour():
         face.uv.append(i)
         face.normal.append(0)
     obj.add_face(face)
-    obj.save("tests/tempColourObj.obj")
+    output = tmp_path / "tempColourObj.obj"
+    obj.save(str(output))
     # reload and check
-    new = Obj.from_file("tests/tempColourObj.obj")
+    new = Obj.from_file(str(output))
     assert new.vertex[0] == Vec3(2.0, 0.0, 0.0)
     assert new.vertex[1] == Vec3(0.0, 4.0, 0.0)
     assert new.vertex[2] == Vec3(-2.0, 0.0, 0.0)
@@ -259,47 +261,19 @@ def test_obj_with_colour():
     assert obj.colour[2] == Vec3(0.0, 0.0, 1.0)
 
 
-def test_negative_indices():
+def test_negative_indices_use_current_mesh_lengths():
     obj = Obj()
-    obj._current_vertex_offset = 4
-    obj._current_normal_offset = 4
-    obj._current_uv_offset = 4
-
-    tokens_v_vt_vn = ["f", "-4/-4/-4", "-3/-3/-3", "-2/-2/-2", "-1/-1/-1"]
-    obj._parse_face_vertex_normal_uv(tokens_v_vt_vn)
-    assert obj.faces[-1].vertex == [0, 1, 2, 3]
-    assert obj.faces[-1].normal == [0, 1, 2, 3]
-    assert obj.faces[-1].uv == [0, 1, 2, 3]
-
-    tokens_v_vn = ["f", "-4//-4", "-3//-3", "-2//-2", "-1//-1"]
-    obj._parse_face_vertex_normal(tokens_v_vn)
-    assert obj.faces[-1].vertex == [0, 1, 2, 3]
-    assert obj.faces[-1].normal == [0, 1, 2, 3]
-
-    tokens_v_vt = ["f", "-4/-4", "-3/-3", "-2/-2", "-1/-1"]
-    obj._parse_face_vertex_uv(tokens_v_vt)
-    assert obj.faces[-1].vertex == [0, 1, 2, 3]
-    assert obj.faces[-1].uv == [0, 1, 2, 3]
+    obj.vertex = [Vec3() for _ in range(4)]
+    obj.normals = [Vec3() for _ in range(4)]
+    obj.uv = [Vec3() for _ in range(4)]
+    obj._parse_face(["f", "-4/-4/-4", "-3/-3/-3", "-2/-2/-2"])
+    assert obj.faces[-1] == Face([0, 1, 2], [0, 1, 2], [0, 1, 2])
 
 
-def test_parse_face_vertex_only_error():
-    obj = Obj()
-    tokens = ["f", "a", "b", "c"]
+@pytest.mark.parametrize("tokens", [["f", "0", "1", "2"], ["f", "1", "1/1", "1"]])
+def test_parse_face_rejects_invalid_corner_formats(tokens):
     with pytest.raises(ObjParseFaceError):
-        obj._parse_face_vertex(tokens)
-
-
-def test_parse_face_error():
-    obj = Obj()
-    tokens = ["f", "a/b/c"]
-    with pytest.raises(ObjParseFaceError):
-        obj._parse_face_vertex_normal_uv(tokens)
-    tokens = ["f", "a//c"]
-    with pytest.raises(ObjParseFaceError):
-        obj._parse_face_vertex_normal(tokens)
-    tokens = ["f", "a/b"]
-    with pytest.raises(ObjParseFaceError):
-        obj._parse_face_vertex_uv(tokens)
+        Obj()._parse_face(tokens)
 
 
 def test_write_face_v_vn():
@@ -315,8 +289,7 @@ def test_write_face_v_vn():
         assert s.read() == "f 1//1 2//2 3//3\n"
 
 
-def test_obj_with_vao(opengl_context):
-    mesh = Obj.obj_with_vao("tests/files/Triangle1.obj", "tests/files/simpleRGB.png")
-    assert mesh.texture_id != 0
-    # check if vao is created
-    assert mesh.vao is not None
+def test_obj_is_cpu_only():
+    mesh = Obj.from_file("tests/files/Triangle1.obj")
+    assert not hasattr(mesh, "draw")
+    assert not hasattr(mesh, "create_vao")

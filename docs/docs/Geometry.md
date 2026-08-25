@@ -4,6 +4,14 @@
 
 ::: ncca.ngl.Obj
 
+## MeshData
+
+::: ncca.ngl.MeshData
+
+## Face
+
+::: ncca.ngl.Face
+
 ## Primitives
 
 ::: ncca.ngl.opengl.Primitives
@@ -11,9 +19,9 @@
 ## BaseMesh
 
 ::: ncca.ngl.opengl.BaseMesh
-## Face
+## OpenGLMesh
 
-::: ncca.ngl.opengl.Face
+::: ncca.ngl.opengl.OpenGLMesh
 
 ## PrimData
 
