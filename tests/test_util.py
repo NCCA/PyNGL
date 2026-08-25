@@ -13,6 +13,7 @@ from ncca.ngl import (
     ortho,
     perspective,
     prim_data_to_ri_points_polygons,
+    renderman_look_at,
 )
 
 
@@ -144,3 +145,55 @@ def test_prim_data_to_ri_points_polygons():
     assert parameterlist.get("P")
     assert parameterlist.get("N")
     assert parameterlist.get("st")
+
+
+def test_prim_data_to_ri_accepts_2d_input():
+    triangles = np.zeros((3, 8), dtype=np.float32)
+
+    nvertices, vertices, _ = prim_data_to_ri_points_polygons(triangles)
+
+    assert nvertices == [3]
+    assert vertices == [0, 1, 2]
+
+
+def test_prim_data_to_ri_flat_length_not_multiple_of_8_raises():
+    bad = np.zeros(20, dtype=np.float32)  # 20 is not divisible by 8
+
+    with pytest.raises(ValueError, match="divisible by 8"):
+        prim_data_to_ri_points_polygons(bad)
+
+
+def test_prim_data_to_ri_vertex_count_not_multiple_of_3_raises():
+    # 2 rows of 8 -> valid stride but 2 vertices is not a whole number of tris.
+    bad = np.zeros((2, 8), dtype=np.float32)
+
+    with pytest.raises(ValueError, match="divisible by 3"):
+        prim_data_to_ri_points_polygons(bad)
+
+
+def test_renderman_look_at_returns_mat4_with_zero_translation_at_origin():
+    eye = Vec3(0.0, 0.0, 0.0)
+    look = Vec3(0.0, 0.0, 1.0)
+    up = Vec3(0.0, 1.0, 0.0)
+
+    view = renderman_look_at(eye, look, up)
+
+    assert isinstance(view, Mat4)
+    # Camera at the origin -> translation row is zero.
+    values = view.to_list()
+    assert values[12] == pytest.approx(0.0, abs=1e-6)
+    assert values[13] == pytest.approx(0.0, abs=1e-6)
+    assert values[14] == pytest.approx(0.0, abs=1e-6)
+
+
+def test_renderman_look_at_translation_encodes_eye_offset():
+    eye = Vec3(0.0, 0.0, 5.0)
+    look = Vec3(0.0, 0.0, 0.0)
+    up = Vec3(0.0, 1.0, 0.0)
+
+    view = renderman_look_at(eye, look, up)
+
+    # A non-origin eye must produce a non-zero translation row.
+    values = view.to_list()
+    assert not np.allclose(values[12:15], 0.0)
+    assert np.all(np.isfinite(values))

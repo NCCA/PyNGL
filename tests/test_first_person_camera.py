@@ -99,3 +99,40 @@ def test_get_vp_returns_mat4():
     cam = FirstPersonCamera(Vec3(), Vec3(), Vec3(0, 1, 0), 60.0)
     vp = cam.get_vp()
     assert isinstance(vp, Mat4)
+
+
+def test_process_mouse_movement_clamps_pitch_to_positive_bound():
+    cam = FirstPersonCamera(Vec3(), Vec3(), Vec3(0, 1, 0), 60.0)
+    cam.pitch = 0.0
+    cam.yaw = 0.0
+    cam.process_mouse_movement(0, 1000, _constrain_pitch=True)
+    assert cam.pitch == pytest.approx(89.0)
+
+
+def test_process_mouse_movement_clamps_pitch_to_negative_bound():
+    cam = FirstPersonCamera(Vec3(), Vec3(), Vec3(0, 1, 0), 60.0)
+    cam.pitch = 0.0
+    cam.yaw = 0.0
+    cam.process_mouse_movement(0, -1000, _constrain_pitch=True)
+    assert cam.pitch == pytest.approx(-89.0)
+
+
+def test_process_mouse_scroll_within_range_reduces_zoom():
+    cam = FirstPersonCamera(Vec3(), Vec3(), Vec3(0, 1, 0), 60.0)
+    cam.zoom = 30.0
+    cam.process_mouse_scroll(5.0)
+    assert cam.zoom == pytest.approx(25.0)
+
+
+def test_process_mouse_scroll_clamps_to_minimum():
+    cam = FirstPersonCamera(Vec3(), Vec3(), Vec3(0, 1, 0), 60.0)
+    cam.zoom = 2.0
+    cam.process_mouse_scroll(100.0)
+    assert cam.zoom == pytest.approx(1.0)
+
+
+def test_process_mouse_scroll_clamps_to_maximum():
+    cam = FirstPersonCamera(Vec3(), Vec3(), Vec3(0, 1, 0), 60.0)
+    cam.zoom = 44.0
+    cam.process_mouse_scroll(-100.0)
+    assert cam.zoom == pytest.approx(45.0)

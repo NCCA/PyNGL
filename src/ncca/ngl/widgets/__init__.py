@@ -1,3 +1,5 @@
+"""PySide6 widgets for editing and displaying NGL math types."""
+
 from importlib.metadata import PackageNotFoundError, version
 
 try:
@@ -10,6 +12,10 @@ __license__ = "MIT"
 
 
 from .lookatwidget import LookAtWidget
+from .mat2widget import Mat2Widget
+from .mat3widget import Mat3Widget
+from .mat4widget import Mat4Widget
+from .perspectivewidget import PerspectiveWidget
 from .rgbacolourwidget import RGBAColourWidget
 from .rgbcolourwidget import RGBColourWidget
 from .transformwidget import TransformWidget
@@ -23,6 +29,10 @@ __all__ = [
     "Vec4Widget",
     "TransformWidget",
     "LookAtWidget",
+    "PerspectiveWidget",
     "RGBColourWidget",
     "RGBAColourWidget",
+    "Mat2Widget",
+    "Mat3Widget",
+    "Mat4Widget",
 ]

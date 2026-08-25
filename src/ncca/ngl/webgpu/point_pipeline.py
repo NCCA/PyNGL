@@ -1,9 +1,9 @@
-"""
-Generic point rendering pipeline for WebGPU.
+"""Generic point rendering pipeline for WebGPU.
+
 Handles point rendering with customizable size, colour, and projection.
 """
 
-from typing import Optional
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import wgpu
@@ -13,8 +13,7 @@ from .pipeline_shaders import POINT_SHADER_MULTI_COLOURED, POINT_SHADER_SINGLE_C
 
 
 class PointPipelineMultiColour(BasePointPipeline):
-    """
-    A reusable pipeline for rendering points in WebGPU.
+    """A reusable pipeline for rendering points in WebGPU.
 
     Features:
     - Instanced rendering of points as quads
@@ -32,12 +31,12 @@ class PointPipelineMultiColour(BasePointPipeline):
         depth_format: wgpu.TextureFormat = wgpu.TextureFormat.depth24plus,
         msaa_sample_count: int = 4,
         stride: int = 0,
-    ):
-        """
-        Initialize the point rendering pipeline.
+    ) -> None:
+        """Initialize the point rendering pipeline.
 
         Args:
             device: WebGPU device
+            data_type: NGL vertex data type name (e.g. "Vec3")
             texture_format: colour attachment format
             depth_format: Depth attachment format
             msaa_sample_count: Number of MSAA samples
@@ -72,7 +71,7 @@ class PointPipelineMultiColour(BasePointPipeline):
         """Get the WGSL shader code for this pipeline."""
         return POINT_SHADER_MULTI_COLOURED
 
-    def _get_vertex_buffer_layouts(self):
+    def _get_vertex_buffer_layouts(self) -> List[Dict[str, Any]]:
         """Get vertex buffer layout configurations for the pipeline."""
         return self._get_default_vertex_layouts(has_colour_buffer=True)
 
@@ -85,9 +84,12 @@ class PointPipelineMultiColour(BasePointPipeline):
         """Get the label for the pipeline."""
         return "point_pipeline_multi_coloured"
 
-    def set_data(self, positions, colours=None) -> None:
-        """
-        Set the point data for rendering.
+    def set_data(
+        self,
+        positions: np.ndarray | wgpu.GPUBuffer,
+        colours: np.ndarray | wgpu.GPUBuffer | None = None,
+    ) -> None:
+        """Set the point data for rendering.
 
         Args:
             positions: Nx2 array of point positions or a pre-existing GPUBuffer.
@@ -137,9 +139,8 @@ class PointPipelineMultiColour(BasePointPipeline):
             else:
                 self.colour_buffer = None
 
-    def update_uniforms(self, **kwargs) -> None:
-        """
-        Update uniform buffer values.
+    def update_uniforms(self, **kwargs: Any) -> None:
+        """Update uniform buffer values.
 
         Args:
             **kwargs: Pipeline-specific uniform parameters
@@ -147,7 +148,6 @@ class PointPipelineMultiColour(BasePointPipeline):
                 - view_matrix: 4x4 view matrix for billboarding calculations
                 - point_size: Size of points in world units
         """
-
         if "mvp" in kwargs and kwargs["mvp"] is not None:
             self.uniform_data["MVP"] = kwargs["mvp"]
 
@@ -161,9 +161,8 @@ class PointPipelineMultiColour(BasePointPipeline):
             self.uniform_buffer, 0, self.uniform_data.tobytes()
         )
 
-    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
-        """
-        Render the points.
+    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs: Any) -> None:
+        """Render the points.
 
         Args:
             render_pass: Active render pass encoder
@@ -194,8 +193,7 @@ class PointPipelineMultiColour(BasePointPipeline):
 
 
 class PointPipelineSingleColour(BasePointPipeline):
-    """
-    A reusable pipeline for rendering points in WebGPU.
+    """A reusable pipeline for rendering points in WebGPU.
 
     Features:
     - Instanced rendering of points as quads
@@ -213,12 +211,12 @@ class PointPipelineSingleColour(BasePointPipeline):
         depth_format: wgpu.TextureFormat = wgpu.TextureFormat.depth24plus,
         msaa_sample_count: int = 4,
         stride: int = 0,
-    ):
-        """
-        Initialize the point rendering pipeline.
+    ) -> None:
+        """Initialize the point rendering pipeline.
 
         Args:
             device: WebGPU device
+            data_type: NGL vertex data type name (e.g. "Vec3")
             texture_format: colour attachment format
             depth_format: Depth attachment format
             msaa_sample_count: Number of MSAA samples
@@ -251,7 +249,7 @@ class PointPipelineSingleColour(BasePointPipeline):
         """Get the WGSL shader code for this pipeline."""
         return POINT_SHADER_SINGLE_COLOUR
 
-    def _get_vertex_buffer_layouts(self):
+    def _get_vertex_buffer_layouts(self) -> List[Dict[str, Any]]:
         """Get vertex buffer layout configurations for the pipeline."""
         return self._get_default_vertex_layouts(has_colour_buffer=False)
 
@@ -266,9 +264,12 @@ class PointPipelineSingleColour(BasePointPipeline):
         """Get the label for the pipeline."""
         return "point_pipeline_single_colour"
 
-    def set_data(self, positions, colours=None) -> None:
-        """
-        Set the point data for rendering.
+    def set_data(
+        self,
+        positions: np.ndarray | wgpu.GPUBuffer,
+        colours: np.ndarray | wgpu.GPUBuffer | None = None,
+    ) -> None:
+        """Set the point data for rendering.
 
         Args:
             positions: Nx2 array of point positions or a pre-existing GPUBuffer.
@@ -287,9 +288,8 @@ class PointPipelineSingleColour(BasePointPipeline):
                 "point_pipeline_single_colour_position_buffer",
             )
 
-    def update_uniforms(self, **kwargs) -> None:
-        """
-        Update uniform buffer values.
+    def update_uniforms(self, **kwargs: Any) -> None:
+        """Update uniform buffer values.
 
         Args:
             **kwargs: Pipeline-specific uniform parameters
@@ -314,9 +314,8 @@ class PointPipelineSingleColour(BasePointPipeline):
             self.uniform_buffer, 0, self.uniform_data.tobytes()
         )
 
-    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
-        """
-        Render the points.
+    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs: Any) -> None:
+        """Render the points.
 
         Args:
             render_pass: Active render pass encoder

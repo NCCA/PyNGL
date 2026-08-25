@@ -1,16 +1,25 @@
-"""
-Class to represent a transform using translate, rotate and scale,
-"""
+"""Class to represent a transform using translate, rotate and scale."""
+
+from typing import Any
 
 from .mat4 import Mat4
 from .vec3 import Vec3
 
 
 class TransformRotationOrder(Exception):
-    pass
+    """Raised when an unrecognised rotation order string is set."""
 
 
 class Transform:
+    """A position/rotation/scale transform that can generate a Mat4.
+
+    Attributes:
+        position (Vec3): Translation component.
+        rotation (Vec3): Rotation component in degrees.
+        scale (Vec3): Scale component.
+        order (str): Rotation order, one of the keys in `rot_order`.
+    """
+
     rot_order = {
         "xyz": "rz@ry@rx",
         "yzx": "rx@rz@ry",
@@ -20,15 +29,27 @@ class Transform:
         "zyx": "rx@ry@rz",
     }
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """Initialize the transform to identity position/rotation/scale."""
         self.position = Vec3(0.0, 0.0, 0.0)
         self.rotation = Vec3(0.0, 0.0, 0.0)
         self.scale = Vec3(1.0, 1.0, 1.0)
-        self.matrix = Mat4()
+        self._matrix = Mat4()
         self.need_recalc = True
         self.order = "xyz"
 
-    def _set_value(self, args):
+    def _set_value(self, args: tuple[Any, ...]) -> Vec3:
+        """Build a Vec3 from either (x, y, z), a list/tuple, or a vec-like object.
+
+        Args:
+            args: Either a single list/tuple/vec-like object, or three floats.
+
+        Returns:
+            The resulting Vec3.
+
+        Raises:
+            ValueError: If neither 1 nor 3 arguments are given.
+        """
         v = Vec3()
         self.need_recalc = True
         if len(args) == 1:  # one argument
@@ -49,47 +70,49 @@ class Transform:
         else:
             raise ValueError
 
-    def reset(self):
+    def reset(self) -> None:
+        """Reset position, rotation, scale and order to their defaults."""
         self.position = Vec3()
         self.rotation = Vec3()
         self.scale = Vec3(1, 1, 1)
         self.order = "xyz"
         self.need_recalc = True
 
-    def set_position(self, *args):
-        "set position attrib using either x,y,z or vec types"
+    def set_position(self, *args: Any) -> None:
+        """Set position attrib using either x,y,z or vec types."""
         self.position = self._set_value(args)
 
-    def set_rotation(self, *args):
-        "set rotation attrib using either x,y,z or vec types"
+    def set_rotation(self, *args: Any) -> None:
+        """Set rotation attrib using either x,y,z or vec types."""
         self.rotation = self._set_value(args)
 
-    def set_scale(self, *args):
-        "set scale attrib using either x,y,z or vec types"
+    def set_scale(self, *args: Any) -> None:
+        """Set scale attrib using either x,y,z or vec types."""
         self.scale = self._set_value(args)
 
-    def set_order(self, order):
-        "set rotation order from string e.g xyz or zyx"
+    def set_order(self, order: str) -> None:
+        """Set rotation order from string e.g xyz or zyx."""
         if order not in self.rot_order:
             raise TransformRotationOrder
         self.order = order
         self.need_recalc = True
 
-    def get_matrix(self):
-        "return a transform matrix based on rotation order"
+    def matrix(self) -> Mat4:
+        """Return a transform matrix based on rotation order."""
         if self.need_recalc is True:
             scale = Mat4.scale(self.scale.x, self.scale.y, self.scale.z)
             rx = Mat4.rotate_x(self.rotation.x)  # noqa: F841
             ry = Mat4.rotate_y(self.rotation.y)  # noqa: F841
             rz = Mat4.rotate_z(self.rotation.z)  # noqa: F841
             rotation_scale = eval(self.rot_order.get(self.order)) @ scale
-            self.matrix = rotation_scale
-            self.matrix.m[3][0] = self.position.x
-            self.matrix.m[3][1] = self.position.y
-            self.matrix.m[3][2] = self.position.z
-            self.matrix.m[3][3] = 1.0
+            self._matrix = rotation_scale
+            self._matrix[3][0] = self.position.x
+            self._matrix[3][1] = self.position.y
+            self._matrix[3][2] = self.position.z
+            self._matrix[3][3] = 1.0
             self.need_recalc = False
-        return self.matrix
+        return self._matrix
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Pretty representation showing position, rotation and scale."""
         return f"pos {self.position}\nrot {self.rotation}\nscale {self.scale}"

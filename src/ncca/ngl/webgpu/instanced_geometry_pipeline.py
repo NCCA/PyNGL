@@ -1,9 +1,9 @@
-"""
-Instanced geometry rendering pipeline for WebGPU.
+"""Instanced geometry rendering pipeline for WebGPU.
+
 Renders multiple instances of the same geometry at different positions with optional per-instance colors.
 """
 
-from typing import Optional
+from typing import Any, Optional
 
 import numpy as np
 import wgpu
@@ -19,8 +19,7 @@ GEOM_ERROR = "geometry_data is required for instanced geometry pipelines"
 
 
 class BaseInstancedGeometryPipeline(BaseWebGPUPipeline):
-    """
-    Base class for instanced geometry rendering pipelines.
+    """Base class for instanced geometry rendering pipelines.
 
     Provides common functionality for:
     - Instanced rendering of arbitrary geometry
@@ -37,9 +36,8 @@ class BaseInstancedGeometryPipeline(BaseWebGPUPipeline):
         depth_format: wgpu.TextureFormat = wgpu.TextureFormat.depth24plus,
         msaa_sample_count: int = 4,
         stride: int = 0,
-    ):
-        """
-        Initialize the instanced geometry pipeline.
+    ) -> None:
+        """Initialize the instanced geometry pipeline.
 
         Args:
             device: WebGPU device
@@ -73,10 +71,7 @@ class BaseInstancedGeometryPipeline(BaseWebGPUPipeline):
         return wgpu.PrimitiveTopology.triangle_list
 
     def _get_default_vertex_layouts(self) -> list:
-        """
-        Get default vertex buffer layouts for instanced geometry rendering.
-
-
+        """Get default vertex buffer layouts for instanced geometry rendering.
 
         Returns:
             List of vertex buffer layout configurations
@@ -164,8 +159,7 @@ class BaseInstancedGeometryPipeline(BaseWebGPUPipeline):
 
 
 class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
-    """
-    A reusable pipeline for rendering instanced geometry in WebGPU with per-instance colors.
+    """A reusable pipeline for rendering instanced geometry in WebGPU with per-instance colors.
 
     Features:
     - Instanced rendering of arbitrary geometry using interleaved x,y,z,nx,ny,nz,u,v format
@@ -203,9 +197,8 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
         """Get the label for the pipeline."""
         return "instanced_geometry_pipeline_multi_colour"
 
-    def set_data(self, **kwargs) -> None:
-        """
-        Set the instanced geometry data for rendering.
+    def set_data(self, **kwargs: Any) -> None:
+        """Set the instanced geometry data for rendering.
 
         Args:
             **kwargs: Pipeline-specific data parameters
@@ -225,7 +218,7 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
         self._set_colour_data(colours)
         self._set_geometry_data(geometry_data)
 
-    def _set_position_data(self, positions) -> None:
+    def _set_position_data(self, positions: np.ndarray | wgpu.GPUBuffer) -> None:
         """Set instance position data from GPUBuffer or numpy array."""
         if isinstance(positions, wgpu.GPUBuffer):
             self.position_buffer = positions
@@ -246,7 +239,7 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
             self.instance_id_buffer.destroy()
         self.instance_id_buffer = super()._create_instance_id_buffer(self.num_instances)
 
-    def _set_colour_data(self, colours) -> None:
+    def _set_colour_data(self, colours: np.ndarray | wgpu.GPUBuffer | None) -> None:
         """Set colour data from GPUBuffer, numpy array, or create default."""
         if self.colour_buffer:
             self.colour_buffer.destroy()
@@ -265,7 +258,7 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
             usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
         )
 
-    def _create_colour_buffer(self, colours) -> None:
+    def _create_colour_buffer(self, colours: np.ndarray | wgpu.GPUBuffer) -> None:
         """Create colour buffer from GPUBuffer or numpy array."""
         if isinstance(colours, wgpu.GPUBuffer):
             self.colour_buffer = colours
@@ -276,7 +269,9 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
                 usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
             )
 
-    def _set_geometry_data(self, geometry_data) -> None:
+    def _set_geometry_data(
+        self, geometry_data: np.ndarray | wgpu.GPUBuffer | None
+    ) -> None:
         """Set geometry data from GPUBuffer or numpy array."""
         if geometry_data is None:
             raise ValueError(GEOM_ERROR)
@@ -287,7 +282,7 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
         else:
             self._process_geometry_array(geometry_data)
 
-    def _process_geometry_array(self, geometry_data) -> None:
+    def _process_geometry_array(self, geometry_data: np.ndarray) -> None:
         """Process geometry numpy array and create buffer."""
         geometry_data = np.asarray(geometry_data, dtype=np.float32)
         geometry_data = self._validate_and_reshape_geometry(geometry_data)
@@ -301,7 +296,7 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
             label="instanced_geometry_buffer",
         )
 
-    def _validate_and_reshape_geometry(self, geometry_data) -> np.ndarray:
+    def _validate_and_reshape_geometry(self, geometry_data: np.ndarray) -> np.ndarray:
         """Validate geometry data dimensions and reshape if needed."""
         if geometry_data.ndim == 1:
             geometry_data = geometry_data.reshape(-1, 8)
@@ -317,9 +312,8 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
 
         return geometry_data
 
-    def update_uniforms(self, **kwargs) -> None:
-        """
-        Update uniform buffer values.
+    def update_uniforms(self, **kwargs: Any) -> None:
+        """Update uniform buffer values.
 
         Args:
             **kwargs: Pipeline-specific uniform parameters
@@ -340,9 +334,8 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
             self.uniform_buffer, 0, self.uniform_data.tobytes()
         )
 
-    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
-        """
-        Render the instanced geometry.
+    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs: Any) -> None:
+        """Render the instanced geometry.
 
         Args:
             render_pass: Active render pass encoder
@@ -394,8 +387,7 @@ class InstancedGeometryPipelineMultiColour(BaseInstancedGeometryPipeline):
 
 
 class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
-    """
-    A reusable pipeline for rendering instanced geometry in WebGPU with single color.
+    """A reusable pipeline for rendering instanced geometry in WebGPU with single color.
 
     Features:
     - Instanced rendering of arbitrary geometry using interleaved x,y,z,nx,ny,nz,u,v format
@@ -437,9 +429,8 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
         """Get the label for the pipeline."""
         return "instanced_geometry_pipeline_single_colour"
 
-    def set_data(self, **kwargs) -> None:
-        """
-        Set the instanced geometry data for rendering.
+    def set_data(self, **kwargs: Any) -> None:
+        """Set the instanced geometry data for rendering.
 
         Args:
             **kwargs: Pipeline-specific data parameters
@@ -459,7 +450,7 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
         self._set_colour_data(colours)
         self._set_geometry_data(geometry_data)
 
-    def _set_position_data(self, positions) -> None:
+    def _set_position_data(self, positions: np.ndarray | wgpu.GPUBuffer) -> None:
         """Set instance position data from GPUBuffer or numpy array."""
         if isinstance(positions, wgpu.GPUBuffer):
             self.position_buffer = positions
@@ -480,7 +471,7 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
             self.instance_id_buffer.destroy()
         self.instance_id_buffer = super()._create_instance_id_buffer(self.num_instances)
 
-    def _set_colour_data(self, colours) -> None:
+    def _set_colour_data(self, colours: np.ndarray | wgpu.GPUBuffer | None) -> None:
         """Set colour data from GPUBuffer, numpy array, or create default."""
         if self.colour_buffer:
             self.colour_buffer.destroy()
@@ -499,7 +490,7 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
             usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
         )
 
-    def _create_colour_buffer(self, colours) -> None:
+    def _create_colour_buffer(self, colours: np.ndarray | wgpu.GPUBuffer) -> None:
         """Create colour buffer from GPUBuffer or numpy array."""
         if isinstance(colours, wgpu.GPUBuffer):
             self.colour_buffer = colours
@@ -510,7 +501,9 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
                 usage=wgpu.BufferUsage.VERTEX | wgpu.BufferUsage.COPY_DST,
             )
 
-    def _set_geometry_data(self, geometry_data) -> None:
+    def _set_geometry_data(
+        self, geometry_data: np.ndarray | wgpu.GPUBuffer | None
+    ) -> None:
         """Set geometry data from GPUBuffer or numpy array."""
         if geometry_data is None:
             raise ValueError(GEOM_ERROR)
@@ -521,7 +514,7 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
         else:
             self._process_geometry_array(geometry_data)
 
-    def _process_geometry_array(self, geometry_data) -> None:
+    def _process_geometry_array(self, geometry_data: np.ndarray) -> None:
         """Process geometry numpy array and create buffer."""
         geometry_data = np.asarray(geometry_data, dtype=np.float32)
         geometry_data = self._validate_and_reshape_geometry(geometry_data)
@@ -535,7 +528,7 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
             label="instanced_geometry_buffer",
         )
 
-    def _validate_and_reshape_geometry(self, geometry_data) -> np.ndarray:
+    def _validate_and_reshape_geometry(self, geometry_data: np.ndarray) -> np.ndarray:
         """Validate geometry data dimensions and reshape if needed."""
         if geometry_data.ndim == 1:
             geometry_data = geometry_data.reshape(-1, 8)
@@ -551,9 +544,8 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
 
         return geometry_data
 
-    def update_uniforms(self, **kwargs) -> None:
-        """
-        Update uniform buffer values.
+    def update_uniforms(self, **kwargs: Any) -> None:
+        """Update uniform buffer values.
 
         Args:
             **kwargs: Pipeline-specific uniform parameters
@@ -578,9 +570,8 @@ class InstancedGeometryPipelineSingleColour(BaseInstancedGeometryPipeline):
             self.uniform_buffer, 0, self.uniform_data.tobytes()
         )
 
-    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
-        """
-        Render the instanced geometry.
+    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs: Any) -> None:
+        """Render the instanced geometry.
 
         Args:
             render_pass: Active render pass encoder

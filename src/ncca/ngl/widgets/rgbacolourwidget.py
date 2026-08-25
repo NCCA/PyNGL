@@ -1,3 +1,5 @@
+"""Widget for editing an RGBA colour as a Vec4."""
+
 from PySide6.QtCore import Property, QSignalBlocker, Signal
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import (
@@ -31,14 +33,15 @@ class RGBAColourWidget(QFrame):
         b: float = 1.0,
         a: float = 1.0,
     ) -> None:
-        """
+        """Initialize the widget.
+
         Args:
-            name: The name of the widget.
-            r: The initial red component of the colour.
-            g: The initial green component of the colour.
-            b: The initial blue component of the colour.
-            a: The initial alpha component of the colour.
-            parent: The parent widget.
+        name: The name of the widget.
+        r: The initial red component of the colour.
+        g: The initial green component of the colour.
+        b: The initial blue component of the colour.
+        a: The initial alpha component of the colour.
+        parent: The parent widget.
         """
         super().__init__(parent)
         self.setFrameShape(QFrame.Shape.StyledPanel)
@@ -81,9 +84,10 @@ class RGBAColourWidget(QFrame):
         return spinbox
 
     def colour(self) -> Vec4:
-        """
+        """Get the value described below.
+
         Returns:
-            The current value of the widget.
+        The current value of the widget.
         """
         return self._colour
 
@@ -157,9 +161,10 @@ class RGBAColourWidget(QFrame):
             self.set_colour(new_colour)
 
     def name(self) -> str:
-        """
+        """Get the value described below.
+
         Returns:
-            The name of the widget.
+        The name of the widget.
         """
         return self._name
 

@@ -102,13 +102,14 @@ def test_setitem():
         a[0] = "not a vec4"
 
 
-def test_get_array():
-    """Test the get_array method"""
-    a = Vec4Array([Vec4(1, 2, 3, 4), Vec4(5, 6, 7, 8)])
-    arr = a.get_array()
-    assert len(arr) == 2
-    assert np.equal(arr[0], np.array([1.0, 2.0, 3.0, 4.0])).all()
-    assert np.equal(arr[1], np.array([5.0, 6.0, 7.0, 8.0])).all()
+def test_to_tuple():
+    a = Vec4Array([Vec4(1.0, 2.0, 3.0, 4.0), Vec4(5.0, 6.0, 7.0, 8.0)])
+    assert a.to_tuple() == (1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0)
+
+
+def test_dtype_float32():
+    a = Vec4Array(2)
+    assert a._data.dtype == np.float32
 
 
 def test_len():
@@ -152,12 +153,12 @@ def test_to_numpy():
 
 def test_repr():
     a = Vec4Array([Vec4(1, 2, 3, 4)])
-    assert repr(a) == "Vec4Array([Vec4 [1.0,2.0,3.0,4.0]])"
+    assert repr(a) == "Vec4Array([Vec4(1.0, 2.0, 3.0, 4.0)])"
 
 
 def test_str():
     a = Vec4Array([Vec4(1, 2, 3, 4)])
-    assert str(a) == "[Vec4 [1.0,2.0,3.0,4.0]]"
+    assert str(a) == "[Vec4(1.0, 2.0, 3.0, 4.0)]"
 
 
 def test_sizeof():

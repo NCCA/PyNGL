@@ -10,7 +10,8 @@ from unittest.mock import Mock
 import pytest
 from PySide6.QtCore import QPointF, Qt
 
-from ncca.ngl import PySideEventHandlingMixin, Vec3
+from ncca.ngl import Vec3
+from ncca.ngl.opengl import PySideEventHandlingMixin
 
 
 class MockEventHandlingWindow(PySideEventHandlingMixin):
@@ -510,3 +511,101 @@ def test_wheel_event_priority_y_over_x(qt_app, event_window):
     # Should use y delta (120), not x delta (-120)
     assert event_window.model_position.z == pytest.approx(initial_z + 0.5)
     assert event_window.update_called is True
+
+
+class MockEmbeddedWidget(PySideEventHandlingMixin):
+    """Mixin host that lives inside a window, the way a QOpenGLWidget does.
+
+    QWidget has window() to walk up to the top level, so this stands in for the
+    embedded case, where closing the host itself would only hide the viewport
+    and leave the rest of the window sitting there.
+    """
+
+    def __init__(self):
+        self.update_called = False
+        self.close_called = False
+        self.top_level = Mock()
+
+    def update(self) -> None:
+        self.update_called = True
+
+    def close(self) -> None:
+        self.close_called = True
+
+    def window(self):
+        return self.top_level
+
+
+def test_close_target_is_self_when_there_is_no_window(qt_app, event_window):
+    """A QOpenGLWindow is already top level and has no window() to walk up to."""
+    assert event_window.close_target() is event_window
+
+
+def test_close_target_is_the_top_level_window_when_embedded(qt_app):
+    """A QOpenGLWidget must close the window it is in, not itself."""
+    widget = MockEmbeddedWidget()
+    widget.setup_event_handling()
+
+    assert widget.close_target() is widget.top_level
+
+
+def test_key_press_event_escape_closes_the_window_not_the_widget(qt_app):
+    """Escape used to hide the viewport and leave the panel behind."""
+    widget = MockEmbeddedWidget()
+    widget.setup_event_handling()
+
+    event = Mock()
+    event.key.return_value = Qt.Key_Escape
+    widget.keyPressEvent(event)
+
+    widget.top_level.close.assert_called_once()
+    assert widget.close_called is False
+
+
+def test_key_shortcuts_can_be_declined(qt_app, monkeypatch):
+    """handle_key_shortcuts=False hands every key to the parent untouched."""
+    window = MockEventHandlingWindow()
+    window.setup_event_handling(handle_key_shortcuts=False)
+
+    mock_parent = Mock()
+    monkeypatch.setattr(
+        "builtins.super", lambda *args, **kwargs: mock_parent, raising=False
+    )
+
+    for key in (Qt.Key_Escape, Qt.Key_W, Qt.Key_S, Qt.Key_Space):
+        event = Mock()
+        event.key.return_value = key
+        window.keyPressEvent(event)
+
+    assert mock_parent.keyPressEvent.call_count == 4
+    assert window.close_called is False
+
+
+def test_key_shortcuts_are_on_by_default(qt_app, event_window):
+    """The 52 window demos rely on this, so the default must not change."""
+    assert event_window.handle_key_shortcuts is True
+
+
+def test_wireframe_flag_tracks_the_w_and_s_keys(qt_app, event_window, monkeypatch):
+    """paintGL that sets the polygon mode itself needs state, not a bare GL call."""
+    monkeypatch.setattr("OpenGL.GL.glPolygonMode", Mock(), raising=False)
+    assert event_window.wireframe is False
+
+    event = Mock()
+    event.key.return_value = Qt.Key_W
+    event_window.keyPressEvent(event)
+    assert event_window.wireframe is True
+
+    event = Mock()
+    event.key.return_value = Qt.Key_S
+    event_window.keyPressEvent(event)
+    assert event_window.wireframe is False
+
+
+def test_setup_does_not_clobber_an_existing_wireframe_attribute(qt_app):
+    """Several demos own a wireframe of their own before calling setup."""
+    window = MockEventHandlingWindow()
+    window.wireframe = True
+    window.setup_event_handling()
+
+    assert window.wireframe is True

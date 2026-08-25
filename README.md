@@ -1,123 +1,118 @@
 # PyNGL
 
-This is the code for the full python version of [NGL](https://github.com/NCCA/NGL) the ncca graphics library.
+PyNGL is the full Python version of [NGL](https://github.com/NCCA/NGL), the NCCA graphics library used for teaching 3D computer graphics at the [NCCA Bournemouth University](https://nccastaff.bournemouth.ac.uk/jmacey/). It provides a consistent set of 3D math primitives, geometry loaders, and rendering back-ends for **OpenGL**, **WebGPU**, and **Qt (PySide6)**.
 
-This project is available on PyPI and can be installed using uv.
-
-For the current build status see our CI logs here 
+**Full documentation, tutorials and API reference:** <https://ncca.github.io/PyNGL/>
 
 [![UV Tests](https://github.com/NCCA/PyNGL/actions/workflows/uv.yml/badge.svg)](https://github.com/NCCA/PyNGL/actions/workflows/uv.yml)[![Sonar Scanner](https://github.com/NCCA/PyNGL/actions/workflows/sonar-scan.yml/badge.svg)](https://github.com/NCCA/PyNGL/actions/workflows/sonar-scan.yml)
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=NCCA_PyNGL&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=NCCA_PyNGL)[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=NCCA_PyNGL&metric=bugs)](https://sonarcloud.io/summary/new_code?id=NCCA_PyNGL)[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=NCCA_PyNGL&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=NCCA_PyNGL)[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=NCCA_PyNGL&metric=coverage)](https://sonarcloud.io/summary/new_code?id=NCCA_PyNGL)[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=NCCA_PyNGL&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=NCCA_PyNGL)
 
-## Test
+## Features
 
-use
+- **3D math** — `Vec2/3/4`, `Mat2/3/4`, `Quaternion`, `Transform`, `Plane`, `BBox`, and the `Vec*Array` containers, all backed by NumPy `float32` with a consistent, well-tested API.
+- **Geometry** — Wavefront OBJ loading (`Obj`), procedural primitives (`PrimData` / `Primitives`), and Bézier curves.
+- **OpenGL rendering** — shader management (`ShaderLib`), VAO abstractions, textures, and freetype-based text.
+- **WebGPU rendering** — a parallel pipeline stack targeting `wgpu`.
+- **Qt Widgets & QML** — ready-made PySide6 widgets (`ncca.ngl.widgets`) and Qt Quick components (`ncca.ngl.qml`) for editing/displaying NGL math types in a GUI, plus camera event handling.
 
+## Installation
+
+PyNGL is published on PyPI as [`ncca-ngl`](https://pypi.org/project/ncca-ngl/) and the project uses [`uv`](https://docs.astral.sh/uv/).
+
+Add it to a project:
+
+```bash
+uv add ncca-ngl
 ```
-uv run pytest
+
+Or install into the current environment:
+
+```bash
+uv pip install ncca-ngl
 ```
 
-To run tests,
+The importable module is `ncca.ngl`:
 
+```python
+from ncca.ngl import Vec3, look_at, perspective
+
+eye = Vec3(0, 2, 5)
+view = look_at(eye, Vec3(0, 0, 0), Vec3(0, 1, 0))
+proj = perspective(45.0, 16.0 / 9.0, 0.1, 100.0)
 ```
-uv run pytest --cov=src --cov-report=term-missing
+
+> **Note:** the OpenGL, WebGPU and Qt back-ends require a real graphics context and are imported from their sub-packages, e.g. `from ncca.ngl.opengl import ShaderLib` and `from ncca.ngl.webgpu import ...`.
+
+## Development
+
+Clone the repository and sync the environment (including dev dependencies):
+
+```bash
+git clone https://github.com/NCCA/PyNGL.git
+cd PyNGL
+uv sync
 ```
 
-For coverage reports.
+### Testing
 
-## Classes
+```bash
+uv run pytest                                   # default (non-GPU) test suite
+uv run pytest --cov=src --cov-report=term-missing  # with coverage
+```
 
-### [`abstract_vao.py`](src/ncca/ngl/abstract_vao.py)
-*   [`VertexData`](src/ncca/ngl/abstract_vao.py): A simple data structure to hold vertex data for a VAO. It stores the data as a numpy array, the size of the data, and the drawing mode.
-*   [`AbstractVAO`](src/ncca/ngl/abstract_vao.py): An abstract base class for Vertex Array Objects (VAOs). It defines the interface for different VAO implementations, including methods for binding, drawing, setting data, and managing the VAO's lifecycle.
+Tests that need a real graphics context are deselected by default and only run when their marker is requested:
 
-### [`base_mesh.py`](src/ncca/ngl/base_mesh.py)
-*   [`Face`](src/ncca/ngl/base_mesh.py): A simple data structure for a mesh face, holding indices for vertices, UVs, and normals.
-*   [`BaseMesh`](src/ncca/ngl/base_mesh.py): A base class for mesh geometry. It provides storage for vertices, normals, UVs, and faces, and includes methods for creating a VAO from the mesh data, calculating dimensions, and drawing the mesh.
+```bash
+uv run pytest -m opengl
+uv run pytest -m webgpu
+uv run pytest -m qt
+./test_all.sh
+```
 
-### [`bbox.py`](src/ncca/ngl/bbox.py)
-*   [`BBox`](src/ncca/ngl/bbox.py): Represents a 3D bounding box. It stores the center, dimensions, and extents of the box, and provides methods to calculate these values and retrieve the box's vertices and normals.
+### Linting & formatting
 
-### [`bezier_curve.py`](src/ncca/ngl/bezier_curve.py)
-*   [`BezierCurve`](src/ncca/ngl/bezier_curve.py): A class for creating and evaluating Bézier curves. It stores control points and knots, and can calculate points on the curve using the Cox-de Boor algorithm.
+```bash
+uv run ruff format src/
+uv run ruff check src/
+```
 
-### [`first_person_camera.py`](src/ncca/ngl/first_person_camera.py)
-*   [`FirstPersonCamera`](src/ncca/ngl/first_person_camera.py): Implements a first-person camera with movement, rotation, and projection matrix calculation. It handles mouse and keyboard input for camera control.
+## Documentation
 
-### [`image.py`](src/ncca/ngl/image.py)
-*   [`Image`](src/ncca/ngl/image.py): A class for loading, saving, and manipulating images. It uses the Pillow library to handle different image formats and stores image data as a NumPy array.
+A full class listing and documentations can be found here :-
 
-### [`log.py`](src/ncca/ngl/log.py)
-*   [`ColoredFormatter`](src/ncca/ngl/log.py): A custom logging formatter that adds color to log messages based on their severity level.
-*   [`setup_logger`](src/ncca/ngl/log.py): A function to set up a logger with both file and console handlers.
+- **Docs site:** <https://ncca.github.io/PyNGL/>
+- **Getting started / tutorials:** <https://ncca.github.io/PyNGL/tutorials/> (Getting Started and Tutorials sections)
 
-### [`mat2.py`](src/ncca/ngl/mat2.py)
-*   [`Mat2`](src/ncca/ngl/mat2.py): A 2x2 matrix class with support for identity, multiplication (matrix-matrix and matrix-vector), and conversion to a NumPy array.
+The site covers the math API design rules, vectors/matrices/quaternions, transforms, cameras and projections, geometry, and the full module-by-module API reference.
 
-### [`mat3.py`](src/ncca/ngl/mat3.py)
-*   [`Mat3`](src/ncca/ngl/mat3.py): A 3x3 matrix class for 3D transformations. It includes methods for identity, zero, scale, rotation, transpose, inverse, and matrix multiplication.
+### Knowledge wiki
 
-### [`mat4.py`](src/ncca/ngl/mat4.py)
-*   [`Mat4`](src/ncca/ngl/mat4.py): A 4x4 matrix class for 3D transformations. It supports creation of identity, zero, scale, translation, and rotation matrices, as well as matrix multiplication and inversion.
+Alongside the API reference, [`wiki/`](wiki/index.md) is an agent-maintained
+knowledge base about _how PyNGL works_ — architecture narratives, module
+deep-dives, design decisions, and gotchas — written for both people and
+coding agents. Start at [`wiki/index.md`](wiki/index.md).
 
-### [`multi_buffer_vao.py`](src/ncca/ngl/multi_buffer_vao.py)
-*   [`MultiBufferVAO`](src/ncca/ngl/multi_buffer_vao.py): A VAO implementation that can manage multiple vertex buffers. This is useful for separating different types of vertex attributes (e.g., positions, colors, normals) into different buffers.
+Every page records which source files it describes and the commit it was
+last verified against. To check the wiki is in sync with the code:
 
-### [`obj.py`](src/ncca/ngl/obj.py)
-*   [`Obj`](src/ncca/ngl/obj.py): A class for loading and saving Wavefront OBJ files. It extends `BaseMesh` and handles parsing of vertices, normals, UVs, and faces from an OBJ file, including support for negative indices.
+```bash
+uv run wiki/tools/check_sync.py
+```
 
-### [`plane.py`](src/ncca/ngl/plane.py)
-*   [`Plane`](src/ncca/ngl/plane.py): Represents a mathematical plane in 3D space. It can be defined by three points or a normal and a point, and can calculate the distance from a point to the plane.
+Exit code 0 means every page is fresh; stale pages are listed with the
+source files that changed. If you use Claude Code, `/wiki status`,
+`/wiki update`, and `/wiki build` maintain the wiki for you (see
+`.claude/skills/wiki/SKILL.md`).
 
-### [`prim_data.py`](src/ncca/ngl/prim_data.py)
-*   [`Prims`](src/ncca/ngl/prim_data.py): An enum of available primitive types.
-*   [`PrimData`](src/ncca/ngl/prim_data.py): A class that provides static methods to generate vertex data for various geometric primitives like spheres, cubes, and tori.
+## AI Usage
 
-### [`primitives.py`](src/ncca/ngl/primitives.py)
-*   [`Primitives`](src/ncca/ngl/primitives.py): A static class for creating and drawing pre-defined geometric primitives. It uses `PrimData` to generate the vertex data and `VAOFactory` to create VAOs for rendering.
+This project has use various AI tools ([Claude](https://claude.ai) and [Codex](https://openai.com/codex/) and [OpenCode](https://opencode.ai/)) to assist with development.
 
-### [`pyside_event_handling_mixin.py`](src/ncca/ngl/pyside_event_handling_mixin.py)
-*   [`PySideEventHandlingMixin`](src/ncca/ngl/pyside_event_handling_mixin.py): A mixin class for PySide6 applications that provides common event handling for mouse-based camera control (rotation, translation, zoom) and keyboard shortcuts.
+The initial phases were for the full port of NGL to PyNGL (C++ to Python conversion) and additional testing. Most of the work is shown in the docs section of the repository, and I have also written about various things on my blog [her](https://nccastaff.bournemouth.ac.uk/jmacey/post/).
 
-### [`quaternion.py`](src/ncca/ngl/quaternion.py)
-*   [`Quaternion`](src/ncca/ngl/quaternion.py): A class for representing rotations using quaternions. It includes methods for converting from a rotation matrix, multiplication, normalization, and applying the rotation to a vector.
+There will be a full write-up of my setup and usage of AI on the Blog soon.
 
-### [`random.py`](src/ncca/ngl/random.py)
-*   [`Random`](src/ncca/ngl/random.py): A static class for generating random numbers and vectors. It provides methods to get random floats, integers, and vectors of different dimensions.
+## License
 
-### [`shader.py`](src/ncca/ngl/shader.py)
-*   [`Shader`](src/ncca/ngl/shader.py): Represents a single OpenGL shader object (e.g., vertex, fragment). It handles loading source from a file, compiling the shader, and checking for errors.
-
-### [`shader_lib.py`](src/ncca/ngl/shader_lib.py)
-*   [`ShaderLib`](src/ncca/ngl/shader_lib.py): A singleton class that manages a library of shader programs. It provides a global point of access for loading, compiling, linking, and using shaders, as well as for setting uniform variables.
-
-### [`shader_program.py`](src/ncca/ngl/shader_program.py)
-*   [`ShaderProgram`](src/ncca/ngl/shader_program.py): A wrapper for an OpenGL shader program. It manages attaching shaders, linking the program, and provides an interface for setting uniform variables.
-
-### [`simple_index_vao.py`](src/ncca/ngl/simple_index_vao.py)
-*   [`SimpleIndexVAO`](src/ncca/ngl/simple_index_vao.py): A VAO implementation that uses an index buffer for indexed drawing. This is more efficient for meshes where vertices are shared between multiple faces.
-
-### [`simple_vao.py`](src/ncca/ngl/simple_vao.py)
-*   [`SimpleVAO`](src/ncca/ngl/simple_vao.py): A basic VAO implementation that uses a single buffer for non-indexed drawing.
-
-### [`text.py`](src/ncca/ngl/text.py)
-*   [`Text`](src/ncca/ngl/text.py): A class for rendering text in OpenGL. It uses `freetype-py` to create a texture atlas of font glyphs and renders text using a geometry shader to create quads for each character.
-
-### [`texture.py`](src/ncca/ngl/texture.py)
-*   [`Texture`](src/ncca/ngl/texture.py): A class for loading image files and creating OpenGL textures from them.
-
-### [`transform.py`](src/ncca/ngl/transform.py)
-*   [`Transform`](src/ncca/ngl/transform.py): A class to represent a 3D transformation with position, rotation, and scale components. It can generate a transformation matrix based on a specified rotation order.
-
-### [`util.py`](src/ncca/ngl/util.py)
-*   [`util.py`](src/ncca/ngl/util.py): This module contains various utility functions for 3D math, including `lookAt`, `perspective`, `ortho`, and `frustum` matrix generation, as well as `clamp` and `lerp` functions.
-
-### [`vao_factory.py`](src/ncca/ngl/vao_factory.py)
-*   [`VAOFactory`](src/ncca/ngl/vao_factory.py): A factory class for creating different types of VAOs. It allows for registering custom VAO creators and creating VAO instances by name.
-
-### [`vec2.py`](src/ncca/ngl/vec2.py), [`vec3.py`](src/ncca/ngl/vec3.py), [`vec4.py`](src/ncca/ngl/vec4.py)
-*   [`Vec2`](src/ncca/ngl/vec2.py), [`Vec3`](src/ncca/ngl/vec3.py), [`Vec4`](src/ncca/ngl/vec4.py): Classes for 2D, 3D, and 4D vectors, respectively. They provide standard vector operations such as addition, subtraction, dot product, cross product, normalization, and length calculation.
-
-### [`vec2_array.py`](src/ncca/ngl/vec2_array.py), [`vec3_array.py`](src/ncca/ngl/vec3_array.py), [`vec4_array.py`](src/ncca/ngl/vec4_array.py)
-*   [`Vec2Array`](src/ncca/ngl/vec2_array.py), [`Vec3Array`](src/ncca/ngl/vec3_array.py), [`Vec4Array`](src/ncca/ngl/vec4_array.py): Container classes that act like `std::vector` for `Vec2`, `Vec3`, and `Vec4` objects, respectively. They provide methods for appending, extending, and converting the data to flat lists or NumPy arrays.
+See [LICENSE.txt](LICENSE.txt) or just use the [Beerware License](https://scancode-licensedb.aboutcode.org/beerware.html)

@@ -1,0 +1,59 @@
+name: Deploy Docs
+
+on:
+  push:
+    branches: [main, Version1.0]
+    paths:
+      - "docs/**"
+      - "src/**"
+      - ".github/workflows/docs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: docs-deploy
+  cancel-in-progress: true
+
+jobs:
+  # Strict build to catch docs drift: broken references, bad ::: targets,
+  # missing/orphaned nav entries, and docstring/signature mismatches.
+  docs-strict:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install the project (needed for mkdocstrings API reference)
+        run: uv sync --locked --all-extras --dev
+
+      - name: Install docs dependencies
+        run: uv pip install mkdocs "mkdocstrings[python]"
+
+      - name: Strict docs build
+        run: uv run mkdocs build --strict -f docs/mkdocs.yml
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install the project (needed for mkdocstrings API reference)
+        run: uv sync --locked --all-extras --dev
+
+      - name: Install docs dependencies
+        run: uv pip install mkdocs "mkdocstrings[python]"
+
+      - name: Deploy to GitHub Pages
+        working-directory: docs
+        run: uv run mkdocs gh-deploy --force --clean

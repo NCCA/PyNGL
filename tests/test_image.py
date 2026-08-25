@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from PIL import Image as PILImage
 
 from ncca.ngl import Image, ImageModes
 
@@ -77,3 +78,21 @@ def test_create_simple_image_rgb(tmp_path):
     assert np.array_equal(pixels[1, 0], [0, 255, 0])
     assert np.array_equal(pixels[2, 0], [0, 0, 255])
     assert np.array_equal(pixels[3, 0], [255, 255, 255])
+
+
+def test_load_converts_unsupported_palette_mode(tmp_path):
+    filename = tmp_path / "palette.png"
+    PILImage.new("P", (4, 4)).save(filename)
+
+    img = Image()
+    assert img.load(str(filename))
+    assert img.mode == ImageModes.RGB
+
+
+def test_load_converts_unsupported_16bit_mode(tmp_path):
+    filename = tmp_path / "sixteen_bit.png"
+    PILImage.new("I;16", (4, 4)).save(filename)
+
+    img = Image()
+    assert img.load(str(filename))
+    assert img.mode == ImageModes.GRAY

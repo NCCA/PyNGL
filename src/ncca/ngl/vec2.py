@@ -1,16 +1,20 @@
-"""
-Simple float only Vec2 class for 3D graphics, very similar to the pyngl ones
+"""Simple float only Vec2 class for 3D graphics, very similar to the pyngl ones.
+
 NumPy-based implementation with VectorBase inheritance for code reuse.
 """
+
+from typing import TYPE_CHECKING
 
 import numpy as np
 
 from .vector_base import VectorBase, _create_properties
 
+if TYPE_CHECKING:
+    from .mat2 import Mat2
+
 
 class Vec2(VectorBase["Vec2"]):
-    """
-    A simple 2D vector class for graphics, using numpy for efficient operations.
+    """A simple 2D vector class for graphics, using numpy for efficient operations.
 
     Attributes:
         x (float): The x-coordinate of the vector.
@@ -24,8 +28,7 @@ class Vec2(VectorBase["Vec2"]):
     __slots__ = ["_data"]
 
     def cross(self, rhs: "Vec2") -> float:
-        """
-        Cross product of two vectors a x b (2D version returns scalar).
+        """Cross product of two vectors a x b (2D version returns scalar).
 
         Args:
             rhs (Vec2): The right-hand side vector to cross product with.
@@ -35,9 +38,8 @@ class Vec2(VectorBase["Vec2"]):
         """
         return self._data[0] * rhs._data[1] - self._data[1] * rhs._data[0]
 
-    def reflect(self, n: "Vec2") -> "Vec2":
-        """
-        Reflect a vector about a normal.
+    def reflected(self, n: "Vec2") -> "Vec2":
+        """Return a new vector reflected about a normal.
 
         Args:
             n (Vec2): The normal to reflect about.
@@ -51,9 +53,8 @@ class Vec2(VectorBase["Vec2"]):
             self._data[0] - 2.0 * d * n._data[0], self._data[1] - 2.0 * d * n._data[1]
         )
 
-    def outer(self, rhs: "Vec2"):
-        """
-        Outer product of two vectors a x b.
+    def outer(self, rhs: "Vec2") -> "Mat2":
+        """Outer product of two vectors a x b.
 
         Args:
             rhs (Vec2): The right-hand side vector to outer product with.
@@ -64,12 +65,11 @@ class Vec2(VectorBase["Vec2"]):
         from .mat2 import Mat2
 
         result = Mat2()
-        result.m = np.outer(self._data, rhs._data).astype(np.float64)
+        result._data = np.outer(self._data, rhs._data).astype(np.float32)
         return result
 
-    def __matmul__(self, rhs):
-        """
-        Vec2 @ Mat2 matrix multiplication.
+    def __matmul__(self, rhs: "Mat2") -> "Vec2":
+        """Vec2 @ Mat2 matrix multiplication.
 
         Args:
             rhs (Mat2): The matrix to multiply by.
@@ -78,13 +78,12 @@ class Vec2(VectorBase["Vec2"]):
             Vec2: A new vector that is the result of multiplying this vector by the matrix.
         """
         return Vec2(
-            self._data[0] * rhs.m[0, 0] + self._data[1] * rhs.m[1, 0],
-            self._data[0] * rhs.m[0, 1] + self._data[1] * rhs.m[1, 1],
+            self._data[0] * rhs._data[0, 0] + self._data[1] * rhs._data[1, 0],
+            self._data[0] * rhs._data[0, 1] + self._data[1] * rhs._data[1, 1],
         )
 
     def set(self, *args: float) -> None:
-        """
-        Set the x,y values of the vector.
+        """Set the x,y values of the vector.
 
         Args:
             *args: Component values (x, y).
@@ -99,14 +98,6 @@ class Vec2(VectorBase["Vec2"]):
             self._data[1] = float(args[1])
         except ValueError:
             raise ValueError(f"Vec2.set {args=} all need to be float")
-
-    def __repr__(self) -> str:
-        """Object representation for debugging."""
-        return f"Vec2 [{self._data[0]},{self._data[1]}]"
-
-    def __str__(self) -> str:
-        """String representation of the vector."""
-        return f"[{self._data[0]},{self._data[1]}]"
 
 
 # Add properties for x, y components

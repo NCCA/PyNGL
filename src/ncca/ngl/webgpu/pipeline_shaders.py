@@ -1,9 +1,11 @@
+"""WGSL shader source generation for the WebGPU pipelines."""
+
 from dataclasses import dataclass
 
 
 @dataclass
 class ShaderConfig:
-    """Configuration for generating WGSL shaders"""
+    """Configuration for generating WGSL shaders."""
 
     name: str
     geometry_type: str  # 'point', 'line', 'triangle', 'instanced', 'point_list'
@@ -115,7 +117,7 @@ CIRCLE_DISCARD = """
 
 
 def _build_uniforms(config: ShaderConfig) -> str:
-    """Build uniform structure based on configuration"""
+    """Build uniform structure based on configuration."""
     additional_fields = []
 
     if config.geometry_type == "point":
@@ -152,7 +154,7 @@ def _build_uniforms(config: ShaderConfig) -> str:
 
 
 def _build_vertex_input(config: ShaderConfig) -> str:
-    """Build vertex input structure based on configuration"""
+    """Build vertex input structure based on configuration."""
     if config.geometry_type == "instanced":
         if config.colour_mode == "single":
             colour_input = (
@@ -195,7 +197,7 @@ struct VertexIn {{
 
 
 def _build_vertex_output(config: ShaderConfig) -> str:
-    """Build vertex output structure based on configuration"""
+    """Build vertex output structure based on configuration."""
     outputs = []
 
     if config.colour_mode == "multi":
@@ -248,7 +250,7 @@ def _build_vertex_output(config: ShaderConfig) -> str:
 
 
 def _build_vertex_main(config: ShaderConfig) -> str:
-    """Build vertex shader main function"""
+    """Build vertex shader main function."""
     if config.geometry_type == "point":
         return _build_point_vertex(config)
     elif config.geometry_type in ["line", "triangle", "point_list"]:
@@ -259,7 +261,7 @@ def _build_vertex_main(config: ShaderConfig) -> str:
 
 
 def _build_point_vertex(config: ShaderConfig) -> str:
-    """Build point sprite vertex shader"""
+    """Build point sprite vertex shader."""
     size_source = (
         "uniforms.size" if config.colour_mode == "multi" else "uniforms.ColourSize.w"
     )
@@ -288,7 +290,7 @@ fn vertex_main(input: VertexIn, @builtin(vertex_index) vertex_index: u32) -> Ver
 
 
 def _build_simple_vertex(config: ShaderConfig) -> str:
-    """Build simple vertex shader for lines, triangles, point lists"""
+    """Build simple vertex shader for lines, triangles, point lists."""
     # Use the correct attribute names based on geometry type
     if config.geometry_type in ["line", "triangle"]:
         position_source = "input.pos"
@@ -318,7 +320,7 @@ fn vertex_main(input: VertexIn) -> VertexOut {{
 
 
 def _build_instanced_vertex(config: ShaderConfig) -> str:
-    """Build instanced vertex shader"""
+    """Build instanced vertex shader."""
     return f"""
 @vertex
 fn vertex_main(instance_data: InstanceData, geom_vertex: GeometryVertex, @builtin(vertex_index) vertex_index: u32) -> VertexOut {{
@@ -347,7 +349,7 @@ fn vertex_main(instance_data: InstanceData, geom_vertex: GeometryVertex, @builti
 
 
 def _build_fragment_main(config: ShaderConfig) -> str:
-    """Build fragment shader main function"""
+    """Build fragment shader main function."""
     if config.geometry_type == "point":
         return _build_point_fragment(config)
     elif config.geometry_type == "instanced":
@@ -357,7 +359,7 @@ def _build_fragment_main(config: ShaderConfig) -> str:
 
 
 def _build_point_fragment(config: ShaderConfig) -> str:
-    """Build point sprite fragment shader"""
+    """Build point sprite fragment shader."""
     colour_source = (
         "fragData.fragColour"
         if config.colour_mode == "multi"
@@ -376,7 +378,7 @@ fn fragment_main(fragData: VertexOut) -> @location(0) vec4<f32>
 
 
 def _build_simple_fragment(config: ShaderConfig) -> str:
-    """Build simple fragment shader for lines, triangles, point lists"""
+    """Build simple fragment shader for lines, triangles, point lists."""
     if config.colour_mode == "single":
         return """
 @fragment
@@ -400,7 +402,7 @@ fn fragment_main(fragData: VertexOut) -> @location(0) vec4<f32>
 
 
 def _build_instanced_fragment(config: ShaderConfig) -> str:
-    """Build instanced fragment shader with lighting"""
+    """Build instanced fragment shader with lighting."""
     colour_source = (
         "uniforms.colour" if config.colour_mode == "single" else "fragData.fragColour"
     )
@@ -422,7 +424,7 @@ fn fragment_main(fragData: VertexOut) -> @location(0) vec4<f32>
 
 
 def generate_shader(config: ShaderConfig) -> str:
-    """Generate complete WGSL shader from configuration"""
+    """Generate complete WGSL shader from configuration."""
     uniforms = _build_uniforms(config)
     vertex_in = _build_vertex_input(config)
     vertex_out = _build_vertex_output(config)

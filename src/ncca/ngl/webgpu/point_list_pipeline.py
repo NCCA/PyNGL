@@ -1,9 +1,9 @@
-"""
-Native point-list rendering pipeline for WebGPU.
+"""Native point-list rendering pipeline for WebGPU.
+
 Handles point rendering using WebGPU's native point-list topology instead of billboarding.
 """
 
-from typing import Optional
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import wgpu
@@ -17,8 +17,7 @@ from .webgpu_constants import NGLToWebGPU
 
 
 class PointListPipelineMultiColour(BaseWebGPUPipeline):
-    """
-    A pipeline for rendering points using WebGPU's native point-list topology.
+    """A pipeline for rendering points using WebGPU's native point-list topology.
 
     Features:
     - Native WebGPU point-list rendering (no billboarding)
@@ -34,9 +33,8 @@ class PointListPipelineMultiColour(BaseWebGPUPipeline):
         depth_format: wgpu.TextureFormat = wgpu.TextureFormat.depth24plus,
         msaa_sample_count: int = 4,
         stride: int = 0,
-    ):
-        """
-        Initialize the point list rendering pipeline.
+    ) -> None:
+        """Initialize the point list rendering pipeline.
 
         Args:
             device: WebGPU device
@@ -76,7 +74,7 @@ class PointListPipelineMultiColour(BaseWebGPUPipeline):
         """Points are rendered as point list."""
         return wgpu.PrimitiveTopology.point_list
 
-    def _get_vertex_buffer_layouts(self):
+    def _get_vertex_buffer_layouts(self) -> List[Dict[str, Any]]:
         """Get vertex buffer layout configurations for the pipeline."""
         position_layout = {
             "array_stride": self._stride,
@@ -114,11 +112,10 @@ class PointListPipelineMultiColour(BaseWebGPUPipeline):
 
     def set_data(
         self,
-        positions,
-        colours=None,
+        positions: np.ndarray | wgpu.GPUBuffer,
+        colours: np.ndarray | wgpu.GPUBuffer | None = None,
     ) -> None:
-        """
-        Set the point data for rendering.
+        """Set the point data for rendering.
 
         Args:
             positions: Nx3 array of point positions or a pre-existing GPUBuffer.
@@ -156,9 +153,8 @@ class PointListPipelineMultiColour(BaseWebGPUPipeline):
                 "point_list_pipeline_multi_coloured_colour_buffer",
             )
 
-    def update_uniforms(self, **kwargs) -> None:
-        """
-        Update uniform buffer values.
+    def update_uniforms(self, **kwargs: Any) -> None:
+        """Update uniform buffer values.
 
         Args:
             **kwargs: Pipeline-specific uniform parameters
@@ -171,9 +167,8 @@ class PointListPipelineMultiColour(BaseWebGPUPipeline):
             self.uniform_buffer, 0, self.uniform_data.tobytes()
         )
 
-    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
-        """
-        Render the points.
+    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs: Any) -> None:
+        """Render the points.
 
         Args:
             render_pass: Active render pass encoder
@@ -204,8 +199,7 @@ class PointListPipelineMultiColour(BaseWebGPUPipeline):
 
 
 class PointListPipelineSingleColour(BaseWebGPUPipeline):
-    """
-    A pipeline for rendering points using WebGPU's native point-list topology.
+    """A pipeline for rendering points using WebGPU's native point-list topology.
 
     Features:
     - Native WebGPU point-list rendering (no billboarding)
@@ -222,9 +216,8 @@ class PointListPipelineSingleColour(BaseWebGPUPipeline):
         depth_format: wgpu.TextureFormat = wgpu.TextureFormat.depth24plus,
         msaa_sample_count: int = 4,
         stride: int = 0,
-    ):
-        """
-        Initialize the point list rendering pipeline.
+    ) -> None:
+        """Initialize the point list rendering pipeline.
 
         Args:
             device: WebGPU device
@@ -265,7 +258,7 @@ class PointListPipelineSingleColour(BaseWebGPUPipeline):
         """Points are rendered as point list."""
         return wgpu.PrimitiveTopology.point_list
 
-    def _get_vertex_buffer_layouts(self):
+    def _get_vertex_buffer_layouts(self) -> List[Dict[str, Any]]:
         """Get vertex buffer layout configurations for the pipeline."""
         position_layout = {
             "array_stride": self._stride,
@@ -292,9 +285,12 @@ class PointListPipelineSingleColour(BaseWebGPUPipeline):
         """Get the label for the pipeline."""
         return "point_list_pipeline_single_colour"
 
-    def set_data(self, positions, colours=None) -> None:
-        """
-        Set the point data for rendering.
+    def set_data(
+        self,
+        positions: np.ndarray | wgpu.GPUBuffer,
+        colours: np.ndarray | wgpu.GPUBuffer | None = None,
+    ) -> None:
+        """Set the point data for rendering.
 
         Args:
             positions: Nx3 array of point positions or a pre-existing GPUBuffer.
@@ -313,9 +309,8 @@ class PointListPipelineSingleColour(BaseWebGPUPipeline):
                 "point_list_pipeline_single_colour_position_buffer",
             )
 
-    def update_uniforms(self, **kwargs) -> None:
-        """
-        Update uniform buffer values.
+    def update_uniforms(self, **kwargs: Any) -> None:
+        """Update uniform buffer values.
 
         Args:
             **kwargs: Pipeline-specific uniform parameters
@@ -333,9 +328,8 @@ class PointListPipelineSingleColour(BaseWebGPUPipeline):
             self.uniform_buffer, 0, self.uniform_data.tobytes()
         )
 
-    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
-        """
-        Render the points.
+    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs: Any) -> None:
+        """Render the points.
 
         Args:
             render_pass: Active render pass encoder

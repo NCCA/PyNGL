@@ -1,3 +1,5 @@
+"""Bezier curve evaluation using the Cox-de Boor algorithm."""
+
 from .vec3 import Vec3
 
 
@@ -5,8 +7,16 @@ class BezierCurve:
     """A Bezier curve class."""
 
     def __init__(
-        self, control_points: list[Vec3] = None, knots: list[float] = None
+        self,
+        control_points: list[Vec3] | None = None,
+        knots: list[float] | None = None,
     ) -> None:
+        """Create a curve from optional control points and knots.
+
+        Args:
+            control_points: Initial control points; empty list if omitted.
+            knots: Knot vector; generated automatically if omitted.
+        """
         self._cp = control_points if control_points is not None else []
         self._knots = knots if knots is not None else []
         self._degree = 0
@@ -23,13 +33,18 @@ class BezierCurve:
 
     @property
     def control_points(self) -> list[Vec3]:
+        """The curve's control points."""
         return self._cp
 
     @property
     def knots(self) -> list[float]:
+        """The curve's knot vector."""
         return self._knots
 
-    def add_point(self, x: float | Vec3, y: float = None, z: float = None) -> None:
+    def add_point(
+        self, x: float | Vec3, y: float | None = None, z: float | None = None
+    ) -> None:
+        """Add a control point, either as a Vec3 or as x, y, z floats."""
         if isinstance(x, Vec3):
             self._cp.append(x)
         else:
@@ -40,16 +55,19 @@ class BezierCurve:
         self.create_knots()
 
     def add_knot(self, k: float) -> None:
+        """Append a knot value to the knot vector."""
         self._knots.append(k)
         self._num_knots = len(self._knots)
 
     def create_knots(self) -> None:
+        """Generate a clamped knot vector for the current control points."""
         self._num_knots = self._num_cp + self._order
         self._knots = [0.0] * (self._num_knots // 2) + [1.0] * (
             self._num_knots - (self._num_knots // 2)
         )
 
     def get_point_on_curve(self, u: float) -> Vec3:
+        """Evaluate the curve at parameter u and return the point."""
         p = Vec3()
         for i in range(self._num_cp):
             val = self.cox_de_boor(u, i, self._degree, self._knots)
@@ -58,6 +76,7 @@ class BezierCurve:
         return p
 
     def cox_de_boor(self, u: float, i: int, k: int, knots: list[float]) -> float:
+        """Recursively evaluate the Cox-de Boor basis function."""
         if k == 1:
             return 1.0 if knots[i] <= u <= knots[i + 1] else 0.0
 

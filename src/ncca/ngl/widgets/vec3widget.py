@@ -1,3 +1,5 @@
+"""Widget for editing a Vec3 with labelled spinboxes."""
+
 from PySide6.QtCore import Property, QSignalBlocker, Signal
 from PySide6.QtWidgets import QDoubleSpinBox, QFrame, QHBoxLayout, QLabel, QWidget
 
@@ -18,11 +20,12 @@ class Vec3Widget(QFrame):
         name: str = "",
         value: Vec3 = Vec3(0.0, 0.0, 0.0),
     ) -> None:
-        """
+        """Initialize the widget.
+
         Args:
-            name: The name of the widget.
-            value: The initial value of the widget.
-            parent: The parent widget.
+        name: The name of the widget.
+        value: The initial value of the widget.
+        parent: The parent widget.
         """
         super().__init__(parent)
         self.setFrameShape(QFrame.Shape.StyledPanel)
@@ -59,9 +62,10 @@ class Vec3Widget(QFrame):
         return spinbox
 
     def get_value(self) -> Vec3:
-        """
+        """Get the value described below.
+
         Returns:
-            The current value of the widget.
+        The current value of the widget.
         """
         return self._value
 
@@ -102,9 +106,10 @@ class Vec3Widget(QFrame):
         self.valueChanged.emit(self._value)
 
     def get_name(self) -> str:
-        """
+        """Get the value described below.
+
         Returns:
-            The name of the widget.
+        The name of the widget.
         """
         return self._name
 

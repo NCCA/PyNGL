@@ -1,16 +1,20 @@
-"""
-Simple float only Vec3 class for 3D graphics, very similar to the pyngl ones
+"""Simple float only Vec3 class for 3D graphics, very similar to the pyngl ones.
+
 NumPy-based implementation with VectorBase inheritance for code reuse.
 """
+
+from typing import TYPE_CHECKING
 
 import numpy as np
 
 from .vector_base import VectorBase, _create_properties
 
+if TYPE_CHECKING:
+    from .mat3 import Mat3
+
 
 class Vec3(VectorBase["Vec3"]):
-    """
-    A simple 3D vector class for 3D graphics, using numpy for efficient operations.
+    """A simple 3D vector class for 3D graphics, using numpy for efficient operations.
 
     Attributes:
         x (float): The x-coordinate of the vector.
@@ -25,8 +29,7 @@ class Vec3(VectorBase["Vec3"]):
     __slots__ = ["_data"]
 
     def cross(self, rhs: "Vec3") -> "Vec3":
-        """
-        Cross product of two vectors a x b.
+        """Cross product of two vectors a x b.
 
         Args:
             rhs (Vec3): The right-hand side vector to cross product with.
@@ -38,9 +41,8 @@ class Vec3(VectorBase["Vec3"]):
         result._data = np.cross(self._data, rhs._data)
         return result
 
-    def reflect(self, n: "Vec3") -> "Vec3":
-        """
-        Reflect a vector about a normal.
+    def reflected(self, n: "Vec3") -> "Vec3":
+        """Return a new vector reflected about a normal.
 
         Args:
             n (Vec3): The normal to reflect about.
@@ -54,9 +56,8 @@ class Vec3(VectorBase["Vec3"]):
         result._data = self._data - 2.0 * d * n._data
         return result
 
-    def outer(self, rhs: "Vec3"):
-        """
-        Outer product of two vectors a x b.
+    def outer(self, rhs: "Vec3") -> "Mat3":
+        """Outer product of two vectors a x b.
 
         Args:
             rhs (Vec3): The right-hand side vector to outer product with.
@@ -67,12 +68,11 @@ class Vec3(VectorBase["Vec3"]):
         from .mat3 import Mat3
 
         result = Mat3()
-        result.m = np.outer(self._data, rhs._data).astype(np.float64)
+        result._data = np.outer(self._data, rhs._data).astype(np.float32)
         return result
 
-    def __matmul__(self, rhs):
-        """
-        Vec3 @ Mat3 matrix multiplication.
+    def __matmul__(self, rhs: "Mat3") -> "Vec3":
+        """Vec3 @ Mat3 matrix multiplication.
 
         Args:
             rhs (Mat3): The matrix to multiply by.
@@ -81,12 +81,11 @@ class Vec3(VectorBase["Vec3"]):
             Vec3: A new vector that is the result of multiplying this vector by the matrix.
         """
         result = Vec3()
-        result._data = rhs.m.T @ self._data  # More efficient
+        result._data = rhs._data.T @ self._data  # More efficient
         return result
 
     def set(self, *args: float) -> None:
-        """
-        Set the x,y,z values of the vector.
+        """Set the x,y,z values of the vector.
 
         Args:
             *args: Component values (x, y, z).
@@ -102,14 +101,6 @@ class Vec3(VectorBase["Vec3"]):
             self._data[2] = float(args[2])
         except ValueError:
             raise ValueError(f"Vec3.set {args=} all need to be float")
-
-    def __repr__(self) -> str:
-        """Object representation for debugging."""
-        return f"Vec3 [{self._data[0]},{self._data[1]},{self._data[2]}]"
-
-    def __str__(self) -> str:
-        """String representation of the vector."""
-        return f"[{self._data[0]},{self._data[1]},{self._data[2]}]"
 
 
 # Add properties for x, y, z components

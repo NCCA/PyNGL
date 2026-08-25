@@ -6,4 +6,8 @@
 
 ## Texture
 
-::: ncca.ngl.Texture
+::: ncca.ngl.opengl.Texture
+
+## ImageModes
+
+::: ncca.ngl.ImageModes

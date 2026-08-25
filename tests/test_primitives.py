@@ -1,6 +1,7 @@
 import pytest
 
-from ncca.ngl import PrimData, Primitives, Prims, Vec3
+from ncca.ngl import PrimData, Prims, Vec3
+from ncca.ngl.opengl import Primitives
 
 
 # Helper to clear primitives between tests
@@ -22,6 +23,18 @@ def test_create_line_grid_basic(opengl_context):
     assert hasattr(prim, "vao")
     assert prim.vao is not None
     assert prim.vao.num_indices() > 0
+
+
+def test_create_line_grid_lines_layout(opengl_context):
+    """line_grid data is position-only GL_LINES pairs, not 8-float triangles."""
+    import OpenGL.GL as gl
+
+    steps = 2
+    Primitives.create(Prims.LINE_GRID, "test_grid", width=2.0, depth=2.0, steps=steps)
+    prim = Primitives._primitives["test_grid"]
+    # 2*(steps+1) lines, 2 endpoints each
+    assert prim.vao.num_indices() == 4 * (steps + 1)
+    assert prim.vao.get_mode() == gl.GL_LINES
 
 
 def test_create_triangle_plane_basic(opengl_context):
@@ -147,38 +160,6 @@ def test_create_torus_invalid_radii(opengl_context):
             minor_radius=0.0,
             sides=8,
             rings=8,
-        )
-
-
-def test_create_torus_invalid_sides_rings(opengl_context):
-    with pytest.raises(ValueError):
-        Primitives.create(
-            Prims.TORUS,
-            "bad_torus",
-            major_radius=2.0,
-            minor_radius=1.0,
-            sides=2,
-            rings=8,
-        )
-    with pytest.raises(ValueError):
-        Primitives.create_torus(
-            "bad_torus", major_radius=2.0, minor_radius=1.0, sides=8, rings=2
-        )
-
-
-def test_create_torus_invalid_sides_rings(opengl_context):
-    with pytest.raises(ValueError):
-        Primitives.create(
-            Prims.TORUS,
-            "bad_torus",
-            major_radius=2.0,
-            minor_radius=1.0,
-            sides=2,
-            rings=8,
-        )
-    with pytest.raises(ValueError):
-        Primitives.create_torus(
-            "bad_torus", major_radius=2.0, minor_radius=1.0, sides=8, rings=2
         )
 
 

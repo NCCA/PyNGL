@@ -1,3 +1,5 @@
+"""WebGPU rendering stack for PyNGL: widgets, pipelines, and shader helpers."""
+
 from importlib.metadata import PackageNotFoundError, version
 
 try:

@@ -1,9 +1,9 @@
-"""
-Generic triangle rendering pipeline for WebGPU.
+"""Generic triangle rendering pipeline for WebGPU.
+
 Handles triangle rendering with customizable colors, projection, and topology.
 """
 
-from typing import Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import wgpu
@@ -28,12 +28,12 @@ class BaseTrianglePipeline(BaseWebGPUPipeline):
         msaa_sample_count: int = 4,
         stride: int = 0,
         topology: wgpu.PrimitiveTopology = wgpu.PrimitiveTopology.triangle_list,
-    ):
-        """
-        Initialize the triangle rendering pipeline.
+    ) -> None:
+        """Initialize the triangle rendering pipeline.
 
         Args:
             device: WebGPU device
+            data_type: NGL vertex data type name (e.g. "Vec3")
             texture_format: Color attachment format
             depth_format: Depth attachment format
             msaa_sample_count: Number of MSAA samples
@@ -56,8 +56,7 @@ class BaseTrianglePipeline(BaseWebGPUPipeline):
 
 
 class TrianglePipelineMultiColour(BaseTrianglePipeline):
-    """
-    A reusable pipeline for rendering triangles in WebGPU with per-vertex colors.
+    """A reusable pipeline for rendering triangles in WebGPU with per-vertex colors.
 
     Features:
     - Triangle lists or triangle strips
@@ -75,12 +74,12 @@ class TrianglePipelineMultiColour(BaseTrianglePipeline):
         msaa_sample_count: int = 4,
         stride: int = 0,
         topology: wgpu.PrimitiveTopology = wgpu.PrimitiveTopology.triangle_list,
-    ):
-        """
-        Initialize the triangle rendering pipeline.
+    ) -> None:
+        """Initialize the triangle rendering pipeline.
 
         Args:
             device: WebGPU device
+            data_type: NGL vertex data type name (e.g. "Vec3")
             texture_format: Color attachment format
             depth_format: Depth attachment format
             msaa_sample_count: Number of MSAA samples
@@ -115,7 +114,7 @@ class TrianglePipelineMultiColour(BaseTrianglePipeline):
         """Get the WGSL shader code for this pipeline."""
         return TRIANGLE_SHADER_MULTI_COLOURED
 
-    def _get_vertex_buffer_layouts(self):
+    def _get_vertex_buffer_layouts(self) -> List[Dict[str, Any]]:
         """Get vertex buffer layout configurations for the pipeline."""
         return [
             {
@@ -155,13 +154,18 @@ class TrianglePipelineMultiColour(BaseTrianglePipeline):
         )
         return f"triangle_pipeline_multi_coloured_{topology_name}"
 
-    def set_data(self, positions=None, colors=None, **kwargs) -> None:
-        """
-        Set the triangle data for rendering.
+    def set_data(
+        self,
+        positions: np.ndarray | wgpu.GPUBuffer | None = None,
+        colors: np.ndarray | wgpu.GPUBuffer | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Set the triangle data for rendering.
 
         Args:
             positions: Nx2/Nx3 array of triangle positions or a pre-existing GPUBuffer.
             colors: Nx3 array of triangle colors (RGB) or a pre-existing GPUBuffer.
+            **kwargs: Unused, accepted for interface compatibility.
         """
         if positions is not None:
             if isinstance(positions, wgpu.GPUBuffer):
@@ -193,9 +197,8 @@ class TrianglePipelineMultiColour(BaseTrianglePipeline):
                 else:
                     self.color_buffer = None
 
-    def update_uniforms(self, **kwargs) -> None:
-        """
-        Update uniform buffer values.
+    def update_uniforms(self, **kwargs: Any) -> None:
+        """Update uniform buffer values.
 
         Args:
             **kwargs: Pipeline-specific uniform parameters
@@ -208,9 +211,8 @@ class TrianglePipelineMultiColour(BaseTrianglePipeline):
             self.uniform_buffer, 0, self.uniform_data.tobytes()
         )
 
-    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
-        """
-        Render the triangles.
+    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs: Any) -> None:
+        """Render the triangles.
 
         Args:
             render_pass: Active render pass encoder
@@ -241,8 +243,7 @@ class TrianglePipelineMultiColour(BaseTrianglePipeline):
 
 
 class TrianglePipelineSingleColour(BaseTrianglePipeline):
-    """
-    A reusable pipeline for rendering triangles in WebGPU with single color.
+    """A reusable pipeline for rendering triangles in WebGPU with single color.
 
     Features:
     - Triangle lists or triangle strips
@@ -261,12 +262,12 @@ class TrianglePipelineSingleColour(BaseTrianglePipeline):
         stride: int = 0,
         topology: wgpu.PrimitiveTopology = wgpu.PrimitiveTopology.triangle_list,
         colour: Tuple[float, float, float] = (1.0, 1.0, 1.0),
-    ):
-        """
-        Initialize the triangle rendering pipeline.
+    ) -> None:
+        """Initialize the triangle rendering pipeline.
 
         Args:
             device: WebGPU device
+            data_type: NGL vertex data type name (e.g. "Vec3")
             texture_format: Color attachment format
             depth_format: Depth attachment format
             msaa_sample_count: Number of MSAA samples
@@ -303,7 +304,7 @@ class TrianglePipelineSingleColour(BaseTrianglePipeline):
         """Get the WGSL shader code for this pipeline."""
         return TRIANGLE_SHADER_SINGLE_COLOUR
 
-    def _get_vertex_buffer_layouts(self):
+    def _get_vertex_buffer_layouts(self) -> List[Dict[str, Any]]:
         """Get vertex buffer layout configurations for the pipeline."""
         return [
             {
@@ -332,13 +333,18 @@ class TrianglePipelineSingleColour(BaseTrianglePipeline):
         )
         return f"triangle_pipeline_single_colour_{topology_name}"
 
-    def set_data(self, positions=None, colors=None, **kwargs) -> None:
-        """
-        Set the triangle data for rendering.
+    def set_data(
+        self,
+        positions: np.ndarray | wgpu.GPUBuffer | None = None,
+        colors: np.ndarray | wgpu.GPUBuffer | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Set the triangle data for rendering.
 
         Args:
             positions: Nx2/Nx3 array of triangle positions or a pre-existing GPUBuffer.
             colors: Ignored for single colour pipeline
+            **kwargs: Unused, accepted for interface compatibility.
         """
         if positions is not None:
             if isinstance(positions, wgpu.GPUBuffer):
@@ -353,9 +359,8 @@ class TrianglePipelineSingleColour(BaseTrianglePipeline):
                 )
                 self.num_vertices = buffer_size // self._stride
 
-    def update_uniforms(self, **kwargs) -> None:
-        """
-        Update uniform buffer values.
+    def update_uniforms(self, **kwargs: Any) -> None:
+        """Update uniform buffer values.
 
         Args:
             **kwargs: Pipeline-specific uniform parameters
@@ -376,8 +381,7 @@ class TrianglePipelineSingleColour(BaseTrianglePipeline):
         )
 
     def set_color(self, colour: Tuple[float, float, float]) -> None:
-        """
-        Set the color for the triangles.
+        """Set the color for the triangles.
 
         Args:
             colour: RGB color tuple
@@ -390,9 +394,8 @@ class TrianglePipelineSingleColour(BaseTrianglePipeline):
                 self.uniform_buffer, 0, self.uniform_data.tobytes()
             )
 
-    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs) -> None:
-        """
-        Render the triangles.
+    def render(self, render_pass: wgpu.GPURenderPassEncoder, **kwargs: Any) -> None:
+        """Render the triangles.
 
         Args:
             render_pass: Active render pass encoder
