@@ -47,7 +47,7 @@ def test_default_constructor(cls):
 
 @pytest.mark.parametrize("cls", ALL_CLASSES)
 def test_component_constructor(cls):
-    assert make(cls) == make(cls)
+    assert make(cls).to_tuple() == SAMPLES[cls]
 
 
 @pytest.mark.parametrize("cls", ALL_CLASSES)
