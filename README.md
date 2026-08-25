@@ -109,7 +109,7 @@ source files that changed. If you use Claude Code, `/wiki status`,
 
 This project has use various AI tools ([Claude](https://claude.ai) and [Codex](https://openai.com/codex/) and [OpenCode](https://opencode.ai/)) to assist with development.
 
-The initial phases were for the full port of NGL to PyNGL (C++ to Python conversion) and additional testing. Most of the work is shown in the docs section of the repository, and I have also written about various things on my blog [her](https://nccastaff.bournemouth.ac.uk/jmacey/post/).
+The initial phases were for the full port of NGL to PyNGL (C++ to Python conversion) and additional testing. Most of the work is shown in the docs section of the repository, and I have also written about various things on my blog [here](https://nccastaff.bournemouth.ac.uk/jmacey/post/).
 
 There will be a full write-up of my setup and usage of AI on the Blog soon.
 
