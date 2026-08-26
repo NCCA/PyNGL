@@ -46,13 +46,22 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
     buffer, and blitted to the widget with QPainter. This keeps the whole
     data flow visible and allows QPainter text overlays via render_text().
 
-    The readback is pipelined through a small ring of buffers: each frame
-    the current image is copied into one buffer while the *previous*
-    frame's buffer is mapped and read. Mapping a buffer whose copy was
-    submitted a frame ago returns almost immediately, so the CPU never
-    stalls waiting for the GPU to drain. The presented image therefore
-    lags the simulation by one frame, which is imperceptible at
-    interactive rates.
+    By default the readback is synchronous: the frame is copied into a
+    buffer, that same buffer is mapped, and what you see is what the paint
+    just drew. Mapping a copy that was only submitted a moment ago means
+    waiting for the GPU to drain, which costs on the order of a
+    millisecond at typical window sizes.
+
+    Setting pipelined_readback = True trades that latency for throughput.
+    The copy still goes into one buffer of the ring, but the buffer mapped
+    and read is the *previous* frame's, whose copy the GPU has had a whole
+    frame to finish, so the map returns almost immediately and the CPU
+    never stalls. The catch is that the presented image then lags the
+    simulation by one frame. Under continuous repaints that is
+    imperceptible, which is what it is for; a widget that only repaints in
+    response to events must leave it off, or a one-off change such as a
+    mouse click renders to the texture but is not shown until whatever
+    event happens to trigger the next paint.
 
     Subclasses must implement paintWebGPU() and resizeWebGPU(), and must
     set self.device to a wgpu device before any rendering can occur. The
@@ -70,6 +79,10 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
         super().__init__()
         self.device: Optional[wgpu.GPUDevice] = None
         self.msaa_sample_count = 4
+        # Present the frame just drawn (see the class docstring). Set this
+        # True in a subclass that repaints continuously to buy back the
+        # readback stall, at the cost of showing everything a frame late.
+        self.pipelined_readback = False
         self.text_buffer: List[Tuple[int, int, str, int, str, QColor]] = []
         self.frame_buffer: Optional[np.ndarray] = None
         self._update_timer = QTimer(self)
@@ -267,10 +280,11 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
 
         The text buffer is cleared each frame, so text must be re-added
         every frame (typically from paintWebGPU or a timer callback).
-        Note the rendered image lags the simulation by one frame due to
-        the pipelined readback, so text meant to track a moving 3D
-        object's screen position will swim slightly during fast motion;
-        HUD-style labels are unaffected.
+        Note that with pipelined_readback on, the rendered image lags the
+        simulation by one frame while the text is drawn from the current
+        one, so text meant to track a moving 3D object's screen position
+        will swim slightly during fast motion; HUD-style labels are
+        unaffected, and neither happens with the default readback.
 
         Args:
             x (int): The x-coordinate of the text.
@@ -303,13 +317,20 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
         return self._calculate_aligned_row_size() * self.texture_size[1]
 
     def _update_colour_buffer(self) -> None:
-        """Copy this frame out, and read the previous frame back in.
+        """Copy this frame out and read a frame back in for presentation.
 
-        A buffer is only ever mapped when it is not the copy target, and
-        is unmapped before it becomes the copy target again - the
-        alternation guarantees this. The first frame after startup or a
-        resize has nothing pending, so the previous frame buffer contents
-        are shown once and everything flows from the next frame on.
+        Which frame comes back depends on pipelined_readback. Off (the
+        default), it is the one just copied, so the map waits for the GPU
+        but the widget shows the current frame. On, it is the previous
+        frame's, already finished and so effectively free to map.
+
+        Either way a buffer is only ever mapped when nothing is copying
+        into it, and is unmapped before it next becomes the copy target:
+        pipelined, the alternation guarantees it; synchronous, the copy
+        completes before the map returns and the unmap happens below. The
+        first frame after startup or a resize has nothing pending when
+        pipelining, so the previous frame buffer contents are shown once
+        and everything flows from the next frame on.
         """
         # A subclass that overrides _create_render_buffer must still create the
         # read-back ring - easiest by calling super()._create_render_buffer().
@@ -328,9 +349,13 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
         width, height = self.texture_size
         try:
             write_idx = self._readback_index
-            read_idx = (write_idx + 1) % len(self.readback_buffers)
+            read_idx = (
+                (write_idx + 1) % len(self.readback_buffers)
+                if self.pipelined_readback
+                else write_idx
+            )
 
-            # Kick off the copy of this frame. We do not wait for it.
+            # Kick off the copy of this frame.
             command_encoder = self.device.create_command_encoder()
             command_encoder.copy_texture_to_buffer(
                 {"texture": self.colour_buffer_texture},
@@ -344,9 +369,11 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
             self.device.queue.submit([command_encoder.finish()])
             self._readback_pending[write_idx] = True
 
-            # Read back last frame's buffer, if it holds one. The map
-            # returns almost immediately because the GPU has had a full
-            # frame to complete that copy.
+            # Map the chosen buffer, if it holds a frame. Synchronously
+            # that is the copy submitted just above, so the map blocks
+            # until the GPU drains; pipelined it is last frame's, which
+            # the GPU has had a full frame to finish, so it returns
+            # almost immediately.
             if self._readback_pending[read_idx]:
                 buf = self.readback_buffers[read_idx]
                 buf.map_sync(mode=wgpu.MapMode.READ)
@@ -364,7 +391,8 @@ class WebGPUWidget(QWidget, metaclass=QWidgetABCMeta):
                 buf.unmap()
                 self._readback_pending[read_idx] = False
 
-            # Alternate: next frame writes into the buffer just drained.
+            # Next frame writes into the buffer just drained: the other
+            # one when pipelining, otherwise the same one again.
             self._readback_index = read_idx
         except Exception:
             # A genuine (usually transient) GPU/mapping error - log it with a
