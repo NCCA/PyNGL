@@ -38,11 +38,7 @@ def pytest_collection_modifyitems(config, items):
     for item in items:
         fixtures = getattr(item, "fixturenames", [])
 
-        is_graphics = (
-            "opengl_context" in fixtures
-            or "webgpu_device" in fixtures
-            or "qt_app" in fixtures
-        )
+        is_graphics = "opengl_context" in fixtures or "webgpu_device" in fixtures or "qt_app" in fixtures
 
         if is_graphics:
             deselected_items.append(item)
@@ -83,8 +79,14 @@ def opengl_context():
 
 @pytest.fixture(scope="session")
 def webgpu_device():
-    # Get the default WebGPU device
-    device = wgpu.utils.get_default_device()
+    """Provide a WebGPU device or skip when no adapter is available."""
+    try:
+        device = wgpu.utils.get_default_device()
+    except (RuntimeError, wgpu.GPUError) as error:
+        reason = str(error).splitlines()[0]
+        pytest.skip(f"WebGPU is not available: {reason}")
+
     if device is None:
-        raise RuntimeError("Could not get a WebGPU device.")
+        pytest.skip("WebGPU is not available: no suitable device found")
+
     yield device
