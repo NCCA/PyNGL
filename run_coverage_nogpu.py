@@ -29,7 +29,7 @@ def run_command(cmd: str, description: str) -> bool:
         return False
 
 
-def main():
+def main() -> None:
     """Main function to run coverage without GPU."""
     # CPU-only tests (no OpenGL context, no Qt)
     cpu_only_tests = [

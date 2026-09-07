@@ -171,8 +171,6 @@ def test_line_pipeline_buffer_reuse_patterns(webgpu_device):
 
     # Set initial data
     pipeline.set_data(positions=TEST_POSITIONS, colors=TEST_COLORS)
-    initial_pos_buffer = pipeline.vertex_buffer
-    initial_color_buffer = pipeline.color_buffer
 
     # Update with same size data
     new_positions = TEST_POSITIONS * 2.0
