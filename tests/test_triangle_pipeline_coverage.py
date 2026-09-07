@@ -14,12 +14,8 @@ from ncca.ngl.webgpu.triangle_pipeline import (
 )
 
 # Test data fixtures
-TEST_POSITIONS = np.array(
-    [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [-1.0, -1.0, 0.0]], dtype=np.float32
-)
-TEST_COLORS = np.array(
-    [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], dtype=np.float32
-)
+TEST_POSITIONS = np.array([[0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [-1.0, -1.0, 0.0]], dtype=np.float32)
+TEST_COLORS = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], dtype=np.float32)
 TEST_MVP_MATRIX = np.eye(4, dtype=np.float32)
 
 
@@ -82,9 +78,7 @@ def test_triangle_pipeline_single_colour_color_functionality(webgpu_device):
     # Test uniform data gets updated
     purple_color = (0.5, 0.0, 0.5)
     pipeline.update_uniforms(colour=purple_color)
-    assert np.array_equal(
-        pipeline.uniform_data["Colour"], np.array(purple_color, dtype=np.float32)
-    )
+    assert np.array_equal(pipeline.uniform_data["Colour"], np.array(purple_color, dtype=np.float32))
 
 
 def test_line_pipeline_single_colour_color_functionality(webgpu_device):
@@ -119,9 +113,7 @@ def test_line_pipeline_single_colour_color_functionality(webgpu_device):
     # Test uniform data gets updated
     orange_color = (1.0, 0.5, 0.0)
     pipeline.update_uniforms(colour=orange_color)
-    assert np.array_equal(
-        pipeline.uniform_data["Colour"], np.array(orange_color, dtype=np.float32)
-    )
+    assert np.array_equal(pipeline.uniform_data["Colour"], np.array(orange_color, dtype=np.float32))
 
 
 def test_triangle_pipeline_multi_colour_color_processing_tuple_result(webgpu_device):
@@ -186,9 +178,7 @@ def test_triangle_pipeline_multi_colour_render_with_buffers(webgpu_device, rende
     pipeline.render(render_pass, num_vertices=2)
 
 
-def test_triangle_pipeline_multi_colour_render_without_buffers(
-    webgpu_device, render_pass
-):
+def test_triangle_pipeline_multi_colour_render_without_buffers(webgpu_device, render_pass):
     """Test multi-colour pipeline render without required buffers (covers line 270)."""
     pipeline = TrianglePipelineMultiColour(webgpu_device)
     pipeline.update_uniforms(mvp=TEST_MVP_MATRIX)
@@ -215,9 +205,7 @@ def test_triangle_pipeline_single_colour_gpu_buffer_position(webgpu_device):
     assert pipeline.num_vertices == position_buffer.size // pipeline._stride
 
 
-def test_triangle_pipeline_single_colour_render_without_position(
-    webgpu_device, render_pass
-):
+def test_triangle_pipeline_single_colour_render_without_position(webgpu_device, render_pass):
     """Test single-colour pipeline render without position buffer (covers line 418)."""
     pipeline = TrianglePipelineSingleColour(webgpu_device)
     pipeline.update_uniforms(mvp=TEST_MVP_MATRIX)
@@ -227,9 +215,7 @@ def test_triangle_pipeline_single_colour_render_without_position(
     pipeline.render(render_pass)
 
 
-def test_triangle_pipeline_single_colour_render_with_position(
-    webgpu_device, render_pass
-):
+def test_triangle_pipeline_single_colour_render_with_position(webgpu_device, render_pass):
     """Test single-colour pipeline render with position buffer (covers lines 420-426)."""
     pipeline = TrianglePipelineSingleColour(webgpu_device)
     pipeline.set_data(positions=TEST_POSITIONS)
@@ -258,20 +244,12 @@ def test_triangle_pipeline_different_topologies(webgpu_device):
     """Test triangle pipelines with different topologies."""
     # Test triangle_list topology (default)
     triangle_list_pipeline = TrianglePipelineMultiColour(webgpu_device)
-    assert (
-        triangle_list_pipeline._get_primitive_topology()
-        == wgpu.PrimitiveTopology.triangle_list
-    )
+    assert triangle_list_pipeline._get_primitive_topology() == wgpu.PrimitiveTopology.triangle_list
     assert "list" in triangle_list_pipeline._get_pipeline_label()
 
     # Test triangle_strip topology
-    triangle_strip_pipeline = TrianglePipelineMultiColour(
-        webgpu_device, topology=wgpu.PrimitiveTopology.triangle_strip
-    )
-    assert (
-        triangle_strip_pipeline._get_primitive_topology()
-        == wgpu.PrimitiveTopology.triangle_strip
-    )
+    triangle_strip_pipeline = TrianglePipelineMultiColour(webgpu_device, topology=wgpu.PrimitiveTopology.triangle_strip)
+    assert triangle_strip_pipeline._get_primitive_topology() == wgpu.PrimitiveTopology.triangle_strip
     assert "strip" in triangle_strip_pipeline._get_pipeline_label()
 
 
@@ -447,46 +425,28 @@ def test_triangle_pipeline_pipeline_label_with_topology(webgpu_device):
     """Test pipeline label generation with different topologies."""
     # Test triangle_list
     list_pipeline = TrianglePipelineMultiColour(webgpu_device)
-    assert (
-        list_pipeline._get_pipeline_label() == "triangle_pipeline_multi_coloured_list"
-    )
+    assert list_pipeline._get_pipeline_label() == "triangle_pipeline_multi_coloured_list"
 
     # Test triangle_strip
-    strip_pipeline = TrianglePipelineMultiColour(
-        webgpu_device, topology=wgpu.PrimitiveTopology.triangle_strip
-    )
-    assert (
-        strip_pipeline._get_pipeline_label() == "triangle_pipeline_multi_coloured_strip"
-    )
+    strip_pipeline = TrianglePipelineMultiColour(webgpu_device, topology=wgpu.PrimitiveTopology.triangle_strip)
+    assert strip_pipeline._get_pipeline_label() == "triangle_pipeline_multi_coloured_strip"
 
     # Test single-colour versions
     single_list_pipeline = TrianglePipelineSingleColour(webgpu_device)
-    assert (
-        single_list_pipeline._get_pipeline_label()
-        == "triangle_pipeline_single_colour_list"
-    )
+    assert single_list_pipeline._get_pipeline_label() == "triangle_pipeline_single_colour_list"
 
-    single_strip_pipeline = TrianglePipelineSingleColour(
-        webgpu_device, topology=wgpu.PrimitiveTopology.triangle_strip
-    )
-    assert (
-        single_strip_pipeline._get_pipeline_label()
-        == "triangle_pipeline_single_colour_strip"
-    )
+    single_strip_pipeline = TrianglePipelineSingleColour(webgpu_device, topology=wgpu.PrimitiveTopology.triangle_strip)
+    assert single_strip_pipeline._get_pipeline_label() == "triangle_pipeline_single_colour_strip"
 
 
 def test_triangle_pipeline_pipeline_creation_via_factory(webgpu_device):
     """Test pipeline creation via factory with different topologies."""
     # Test triangle_list multi-colour
-    list_multi = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.MULTI_COLOURED_TRIANGLES
-    )
+    list_multi = PipelineFactory.create_pipeline(webgpu_device, PipelineType.MULTI_COLOURED_TRIANGLES)
     assert isinstance(list_multi, TrianglePipelineMultiColour)
 
     # Test triangle_list single-colour
-    list_single = PipelineFactory.create_pipeline(
-        webgpu_device, PipelineType.SINGLE_COLOUR_TRIANGLES
-    )
+    list_single = PipelineFactory.create_pipeline(webgpu_device, PipelineType.SINGLE_COLOUR_TRIANGLES)
     assert isinstance(list_single, TrianglePipelineSingleColour)
 
     # Test basic functionality

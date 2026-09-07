@@ -3,23 +3,18 @@ Additional tests for point pipeline to improve coverage.
 Tests specific edge cases and error conditions not covered in main test suite.
 """
 
+import numpy as np
 import pytest
 import wgpu
-import numpy as np
 
 from ncca.ngl.webgpu.point_pipeline import (
     PointPipelineMultiColour,
     PointPipelineSingleColour,
 )
 
-
 # Test data fixtures
-TEST_POSITIONS = np.array(
-    [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [-1.0, -1.0, 0.0]], dtype=np.float32
-)
-TEST_COLORS = np.array(
-    [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], dtype=np.float32
-)
+TEST_POSITIONS = np.array([[0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [-1.0, -1.0, 0.0]], dtype=np.float32)
+TEST_COLORS = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], dtype=np.float32)
 TEST_MVP_MATRIX = np.eye(4, dtype=np.float32)
 
 
@@ -57,7 +52,6 @@ def test_point_pipeline_multi_colour_default_colour_result_tuple(webgpu_device):
     pipeline = PointPipelineMultiColour(webgpu_device)
 
     # Mock the _process_vertex_data to return a tuple (simulating edge case)
-    original_process = pipeline._process_vertex_data
 
     def mock_process_vertex_data(*args, **kwargs):
         # Return a tuple to trigger the elif branch
@@ -101,9 +95,7 @@ def test_point_pipeline_multi_colour_update_view_matrix(webgpu_device):
     view_matrix[0, 3] = 5.0  # Translate X
 
     # Test view_matrix update
-    pipeline.update_uniforms(
-        mvp=TEST_MVP_MATRIX, view_matrix=view_matrix, point_size=2.0
-    )
+    pipeline.update_uniforms(mvp=TEST_MVP_MATRIX, view_matrix=view_matrix, point_size=2.0)
 
     assert pipeline.uniform_buffer is not None
     np.testing.assert_array_equal(pipeline.uniform_data["ViewMatrix"], view_matrix)
@@ -156,9 +148,7 @@ def test_point_pipeline_single_colour_update_view_matrix(webgpu_device):
     np.testing.assert_array_equal(pipeline.uniform_data["ViewMatrix"], view_matrix)
 
 
-def test_point_pipeline_single_colour_render_without_position(
-    webgpu_device, render_pass
-):
+def test_point_pipeline_single_colour_render_without_position(webgpu_device, render_pass):
     """Test single-colour pipeline render without position buffer (covers line 449)."""
     pipeline = PointPipelineSingleColour(webgpu_device)
 
@@ -250,9 +240,7 @@ def test_point_pipeline_single_colour_colour_and_size_updates(webgpu_device):
     # Test updating colour only
     pipeline.update_uniforms(colour=np.array([0.5, 0.25, 0.75]))
     expected_colour = np.array([0.5, 0.25, 0.75, 1.0], dtype=np.float32)
-    np.testing.assert_array_equal(
-        pipeline.uniform_data["ColourSize"][:3], expected_colour[:3]
-    )
+    np.testing.assert_array_equal(pipeline.uniform_data["ColourSize"][:3], expected_colour[:3])
 
     # Test updating point size only
     pipeline.update_uniforms(point_size=3.5)

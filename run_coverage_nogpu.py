@@ -1,5 +1,7 @@
 #!/usr/bin/env -S uv run --script
+
 """Run coverage tests without GPU dependencies.
+
 This script separates CPU-only tests from GPU/Qt-dependent tests.
 """
 
@@ -15,9 +17,7 @@ def run_command(cmd: str, description: str) -> bool:
     print(f"{'=' * 60}")
 
     try:
-        result = subprocess.run(
-            cmd, shell=True, check=True, capture_output=True, text=True
-        )
+        result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
         print(result.stdout)
         if result.stderr:
             print("STDERR:", result.stderr)
