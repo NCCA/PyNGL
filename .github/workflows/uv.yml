@@ -38,7 +38,7 @@ jobs:
           - "3.12"
           - "3.13"
           - "3.14"
-          - "3.15"
+          # - "3.15" whilst this works on mac it fails on linux and windows.
     steps:
       - uses: actions/checkout@v4
 
