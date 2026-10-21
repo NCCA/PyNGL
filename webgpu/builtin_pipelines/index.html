@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>The Built-in Pipelines - PyNGL - NCCA Python Graphics Library</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "The Built-in Pipelines";
+        var mkdocs_page_input_path = "webgpu/builtin_pipelines.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> PyNGL - NCCA Python Graphics Library
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../getting_started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/method_names/">Understanding the Method Names</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/vectors/">Vectors</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/matrices/">Matrices</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/quaternions/">Quaternions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/transforms/">The Transform Class</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/cameras_and_projection/">Cameras and Projection</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/vector_arrays/">Vector Arrays</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/geometry_maths/">Geometry Maths</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/utility_functions/">Utility Functions</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">OpenGL</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/getting_started/">Getting Started with OpenGL</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/shaders/">Shaders and ShaderLib</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/geometry/">Geometry, Primitives, and VAOs</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">WebGPU</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../getting_started/">Getting Started with WebGPU</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">The Built-in Pipelines</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#the-pipeline-contract">The pipeline contract</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#choosing-a-pipeline-type">Choosing a pipeline type</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#points">Points</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#lines">Lines</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#triangles-list-and-strip">Triangles — list and strip</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#instanced-geometry">Instanced geometry</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#putting-it-together-the-demos-frame-loop">Putting it together: the demo's frame loop</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#when-the-built-ins-arent-enough">When the built-ins aren't enough</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../custom_pipelines/">Custom Pipelines</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../widgets/">Qt Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">QML Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../qml/">Qt Quick Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Math/">Math</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Geometry/">Geometry</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../VAO/">VAO</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Shaders/">Shaders</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Camera/">Camera</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../ImageAndTexture/">Image and Texture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Text/">Text</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../WebGPU/">WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Widgets/">Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../QmlWidgets/">QML Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Misc/">Miscellaneous</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../about/">About</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">PyNGL - NCCA Python Graphics Library</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">WebGPU</li>
+      <li class="breadcrumb-item active">The Built-in Pipelines</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="the-built-in-pipelines">The Built-in Pipelines</h1>
+<p><code>PipelineFactory</code> provides fourteen ready-made render pipelines so you can
+draw points, lines, triangles, and instanced meshes without writing any
+WGSL. This page follows the bundled demo application, which cycles through
+every one of them:</p>
+<pre><code class="language-bash">uv run python -m ncca.ngl.webgpu
+</code></pre>
+<p><strong>Left</strong> / <strong>Right</strong> switch pipelines, <strong>Space</strong> pauses the animation,
+<strong>A</strong> toggles automatic switching, <strong>Escape</strong> quits. The demo's source is
+<a href="https://github.com/NCCA/PyNGL/blob/main/src/ncca/ngl/webgpu/__main__.py"><code>src/ncca/ngl/webgpu/__main__.py</code></a>
+— every snippet below is taken from it.</p>
+<h2 id="the-pipeline-contract">The pipeline contract</h2>
+<p>Every built-in pipeline is used the same way. <strong>Create it once</strong> at start
+up, then <strong>each frame</strong> set data, update uniforms, and render inside your
+render pass:</p>
+<pre><code class="language-python">from ncca.ngl.webgpu import PipelineFactory, PipelineType
+
+# once, in __init__ (after self.device exists)
+pipeline = PipelineFactory.create_pipeline(
+    self.device, PipelineType.MULTI_COLOURED_POINTS
+)
+
+# each frame, in paintWebGPU
+pipeline.set_data(positions, colours)      # upload vertex data
+pipeline.update_uniforms(mvp=mvp, ...)     # upload uniform values
+pipeline.render(render_pass)               # record the draw call
+</code></pre>
+<ul>
+<li><code>set_data</code> accepts numpy <code>float32</code> arrays <strong>or</strong> pre-existing
+  <code>wgpu.GPUBuffer</code> objects (useful when a compute shader writes the data).
+  Buffers are created on first use and reused/grown on subsequent calls,
+  so calling it every frame is fine.</li>
+<li><code>update_uniforms</code> and <code>set_data</code> are keyword-based; each pipeline type
+  documents which keywords it reads. Unknown keywords are ignored.</li>
+<li><code>render(render_pass)</code> sets the pipeline, bind group, and vertex buffers
+  and records the draw. Pass <code>num_points=</code> / <code>num_vertices=</code> /
+  <code>num_instances=</code> to draw a subset.</li>
+<li>Call <code>pipeline.cleanup()</code> when you are finished with it.</li>
+</ul>
+<p>Matrices go in as numpy arrays; the demo rebuilds them once per frame:</p>
+<pre><code class="language-python">rotation = Mat4.rotate_y(self.rotation)
+self.mvp_matrix = (self.project @ self.view @ rotation).to_numpy().astype(np.float32)
+self.view_matrix = (self.view @ rotation).to_numpy().astype(np.float32)
+</code></pre>
+<h2 id="choosing-a-pipeline-type">Choosing a pipeline type</h2>
+<p>Each primitive family comes in two flavours: <strong>multi-coloured</strong> (a colour
+per vertex/instance, passed to <code>set_data</code>) and <strong>single-colour</strong> (one
+uniform colour for everything, passed to <code>update_uniforms</code>).</p>
+<table>
+<thead>
+<tr>
+<th><code>PipelineType</code></th>
+<th>Draws</th>
+<th><code>set_data</code></th>
+<th><code>update_uniforms</code></th>
+<th><code>render</code> kwarg</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MULTI_COLOURED_POINTS</code></td>
+<td>billboarded round points (world-size)</td>
+<td><code>positions</code>, <code>colours</code></td>
+<td><code>mvp</code>, <code>view_matrix</code>, <code>point_size</code></td>
+<td><code>num_points</code></td>
+</tr>
+<tr>
+<td><code>SINGLE_COLOUR_POINTS</code></td>
+<td>as above, one colour</td>
+<td><code>positions</code></td>
+<td><code>mvp</code>, <code>view_matrix</code>, <code>point_size</code>, <code>colour</code></td>
+<td><code>num_points</code></td>
+</tr>
+<tr>
+<td><code>POINT_LIST_MULTI_COLOURED</code></td>
+<td>1-pixel raw points</td>
+<td><code>positions</code>, <code>colours</code></td>
+<td><code>mvp</code></td>
+<td><code>num_points</code></td>
+</tr>
+<tr>
+<td><code>POINT_LIST_SINGLE_COLOUR</code></td>
+<td>as above, one colour</td>
+<td><code>positions</code></td>
+<td><code>mvp</code>, <code>colour</code></td>
+<td><code>num_points</code></td>
+</tr>
+<tr>
+<td><code>MULTI_COLOURED_LINES</code></td>
+<td>line segments (pairs of vertices)</td>
+<td><code>positions</code>, <code>colors</code></td>
+<td><code>mvp</code></td>
+<td><code>num_vertices</code></td>
+</tr>
+<tr>
+<td><code>SINGLE_COLOUR_LINES</code></td>
+<td>as above, one colour</td>
+<td><code>positions</code></td>
+<td><code>mvp</code>, <code>colour</code></td>
+<td><code>num_vertices</code></td>
+</tr>
+<tr>
+<td><code>MULTI_COLOURED_TRIANGLES</code></td>
+<td>triangle list</td>
+<td><code>positions</code>, <code>colors</code></td>
+<td><code>mvp</code></td>
+<td><code>num_vertices</code></td>
+</tr>
+<tr>
+<td><code>SINGLE_COLOUR_TRIANGLES</code></td>
+<td>as above, one colour</td>
+<td><code>positions</code></td>
+<td><code>mvp</code>, <code>colour</code></td>
+<td><code>num_vertices</code></td>
+</tr>
+<tr>
+<td><code>TRIANGLE_LIST_MULTI_COLOURED</code></td>
+<td>triangle list (explicit topology)</td>
+<td><code>positions</code>, <code>colors</code></td>
+<td><code>mvp</code></td>
+<td><code>num_vertices</code></td>
+</tr>
+<tr>
+<td><code>TRIANGLE_LIST_SINGLE_COLOUR</code></td>
+<td>as above, one colour</td>
+<td><code>positions</code></td>
+<td><code>mvp</code>, <code>colour</code></td>
+<td><code>num_vertices</code></td>
+</tr>
+<tr>
+<td><code>TRIANGLE_STRIP_MULTI_COLOURED</code></td>
+<td>triangle strip</td>
+<td><code>positions</code>, <code>colors</code></td>
+<td><code>mvp</code></td>
+<td><code>num_vertices</code></td>
+</tr>
+<tr>
+<td><code>TRIANGLE_STRIP_SINGLE_COLOUR</code></td>
+<td>as above, one colour</td>
+<td><code>positions</code></td>
+<td><code>mvp</code>, <code>colour</code></td>
+<td><code>num_vertices</code></td>
+</tr>
+<tr>
+<td><code>MULTI_COLOURED_INSTANCED_GEOMETRY</code></td>
+<td>a mesh drawn once per instance</td>
+<td><code>positions</code>, <code>colours</code>, <code>geometry_data</code></td>
+<td><code>mvp</code>, <code>view_matrix</code>, <code>instance_transform</code></td>
+<td><code>num_instances</code></td>
+</tr>
+<tr>
+<td><code>SINGLE_COLOUR_INSTANCED_GEOMETRY</code></td>
+<td>as above, one colour</td>
+<td><code>positions</code>, <code>geometry_data</code></td>
+<td><code>mvp</code>, <code>view_matrix</code>, <code>colour</code>, <code>instance_transform</code></td>
+<td><code>num_instances</code></td>
+</tr>
+</tbody>
+</table>
+<p>Positions are <code>(N, 3)</code> (lines and triangles also accept <code>(N, 2)</code>);
+colours are <code>(N, 3)</code> RGB in 0–1; the single-colour <code>colour</code> uniform is a
+3-element <code>float32</code> array. All data must be <code>np.float32</code>.</p>
+<h2 id="points">Points</h2>
+<p>Two different point renderers exist:</p>
+<ul>
+<li>The <strong><code>*_POINTS</code></strong> pipelines draw each point as a camera-facing quad,
+  clipped to a circle in the fragment shader. <code>point_size</code> is in <strong>world
+  units</strong>, and the pipeline needs the <code>view_matrix</code> for the billboarding.</li>
+<li>The <strong><code>POINT_LIST_*</code></strong> pipelines use raw <code>point_list</code> topology: always
+  one pixel per point, only <code>mvp</code> (plus <code>colour</code> for the single-colour
+  variant) — the cheapest way to fling a particle cloud at the screen.</li>
+</ul>
+<p>From the demo — ten thousand random points:</p>
+<pre><code class="language-python">rng = np.random.default_rng()
+positions = rng.uniform(-4.0, 4.0, size=(10000, 3)).astype(np.float32)
+colours = rng.random((10000, 3)).astype(np.float32)
+
+pipeline = PipelineFactory.create_pipeline(
+    self.device, PipelineType.MULTI_COLOURED_POINTS
+)
+
+# per frame
+pipeline.set_data(positions, colours)
+pipeline.update_uniforms(
+    mvp=self.mvp_matrix,
+    view_matrix=self.view_matrix,
+    point_size=0.05,          # world units
+)
+pipeline.render(render_pass)
+</code></pre>
+<p>The single-colour variant drops the <code>colours</code> array and takes the colour
+as a uniform instead:</p>
+<pre><code class="language-python">pipeline.set_data(positions)
+pipeline.update_uniforms(
+    mvp=self.mvp_matrix,
+    view_matrix=self.view_matrix,
+    point_size=0.05,
+    colour=np.array([1.0, 1.0, 0.0], dtype=np.float32),  # yellow
+)
+pipeline.render(render_pass)
+</code></pre>
+<h2 id="lines">Lines</h2>
+<p><code>line_list</code> topology: each consecutive <strong>pair</strong> of vertices is one
+segment. The demo feeds it the same random point set (as 2D positions) to
+draw a hairball:</p>
+<pre><code class="language-python">pipeline = PipelineFactory.create_pipeline(
+    self.device, PipelineType.MULTI_COLOURED_LINES
+)
+
+pipeline.set_data(positions, colours)
+pipeline.update_uniforms(mvp=self.mvp_matrix)
+pipeline.render(render_pass)
+</code></pre>
+<p>For <code>SINGLE_COLOUR_LINES</code>, pass <code>colour=</code> to <code>update_uniforms</code> as with
+points.</p>
+<h2 id="triangles-list-and-strip">Triangles — list and strip</h2>
+<p><code>MULTI_COLOURED_TRIANGLES</code> / <code>SINGLE_COLOUR_TRIANGLES</code> draw a triangle
+list (every three vertices make one triangle). The
+<code>TRIANGLE_LIST_*</code> types are the same thing with the topology stated
+explicitly, and <code>TRIANGLE_STRIP_*</code> switches to strip topology, where each
+new vertex after the first two extends the previous triangle — the demo
+uses a strip to build a twisting ribbon from a helix of alternating
+upper/lower vertices.</p>
+<pre><code class="language-python">pipeline = PipelineFactory.create_pipeline(
+    self.device, PipelineType.TRIANGLE_STRIP_MULTI_COLOURED
+)
+
+pipeline.set_data(strip_positions, strip_colours)
+pipeline.update_uniforms(mvp=self.mvp_matrix)
+pipeline.render(render_pass)
+</code></pre>
+<p>Under the hood these are one pipeline class parameterised by topology —
+the triangle (and line) pipelines accept a <code>topology=</code> keyword through
+<code>create_pipeline</code> if you need something the enum doesn't cover.</p>
+<h2 id="instanced-geometry">Instanced geometry</h2>
+<p>The instanced pipelines draw a <strong>mesh once per instance position</strong> — the
+demo renders a 15×15 grid of teapots this way. The mesh comes straight
+from <code>PrimData</code> as interleaved <code>(M, 8)</code> data (position, normal, UV per
+vertex):</p>
+<pre><code class="language-python">from ncca.ngl import PrimData
+
+geometry = PrimData.primitive(&quot;teapot&quot;).reshape(-1, 8)
+
+# one position (and optionally colour) per instance
+instance_positions = ...  # (N, 3) float32
+instance_colours = ...    # (N, 3) float32
+
+pipeline = PipelineFactory.create_pipeline(
+    self.device, PipelineType.MULTI_COLOURED_INSTANCED_GEOMETRY
+)
+
+pipeline.set_data(
+    positions=instance_positions,
+    colours=instance_colours,
+    geometry_data=geometry,
+)
+pipeline.update_uniforms(
+    mvp=self.mvp_matrix,
+    view_matrix=self.view_matrix,
+    instance_transform=np.eye(4, dtype=np.float32),
+)
+pipeline.render(render_pass, num_instances=len(instance_positions))
+</code></pre>
+<p><code>instance_transform</code> is applied to the mesh in every instance — use it to
+scale or orient the base geometry without touching the vertex data. The
+single-colour variant omits <code>colours</code> from <code>set_data</code> and takes
+<code>colour=</code> in <code>update_uniforms</code>.</p>
+<h2 id="putting-it-together-the-demos-frame-loop">Putting it together: the demo's frame loop</h2>
+<p>The demo holds all fourteen pipelines in a list and renders whichever is
+current — its <code>paintWebGPU</code> is a template for any multi-pipeline scene:</p>
+<pre><code class="language-python">def paintWebGPU(self):
+    self.render_text(10, 20, pipeline_name, size=20, colour=QColor(255, 255, 255))
+    encoder = self.device.create_command_encoder()
+    render_pass = self._create_render_pass(encoder)
+    self.update_uniform_buffers()          # rebuild mvp/view numpy matrices
+    self.pipelines[self.current][1](render_pass)   # set_data / uniforms / render
+    render_pass.end()
+    self.device.queue.submit([encoder.finish()])
+</code></pre>
+<p>You can render several pipelines into the <em>same</em> render pass — just call
+each pipeline's <code>render()</code> in turn before <code>render_pass.end()</code>.</p>
+<h2 id="when-the-built-ins-arent-enough">When the built-ins aren't enough</h2>
+<p>The built-in pipelines are deliberately simple: no lighting, no textures.
+For anything beyond flat colour — Lambert/PBR shading, texture mapping,
+per-vertex data of your own — write a WGSL shader and use
+<a href="../custom_pipelines/">a custom pipeline</a>.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../getting_started/" class="btn btn-neutral float-left" title="Getting Started with WebGPU"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../custom_pipelines/" class="btn btn-neutral float-right" title="Custom Pipelines">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../getting_started/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../custom_pipelines/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

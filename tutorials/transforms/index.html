@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>The Transform Class - PyNGL - NCCA Python Graphics Library</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "The Transform Class";
+        var mkdocs_page_input_path = "tutorials/transforms.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> PyNGL - NCCA Python Graphics Library
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../getting_started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../method_names/">Understanding the Method Names</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../vectors/">Vectors</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../matrices/">Matrices</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../quaternions/">Quaternions</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">The Transform Class</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#basic-use">Basic use</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#a-typical-render-loop">A typical render loop</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#rotation-order">Rotation order</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#resetting">Resetting</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#reading-the-current-values">Reading the current values</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#common-mistakes">Common mistakes</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../cameras_and_projection/">Cameras and Projection</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../vector_arrays/">Vector Arrays</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../geometry_maths/">Geometry Maths</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../utility_functions/">Utility Functions</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">OpenGL</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/getting_started/">Getting Started with OpenGL</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/shaders/">Shaders and ShaderLib</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/geometry/">Geometry, Primitives, and VAOs</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">WebGPU</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/getting_started/">Getting Started with WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/builtin_pipelines/">The Built-in Pipelines</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/custom_pipelines/">Custom Pipelines</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../widgets/">Qt Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">QML Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../qml/">Qt Quick Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Math/">Math</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Geometry/">Geometry</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../VAO/">VAO</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Shaders/">Shaders</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Camera/">Camera</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../ImageAndTexture/">Image and Texture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Text/">Text</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../WebGPU/">WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Widgets/">Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../QmlWidgets/">QML Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Misc/">Miscellaneous</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../about/">About</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">PyNGL - NCCA Python Graphics Library</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Tutorials</li>
+      <li class="breadcrumb-item active">The Transform Class</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="the-transform-class-position-rotation-and-scale-in-one-object">The Transform Class — position, rotation, and scale in one object</h1>
+<p>In the <a href="../matrices/">matrices tutorial</a> you learned to place an object with
+<em>scale -&gt; rotate -&gt; translate</em>, written as:</p>
+<pre><code class="language-python">model = Mat4.translate(...) @ rotation @ Mat4.scale(...)
+</code></pre>
+<p>Every object in a scene needs exactly this, so PyNGL bundles it into one
+class: <strong><code>Transform</code></strong>. You give it a position, a rotation, and a scale,
+and it builds the model matrix for you, in the right order, every time.</p>
+<h2 id="basic-use">Basic use</h2>
+<pre><code class="language-python">from ncca.ngl import Transform
+
+tx = Transform()
+tx.set_position(0.0, 5.0, 0.0)     # where the object is
+tx.set_rotation(0.0, 45.0, 0.0)    # Euler angles in DEGREES (x, y, z)
+tx.set_scale(2.0, 2.0, 2.0)        # how big it is
+
+model = tx.matrix()                # the combined Mat4  send this to your shader
+</code></pre>
+<p>Each setter also accepts a <code>Vec3</code> (or a list/tuple) instead of three
+floats:</p>
+<pre><code class="language-python">from ncca.ngl import Vec3
+
+tx.set_position(Vec3(0.0, 5.0, 0.0))
+tx.set_scale([2.0, 2.0, 2.0])
+</code></pre>
+<blockquote>
+<p><strong>Note the naming</strong> (<a href="../method_names/">grammar guide</a>): <code>set_position</code>,
+<code>set_rotation</code>, and <code>set_scale</code> start with the command verb <strong><code>set</code></strong> —
+so, unlike the math classes, a <code>Transform</code> <strong>is</strong> mutable. It is a
+<em>builder</em> for matrices, not a mathematical value. <code>matrix()</code> is a noun:
+it returns a new <code>Mat4</code> and changes nothing.</p>
+</blockquote>
+<h2 id="a-typical-render-loop">A typical render loop</h2>
+<pre><code class="language-python">tx = Transform()
+tx.set_scale(0.5, 0.5, 0.5)
+
+angle = 0.0
+while running:                       # your draw loop
+    angle += 1.0
+    tx.set_rotation(0.0, angle, 0.0)     # spin about y
+    shader.set_uniform(&quot;model&quot;, tx.matrix())
+    draw_the_object()
+</code></pre>
+<p><code>Transform</code> caches its matrix internally and only rebuilds it when one of
+the setters has been called, so calling <code>matrix()</code> every frame is cheap.</p>
+<h2 id="rotation-order">Rotation order</h2>
+<p>Euler rotations are applied one axis at a time, and the <em>order</em> changes the
+result. By default <code>Transform</code> uses <code>"xyz"</code> (x first, then y, then z). You
+can choose another order:</p>
+<pre><code class="language-python">tx.set_order(&quot;zyx&quot;)      # one of: xyz, yzx, zxy, xzy, yxz, zyx
+</code></pre>
+<p>An invalid string raises <code>TransformRotationOrder</code>. If you find yourself
+fighting rotation orders (or hitting gimbal lock), that is your cue to use
+<a href="../quaternions/">quaternions</a> instead.</p>
+<h2 id="resetting">Resetting</h2>
+<pre><code class="language-python">tx.reset()    # position (0,0,0), rotation (0,0,0), scale (1,1,1), order &quot;xyz&quot;
+</code></pre>
+<h2 id="reading-the-current-values">Reading the current values</h2>
+<p>The components are plain attributes — each is a <code>Vec3</code>:</p>
+<pre><code class="language-python">tx.position    # Vec3
+tx.rotation    # Vec3 of Euler angles in degrees
+tx.scale       # Vec3
+</code></pre>
+<h2 id="common-mistakes">Common mistakes</h2>
+<p><strong>Mistake 1 :- rebuilding the ordering by hand.</strong> If you already use
+<code>Transform</code>, don't multiply extra scale/rotate matrices around
+<code>tx.matrix()</code> unless you really mean to add a second transform (e.g. a
+parent, as in the planet-and-moon example in the
+<a href="../matrices/">matrices tutorial</a>).</p>
+<p><strong>Mistake 2 :- radians.</strong> <code>set_rotation</code> takes <strong>degrees</strong>, like everything
+in PyNGL.</p>
+<p><strong>Mistake 3 :- forgetting <code>matrix()</code> is a method.</strong> Write <code>tx.matrix()</code>,
+with parentheses.</p>
+<p><strong>Next:</strong> <a href="../cameras_and_projection/">Cameras and Projection</a> — the view
+and projection matrices that turn your scene into pixels.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../quaternions/" class="btn btn-neutral float-left" title="Quaternions"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../cameras_and_projection/" class="btn btn-neutral float-right" title="Cameras and Projection">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../quaternions/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../cameras_and_projection/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Geometry Maths - PyNGL - NCCA Python Graphics Library</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Geometry Maths";
+        var mkdocs_page_input_path = "tutorials/geometry_maths.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> PyNGL - NCCA Python Graphics Library
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../getting_started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../method_names/">Understanding the Method Names</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../vectors/">Vectors</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../matrices/">Matrices</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../quaternions/">Quaternions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../transforms/">The Transform Class</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../cameras_and_projection/">Cameras and Projection</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../vector_arrays/">Vector Arrays</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Geometry Maths</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#bbox-axis-aligned-bounding-boxes">BBox :- axis-aligned bounding boxes</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#creating-a-bbox">Creating a BBox</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#properties">Properties</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#mutation">Mutation</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#worked-example-point-in-box-and-overlap-tests">Worked example — point-in-box and overlap tests</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#plane-an-infinite-flat-surface">Plane :- an infinite flat surface</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#creating-a-plane">Creating a Plane</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-signed-distance-from-a-plane">The signed distance from a plane</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#worked-example-is-a-sphere-visible">Worked example :- is a sphere visible?</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#beziercurve-smooth-curves-through-control-points">BezierCurve :- smooth curves through control points</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#building-and-evaluating-a-curve">Building and evaluating a curve</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#worked-example-flying-a-camera-along-a-path">Worked example :- flying a camera along a path</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#common-mistakes">Common mistakes</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../utility_functions/">Utility Functions</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">OpenGL</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/getting_started/">Getting Started with OpenGL</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/shaders/">Shaders and ShaderLib</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/geometry/">Geometry, Primitives, and VAOs</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">WebGPU</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/getting_started/">Getting Started with WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/builtin_pipelines/">The Built-in Pipelines</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/custom_pipelines/">Custom Pipelines</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../widgets/">Qt Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">QML Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../qml/">Qt Quick Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Math/">Math</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Geometry/">Geometry</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../VAO/">VAO</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Shaders/">Shaders</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Camera/">Camera</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../ImageAndTexture/">Image and Texture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Text/">Text</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../WebGPU/">WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Widgets/">Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../QmlWidgets/">QML Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Misc/">Miscellaneous</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../about/">About</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">PyNGL - NCCA Python Graphics Library</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Tutorials</li>
+      <li class="breadcrumb-item active">Geometry Maths</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="geometry-classes-bbox-plane-beziercurve">Geometry classes <code>BBox</code>, <code>Plane</code>, <code>BezierCurve</code></h1>
+<p>Three small geometric classes that build on <a href="../vectors/">vectors</a>:
+bounding boxes for collision and culling, planes for tests like "which side
+am I on?", and Bézier curves for smooth paths.</p>
+<hr />
+<h2 id="bbox-axis-aligned-bounding-boxes"><code>BBox</code> :- axis-aligned bounding boxes</h2>
+<p>A <strong>bounding box</strong> is the simplest useful approximation of an object: the
+smallest axis-aligned box the object fits inside. We can use this for what is know as "broad phase" collision detection where we first test the cheap box before (or instead of) the expensive mesh.</p>
+<p>It can be used to quickly test whether a ray (e.g. from a mouse click) intersects with the mesh, without needing to test every vertex.</p>
+<h3 id="creating-a-bbox">Creating a BBox</h3>
+<p>There are two ways to create a <code>BBox</code> depending on how you have the data:</p>
+<pre><code class="language-python">from ncca.ngl import BBox, Vec3
+
+# from a center point and dimensions
+box = BBox(center=Vec3(0.0, 0.0, 0.0), width=2.0, height=2.0, depth=2.0)
+
+# FROM min/max extents (note the from_ classmethod naming)
+box = BBox.from_extents(-1.0, 1.0,    # min_x, max_x
+                        -1.0, 1.0,    # min_y, max_y
+                        -1.0, 1.0)    # min_z, max_z
+</code></pre>
+<h3 id="properties">Properties</h3>
+<pre><code class="language-python">box.center     # Vec3  property, no parentheses
+box.width      # 2.0
+box.height     # 2.0
+box.depth      # 2.0
+
+box.min_x, box.max_x    # extents on each axis
+box.min_y, box.max_y
+box.min_z, box.max_z
+
+box.get_vertex_array()   # the 8 corner Vec3s  handy for drawing the box
+box.get_normal_array()   # the 6 face normals
+</code></pre>
+<h3 id="mutation">Mutation</h3>
+<p><code>center</code>, <code>width</code>, <code>height</code>, and <code>depth</code> are settable properties, and
+<code>set_extents(...)</code> replaces the extents; the corner vertices and normals
+are recalculated for you:</p>
+<pre><code class="language-python">box.center = Vec3(5.0, 0.0, 0.0)      # move the box
+box.width  = 4.0                       # widen it
+box.set_extents(0.0, 1.0, 0.0, 1.0, 0.0, 1.0)
+</code></pre>
+<h3 id="worked-example-point-in-box-and-overlap-tests">Worked example — point-in-box and overlap tests</h3>
+<pre><code class="language-python">def contains(box: BBox, p: Vec3) -&gt; bool:
+    return (box.min_x &lt;= p.x &lt;= box.max_x and
+            box.min_y &lt;= p.y &lt;= box.max_y and
+            box.min_z &lt;= p.z &lt;= box.max_z)
+
+def overlaps(a: BBox, b: BBox) -&gt; bool:
+    return (a.min_x &lt;= b.max_x and a.max_x &gt;= b.min_x and
+            a.min_y &lt;= b.max_y and a.max_y &gt;= b.min_y and
+            a.min_z &lt;= b.max_z and a.max_z &gt;= b.min_z)
+</code></pre>
+<p>These two tests are the backbone of simple collision detection.</p>
+<hr />
+<h2 id="plane-an-infinite-flat-surface"><code>Plane</code> :- an infinite flat surface</h2>
+<p>A <strong>plane</strong> divides space in two. Graphics uses planes everywhere: the six
+faces of a camera's viewing volume (frustum culling), mirrors, floors,
+clipping.</p>
+<h3 id="creating-a-plane">Creating a Plane</h3>
+<pre><code class="language-python">from ncca.ngl import Plane, Vec3
+
+# from three points ON the plane (their winding decides the normal direction)
+p = Plane(Vec3(0.0, 0.0, 0.0), Vec3(1.0, 0.0, 0.0), Vec3(0.0, 0.0, -1.0))
+
+# or from a normal and one point
+p = Plane()
+p.set_normal_point(Vec3(0.0, 1.0, 0.0), Vec3(0.0, 0.0, 0.0))   # the ground plane
+
+# or from the four floats of the plane equation ax + by + cz + d = 0
+p = Plane()
+p.set_floats(0.0, 1.0, 0.0, 0.0)
+</code></pre>
+<pre><code class="language-python">p.normal    # Vec3 — the plane's unit normal (property)
+p.point     # Vec3 — a point on the plane
+p.d         # float — the d of the plane equation
+</code></pre>
+<h3 id="the-signed-distance-from-a-plane">The signed distance from a plane</h3>
+<p><code>distance(point)</code> returns how far a point is from the plane, <strong>with a
+sign</strong>: positive on the side the normal points to, negative on the other
+side, zero on the plane itself.</p>
+<pre><code class="language-python">ground = Plane()
+ground.set_normal_point(Vec3(0.0, 1.0, 0.0), Vec3(0.0, 0.0, 0.0))
+
+ground.distance(Vec3(0.0, 5.0, 0.0))    #  5.0 — above the ground
+ground.distance(Vec3(0.0, -2.0, 0.0))   # -2.0 — below it!
+</code></pre>
+<h3 id="worked-example-is-a-sphere-visible">Worked example :- is a sphere visible?</h3>
+<p>Frustum culling in one line per plane: a sphere is completely outside a
+plane if its center is further than its radius behind it.</p>
+<pre><code class="language-python">def sphere_outside(plane: Plane, center: Vec3, radius: float) -&gt; bool:
+    return plane.distance(center) &lt; -radius
+</code></pre>
+<p>Run that against the six planes of the camera frustum and you can skip
+drawing everything the camera cannot see.</p>
+<hr />
+<h2 id="beziercurve-smooth-curves-through-control-points"><code>BezierCurve</code> :- smooth curves through control points</h2>
+<p>A <strong>Bézier curve</strong> turns a handful of <em>control points</em> into a smooth path
+ for camera moves, animation paths, or modelling curved shapes. The curve
+starts at the first control point, ends at the last, and is <em>pulled
+towards</em> (but does not touch) the ones in between.</p>
+<h3 id="building-and-evaluating-a-curve">Building and evaluating a curve</h3>
+<pre><code class="language-python">from ncca.ngl import BezierCurve, Vec3
+
+curve = BezierCurve()
+curve.add_point(Vec3(0.0, 0.0, 0.0))     # add_point accepts a Vec3...
+curve.add_point(1.0, 2.0, 0.0)           # ...or three floats
+curve.add_point(3.0, 2.0, 0.0)
+curve.add_point(4.0, 0.0, 0.0)
+curve.create_knots()                     # call once after adding all points
+
+mid = curve.get_point_on_curve(0.5)      # Vec3 at the halfway parameter
+print(mid)                               # [2.0, 1.5, 0.0]
+</code></pre>
+<p><code>get_point_on_curve(u)</code> takes a parameter <code>u</code> from <code>0.0</code> (start) to <code>1.0</code>
+(end) and returns the <code>Vec3</code> on the curve at that parameter.</p>
+<h3 id="worked-example-flying-a-camera-along-a-path">Worked example :- flying a camera along a path</h3>
+<pre><code class="language-python">from ncca.ngl import BezierCurve, Vec3, look_at
+
+path = BezierCurve()
+for p in [Vec3(10.0, 2.0, 10.0), Vec3(10.0, 8.0, -10.0),
+          Vec3(-10.0, 8.0, -10.0), Vec3(-10.0, 2.0, 10.0)]:
+    path.add_point(p)
+path.create_knots()
+
+frames = 300
+for frame in range(frames + 1):
+    u = frame / frames
+    eye = path.get_point_on_curve(u)
+    view = look_at(eye, Vec3(0.0, 0.0, 0.0), Vec3(0.0, 1.0, 0.0))
+    # render the scene with this view matrix...
+</code></pre>
+<p>The camera glides smoothly around the scene, always looking at the origin.</p>
+<h2 id="common-mistakes">Common mistakes</h2>
+<p><strong>Mistake 1 — forgetting <code>create_knots()</code>.</strong> The curve cannot be evaluated
+until the knot vector exists. Add all your points, call <code>create_knots()</code>
+once, then evaluate.</p>
+<p><strong>Mistake 2 :- treating <code>distance()</code> as always positive.</strong> It is a <em>signed</em>
+distance :- that sign is the useful part. Use <code>abs()</code> if you only want the
+magnitude.</p>
+<p><strong>Mistake 3 :- expecting the curve to pass through the middle control
+points.</strong> Bézier curves only touch their first and last points; the middle
+ones shape the curve.</p>
+<p><strong>Next:</strong> <a href="../utility_functions/">Utility Functions</a> :- the small helpers
+you will use everywhere.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../vector_arrays/" class="btn btn-neutral float-left" title="Vector Arrays"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../utility_functions/" class="btn btn-neutral float-right" title="Utility Functions">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../vector_arrays/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../utility_functions/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

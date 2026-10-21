@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Vectors - PyNGL - NCCA Python Graphics Library</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Vectors";
+        var mkdocs_page_input_path = "tutorials/vectors.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> PyNGL - NCCA Python Graphics Library
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../getting_started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../method_names/">Understanding the Method Names</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Vectors</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#creating-vectors">Creating vectors</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#reading-and-writing-components">Reading and writing components</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#arithmetic">Arithmetic</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#a-worked-example-moving-a-point">A worked example — moving a point</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#length-and-normalization">Length and normalization</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#a-worked-example-the-direction-from-a-to-b">A worked example — the direction from A to B</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#the-dot-product">The dot product</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#a-worked-example-simple-diffuse-lighting">A worked example :- simple diffuse lighting</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#a-worked-example-is-it-in-front-of-me">A worked example :- is it in front of me?</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#the-cross-product-give-me-a-perpendicular-vector">The cross product :- "give me a perpendicular vector"</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#a-worked-example-the-normal-of-a-triangle">A worked example :- the normal of a triangle</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#reflection-bouncing-off-a-surface">Reflection :- bouncing off a surface</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#a-worked-example-a-bouncing-ball">A worked example — a bouncing ball</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#clamping-and-interpolation">Clamping and interpolation</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#a-worked-example-mixing-between-two-colours">A worked example — mixing between two colours</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#vec4-and-the-w-component">Vec4 and the w component</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#common-mistakes">Common mistakes</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#quick-reference">Quick reference</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../matrices/">Matrices</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../quaternions/">Quaternions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../transforms/">The Transform Class</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../cameras_and_projection/">Cameras and Projection</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../vector_arrays/">Vector Arrays</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../geometry_maths/">Geometry Maths</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../utility_functions/">Utility Functions</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">OpenGL</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/getting_started/">Getting Started with OpenGL</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/shaders/">Shaders and ShaderLib</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/geometry/">Geometry, Primitives, and VAOs</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">WebGPU</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/getting_started/">Getting Started with WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/builtin_pipelines/">The Built-in Pipelines</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/custom_pipelines/">Custom Pipelines</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../widgets/">Qt Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">QML Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../qml/">Qt Quick Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Math/">Math</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Geometry/">Geometry</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../VAO/">VAO</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Shaders/">Shaders</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Camera/">Camera</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../ImageAndTexture/">Image and Texture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Text/">Text</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../WebGPU/">WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Widgets/">Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../QmlWidgets/">QML Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Misc/">Miscellaneous</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../about/">About</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">PyNGL - NCCA Python Graphics Library</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Tutorials</li>
+      <li class="breadcrumb-item active">Vectors</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="vectors-vec2-vec3-vec4">Vectors :- <code>Vec2</code>, <code>Vec3</code>, <code>Vec4</code></h1>
+<p>A <strong>vector</strong> is the most important object in 3D graphics. In PyNGL a vector
+is a small, fixed-size collection of <code>float</code> values:</p>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Components</th>
+<th>Typical uses</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Vec2</code></td>
+<td><code>x, y</code></td>
+<td>texture coordinates, 2D positions, screen positions</td>
+</tr>
+<tr>
+<td><code>Vec3</code></td>
+<td><code>x, y, z</code></td>
+<td>3D positions, directions, normals, colours (r, g, b)</td>
+</tr>
+<tr>
+<td><code>Vec4</code></td>
+<td><code>x, y, z, w</code></td>
+<td>homogeneous positions, colours with alpha (r, g, b, a)</td>
+</tr>
+</tbody>
+</table>
+<p>All three share the same API, so once you know <code>Vec3</code> you know them all.
+This tutorial uses <code>Vec3</code> for most examples.</p>
+<blockquote>
+<p><strong>Before you start:</strong> make sure you have read
+<a href="../method_names/">Understanding the Method Names</a>. The single most
+important fact is that methods ending in <code>-ed</code> return a <strong>new</strong> vector —
+they never change the vector you call them on.</p>
+</blockquote>
+<hr />
+<h2 id="creating-vectors">Creating vectors</h2>
+<pre><code class="language-python">from ncca.ngl import Vec2, Vec3, Vec4
+
+a = Vec3(1.0, 2.0, 3.0)     # positional components
+b = Vec3(y=1.0)             # keywords work too -&gt; (0.0, 1.0, 0.0)
+c = Vec3()                  # default -&gt; (0.0, 0.0, 0.0)
+d = Vec4()                  # default -&gt; (0.0, 0.0, 0.0, 1.0)  note w = 1!
+</code></pre>
+<blockquote>
+<p><strong>Why does <code>Vec4</code> default <code>w</code> to 1.0?</strong> A <code>Vec4</code> usually represents a
+<em>position</em> in homogeneous coordinates, and positions have <code>w = 1</code> so that
+matrix translation affects them. Directions use <code>w = 0</code>. This matters in
+the <a href="../matrices/">matrices tutorial</a>.</p>
+</blockquote>
+<p>You can also build vectors <em>from</em> other types with the <code>from_</code> classmethods,
+and convert <em>to</em> other types with the <code>to_</code> methods:</p>
+<pre><code class="language-python">import numpy as np
+
+v = Vec3.from_list([1.0, 2.0, 3.0])
+w = Vec3.from_numpy(np.array([4.0, 5.0, 6.0]))
+
+v.to_list()    # [1.0, 2.0, 3.0]
+v.to_tuple()   # (1.0, 2.0, 3.0)
+v.to_numpy()   # np.float32 array ready to send to OpenGL / WebGPU
+</code></pre>
+<h3 id="reading-and-writing-components">Reading and writing components</h3>
+<pre><code class="language-python">v = Vec3(1.0, 2.0, 3.0)
+
+v.x            # 1.0 — by name
+v[0]           # 1.0 — by index
+x, y, z = v    # vectors unpack like tuples
+
+v.x = 10.0     # component assignment mutates (like set)
+v.set(1.0, 2.0, 3.0)   # set() replaces ALL components at once
+</code></pre>
+<p>Remember: <code>set()</code> and component assignment are the <strong>only</strong> ways to change
+an existing vector. Everything else returns a new one.</p>
+<hr />
+<h2 id="arithmetic">Arithmetic</h2>
+<p>Vectors support the arithmetic you would expect, and every operation
+returns a <strong>new</strong> vector:</p>
+<pre><code class="language-python">a = Vec3(1.0, 2.0, 3.0)
+b = Vec3(4.0, 5.0, 6.0)
+
+a + b          # [5.0, 7.0, 9.0]   component-wise add
+a - b          # [-3.0, -3.0, -3.0]
+-a             # [-1.0, -2.0, -3.0] negation (the opposite direction)
+a * 2.0        # [2.0, 4.0, 6.0]   scale by a number
+2.0 * a        # same order does not matter for scalars
+a / 2.0        # [0.5, 1.0, 1.5]
+
+a == Vec3(1.0, 2.0, 3.0)   # True  compares component values
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong> <code>*</code> only works with a <em>number</em> (a scalar). You cannot write
+<code>a * b</code> for two vectors — that would be ambiguous (dot product? cross
+product? component-wise?). PyNGL makes you say which one you mean:
+<code>a.dot(b)</code> or <code>a.cross(b)</code>.</p>
+</blockquote>
+<h3 id="a-worked-example-moving-a-point">A worked example — moving a point</h3>
+<p>A very common pattern in animation: move a position along a direction.</p>
+<pre><code class="language-python">position  = Vec3(0.0, 0.0, 0.0)
+velocity  = Vec3(1.0, 2.0, 0.0)
+dt        = 0.1                       # time step in seconds
+
+position = position + velocity * dt   # new position each frame
+print(position)                       # [0.1, 0.2, 0.0]
+</code></pre>
+<hr />
+<h2 id="length-and-normalization">Length and normalization</h2>
+<p>The <strong>length</strong> (or <em>magnitude</em>) of a vector is how long the arrow is:</p>
+<pre><code class="language-python">v = Vec3(0.0, 3.0, 4.0)
+v.length()          # 5.0        (the 3-4-5 triangle!)
+v.length_squared()  # 25.0
+</code></pre>
+<blockquote>
+<p><strong>Why <code>length_squared()</code>?</strong> Computing a length needs a square root, which
+is relatively slow. If you only want to <em>compare</em> distances ("which enemy
+is closest?"), compare the squared lengths instead — the comparison gives
+the same answer and skips the square root.</p>
+</blockquote>
+<p>A <strong>normalized</strong> vector (also called a <em>unit vector</em>) has length 1. Unit
+vectors represent pure <em>direction</em> with no magnitude, and almost every
+lighting and reflection formula requires them:</p>
+<pre><code class="language-python">v = Vec3(0.0, 3.0, 4.0)
+
+u = v.normalized()   # NEW vector [0.0, 0.6, 0.8] with length 1.0
+print(v)             # [0.0, 3.0, 4.0] — v is unchanged!
+</code></pre>
+<h3 id="a-worked-example-the-direction-from-a-to-b">A worked example — the direction from A to B</h3>
+<p>"Which way do I walk from <code>start</code> to <code>target</code>, and how far is it?"</p>
+<pre><code class="language-python">start  = Vec3(1.0, 0.0, 1.0)
+target = Vec3(4.0, 0.0, 5.0)
+
+offset    = target - start        # the arrow from start to target
+distance  = offset.length()       # 5.0
+direction = offset.normalized()   # [0.6, 0.0, 0.8]  unit direction
+
+# walk 2 units towards the target:
+new_position = start + direction * 2.0
+</code></pre>
+<p>This <em>subtract, measure, normalize</em> pattern appears constantly in graphics
+and games — learn it well.</p>
+<hr />
+<h2 id="the-dot-product">The dot product</h2>
+<p><code>a.dot(b)</code> returns a single number that measures the alignment of two
+vectors. For <strong>unit</strong> vectors it is the cosine of the angle between them:</p>
+<table>
+<thead>
+<tr>
+<th><code>a.dot(b)</code> (unit vectors)</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>1.0</code></td>
+<td>same direction (0°)</td>
+</tr>
+<tr>
+<td><code>0.0</code></td>
+<td>perpendicular (90°)</td>
+</tr>
+<tr>
+<td><code>-1.0</code></td>
+<td>opposite directions (180°)</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-python">a = Vec3(1.0, 0.0, 0.0)
+b = Vec3(0.0, 1.0, 0.0)
+
+a.dot(b)    # 0.0   perpendicular
+a.dot(a)    # 1.0   a vector always fully agrees with itself
+a.dot(-a)   # -1.0  opposite
+</code></pre>
+<h3 id="a-worked-example-simple-diffuse-lighting">A worked example :- simple diffuse lighting</h3>
+<p>The heart of the classic <em>Lambert</em> lighting model is one dot product: a
+surface is bright when its normal points at the light.</p>
+<pre><code class="language-python">normal          = Vec3(0.0, 1.0, 0.0)                # surface faces up
+to_light        = Vec3(1.0, 1.0, 0.0).normalized()   # direction to the light
+
+brightness = max(0.0, normal.dot(to_light))
+print(brightness)    # 0.707...  light at 45 degrees gives ~71% brightness
+</code></pre>
+<p>The <code>max(0.0, ...)</code> clamps away negative values  a surface facing <em>away</em>
+from the light is dark, not "negatively lit".</p>
+<h3 id="a-worked-example-is-it-in-front-of-me">A worked example :- is it in front of me?</h3>
+<pre><code class="language-python">forward   = Vec3(0.0, 0.0, -1.0)      # camera looks down -z
+to_object = (obj_pos - cam_pos).normalized()
+
+if forward.dot(to_object) &gt; 0.0:
+    print(&quot;the object is in front of the camera&quot;)
+</code></pre>
+<hr />
+<h2 id="the-cross-product-give-me-a-perpendicular-vector">The cross product :- "give me a perpendicular vector"</h2>
+<p><code>a.cross(b)</code> returns a <strong>new vector perpendicular to both</strong> <code>a</code> and <code>b</code>.
+Its direction follows the right-hand rule, and its length equals the area
+of the parallelogram the two vectors span.</p>
+<pre><code class="language-python">x = Vec3(1.0, 0.0, 0.0)
+y = Vec3(0.0, 1.0, 0.0)
+
+x.cross(y)   # [0.0, 0.0, 1.0]   the z axis
+y.cross(x)   # [0.0, 0.0, -1.0]  order matters! (anti-commutative)
+</code></pre>
+<blockquote>
+<p><strong><code>Vec2</code> is special:</strong> in 2D there is no third axis to point along, so
+<code>Vec2.cross()</code> returns a single <em>number</em> (the signed area) instead of a
+vector. Positive means <code>b</code> is anticlockwise from <code>a</code>.</p>
+</blockquote>
+<h3 id="a-worked-example-the-normal-of-a-triangle">A worked example :- the normal of a triangle</h3>
+<p>Given three corners of a triangle, the cross product of two edges gives the surface normal (used in lighting calculations).</p>
+<pre><code class="language-python">p1 = Vec3(0.0, 0.0, 0.0)
+p2 = Vec3(1.0, 0.0, 0.0)
+p3 = Vec3(0.0, 1.0, 0.0)
+
+edge1  = p2 - p1
+edge2  = p3 - p1
+normal = edge1.cross(edge2).normalized()
+</code></pre>
+<p>PyNGL wraps this exact pattern in a helper —
+<a href="../utility_functions/"><code>calc_normal(p1, p2, p3)</code></a> — but you should
+understand what it does inside.</p>
+<hr />
+<h2 id="reflection-bouncing-off-a-surface">Reflection :- bouncing off a surface</h2>
+<p><code>v.reflected(n)</code> returns the vector <code>v</code> bounced off a surface whose unit
+normal is <code>n</code>. Think of a ball hitting the floor, or light hitting a mirror:</p>
+<pre><code class="language-python">incoming = Vec3(1.0, -1.0, 0.0)      # travelling right and DOWN
+floor_n  = Vec3(0.0, 1.0, 0.0)       # the floor's normal points UP
+
+bounced = incoming.reflected(floor_n)
+print(bounced)                        # [1.0, 1.0, 0.0] — right and UP
+</code></pre>
+<p>The formula inside is <code>v - 2 * v.dot(n) * n</code>. The normal <code>n</code> <strong>must be unit
+length</strong> or the result will be wrong — normalize it first if in doubt.</p>
+<h3 id="a-worked-example-a-bouncing-ball">A worked example — a bouncing ball</h3>
+<pre><code class="language-python">position = Vec3(0.0, 5.0, 0.0)
+velocity = Vec3(2.0, 0.0, 0.0)
+gravity  = Vec3(0.0, -9.8, 0.0)
+floor_n  = Vec3(0.0, 1.0, 0.0)
+dt = 1.0 / 60.0
+
+for frame in range(600):
+    velocity = velocity + gravity * dt
+    position = position + velocity * dt
+    if position.y &lt; 0.0:                          # hit the floor
+        position.y = 0.0
+        velocity = velocity.reflected(floor_n) * 0.8   # bounce, lose 20% energy
+</code></pre>
+<hr />
+<h2 id="clamping-and-interpolation">Clamping and interpolation</h2>
+<p><code>clamped(low, high)</code> limits every component to a range — useful for
+colours, which must stay in <code>[0, 1]</code>:</p>
+<pre><code class="language-python">colour = Vec3(1.4, -0.2, 0.5)
+safe   = colour.clamped(0.0, 1.0)   # [1.0, 0.0, 0.5]
+</code></pre>
+<p><code>lerp(other, t)</code> (<strong>l</strong>inear int<strong>erp</strong>olation) blends from this vector to
+another. <code>t = 0</code> gives the start, <code>t = 1</code> gives the end, <code>t = 0.5</code> gives
+the midpoint:</p>
+<pre><code class="language-python">start = Vec3(0.0, 0.0, 0.0)
+end   = Vec3(10.0, 0.0, 0.0)
+
+start.lerp(end, 0.25)   # [2.5, 0.0, 0.0] — a quarter of the way there
+</code></pre>
+<h3 id="a-worked-example-mixing-between-two-colours">A worked example — mixing between two colours</h3>
+<pre><code class="language-python">red  = Vec3(1.0, 0.0, 0.0)
+blue = Vec3(0.0, 0.0, 1.0)
+
+for frame in range(101):
+    t = frame / 100.0
+    colour = red.lerp(blue, t)   # smoothly red -&gt; purple -&gt; blue
+</code></pre>
+<hr />
+<h2 id="vec4-and-the-w-component"><code>Vec4</code> and the <code>w</code> component</h2>
+<p><code>Vec4</code> adds a fourth component, <code>w</code>. In graphics it has two main jobs:</p>
+<p><strong>1. Homogeneous coordinates.</strong> A <code>Mat4</code> can only translate a point if the
+point has <code>w = 1</code>:</p>
+<pre><code class="language-python">point     = Vec4(2.0, 3.0, 4.0)        # w defaults to 1.0 -&gt; a POSITION
+direction = Vec4(0.0, 1.0, 0.0, 0.0)   # w = 0.0           -&gt; a DIRECTION
+</code></pre>
+<p>When multiplied by a <code>Mat4</code>, the position is affected by translation but the direction is not — which is exactly right: you can move a <em>point</em>, but "up" is still "up" no matter where you stand.</p>
+<p><strong>2. RGBA colours.</strong> <code>Vec4(r, g, b, a)</code> and here the default <code>w = 1.0</code> also makes sense: fully opaque.</p>
+<hr />
+<h2 id="common-mistakes">Common mistakes</h2>
+<p><strong>Mistake 1 :- forgetting to keep the result of an <code>-ed</code> method.</strong></p>
+<pre><code class="language-python">v.normalized()          #  result thrown away, v unchanged
+v = v.normalized()      # 
+</code></pre>
+<p><strong>Mistake 2 :- normalizing the zero vector.</strong></p>
+<pre><code class="language-python">Vec3(0.0, 0.0, 0.0).normalized()   # ❌ length is 0  you cannot divide by it
+</code></pre>
+<p>Guard with <code>if v.length_squared() &gt; 0.0:</code> when the input might be zero.</p>
+<p><strong>Mistake 3 :- using <code>*</code> between two vectors.</strong></p>
+<pre><code class="language-python">a * b        #  ValueError — * is scalar-only
+a.dot(b)     #  if you wanted the dot product
+a.cross(b)   #  if you wanted the cross product
+</code></pre>
+<p><strong>Mistake 4 :- comparing distances with <code>length()</code> in a loop.</strong></p>
+<pre><code class="language-python">if (a - b).length() &lt; (a - c).length():          # works, but slow (2 sqrts)
+if (a - b).length_squared() &lt; (a - c).length_squared():   #  same answer, faster
+</code></pre>
+<p><strong>Mistake 5 :- reflecting off an unnormalized normal.</strong></p>
+<pre><code class="language-python">v.reflected(Vec3(0.0, 2.0, 0.0))                 #  normal has length 2 wrong answer
+v.reflected(Vec3(0.0, 2.0, 0.0).normalized())    # 
+</code></pre>
+<hr />
+<h2 id="quick-reference">Quick reference</h2>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Code</th>
+<th>Returns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>add / subtract</td>
+<td><code>a + b</code>, <code>a - b</code></td>
+<td>new vector</td>
+</tr>
+<tr>
+<td>scale</td>
+<td><code>a * 2.0</code>, <code>a / 2.0</code></td>
+<td>new vector</td>
+</tr>
+<tr>
+<td>negate</td>
+<td><code>-a</code></td>
+<td>new vector</td>
+</tr>
+<tr>
+<td>length</td>
+<td><code>a.length()</code>, <code>a.length_squared()</code></td>
+<td><code>float</code></td>
+</tr>
+<tr>
+<td>unit vector</td>
+<td><code>a.normalized()</code></td>
+<td>new vector</td>
+</tr>
+<tr>
+<td>alignment</td>
+<td><code>a.dot(b)</code></td>
+<td><code>float</code></td>
+</tr>
+<tr>
+<td>perpendicular</td>
+<td><code>a.cross(b)</code></td>
+<td>new vector (<code>float</code> for <code>Vec2</code>)</td>
+</tr>
+<tr>
+<td>bounce</td>
+<td><code>a.reflected(n)</code></td>
+<td>new vector</td>
+</tr>
+<tr>
+<td>limit range</td>
+<td><code>a.clamped(low, high)</code></td>
+<td>new vector</td>
+</tr>
+<tr>
+<td>blend</td>
+<td><code>a.lerp(b, t)</code></td>
+<td>new vector</td>
+</tr>
+<tr>
+<td>copy</td>
+<td><code>a.copy()</code></td>
+<td>new vector</td>
+</tr>
+<tr>
+<td>mutate</td>
+<td><code>a.set(x, y, z)</code>, <code>a.x = 1.0</code></td>
+<td>— (changes <code>a</code>)</td>
+</tr>
+<tr>
+<td>convert</td>
+<td><code>to_list/tuple/numpy</code>, <code>from_list/numpy</code></td>
+<td>conversions</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Next:</strong> <a href="../matrices/">Matrices</a> — transforming vectors with rotation,
+scale, and translation.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../method_names/" class="btn btn-neutral float-left" title="Understanding the Method Names"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../matrices/" class="btn btn-neutral float-right" title="Matrices">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../method_names/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../matrices/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

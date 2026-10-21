@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Quaternions - PyNGL - NCCA Python Graphics Library</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Quaternions";
+        var mkdocs_page_input_path = "tutorials/quaternions.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> PyNGL - NCCA Python Graphics Library
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../getting_started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../method_names/">Understanding the Method Names</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../vectors/">Vectors</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../matrices/">Matrices</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Quaternions</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#creating-quaternions">Creating quaternions</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#rotating-a-vector">Rotating a vector</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#combining-rotations-with">Combining rotations with @</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#slerp-the-reason-quaternions-exist">slerp — the reason quaternions exist</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#worked-example-turning-a-character-to-face-a-new-direction">Worked example — turning a character to face a new direction</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#conjugate-and-inverse-undoing-a-rotation">Conjugate and inverse — undoing a rotation</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#other-operations">Other operations</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#common-mistakes">Common mistakes</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#quick-reference">Quick reference</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../transforms/">The Transform Class</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../cameras_and_projection/">Cameras and Projection</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../vector_arrays/">Vector Arrays</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../geometry_maths/">Geometry Maths</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../utility_functions/">Utility Functions</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">OpenGL</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/getting_started/">Getting Started with OpenGL</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/shaders/">Shaders and ShaderLib</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/geometry/">Geometry, Primitives, and VAOs</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">WebGPU</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/getting_started/">Getting Started with WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/builtin_pipelines/">The Built-in Pipelines</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/custom_pipelines/">Custom Pipelines</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../widgets/">Qt Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">QML Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../qml/">Qt Quick Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Math/">Math</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Geometry/">Geometry</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../VAO/">VAO</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Shaders/">Shaders</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Camera/">Camera</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../ImageAndTexture/">Image and Texture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Text/">Text</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../WebGPU/">WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Widgets/">Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../QmlWidgets/">QML Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Misc/">Miscellaneous</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../about/">About</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">PyNGL - NCCA Python Graphics Library</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Tutorials</li>
+      <li class="breadcrumb-item active">Quaternions</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="quaternions">Quaternions</h1>
+<p>A <strong>quaternion</strong> is a four-number object <code>(s, x, y, z)</code> that represents a
+3D rotation. Compared to rotation matrices and Euler angles, quaternions:</p>
+<ul>
+<li><strong>interpolate beautifully</strong>  <code>slerp</code> gives perfectly smooth rotation
+  between two orientations, which is why animation systems store rotations
+  as quaternions.</li>
+<li><strong>never suffer gimbal lock</strong>  the "stuck axis" problem that Euler angles
+  (separate x/y/z rotations) run into.</li>
+<li>are <strong>compact</strong>  4 floats instead of a matrix's 9 or 16.</li>
+</ul>
+<p>You don't need to understand the four numbers themselves (they come from
+the mathematics of complex numbers extended to 4D). You only need the
+recipes on this page.</p>
+<blockquote>
+<p><strong>Naming reminder</strong> (<a href="../method_names/">grammar guide</a>): <code>normalized()</code>
+returns a <strong>new</strong> quaternion; <code>conjugate()</code> and <code>inverse()</code> are nouns
+naming the new object they return; only <code>set()</code> mutates.</p>
+</blockquote>
+<hr />
+<h2 id="creating-quaternions">Creating quaternions</h2>
+<p>It is best to never type the four numbers by hand, rather build quaternions <strong>from</strong> something
+meaningful:</p>
+<pre><code class="language-python">from ncca.ngl import Quaternion, Vec3
+
+# the identity quaternion: &quot;no rotation&quot;
+q = Quaternion()                 # (s=1, x=0, y=0, z=0)
+
+# THE way to make a rotation: an axis and an angle (in degrees)
+q = Quaternion.from_axis_angle(Vec3(0.0, 1.0, 0.0), 90.0)   # 90° about y
+
+# from an existing rotation matrix
+from ncca.ngl import Mat4
+q = Quaternion.from_mat4(Mat4.rotate_y(90.0))
+</code></pre>
+<p>And convert back to a matrix when the GPU needs one:</p>
+<pre><code class="language-python">m = q.to_mat4()      # Quaternion -&gt; Mat4, ready to combine with @ and upload
+</code></pre>
+<p><code>from_list</code> / <code>from_numpy</code> / <code>to_list</code> / <code>to_numpy</code> / <code>to_tuple</code> / <code>copy</code>
+work exactly as they do on vectors. Components are accessible as <code>q.s</code>,
+<code>q.x</code>, <code>q.y</code>, <code>q.z</code> or by index.</p>
+<hr />
+<h2 id="rotating-a-vector">Rotating a vector</h2>
+<p>This is the one deliberate exception to PyNGL's "<code>*</code> is scalar-only" rule:
+<strong><code>Quaternion * Vec3</code> rotates the vector</strong> and returns a new <code>Vec3</code>.</p>
+<pre><code class="language-python">from ncca.ngl import Quaternion, Vec3
+
+q = Quaternion.from_axis_angle(Vec3(0.0, 1.0, 0.0), 90.0)
+
+v = Vec3(1.0, 0.0, 0.0)
+rotated = q * v
+print(rotated)       # [0.0, 0.0, -1.0]  x axis swung 90° about y onto -z
+</code></pre>
+<p>(Right-hand rule: point your right thumb along +y; your fingers curl from
++x towards −z.)</p>
+<hr />
+<h2 id="combining-rotations-with">Combining rotations with <code>@</code></h2>
+<p>Just like matrices, quaternions combine with <code>@</code>, and the combination reads
+<strong>right to left</strong> — the right-hand rotation is applied first:</p>
+<pre><code class="language-python">yaw   = Quaternion.from_axis_angle(Vec3(0.0, 1.0, 0.0), 45.0)
+pitch = Quaternion.from_axis_angle(Vec3(1.0, 0.0, 0.0), 30.0)
+
+look = yaw @ pitch     # pitch first, then yaw
+</code></pre>
+<blockquote>
+<p><strong>Why <code>@</code> and not <code>*</code>?</strong> The quaternion product <em>is</em> a linear-algebra
+product, so it uses the same operator as matrix multiplication. Writing
+<code>q1 * q2</code> raises a <code>TypeError</code> telling you to use <code>@</code>  the library keeps
+<code>*</code> for "scale by a number" and the one special <code>Quaternion * Vec3</code> case.</p>
+</blockquote>
+<p>After combining many rotations, floating-point error slowly makes the
+quaternion drift away from unit length. Re-normalize occasionally:</p>
+<pre><code class="language-python">q = q.normalized()     # a new, exactly-unit-length quaternion
+</code></pre>
+<hr />
+<h2 id="slerp-the-reason-quaternions-exist"><code>slerp</code> — the reason quaternions exist</h2>
+<p><strong>S</strong>pherical <strong>l</strong>inear int<strong>erp</strong>olation blends smoothly from one
+orientation to another at constant angular speed. This is <em>the</em> tool for
+animating rotation:</p>
+<pre><code class="language-python">from ncca.ngl import Quaternion, Vec3
+
+start = Quaternion()                                             # no rotation
+end   = Quaternion.from_axis_angle(Vec3(0.0, 1.0, 0.0), 90.0)   # 90° about y
+
+halfway = start.slerp(end, 0.5)      # exactly 45° about y
+</code></pre>
+<h3 id="worked-example-turning-a-character-to-face-a-new-direction">Worked example — turning a character to face a new direction</h3>
+<pre><code class="language-python">frames = 60
+start  = Quaternion.from_axis_angle(Vec3(0.0, 1.0, 0.0), 0.0)
+end    = Quaternion.from_axis_angle(Vec3(0.0, 1.0, 0.0), 180.0)
+
+for frame in range(frames + 1):
+    t = frame / frames                    # 0.0 -&gt; 1.0
+    q = start.slerp(end, t)
+    model = q.to_mat4()                   # use as the model's rotation
+</code></pre>
+<p>Why not just <code>lerp</code> the Euler angles? For a single-axis turn it happens to
+work, but between two arbitrary 3D orientations, interpolating angles gives
+wobbling, speed changes, and can hit gimbal lock. <code>slerp</code> takes the
+shortest arc at constant speed, always.</p>
+<hr />
+<h2 id="conjugate-and-inverse-undoing-a-rotation">Conjugate and inverse — undoing a rotation</h2>
+<pre><code class="language-python">q = Quaternion.from_axis_angle(Vec3(0.0, 1.0, 0.0), 90.0)
+
+back = q.inverse()       # the rotation that undoes q
+conj = q.conjugate()     # flips the axis: (s, -x, -y, -z)
+</code></pre>
+<p>For a <strong>unit</strong> quaternion (which every rotation should be), the conjugate
+<em>is</em> the inverse, same idea as "for a pure rotation matrix, the transpose
+is the inverse", and just as cheap.</p>
+<pre><code class="language-python">v = Vec3(1.0, 0.0, 0.0)
+w = q.inverse() * (q * v)     # rotate, then un-rotate
+print(w)                      # [1.0, 0.0, 0.0] (within float precision)
+</code></pre>
+<hr />
+<h2 id="other-operations">Other operations</h2>
+<p>Quaternions also support <code>+</code>, <code>-</code>, unary <code>-</code>, scalar <code>*</code> and <code>/</code>, <code>dot</code>,
+<code>length</code> / <code>length_squared</code>, <code>==</code>, and iteration — the same value-like
+behaviour as vectors. You will rarely need the arithmetic ones directly
+(slerp uses them internally), but <code>dot</code> has a handy meaning:</p>
+<pre><code class="language-python">q1.dot(q2)    # close to 1.0 (or -1.0) -&gt; the two orientations are similar
+</code></pre>
+<hr />
+<h2 id="common-mistakes">Common mistakes</h2>
+<p><strong>Mistake 1 :- using <code>*</code> for the quaternion product.</strong></p>
+<pre><code class="language-python">q1 * q2      # wrong :- TypeError — the message tells you what to do
+q1 @ q2      # Correct
+</code></pre>
+<p><strong>Mistake 2 :- forgetting angles are degrees.</strong></p>
+<pre><code class="language-python">Quaternion.from_axis_angle(axis, math.pi / 2)   # wrong that's 1.57 DEGREES
+Quaternion.from_axis_angle(axis, 90.0)          # 
+</code></pre>
+<p><strong>Mistake 3 :- a non-unit axis.</strong> <code>from_axis_angle</code> expects a direction —
+keep the axis normalized:</p>
+<pre><code class="language-python">Quaternion.from_axis_angle(Vec3(0.0, 1.0, 0.0), 90.0)          #  unit axis
+Quaternion.from_axis_angle(Vec3(1.0, 1.0, 0.0).normalized(), 90.0)  # 
+</code></pre>
+<p><strong>Mistake 4 :- expecting <code>normalized()</code> to mutate.</strong> As everywhere in
+PyNGL: assign the result — <code>q = q.normalized()</code>.</p>
+<hr />
+<h2 id="quick-reference">Quick reference</h2>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Code</th>
+<th>Returns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>no rotation</td>
+<td><code>Quaternion()</code></td>
+<td>identity quaternion</td>
+</tr>
+<tr>
+<td>axis + angle</td>
+<td><code>Quaternion.from_axis_angle(axis, deg)</code></td>
+<td>new quaternion</td>
+</tr>
+<tr>
+<td>from / to matrix</td>
+<td><code>Quaternion.from_mat4(m)</code>, <code>q.to_mat4()</code></td>
+<td>conversions</td>
+</tr>
+<tr>
+<td>rotate a vector</td>
+<td><code>q * v</code></td>
+<td>new <code>Vec3</code></td>
+</tr>
+<tr>
+<td>combine</td>
+<td><code>q1 @ q2</code> (right one first)</td>
+<td>new quaternion</td>
+</tr>
+<tr>
+<td>blend</td>
+<td><code>q1.slerp(q2, t)</code></td>
+<td>new quaternion</td>
+</tr>
+<tr>
+<td>undo</td>
+<td><code>q.inverse()</code>, <code>q.conjugate()</code></td>
+<td>new quaternion</td>
+</tr>
+<tr>
+<td>unit length</td>
+<td><code>q.normalized()</code></td>
+<td>new quaternion</td>
+</tr>
+<tr>
+<td>similarity</td>
+<td><code>q1.dot(q2)</code></td>
+<td><code>float</code></td>
+</tr>
+<tr>
+<td>mutate</td>
+<td><code>q.set(s, x, y, z)</code></td>
+<td>— (changes <code>q</code>)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Next:</strong> <a href="../transforms/">The Transform Class</a> — position, rotation, and
+scale bundled into one object.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../matrices/" class="btn btn-neutral float-left" title="Matrices"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../transforms/" class="btn btn-neutral float-right" title="The Transform Class">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../matrices/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../transforms/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

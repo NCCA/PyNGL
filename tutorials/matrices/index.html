@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Matrices - PyNGL - NCCA Python Graphics Library</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Matrices";
+        var mkdocs_page_input_path = "tutorials/matrices.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> PyNGL - NCCA Python Graphics Library
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../getting_started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../method_names/">Understanding the Method Names</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../vectors/">Vectors</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Matrices</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#creating-matrices">Creating matrices</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#the-identity-matrix">The identity matrix</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#pyngl-uses-row-vector-convention">PyNGL uses row-vector convention</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#points-vs-directions-why-w-matters">Points vs directions — why w matters</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#combining-transforms-with">Combining transforms with @</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#order-matters">Order matters!</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#inverse-transpose-determinant">Inverse, transpose, determinant</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#the-normal-matrix">The normal matrix</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#element-access">Element access</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#worked-example-a-planet-with-a-moon">Worked example :- a planet with a moon</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#common-mistakes">Common mistakes</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#quick-reference">Quick reference</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../quaternions/">Quaternions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../transforms/">The Transform Class</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../cameras_and_projection/">Cameras and Projection</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../vector_arrays/">Vector Arrays</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../geometry_maths/">Geometry Maths</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../utility_functions/">Utility Functions</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">OpenGL</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/getting_started/">Getting Started with OpenGL</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/shaders/">Shaders and ShaderLib</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../opengl/geometry/">Geometry, Primitives, and VAOs</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">WebGPU</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/getting_started/">Getting Started with WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/builtin_pipelines/">The Built-in Pipelines</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/custom_pipelines/">Custom Pipelines</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../widgets/">Qt Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">QML Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../qml/">Qt Quick Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Math/">Math</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Geometry/">Geometry</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../VAO/">VAO</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Shaders/">Shaders</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Camera/">Camera</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../ImageAndTexture/">Image and Texture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Text/">Text</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../WebGPU/">WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Widgets/">Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../QmlWidgets/">QML Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Misc/">Miscellaneous</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../about/">About</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">PyNGL - NCCA Python Graphics Library</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Tutorials</li>
+      <li class="breadcrumb-item active">Matrices</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="matrices-mat2-mat3-mat4">Matrices :- <code>Mat2</code>, <code>Mat3</code>, <code>Mat4</code></h1>
+<p>A <strong>matrix</strong> is a grid of numbers that <em>transforms</em> vectors — it can rotate,
+scale, and (for <code>Mat4</code>) translate them. Matrices are how everything in a 3D
+scene gets positioned, oriented, and finally projected onto your screen.</p>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Size</th>
+<th>Typical uses</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Mat2</code></td>
+<td>2×2</td>
+<td>2D rotation/scale</td>
+</tr>
+<tr>
+<td><code>Mat3</code></td>
+<td>3×3</td>
+<td>3D rotation/scale, normal matrices</td>
+</tr>
+<tr>
+<td><code>Mat4</code></td>
+<td>4×4</td>
+<td>full 3D transforms <strong>including translation</strong>, cameras, projection</td>
+</tr>
+</tbody>
+</table>
+<p>All three share the same core API <code>Mat4</code> is the one you will use most.</p>
+<blockquote>
+<p><strong>Before you start:</strong> read <a href="../vectors/">Vectors</a> first, and remember the
+<a href="../method_names/">naming rule</a>: <code>transposed()</code> returns a <strong>new</strong> matrix,
+<code>inverse()</code> and <code>determinant()</code> are nouns naming what they return, and no
+method changes the matrix you call it on.</p>
+</blockquote>
+<hr />
+<h2 id="creating-matrices">Creating matrices</h2>
+<p>Matrices are usually built with <strong>named classmethods</strong>, not by typing 16
+numbers:</p>
+<pre><code class="language-python">from ncca.ngl import Mat3, Mat4
+
+i = Mat4()                      # identity 
+i = Mat4.identity()             # the same, spelled explicitly
+z = Mat4.zero()                 # all zeros (rarely what you want!)
+
+r = Mat4.rotate_x(45.0)         # rotate 45 DEGREES about the x axis
+r = Mat4.rotate_y(90.0)         # ... about y
+r = Mat4.rotate_z(30.0)         # ... about z
+s = Mat4.scale(2.0, 2.0, 2.0)   # uniform scale ×2
+t = Mat4.translate(1.0, 2.0, 3.0)   # move by (1, 2, 3) — Mat4 only!
+</code></pre>
+<blockquote>
+<p><strong>Angles are in degrees</strong> everywhere in PyNGL.</p>
+</blockquote>
+<p>And of course <code>from_list</code> / <code>from_numpy</code> / <code>to_numpy</code> conversions exist,
+just like vectors:</p>
+<pre><code class="language-python">m = Mat4.from_list([1.0, 0.0, 0.0, 0.0,
+                    0.0, 1.0, 0.0, 0.0,
+                    0.0, 0.0, 1.0, 0.0,
+                    0.0, 0.0, 0.0, 1.0])
+m.to_numpy()     # np.float32 4×4 array ready for glUniformMatrix4fv 
+</code></pre>
+<p>You can also convert between sizes: <code>Mat3.from_mat4(m)</code> keeps the top-left
+3×3 (the rotation/scale part, dropping translation) and <code>Mat4.from_mat3(m)</code>
+embeds a 3×3 into a 4×4.</p>
+<h3 id="the-identity-matrix">The identity matrix</h3>
+<p><code>Mat4()</code> is the <em>identity</em>: transforming a vector by it changes nothing,
+just like multiplying a number by 1. It is the natural starting point when
+you build up a transform.</p>
+<hr />
+<h2 id="pyngl-uses-row-vector-convention">PyNGL uses row-vector convention</h2>
+<p>This is the single most important thing to learn on this page. In PyNGL
+(matching the C++ NGL and libraries like DirectX):</p>
+<ul>
+<li>Vectors are <strong>rows</strong>, and you transform a point by writing the point
+  <strong>first</strong>: <code>new_point = point @ matrix</code>.</li>
+<li>The translation lives in the <strong>bottom row</strong> of a <code>Mat4</code>.</li>
+</ul>
+<pre><code class="language-python">from ncca.ngl import Mat4, Vec4
+
+print(Mat4.translate(1.0, 2.0, 3.0))
+# [[1.0, 0.0, 0.0, 0.0]
+#  [0.0, 1.0, 0.0, 0.0]
+#  [0.0, 0.0, 1.0, 0.0]
+#  [1.0, 2.0, 3.0, 1.0]]   &lt;- translation in the bottom row
+
+p = Vec4(0.0, 0.0, 0.0)          # a point at the origin (w defaults to 1)
+p2 = p @ Mat4.translate(1.0, 2.0, 3.0)
+print(p2)                        # [1.0, 2.0, 3.0, 1.0]
+</code></pre>
+<p>If you have used GLM or written OpenGL maths by hand you may know the
+<em>column-vector</em> convention (<code>matrix @ point</code>, translation in the last
+column). PyNGL's matrices are the transpose of that layout. Don't mix the
+two conventions in your head — in PyNGL, <strong>the point goes on the left</strong>.</p>
+<h3 id="points-vs-directions-why-w-matters">Points vs directions — why <code>w</code> matters</h3>
+<pre><code class="language-python">from ncca.ngl import Mat4, Vec4
+
+m = Mat4.translate(5.0, 0.0, 0.0)
+
+point     = Vec4(1.0, 0.0, 0.0, 1.0)   # w = 1 -&gt; a position
+direction = Vec4(1.0, 0.0, 0.0, 0.0)   # w = 0 -&gt; a direction
+
+point @ m       # [6.0, 0.0, 0.0, 1.0]   moved
+direction @ m   # [1.0, 0.0, 0.0, 0.0]   NOT moved (directions can't move)
+</code></pre>
+<p><code>Vec3 @ Mat3</code> works the same way for pure rotation/scale:</p>
+<pre><code class="language-python">from ncca.ngl import Mat3, Vec3
+
+up      = Vec3(0.0, 1.0, 0.0)
+rotated = up @ Mat3.rotate_x(90.0)   # [0.0, 0.0, 1.0]  y axis rotated onto z
+</code></pre>
+<hr />
+<h2 id="combining-transforms-with">Combining transforms with <code>@</code></h2>
+<p>Real transforms are built by <em>combining</em> simple ones. <code>@</code> multiplies two
+matrices into one matrix that does both:</p>
+<pre><code class="language-python">model = Mat4.translate(0.0, 5.0, 0.0) @ Mat4.rotate_z(90.0) @ Mat4.scale(2.0, 2.0, 2.0)
+</code></pre>
+<p><strong>Read the combination right to left</strong>: the matrix <em>nearest the end</em> is
+applied to the object <strong>first</strong>. The line above means:</p>
+<ol>
+<li><strong>scale</strong> the object ×2, <em>then</em></li>
+<li><strong>rotate</strong> it 90° about z, <em>then</em></li>
+<li><strong>translate</strong> it up by 5.</li>
+</ol>
+<p>This <em>scale → rotate → translate</em> order is the standard way to place an
+object in a scene, and it is exactly what the
+<a href="../transforms/"><code>Transform</code> class</a> does for you.</p>
+<h3 id="order-matters">Order matters!</h3>
+<p>Matrix multiplication is <strong>not</strong> commutative — <code>a @ b</code> and <code>b @ a</code> are
+different transforms:</p>
+<pre><code class="language-python">from ncca.ngl import Mat4, Vec4
+
+t = Mat4.translate(1.0, 0.0, 0.0)
+r = Mat4.rotate_z(90.0)
+p = Vec4(0.0, 0.0, 0.0)      # the origin, w = 1
+
+p @ (t @ r)   # [1.0, 0.0, 0.0, 1.0] — rotate first (spins in place), then move
+p @ (r @ t)   # [0.0, 1.0, 0.0, 1.0] — move first, then rotate about the origin
+</code></pre>
+<p>Think about a real object: "spin on the spot, then walk forward" ends
+somewhere completely different from "walk forward, then orbit the origin".</p>
+<blockquote>
+<p><strong>Tip — build the matrix first, then apply it.</strong> Always combine your
+matrices into one and then transform points with it
+(<code>p @ (t @ r)</code>), rather than chaining points through matrices one at a
+time. One combined matrix is also far cheaper when you have thousands of
+vertices.</p>
+</blockquote>
+<hr />
+<h2 id="inverse-transpose-determinant">Inverse, transpose, determinant</h2>
+<pre><code class="language-python">m = Mat4.rotate_x(45.0) @ Mat4.translate(0.0, 2.0, 0.0)
+
+inv  = m.inverse()       # the transform that UNDOES m (a new Mat4)
+flip = m.transposed()    # rows and columns swapped (a new Mat4)
+det  = m.determinant()   # a single float
+</code></pre>
+<ul>
+<li><strong><code>inverse()</code></strong> :- if <code>m</code> moves an object into place, <code>m.inverse()</code> moves
+  it back: <code>(p @ m) @ m.inverse() == p</code>. Cameras are the classic use: the
+  <em>view matrix</em> is the inverse of the camera's own transform.</li>
+<li><strong><code>transposed()</code></strong> :- swaps rows and columns. For a <strong>pure rotation</strong>
+  matrix the transpose <em>is</em> the inverse, which is much cheaper to compute.</li>
+<li><strong><code>determinant()</code></strong> :- a single number describing how the matrix changes
+  volume. <code>1.0</code> means volume is preserved (pure rotation); <code>0.0</code> means the
+  matrix is <em>singular</em> :- it flattens space and <strong>has no inverse</strong>.</li>
+</ul>
+<pre><code class="language-python">Mat4.rotate_z(90.0).determinant()    # 1.0 — rotations preserve volume
+Mat4.scale(2.0, 2.0, 2.0).determinant()  # 8.0 — doubles each axis -&gt; 8x volume
+Mat4.scale(1.0, 1.0, 0.0).determinant()  # 0.0 — flattens z -&gt; NOT invertible
+</code></pre>
+<p>Calling <code>inverse()</code> on a singular matrix raises <code>MatrixError</code>.</p>
+<h3 id="the-normal-matrix">The normal matrix</h3>
+<p>If a model matrix contains <strong>non-uniform scale</strong>, you
+cannot transform surface <em>normals</em> with it as they come out skewed. The fix
+is to use the <em>inverse transpose</em> of the 3×3 part:</p>
+<pre><code class="language-python">from ncca.ngl import Mat3, Mat4
+
+model = Mat4.rotate_y(30.0) @ Mat4.scale(1.0, 2.0, 1.0)
+normal_matrix = Mat3.from_mat4(model).inverse().transposed()
+# transform normals with:  n @ normal_matrix, then renormalize
+</code></pre>
+<hr />
+<h2 id="element-access">Element access</h2>
+<p>Matrices support two-level indexing (row, then column) and iteration:</p>
+<pre><code class="language-python">m = Mat4.translate(1.0, 2.0, 3.0)
+
+m[3]        # the bottom row as an array: [1.0, 2.0, 3.0, 1.0]
+m[3][0]     # 1.0 — the x translation
+
+m[3][0] = 5.0   # element assignment mutates the matrix (like set)
+</code></pre>
+<p>As with vectors, element assignment is the only mutation. As every named method returns a new matrix.</p>
+<hr />
+<h2 id="worked-example-a-planet-with-a-moon">Worked example :- a planet with a moon</h2>
+<p>Hierarchical transforms: the moon's position depends on the planet's.</p>
+<pre><code class="language-python">from ncca.ngl import Mat4, Vec4
+
+def planet_and_moon(t: float) -&gt; tuple[Vec4, Vec4]:
+    # the planet spins about the origin and sits 10 units out
+    planet = Mat4.translate(10.0, 0.0, 0.0) @ Mat4.rotate_y(t * 10.0)
+
+    # the moon orbits the PLANET: its own small orbit, then the planet's transform
+    moon = planet @ Mat4.translate(2.0, 0.0, 0.0) @ Mat4.rotate_y(t * 50.0)
+
+    origin = Vec4(0.0, 0.0, 0.0)      # w = 1
+    return origin @ planet, origin @ moon
+</code></pre>
+<p>Reading <code>moon</code> right to left: rotate in a fast small orbit, push out 2
+units, <em>then</em> apply everything the planet does. Parent transforms always go
+on the <strong>left</strong> of the child's own transform.</p>
+<hr />
+<h2 id="common-mistakes">Common mistakes</h2>
+<p><strong>Mistake 1 writing the point on the wrong side.</strong></p>
+<pre><code class="language-python">m @ p       #  wrong side — this is column-vector convention
+p @ m       # Correct PyNGL is row-vector: point first
+</code></pre>
+<p><strong>Mistake 2  expecting <code>transposed()</code> to change the matrix.</strong></p>
+<pre><code class="language-python">m.transposed()          #  result thrown away
+m = m.transposed()      # Correct
+</code></pre>
+<p><strong>Mistake 3  combining transforms in the wrong order.</strong></p>
+<p>If your object orbits the origin when you wanted it to spin in place, your
+rotation and translation are swapped. Remember: <strong>right to left</strong>, and
+<em>scale → rotate → translate</em> reads <code>translate @ rotate @ scale</code>.</p>
+<p><strong>Mistake 4  using <code>*</code> for matrix multiplication.</strong></p>
+<pre><code class="language-python">a * b        # wrong :- MatrixError  * is scalar-only
+a @ b        # matrix product
+a * 2.0      # scale every element by 2
+</code></pre>
+<p><strong>Mistake 5  translating a <code>Vec3</code>.</strong></p>
+<p>Translation needs the fourth (<code>w</code>) component, so it needs <code>Vec4</code> and
+<code>Mat4</code>. <code>Vec3 @ Mat3</code> can only rotate and scale.</p>
+<hr />
+<h2 id="quick-reference">Quick reference</h2>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Code</th>
+<th>Returns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>identity / zero</td>
+<td><code>Mat4()</code>, <code>Mat4.identity()</code>, <code>Mat4.zero()</code></td>
+<td>new matrix</td>
+</tr>
+<tr>
+<td>build transforms</td>
+<td><code>Mat4.rotate_x/y/z(deg)</code>, <code>Mat4.scale(x,y,z)</code>, <code>Mat4.translate(x,y,z)</code></td>
+<td>new matrix</td>
+</tr>
+<tr>
+<td>combine</td>
+<td><code>a @ b</code> (right one applies first)</td>
+<td>new matrix</td>
+</tr>
+<tr>
+<td>transform a point</td>
+<td><code>Vec4(...) @ m</code>, <code>Vec3(...) @ mat3</code></td>
+<td>new vector</td>
+</tr>
+<tr>
+<td>undo</td>
+<td><code>m.inverse()</code></td>
+<td>new matrix</td>
+</tr>
+<tr>
+<td>flip rows/cols</td>
+<td><code>m.transposed()</code></td>
+<td>new matrix</td>
+</tr>
+<tr>
+<td>volume change</td>
+<td><code>m.determinant()</code></td>
+<td><code>float</code></td>
+</tr>
+<tr>
+<td>resize</td>
+<td><code>Mat3.from_mat4(m)</code>, <code>Mat4.from_mat3(m)</code></td>
+<td>new matrix</td>
+</tr>
+<tr>
+<td>elements</td>
+<td><code>m[row][col]</code> (read/write)</td>
+<td><code>float</code></td>
+</tr>
+<tr>
+<td>convert</td>
+<td><code>to_list/tuple/numpy</code>, <code>from_list/numpy</code>, <code>copy()</code></td>
+<td>conversions</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Next:</strong> <a href="../quaternions/">Quaternions</a> — a better way to represent
+rotation.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../vectors/" class="btn btn-neutral float-left" title="Vectors"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../quaternions/" class="btn btn-neutral float-right" title="Quaternions">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../vectors/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../quaternions/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

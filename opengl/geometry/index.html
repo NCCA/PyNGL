@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Geometry, Primitives, and VAOs - PyNGL - NCCA Python Graphics Library</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Geometry, Primitives, and VAOs";
+        var mkdocs_page_input_path = "opengl/geometry.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> PyNGL - NCCA Python Graphics Library
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../getting_started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/method_names/">Understanding the Method Names</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/vectors/">Vectors</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/matrices/">Matrices</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/quaternions/">Quaternions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/transforms/">The Transform Class</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/cameras_and_projection/">Cameras and Projection</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/vector_arrays/">Vector Arrays</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/geometry_maths/">Geometry Maths</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/utility_functions/">Utility Functions</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">OpenGL</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../getting_started/">Getting Started with OpenGL</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../shaders/">Shaders and ShaderLib</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Geometry, Primitives, and VAOs</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#stock-primitives">Stock primitives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#parametric-primitives">Parametric primitives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#obj-files">OBJ files</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#textures">Textures</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#custom-geometry-the-vao-factory">Custom geometry: the VAO factory</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#text-rendering">Text rendering</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">WebGPU</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/getting_started/">Getting Started with WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/builtin_pipelines/">The Built-in Pipelines</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../webgpu/custom_pipelines/">Custom Pipelines</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../widgets/">Qt Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">QML Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../qml/">Qt Quick Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Math/">Math</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Geometry/">Geometry</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../VAO/">VAO</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Shaders/">Shaders</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Camera/">Camera</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../ImageAndTexture/">Image and Texture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Text/">Text</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../WebGPU/">WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Widgets/">Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../QmlWidgets/">QML Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../Misc/">Miscellaneous</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../about/">About</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">PyNGL - NCCA Python Graphics Library</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">OpenGL</li>
+      <li class="breadcrumb-item active">Geometry, Primitives, and VAOs</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="geometry-primitives-meshes-and-vaos">Geometry: Primitives, Meshes, and VAOs</h1>
+<p>Three ways to get geometry on screen, in increasing order of effort:
+stock primitives, OBJ files, and custom vertex data through the VAO
+factory.</p>
+<h2 id="stock-primitives">Stock primitives</h2>
+<p><code>Primitives</code> is a static class holding named, ready-to-draw meshes. The
+classic NGL teaching models are built in — load them once in
+<code>initializeGL</code>, then drawing is one line:</p>
+<pre><code class="language-python">from ncca.ngl.opengl import Primitives
+
+Primitives.load_default_primitives()   # once
+Primitives.draw(&quot;teapot&quot;)              # per frame
+</code></pre>
+<p>The stock names (also available as the <code>Prims</code> enum from <code>ncca.ngl</code>):
+<code>teapot</code>, <code>bunny</code>, <code>buddah</code>, <code>dragon</code>, <code>troll</code>, <code>cube</code>, <code>football</code>,
+<code>icosahedron</code>, <code>octahedron</code>, <code>tetrahedron</code>, <code>dodecahedron</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Drawing a stock name without calling <code>load_default_primitives()</code>
+first draws nothing — it is the most common first-app mistake.</p>
+</div>
+<h2 id="parametric-primitives">Parametric primitives</h2>
+<p><code>Primitives.create(type, name, ...)</code> generates a shape at the resolution
+you ask for and registers it under your own name:</p>
+<pre><code class="language-python">from ncca.ngl import Prims
+from ncca.ngl.opengl import Primitives
+
+Primitives.create(Prims.SPHERE, &quot;ball&quot;, 0.3, 32)      # radius, precision
+Primitives.create(Prims.TORUS, &quot;donut&quot;, 1.0, 0.3, 40) # radius, tube_radius, precision
+Primitives.draw(&quot;ball&quot;)
+</code></pre>
+<p>The available types and their arguments:</p>
+<table>
+<thead>
+<tr>
+<th><code>Prims</code></th>
+<th>Arguments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SPHERE</code></td>
+<td><code>radius, precision</code></td>
+</tr>
+<tr>
+<td><code>TORUS</code></td>
+<td><code>radius, tube_radius, precision</code></td>
+</tr>
+<tr>
+<td><code>CYLINDER</code> / <code>CONE</code> / <code>CAPSULE</code></td>
+<td><code>radius, height, slices, stacks</code></td>
+</tr>
+<tr>
+<td><code>DISK</code></td>
+<td><code>radius, slices</code></td>
+</tr>
+<tr>
+<td><code>LINE_GRID</code></td>
+<td><code>width, depth, steps</code> (drawn as <code>GL_LINES</code>)</td>
+</tr>
+<tr>
+<td><code>TRIANGLE_PLANE</code></td>
+<td><code>width, depth, w_p, d_p, normal (Vec3)</code></td>
+</tr>
+</tbody>
+</table>
+<p>Everything except <code>LINE_GRID</code> is interleaved position/normal/UV triangle
+data, so the built-in shaders light and texture it correctly. The raw
+vertex arrays behind these shapes come from <code>PrimData</code> in <code>ncca.ngl</code> —
+useful on its own when you want the data without a VAO (the WebGPU stack
+uses it this way).</p>
+<h2 id="obj-files">OBJ files</h2>
+<p><code>Obj</code> parses Wavefront OBJ files into CPU-side mesh data. Upload it to an
+OpenGL VAO with <code>OpenGLMesh</code>:</p>
+<pre><code class="language-python">from ncca.ngl import Obj
+from ncca.ngl.opengl import OpenGLMesh
+
+data = Obj.from_file(&quot;models/helix.obj&quot;)
+mesh = OpenGLMesh(data)
+mesh.upload()  # whilst an OpenGL context is current
+mesh.draw()    # per frame, with your shader active
+</code></pre>
+<p><code>Obj.from_file("file.obj")</code> returns the parsed data (vertices, normals, UVs,
+and <code>Face</code> lists). <code>Obj</code> no longer has <code>create_vao()</code>, <code>draw()</code>, or
+<code>obj_with_vao()</code>. Parse errors raise <code>ObjParse*Error</code> exceptions rather than
+returning half-loaded meshes.</p>
+<h2 id="textures">Textures</h2>
+<pre><code class="language-python">from ncca.ngl.opengl import Texture
+
+tex = Texture(&quot;textures/crate.png&quot;)
+tex_id = tex.set_texture_gl()          # creates the GL texture, returns its id
+ShaderLib.set_uniform(&quot;tex&quot;, 0)        # sampler uniform = texture *unit* index
+</code></pre>
+<h2 id="custom-geometry-the-vao-factory">Custom geometry: the VAO factory</h2>
+<p>For your own vertex data, <code>VAOFactory</code> creates a managed vertex array
+object. Three implementations ship, chosen with <code>VAOType</code>:</p>
+<table>
+<thead>
+<tr>
+<th><code>VAOType</code></th>
+<th>Use for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SIMPLE</code></td>
+<td>one interleaved buffer, <code>glDrawArrays</code></td>
+</tr>
+<tr>
+<td><code>SIMPLE_INDEX</code></td>
+<td>interleaved buffer + index buffer, <code>glDrawElements</code> (use <code>IndexVertexData</code>)</td>
+</tr>
+<tr>
+<td><code>MULTI_BUFFER</code></td>
+<td>separate buffers per attribute (positions, normals, … each in their own VBO)</td>
+</tr>
+</tbody>
+</table>
+<p>A VAO is used as a context manager — <code>with</code> binds it, leaving the block
+unbinds it. Build once:</p>
+<pre><code class="language-python">import numpy as np
+import OpenGL.GL as gl
+
+from ncca.ngl.opengl import VAOFactory, VAOType, VertexData
+
+# x,y,z then u,v per vertex
+verts = np.array([...], dtype=np.float32)
+
+vao = VAOFactory.create_vao(VAOType.SIMPLE, gl.GL_TRIANGLES)
+with vao:
+    vao.set_data(VertexData(data=verts, size=len(verts) // 5))
+    stride = 5 * verts.itemsize
+    vao.set_vertex_attribute_pointer(0, 3, gl.GL_FLOAT, stride, 0)  # position
+    vao.set_vertex_attribute_pointer(1, 2, gl.GL_FLOAT, stride, 3 * verts.itemsize)  # uv
+</code></pre>
+<p>Draw per frame:</p>
+<pre><code class="language-python">with vao:
+    vao.draw()
+</code></pre>
+<p><code>VertexData(data, size, mode=GL_STATIC_DRAW)</code> carries the array and the
+<strong>vertex count</strong> (not float count); for indexed drawing,
+<code>IndexVertexData</code> adds the index array and its GL type. The VAOs also
+expose <code>get_buffer_id()</code> and <code>map_buffer()</code> when you need to poke the
+underlying VBO — handy for dynamic/streaming data.</p>
+<p>Like the WebGPU <code>PipelineFactory</code>, the factory is a registry:
+<code>VAOFactory.register_vao_creator(...)</code> adds your own <code>AbstractVAO</code>
+subclass without touching call sites —
+<code>PyNGLDemos/VertexArrayObject</code> has a worked example.</p>
+<h2 id="text-rendering">Text rendering</h2>
+<p><code>Text</code> renders a TrueType font via a freetype glyph atlas and
+geometry-shader quads, using the built-in <code>DefaultShader.TEXT</code>:</p>
+<pre><code class="language-python">from ncca.ngl import Vec3
+from ncca.ngl.opengl import Text
+
+text = Text()
+text.add_font(&quot;arial&quot;, &quot;fonts/Arial.ttf&quot;, 40)
+text.set_screen_size(self.width(), self.height())   # and again on resize
+
+# in paintGL
+text.render_text(&quot;arial&quot;, 10, 20, &quot;PyNGL!&quot;, colour=Vec3(1.0, 1.0, 0.0))
+</code></pre>
+<p>A <code>Text</code> object can hold several fonts/sizes at once — each <code>add_font</code>
+builds a glyph atlas under the name you give it.</p>
+<p>Full API: <a href="../../Geometry/">Geometry</a>, <a href="../../VAO/">VAO</a>,
+<a href="../../ImageAndTexture/">Image and Texture</a>, and <a href="../../Text/">Text</a>
+references.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../shaders/" class="btn btn-neutral float-left" title="Shaders and ShaderLib"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../webgpu/" class="btn btn-neutral float-right" title="Overview">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../shaders/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../../webgpu/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Qt Widgets for NGL Types - PyNGL - NCCA Python Graphics Library</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Qt Widgets for NGL Types";
+        var mkdocs_page_input_path = "widgets/index.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> PyNGL - NCCA Python Graphics Library
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../getting_started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/method_names/">Understanding the Method Names</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/vectors/">Vectors</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/matrices/">Matrices</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/quaternions/">Quaternions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/transforms/">The Transform Class</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/cameras_and_projection/">Cameras and Projection</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/vector_arrays/">Vector Arrays</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/geometry_maths/">Geometry Maths</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/utility_functions/">Utility Functions</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">OpenGL</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../opengl/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../opengl/getting_started/">Getting Started with OpenGL</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../opengl/shaders/">Shaders and ShaderLib</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../opengl/geometry/">Geometry, Primitives, and VAOs</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">WebGPU</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../webgpu/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../webgpu/getting_started/">Getting Started with WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../webgpu/builtin_pipelines/">The Built-in Pipelines</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../webgpu/custom_pipelines/">Custom Pipelines</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Widgets</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Qt Widgets for NGL Types</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#the-widgets">The widgets</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#signals">Signals</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#ranges-and-steps">Ranges and steps</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#matrix-grid-widgets">Matrix grid widgets</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#read-only-view-mode">Read-only (view) mode</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#driving-a-viewport">Driving a viewport</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">QML Widgets</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../qml/">Qt Quick Widgets for NGL Types</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../Math/">Math</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Geometry/">Geometry</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../VAO/">VAO</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Shaders/">Shaders</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Camera/">Camera</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ImageAndTexture/">Image and Texture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Text/">Text</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../WebGPU/">WebGPU</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Widgets/">Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../QmlWidgets/">QML Widgets</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Misc/">Miscellaneous</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../about/">About</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">PyNGL - NCCA Python Graphics Library</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Widgets</li>
+      <li class="breadcrumb-item active">Qt Widgets for NGL Types</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="qt-widgets-for-ngl-types">Qt Widgets for NGL Types</h1>
+<p><code>ncca.ngl.widgets</code> provides ready-made PySide6 widgets for editing and
+displaying NGL math types in a GUI — spin-box clusters for vectors,
+colour pickers that speak <code>Vec3</code>/<code>Vec4</code>, and composite editors that emit
+<code>Mat4</code> transforms. They are ordinary <code>QWidget</code>s (each is a <code>QFrame</code>), so
+they drop into any Qt layout.</p>
+<p>See them all at once with the bundled demo:</p>
+<pre><code class="language-bash">uv run python -m ncca.ngl.widgets
+</code></pre>
+<h2 id="the-widgets">The widgets</h2>
+<table>
+<thead>
+<tr>
+<th>Widget</th>
+<th>Edits</th>
+<th>Value signal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Vec2Widget</code></td>
+<td>two spin boxes</td>
+<td><code>valueChanged(Vec2)</code></td>
+</tr>
+<tr>
+<td><code>Vec3Widget</code></td>
+<td>three spin boxes</td>
+<td><code>valueChanged(Vec3)</code></td>
+</tr>
+<tr>
+<td><code>Vec4Widget</code></td>
+<td>four spin boxes</td>
+<td><code>valueChanged(Vec4)</code></td>
+</tr>
+<tr>
+<td><code>Mat2Widget</code></td>
+<td>2x2 grid + reset buttons</td>
+<td><code>valueChanged(Mat2)</code></td>
+</tr>
+<tr>
+<td><code>Mat3Widget</code></td>
+<td>3x3 grid + reset buttons + method combo</td>
+<td><code>valueChanged(Mat3)</code></td>
+</tr>
+<tr>
+<td><code>Mat4Widget</code></td>
+<td>4x4 grid + reset buttons + method combo</td>
+<td><code>valueChanged(Mat4)</code></td>
+</tr>
+<tr>
+<td><code>TransformWidget</code></td>
+<td>position / rotation / scale</td>
+<td><code>valueChanged(Mat4)</code></td>
+</tr>
+<tr>
+<td><code>LookAtWidget</code></td>
+<td>eye / look / up</td>
+<td><code>valueChanged(Mat4)</code> (a <code>look_at</code> view matrix)</td>
+</tr>
+<tr>
+<td><code>RGBColourWidget</code></td>
+<td>RGB sliders + colour dialog</td>
+<td><code>colourChanged(Vec3)</code></td>
+</tr>
+<tr>
+<td><code>RGBAColourWidget</code></td>
+<td>RGBA sliders + colour dialog</td>
+<td><code>colourChanged(Vec4)</code></td>
+</tr>
+</tbody>
+</table>
+<p>The vector, transform, look-at and colour widgets share the constructor
+shape <code>Widget(parent=None, name="", &lt;initial value...&gt;)</code> — <code>name</code> is the
+label shown on the widget frame:</p>
+<pre><code class="language-python">from ncca.ngl import Vec3
+from ncca.ngl.widgets import Vec3Widget
+
+position = Vec3Widget(self, &quot;Position&quot;, Vec3(0, 1, 0))
+</code></pre>
+<p>The matrix widgets (below) instead take <code>Widget(parent=None, name="",
+read_only=False)</code> — no initial-value argument, since they always start
+from an identity matrix; use <code>set_value()</code> to set a starting value.</p>
+<h2 id="signals">Signals</h2>
+<p>Beyond the whole-value signal, the vector widgets emit per-component
+<code>float</code> signals (<code>xValueChanged</code>, <code>yValueChanged</code>, <code>zValueChanged</code>,
+<code>wValueChanged</code>), and the colour widgets per-channel ones
+(<code>rValueChanged</code>, <code>gValueChanged</code>, <code>bValueChanged</code>, <code>aValueChanged</code>).
+Connect whichever granularity you need:</p>
+<pre><code class="language-python">position.valueChanged.connect(self.set_position)   # receives a Vec3
+position.yValueChanged.connect(self.set_height)    # receives a float
+</code></pre>
+<p>Values are read and written with <code>get_value()</code> / <code>set_value(...)</code>
+(<code>get_eye</code>/<code>set_eye</code>, <code>get_look</code>, <code>get_up</code> on <code>LookAtWidget</code>;
+<code>set_colour</code> on the colour widgets).</p>
+<h2 id="ranges-and-steps">Ranges and steps</h2>
+<p>The vector widgets default to a small range, so set what your scene
+needs — per component or all at once:</p>
+<pre><code class="language-python">position.set_range(-10.0, 10.0)     # all components
+position.set_y_range(0.0, 5.0)      # just Y
+position.set_single_step(0.1)
+</code></pre>
+<p><code>set_range()</code>/<code>set_single_step()</code> work the same way on the matrix grid
+widgets below, applied to every cell.</p>
+<h2 id="matrix-grid-widgets">Matrix grid widgets</h2>
+<p><code>Mat2Widget</code>/<code>Mat3Widget</code>/<code>Mat4Widget</code> edit a matrix as a grid of spin
+boxes, with <strong>Identity</strong>/<strong>Zero</strong>/<strong>Transpose</strong>/<strong>Inverse</strong> buttons that
+reset or transform the current value (Inverse shows "Matrix is singular"
+instead of raising if the matrix isn't invertible):</p>
+<pre><code class="language-python">from ncca.ngl.widgets import Mat4Widget
+
+model_matrix = Mat4Widget(self, &quot;Model&quot;)
+model_matrix.valueChanged.connect(viewport.set_model)   # Mat4
+</code></pre>
+<p><code>Mat3Widget</code> and <code>Mat4Widget</code> also have a method combo box
+(<code>rotate_x</code>/<code>rotate_y</code>/<code>rotate_z</code>/<code>scale</code>, plus <code>translate</code> on
+<code>Mat4Widget</code>) that sets the matrix from the corresponding classmethod.
+Selecting a rotation shows a single angle (degrees) spin box; selecting
+<code>scale</code>/<code>translate</code> shows an embedded <code>Vec3Widget</code> instead. Whichever
+panel is visible updates the matrix live — there's no separate "Apply"
+button.</p>
+<h3 id="read-only-view-mode">Read-only (view) mode</h3>
+<p>Pass <code>read_only=True</code> to get a plain display grid with no reset buttons
+and no method combo — the cells can't be typed into, but <code>set_value()</code>
+still updates what's shown. Use this to display a matrix that's produced
+elsewhere (e.g. a <code>TransformWidget</code> output) without offering a second,
+conflicting way to edit it:</p>
+<pre><code class="language-python">transform = TransformWidget(self, &quot;Model&quot;)
+transform_matrix = Mat4Widget(self, &quot;Model Matrix&quot;, read_only=True)
+transform.valueChanged.connect(transform_matrix.set_value)
+</code></pre>
+<h2 id="driving-a-viewport">Driving a viewport</h2>
+<p>The typical use is a control panel beside an OpenGL (or WebGPU)
+viewport: connect the widget signals to slots that store the value and
+schedule a repaint.</p>
+<pre><code class="language-python">from ncca.ngl import Mat4, Vec3, Vec4
+from ncca.ngl.widgets import LookAtWidget, RGBColourWidget, TransformWidget
+
+
+class ControlPanel(QWidget):
+    def __init__(self, viewport):
+        super().__init__()
+        layout = QVBoxLayout(self)
+
+        camera = LookAtWidget(self, &quot;Camera&quot;, eye=Vec3(2, 2, 2))
+        camera.valueChanged.connect(viewport.set_view)        # Mat4
+
+        transform = TransformWidget(self, &quot;Model&quot;)
+        transform.valueChanged.connect(viewport.set_model)    # Mat4
+
+        colour = RGBColourWidget(self, &quot;Colour&quot;, 0.8, 0.5, 0.2)
+        colour.colourChanged.connect(viewport.set_colour)     # Vec3
+
+        for w in (camera, transform, colour):
+            layout.addWidget(w)
+</code></pre>
+<p>In the viewport slots, store the value and call <code>self.update()</code>; the next
+<code>paintGL</code> picks it up. <code>TransformWidget</code> and <code>LookAtWidget</code> both hand you
+a finished <code>Mat4</code> — the model matrix and the view matrix respectively —
+so the paint code just multiplies:</p>
+<pre><code class="language-python">mvp = self.project @ self.view @ self.model
+</code></pre>
+<p>The demo dialog in
+<a href="https://github.com/NCCA/PyNGL/blob/main/src/ncca/ngl/widgets/__main__.py"><code>src/ncca/ngl/widgets/__main__.py</code></a>
+shows every widget wired to live value labels and is a good copy-paste
+source.</p>
+<p>Full API: <a href="../Widgets/">Widgets reference</a>.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../webgpu/custom_pipelines/" class="btn btn-neutral float-left" title="Custom Pipelines"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../qml/" class="btn btn-neutral float-right" title="Qt Quick Widgets for NGL Types">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../webgpu/custom_pipelines/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../qml/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
