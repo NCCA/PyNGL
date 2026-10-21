@@ -108,3 +108,26 @@ Vulkan and WebGPU device creation before collecting tests, and prints the
 selected adapter. `LIBGL_ALWAYS_SOFTWARE` controls the OpenGL side separately.
 A native driver abort stops the process before Python can catch an exception;
 the separate device check makes that failure easier to locate in the CI log.
+
+## Commit checks
+
+Install the Git hook once after cloning:
+
+```bash
+uv run pre-commit install
+```
+
+Each commit runs `uv run --locked ruff check src/`, using the same Ruff rules
+and locked version as CI. This includes public docstrings and type annotations
+from `pyproject.toml`. The check covers the whole source tree even when the
+commit only changes configuration or documentation. Python files in the commit
+are also formatted; stage any formatting changes before committing again.
+
+To run the source check manually:
+
+```bash
+uv run pre-commit run ruff-check --all-files
+```
+
+The hook must be installed in each clone. Installing the Python package alone
+does not install Git hooks. CI remains the check for full tests and builds.

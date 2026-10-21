@@ -1,12 +1,14 @@
 repos:
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    # Ruff version.
-    rev: v0.12.10
+  - repo: local
     hooks:
-      # Run the linter.
       - id: ruff-check
-        types_or: [python, pyi]
-        args: ["check", "--select", "I", "--fix"]
-      # Run the formatter.
+        name: Ruff lint (same source checks as CI)
+        entry: uv run --locked ruff check src/
+        language: system
+        pass_filenames: false
+        always_run: true
       - id: ruff-format
+        name: Ruff format
+        entry: uv run --locked ruff format
+        language: system
         types_or: [python, pyi]
