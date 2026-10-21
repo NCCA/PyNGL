@@ -142,6 +142,7 @@ class SimpleDialog(QDialog):
 
 
 def main() -> None:
+    """Entry point for the widgets demo."""
     app = QApplication(sys.argv)
     print("NCCA Widgets")
     dialog = SimpleDialog()
