@@ -13,6 +13,8 @@ jobs:
       QT_QPA_PLATFORM: offscreen
       LIBGL_ALWAYS_SOFTWARE: "1"
       QT_QUICK_BACKEND: software
+      WGPU_BACKEND_TYPE: Vulkan
+      PYTHONUNBUFFERED: "1"
     strategy:
       matrix:
         python-version: ["3.13"]
@@ -30,11 +32,38 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             xvfb xauth libegl1 libgl1 libgl1-mesa-dri libglx-mesa0 \
-            libvulkan1 mesa-vulkan-drivers libglib2.0-0t64 libfontconfig1 \
+            libvulkan1 mesa-vulkan-drivers vulkan-tools libglib2.0-0t64 libfontconfig1 \
             libxkbcommon0 libdbus-1-3 libxkbcommon-x11-0 libxcb-xinerama0
+
+      - name: Select the software Vulkan driver
+        shell: bash
+        run: |
+          drivers=(/usr/share/vulkan/icd.d/lvp_icd*.json)
+          test -f "${drivers[0]}"
+          echo "VK_DRIVER_FILES=${drivers[0]}" >> "$GITHUB_ENV"
+          runtime_dir="$RUNNER_TEMP/pyngl-runtime"
+          mkdir -p "$runtime_dir"
+          chmod 700 "$runtime_dir"
+          echo "XDG_RUNTIME_DIR=$runtime_dir" >> "$GITHUB_ENV"
 
       - name: Install the project
         run: uv sync --locked --all-extras --dev
+
+      - name: Check software Vulkan and WebGPU device creation
+        run: |
+          vulkaninfo --summary
+          uv run python -u - <<'PYTHON'
+          import logging
+          import wgpu.utils
+
+          logging.basicConfig(level=logging.INFO)
+          logging.getLogger("wgpu").setLevel(logging.DEBUG)
+          device = wgpu.utils.get_default_device()
+          info = dict(device.adapter.info)
+          print("WebGPU CI adapter:", info, flush=True)
+          assert info["backend_type"] == "Vulkan", info
+          assert info["adapter_type"] == "CPU", info
+          PYTHON
 
       - name: Run full-suite coverage with software graphics
         run: xvfb-run -a uv run python run_coverage_nogpu.py

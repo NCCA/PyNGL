@@ -101,3 +101,10 @@ leave out tests requiring graphics or Qt fixtures.
 
 Coverage reports are regenerated for each run. Test failures, report failures
 and coverage below 80% stop the analysis job.
+
+The Linux analysis job explicitly selects WebGPU's Vulkan backend and Mesa's
+Lavapipe driver using `WGPU_BACKEND_TYPE` and `VK_DRIVER_FILES`. It checks
+Vulkan and WebGPU device creation before collecting tests, and prints the
+selected adapter. `LIBGL_ALWAYS_SOFTWARE` controls the OpenGL side separately.
+A native driver abort stops the process before Python can catch an exception;
+the separate device check makes that failure easier to locate in the CI log.
