@@ -1049,21 +1049,13 @@ def test_shaderprogram_set_uniform_buffer_exception_handling(
 ):
     """Test uniform buffer exception handling"""
 
-    # Get first available uniform block
     blocks = uniform_block_shader.get_registered_uniform_blocks()
-    if blocks:
-        block_name = list(blocks.keys())[0]
+    assert blocks
+    block_name = next(iter(blocks))
 
-        # Test with invalid data that might cause np.frombuffer to fail
-        try:
-            result = uniform_block_shader.set_uniform_buffer(
-                block_name, 16, "invalid_data"
-            )
-            # Should return False due to exception
-            assert result
-        except Exception as e:
-            # If exception is raised instead of caught, that's also valid
-            print(e)
+    result = uniform_block_shader.set_uniform_buffer(block_name, 16, "invalid_data")
+
+    assert result is False
 
 
 def test_shaderprogram_array_methods_with_invalid_location(opengl_context):

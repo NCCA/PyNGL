@@ -84,3 +84,20 @@ The WebGPU stack is similarly namespaced under `ncca.ngl.webgpu`. See the
 Work through the [tutorials](tutorials/index.md) in order — they build from
 vectors up to full camera and transformation pipelines, with runnable
 examples throughout.
+
+## Running the analysis tests
+
+The SonarCloud job collects the complete test suite, including Qt, OpenGL and
+WebGPU tests. Run it locally with:
+
+```bash
+uv run python run_coverage_nogpu.py
+```
+
+The script keeps its historical filename. It now needs graphics support;
+Linux CI uses Mesa software rendering under Xvfb. To run the full suite without
+coverage, use `uv run pytest --run-graphics`. The default test run continues to
+leave out tests requiring graphics or Qt fixtures.
+
+Coverage reports are regenerated for each run. Test failures, report failures
+and coverage below 80% stop the analysis job.

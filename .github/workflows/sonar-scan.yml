@@ -11,12 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     env:
       QT_QPA_PLATFORM: offscreen
-      GLFW_CONTEXT_API: osmesa
+      LIBGL_ALWAYS_SOFTWARE: "1"
+      QT_QUICK_BACKEND: software
     strategy:
       matrix:
         python-version: ["3.13"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
       - name: Install uv
@@ -24,34 +25,20 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install EGL dependencies
+      - name: Install software graphics and Qt dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-            libegl1 \
-            libgl1 \
-            libxkbcommon-x11-0 \
-            libxcb-xinerama0
-
-      # - name: Install OpenGL (OSMesa)
-      #   run: |
-      #     sudo apt-get update
-      #     sudo apt-get install -y \
-      #       libgl1-mesa-dev \
-      #       libosmesa6-dev \
-      #       mesa-utils
+          sudo apt-get install -y --no-install-recommends \
+            xvfb xauth libegl1 libgl1 libgl1-mesa-dri libglx-mesa0 \
+            libvulkan1 mesa-vulkan-drivers libglib2.0-0t64 libfontconfig1 \
+            libxkbcommon0 libdbus-1-3 libxkbcommon-x11-0 libxcb-xinerama0
 
       - name: Install the project
         run: uv sync --locked --all-extras --dev
 
-      - name: Install dependencies and run coverage
-        run: uv run run_coverage_nogpu.py
+      - name: Run full-suite coverage with software graphics
+        run: xvfb-run -a uv run python run_coverage_nogpu.py
 
-        # run: |
-        #   uv run coverage run --source=src/ncca/ngl  --omit="*/tests/*,*/test_*" -m pytest -p no:pytest-qt tests --ignore=tests/test_shaderlib.py --ignore=tests/test_texture.py --ignore=tests/test_text.py --ignore=tests/test_base_mesh.py --ignore=tests/test_primitives.py --ignore=tests/test_obj.py --ignore=tests/test_vao.py --ignore=tests/test_lookat_widget.py  --ignore=tests/test_transform_widget.py   --ignore=tests/test_vec4_widget.py --ignore=tests/test_rgb_colour_widget.py  --ignore=tests/test_vec2_widget.py --ignore=tests/test_rgba_colour_widget.py --ignore=tests/test_vec3_widget.py --ignore=tests/test_webgpu_widget.py && uv run coverage report -m
-        #   uv run coverage xml
-        # run: |
-        #   uv run coverage run --source=src/ncca/ngl -m pytest && uv run coverage report -m && uv run coverage xml
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5.0.0
         env:

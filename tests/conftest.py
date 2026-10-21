@@ -5,6 +5,11 @@ import wgpu
 import wgpu.utils
 
 
+def pytest_addoption(parser):
+    """Allow the coverage job to include graphics and Qt tests."""
+    parser.addoption("--run-graphics", action="store_true", default=False)
+
+
 def pytest_configure(config):
     """Configure pytest with custom markers."""
     config.addinivalue_line("markers", "opengl: mark test as using an OpenGL context")
@@ -13,22 +18,19 @@ def pytest_configure(config):
 
 
 def pytest_collection_modifyitems(config, items):
-    """
-    If `-m` is specified on the command line, this function only adds the
-    'opengl' and 'webgpu' markers, allowing pytest to handle filtering.
+    """Select graphics tests when requested by marker or --run-graphics.
 
-    If no `-m` is specified, this function manually deselects all tests
-    marked 'opengl' or 'webgpu' for the default test run.
+    The default run leaves out tests using OpenGL, WebGPU or Qt fixtures.
     """
     # If the user is specifying a marker, just add our markers and let pytest handle it.
-    if config.getoption("markexpr"):
+    if config.getoption("markexpr") or config.getoption("--run-graphics"):
         for item in items:
             fixtures = getattr(item, "fixturenames", [])
             if "opengl_context" in fixtures:
                 item.add_marker(pytest.mark.opengl)
             elif "webgpu_device" in fixtures:
                 item.add_marker(pytest.mark.webgpu)
-            elif "qt_app" in fixtures:
+            elif any(name in fixtures for name in ("qt_app", "qtbot", "qapp")):
                 item.add_marker(pytest.mark.qt)
         return
 
@@ -38,7 +40,11 @@ def pytest_collection_modifyitems(config, items):
     for item in items:
         fixtures = getattr(item, "fixturenames", [])
 
-        is_graphics = "opengl_context" in fixtures or "webgpu_device" in fixtures or "qt_app" in fixtures
+        is_graphics = (
+            "opengl_context" in fixtures
+            or "webgpu_device" in fixtures
+            or any(name in fixtures for name in ("qt_app", "qtbot", "qapp"))
+        )
 
         if is_graphics:
             deselected_items.append(item)
