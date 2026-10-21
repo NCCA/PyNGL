@@ -90,3 +90,10 @@ exclude_lines = [
     "if __name__ == .__main__.:",
     "if TYPE_CHECKING:",
 ]
+
+
+[project.scripts]
+web-gpu-demo = "ncca.ngl.webgpu.__main__:main"
+opengl-demo = "ncca.ngl.opengl.__main__:main"
+qml-demo = "ncca.ngl.qml.__main__:main"
+widgets-demo = "ncca.ngl.widgets.__main__:main"

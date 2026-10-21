@@ -73,13 +73,9 @@ class SimpleDialog(QDialog):
         self.perspective_widget = PerspectiveWidget(self, "Perspective Widget")
         grid_layout.addWidget(self.perspective_widget, 5, 0)
 
-        self.rgb_colour_widget = RGBColourWidget(
-            self, "RGB Colour Widget", 1.0, 0.0, 0.0
-        )
+        self.rgb_colour_widget = RGBColourWidget(self, "RGB Colour Widget", 1.0, 0.0, 0.0)
         grid_layout.addWidget(self.rgb_colour_widget, 6, 0)
-        self.rgba_colour_widget = RGBAColourWidget(
-            self, "RGB Colour Widget", 1.0, 0.0, 0.0, 1.0
-        )
+        self.rgba_colour_widget = RGBAColourWidget(self, "RGB Colour Widget", 1.0, 0.0, 0.0, 1.0)
         grid_layout.addWidget(self.rgba_colour_widget, 7, 0)
 
         self.mat2_widget = Mat2Widget(self, "Mat2 Widget")
@@ -91,15 +87,11 @@ class SimpleDialog(QDialog):
         self.mat4_widget = Mat4Widget(self, "Mat4 Widget")
         grid_layout.addWidget(self.mat4_widget, 2, 2)
 
-        self.transform_matrix_widget = Mat4Widget(
-            self, "Transform Output", read_only=True
-        )
+        self.transform_matrix_widget = Mat4Widget(self, "Transform Output", read_only=True)
         grid_layout.addWidget(self.transform_matrix_widget, 3, 2)
         self.transform_widget.valueChanged.connect(self._update_transform_matrix)
 
-        self.perspective_matrix_widget = Mat4Widget(
-            self, "Perspective Output", read_only=True
-        )
+        self.perspective_matrix_widget = Mat4Widget(self, "Perspective Output", read_only=True)
         grid_layout.addWidget(self.perspective_matrix_widget, 4, 2)
         self.perspective_widget.valueChanged.connect(self._update_perspective_matrix)
 
@@ -140,9 +132,7 @@ class SimpleDialog(QDialog):
         self.vec2_label.setText(f"[{value.x:0.2f}, {value.y:0.2f}]")
 
     def _update_vec4(self, value: Vec4) -> None:
-        self.vec4_label.setText(
-            f"[{value.x:0.2f}, {value.y:0.2f}, {value.z:0.2f}, {value.w:0.2f}]"
-        )
+        self.vec4_label.setText(f"[{value.x:0.2f}, {value.y:0.2f}, {value.z:0.2f}, {value.w:0.2f}]")
 
     def _update_transform_matrix(self, value: Mat4) -> None:
         self.transform_matrix_widget.set_value(value)
@@ -151,10 +141,13 @@ class SimpleDialog(QDialog):
         self.perspective_matrix_widget.set_value(value)
 
 
-if __name__ == "__main__":
+def main() -> None:
     app = QApplication(sys.argv)
     print("NCCA Widgets")
-
     dialog = SimpleDialog()
     dialog.show()
     app.exec()
+
+
+if __name__ == "__main__":
+    main()
